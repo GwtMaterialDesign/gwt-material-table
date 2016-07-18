@@ -1,0 +1,40 @@
+.table-container .data-pager {
+    width: 100%;
+    position: relative;
+    padding: 4px;
+    color: #9e9e9e !important;
+    font-size: 0.8em;
+    margin-bottom: 0;
+}
+
+.data-pager .action-page-panel > span, .data-pager .rows-per-page-panel > span, .data-pager .num-page-panel > span, .data-pager .action-page-panel i {
+    float: right;
+    margin-right: 8px;
+    margin-top: 12px;
+}
+
+.data-pager .action-page-panel i {
+    margin-top: 4px;
+}
+
+.data-pager .action-page-panel i.disabled {
+    background: white !important;
+    color: #e9e9e9 !important;
+}
+
+.data-pager .rows-per-page-panel .select-wrapper, .data-pager .num-page-panel .select-wrapper {
+    float: right;
+    width: 44px;
+    max-width: 64px;
+    margin-left: 32px;
+}
+
+.data-pager .rows-per-page-panel .select-dropdown, .data-pager .num-page-panel .select-dropdown {
+    border: none;
+    margin-bottom: 0;
+    font-size: 1em;
+}
+
+.data-pager .select-wrapper .caret {
+    color: #9e9e9e !important;
+}
