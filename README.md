@@ -24,6 +24,17 @@ Snapshot Version 1.0-SNAPSHOT
 </dependency>
 ```
 
+## Setup Guide
+Import the GMD Table library (using Maven or using the Jar file).
+
+```xml
+<inherits name="gwt.material.design.GwtMaterialTable"/>
+```
+Or debug module:
+```xml
+<inherits name="gwt.material.design.GwtMaterialTableDebug"/>
+```
+
 ## License
 [Apache 2.0 License](https://github.com/GwtMaterialDesign/gwt-material-table/blob/master/LICENSE.md)
 
