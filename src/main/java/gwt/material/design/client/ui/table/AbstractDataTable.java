@@ -150,16 +150,18 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     protected void onLoad() {
         super.onLoad();
 
-        // Build the table scaffolding
-        scaffolding.build();
-        scaffolding.apply(this);
+        if(!setup) {
+            // Build the table scaffolding
+            scaffolding.build();
+            scaffolding.apply(this);
 
-        try {
-            setup = true;
-            setup(scaffolding);
-        } catch (Exception ex) {
-            logger.log(Level.SEVERE,
-                "Could not setup AbstractDataTable due to previous errors.", ex);
+            try {
+                setup = true;
+                setup(scaffolding);
+            } catch (Exception ex) {
+                logger.log(Level.SEVERE,
+                        "Could not setup AbstractDataTable due to previous errors.", ex);
+            }
         }
     }
 

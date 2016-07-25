@@ -112,7 +112,8 @@ public class BaseRenderer<T> implements Renderer<T> {
                 for(int c = 0; c < columns.size(); c++) {
                     int colIndex = c + colOffset;
                     Context context = new Context(rowComponent.getIndex(), colIndex, valueKey);
-                    drawColumn(row, context, rowComponent.getData(), columns.get(c), colIndex, dataView.isHeaderVisible(colIndex));
+                    drawColumn(row, context, rowComponent.getData(), columns.get(c), colIndex,
+                        dataView.isHeaderVisible(colIndex));
                 }
                 rowComponent.setRedraw(false);
             }
@@ -223,6 +224,7 @@ public class BaseRenderer<T> implements Renderer<T> {
         if(column.isNumeric()) {
             th.addStyleName("numeric");
         }
+        th.setVisible(true);
         return th;
     }
 

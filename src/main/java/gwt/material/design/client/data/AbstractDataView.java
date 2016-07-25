@@ -807,7 +807,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     @Override
     public boolean isHeaderVisible(int colIndex) {
-        return colIndex < headers.size() && headers.get(colIndex).$this().is(":visible");
+        return colIndex < headers.size() && headers.get(colIndex).$this().is(":visible") && headers.get(colIndex).isVisible();
     }
 
     @Override
@@ -1841,6 +1841,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             headerRow.remove(index);
         }
         refreshStickyHeaders();
+    }
+
+    protected List<TableHeader> getHeaders() {
+        return Collections.unmodifiableList(headers);
     }
 
     protected int getCategoryRowCount(String category) {
