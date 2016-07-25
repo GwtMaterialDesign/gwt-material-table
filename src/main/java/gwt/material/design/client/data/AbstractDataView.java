@@ -125,7 +125,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     private boolean useRowExpansion;
     private boolean useStickyHeader;
     private boolean useLoadOverlay;
-    private boolean useCategories = true;
+    private boolean useCategories;
     private SelectionType selectionType = SelectionType.NONE;
 
     // Components
