@@ -807,7 +807,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     @Override
     public boolean isHeaderVisible(int colIndex) {
-        return colIndex < headers.size() && (headers.get(colIndex).$this().is(":visible") || headers.get(colIndex).isVisible();
+        return colIndex < headers.size() && (headers.get(colIndex).$this().is(":visible") || headers.get(colIndex).isVisible());
     }
 
     @Override
