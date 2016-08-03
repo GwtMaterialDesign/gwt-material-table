@@ -202,7 +202,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             Scheduler.get().scheduleDeferred(() -> {
                 Component<?> component = components.get(components.size() - 1);
                 Widget componentWidget = component.getElement();
-                if (componentWidget.isAttached()) {
+                if (componentWidget == null || componentWidget.isAttached()) {
                     rendering = false;
                 } else {
                     attachHandler = componentWidget.addAttachHandler(event -> rendering = false);
