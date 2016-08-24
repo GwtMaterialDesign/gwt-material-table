@@ -51,7 +51,7 @@ import jsinterop.annotations.JsType;
  * @author Ben Dol
  */
 @JsType(isNative = true)
-public class JQueryExtension<T> extends JQueryElement<T> {
+public class JQueryExtension extends JQueryElement {
 
     @JsMethod(name = "$", namespace = JsPackage.GLOBAL)
     public static native JQueryExtension $(JQueryElement element);
