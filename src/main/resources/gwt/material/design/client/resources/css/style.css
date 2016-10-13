@@ -379,7 +379,7 @@ table.table tbody tr.expansion td div.expanded section.overlay i {
 }
 
 /* --- Expanded Row Collapsed --- */
-table.table tbody tr.expansion td div {
+table.table tbody tr.expansion td > div {
     display: block;
     width: 100%;
     max-height: 0;
