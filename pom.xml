@@ -144,12 +144,12 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven-surefire-plugin.version}</version>
         <configuration>
-          <includes>
-            <include>**/*Test.java</include>
-          </includes>
           <excludes>
-            <exclude>**/*GwtTest.java</exclude>
+            <exclude>**/*Test.java</exclude>
           </excludes>
+          <includes>
+            <include>**/MaterialTableTest*.java</include>
+          </includes>
         </configuration>
       </plugin>
     </plugins>
