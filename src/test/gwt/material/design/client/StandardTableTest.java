@@ -20,11 +20,13 @@
 package gwt.material.design.client;
 
 import gwt.material.design.client.base.TableBaseTest;
+import gwt.material.design.client.model.Person;
+import gwt.material.design.client.ui.table.MaterialDataTable;
 
 public class StandardTableTest extends TableBaseTest {
 
     public void init() {
-        MaterialTable standardTable = new MaterialTable();
+        MaterialDataTable<Person> standardTable = new MaterialDataTable<>();
         checkTable(standardTable);
     }
 }
