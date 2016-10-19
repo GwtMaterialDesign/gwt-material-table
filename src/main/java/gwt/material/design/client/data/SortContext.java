@@ -21,6 +21,7 @@ package gwt.material.design.client.data;
  */
 
 
+import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.ui.MaterialIcon;
 import gwt.material.design.client.ui.table.TableHeader;
 import gwt.material.design.client.ui.table.cell.Column;
@@ -67,7 +68,7 @@ public class SortContext<T> {
 
     protected void reset() {
         tableHeader.removeSortIcon();
-        tableHeader.removeStyleName("selected");
+        tableHeader.removeStyleName(TableCssName.SELECTED);
         sortDir = SortDir.ASC;
         sortColumn = null;
     }

@@ -22,6 +22,8 @@ package gwt.material.design.client.ui.pager;
 
 
 import com.google.gwt.dom.client.Document;
+import gwt.material.design.client.base.constants.TableCssName;
+import gwt.material.design.client.constants.CssName;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.constants.WavesType;
 import gwt.material.design.client.data.DataSource;
@@ -54,7 +56,7 @@ public class MaterialDataPagerBase<T> extends MaterialRow {
     private MaterialIcon iconPrev = new MaterialIcon(IconType.KEYBOARD_ARROW_LEFT);
 
     public MaterialDataPagerBase(MaterialDataTable<T> table, DataSource<T> dataSource) {
-        super(Document.get().createDivElement(), "data-pager", "row");
+        super(Document.get().createDivElement(), TableCssName.DATA_PAGER, TableCssName.ROW);
         this.table = table;
         this.table.setDataSource(dataSource);
         buildNumPagePanel();
@@ -66,7 +68,7 @@ public class MaterialDataPagerBase<T> extends MaterialRow {
      * Build the number page panel - where user can change the page number into a listbox
      */
     private void buildNumPagePanel() {
-        numPagePanel.setInitialClasses("num-page-panel");
+        numPagePanel.setInitialClasses(TableCssName.NUM_PAGE_PANEL);
         numPagePanel.setGrid("s12 m4 l3");
         numPagePanel.setOffset("l3");
         numPagePanel.add(listPages);
@@ -78,7 +80,7 @@ public class MaterialDataPagerBase<T> extends MaterialRow {
      * Build the rows per page panel - where you can set the range of row count into listbox
      */
     private void buildRowsPerPagePanel() {
-        rowsPerPagePanel.setInitialClasses("rows-per-page-panel");
+        rowsPerPagePanel.setInitialClasses(TableCssName.ROWS_PER_PAGE_PANEL);
         rowsPerPagePanel.setGrid("s12 m4 l3");
         rowsPerPagePanel.add(listRowsPerPage);
         rowsPerPagePanel.add(rowsPerPageLabel);
@@ -89,7 +91,7 @@ public class MaterialDataPagerBase<T> extends MaterialRow {
      * Build the action panel - contains a page detail including the arrow next / previous icons.
      */
     private void buildActionPanel() {
-        actionPagePanel.setInitialClasses("action-page-panel");
+        actionPagePanel.setInitialClasses(TableCssName.ACTION_PAGE_PANEL);
         actionPagePanel.setGrid("s12 m4 l3");
         actionLabel.setText("41 - 640 of 2014");
         actionPagePanel.add(iconNext);

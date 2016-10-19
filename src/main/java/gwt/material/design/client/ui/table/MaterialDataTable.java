@@ -22,6 +22,7 @@ package gwt.material.design.client.ui.table;
 
 
 import com.google.gwt.user.client.ui.Panel;
+import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.jquery.client.api.JQueryElement;
 import gwt.material.design.client.constants.Alignment;
 import gwt.material.design.client.constants.HideOn;
@@ -85,7 +86,7 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> {
 
         // table title
         tableTitle = new Span("Table Title");
-        tableTitle.addStyleName("title");
+        tableTitle.addStyleName(TableCssName.TITLE);
         infoPanel.add(tableTitle);
 
         // stretch icon
@@ -233,10 +234,10 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> {
     }
 
     public void stretch(boolean fireEvent) {
-        $this().toggleClass("stretch");
+        $this().toggleClass(TableCssName.STRETCH);
 
         // Make sure the body doesn't display scrollbar
-        body().toggleClass("overflow-hidden");
+        body().toggleClass(TableCssName.OVERFLOW_HIDDEN);
 
         // Update table header widths
         JsTableElement tableJs = scaffolding.getTable().getJsElement();
@@ -248,7 +249,7 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> {
 
         if(fireEvent) {
             // Fire table stretch event
-            $this().trigger(TableEvents.STRETCH, new Object[]{$this().hasClass("stretch")});
+            $this().trigger(TableEvents.STRETCH, new Object[]{$this().hasClass(TableCssName.STRETCH)});
         }
     }
 

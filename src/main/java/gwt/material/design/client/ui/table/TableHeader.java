@@ -23,6 +23,7 @@ package gwt.material.design.client.ui.table;
 
 import com.google.gwt.dom.client.Style.Float;
 import com.google.gwt.user.client.DOM;
+import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.constants.Display;
 import gwt.material.design.client.constants.IconSize;
 import gwt.material.design.client.ui.MaterialIcon;
@@ -59,7 +60,7 @@ public class TableHeader extends TableData {
     public void setHeader(String header) {
         if(headerLbl == null) {
             headerLbl = new Span(header);
-            headerLbl.setStyleName("table-header");
+            headerLbl.setStyleName(TableCssName.TABLE_HEADER);
             headerWrap.add(headerLbl);
         } else {
             headerLbl.setText(header);

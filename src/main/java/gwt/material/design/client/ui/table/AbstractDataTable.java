@@ -38,6 +38,7 @@ import com.google.gwt.view.client.ProvidesKey;
 import com.google.gwt.view.client.Range;
 import com.google.gwt.view.client.RangeChangeEvent.Handler;
 import com.google.gwt.view.client.RowCountChangeEvent;
+import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.jquery.client.api.Functions.EventFunc1;
 import gwt.material.design.jquery.client.api.Functions.EventFunc2;
 import gwt.material.design.jquery.client.api.Functions.EventFunc3;
@@ -82,35 +83,35 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         @Override
         public MaterialWidget createTableBody() {
             MaterialWidget tableBody = new MaterialWidget(DOM.createDiv());
-            tableBody.addStyleName("table-body");
+            tableBody.addStyleName(TableCssName.TABLE_BODY);
             return tableBody;
         }
 
         @Override
         public MaterialWidget createTopPanel() {
             MaterialWidget topPanel = new MaterialWidget(DOM.createDiv());
-            topPanel.addStyleName("top-panel");
+            topPanel.addStyleName(TableCssName.TOP_PANEL);
             return topPanel;
         }
 
         @Override
         public MaterialWidget createInfoPanel() {
             MaterialWidget infoPanel = new MaterialWidget(DOM.createDiv());
-            infoPanel.addStyleName("info-panel");
+            infoPanel.addStyleName(TableCssName.INFO_PANEL);
             return infoPanel;
         }
 
         @Override
         public MaterialWidget createToolPanel() {
             MaterialWidget toolPanel = new MaterialWidget(DOM.createDiv());
-            toolPanel.addStyleName("tool-panel");
+            toolPanel.addStyleName(TableCssName.TOOL_PANEL);
             return toolPanel;
         }
 
         @Override
         protected Table createTable() {
             Table table = new Table();
-            table.addStyleName("table");
+            table.addStyleName(TableCssName.TABLE);
             return table;
         }
     }

@@ -26,6 +26,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.constants.HideOn;
 import gwt.material.design.client.constants.IconSize;
 import gwt.material.design.client.constants.IconType;
@@ -78,7 +79,7 @@ public class BaseRenderer<T> implements Renderer<T> {
             row.getElement().getStyle().setProperty("height", getExpectedRowHeight() + "px");
             row.getElement().getStyle().setProperty("maxHeight", getExpectedRowHeight() + "px");
             row.getElement().getStyle().setProperty("minHeight", getExpectedRowHeight() + "px");
-            row.setStyleName("data-row");
+            row.setStyleName(TableCssName.DATA_ROW);
             rowComponent.setElement(row);
 
             if(!dataView.getSelectionType().equals(SelectionType.NONE)) {
@@ -148,7 +149,7 @@ public class BaseRenderer<T> implements Renderer<T> {
     public TableData drawSelectionCell() {
         TableData checkBox = new TableData();
         checkBox.setId("col0");
-        checkBox.setStyleName("selection");
+        checkBox.setStyleName(TableCssName.SELECTION);
         new MaterialCheckBox(checkBox.getElement());
         return checkBox;
     }
@@ -171,13 +172,13 @@ public class BaseRenderer<T> implements Renderer<T> {
 
             // Render the column cell
             if(column instanceof WidgetColumn) {
-                wrapper.setStyleName("widget-cell");
+                wrapper.setStyleName(TableCssName.WIDGET_CELL);
                 wrapper.add(((WidgetColumn) column).render(context, rowValue));
             } else {
                 SafeHtmlBuilder sb = new SafeHtmlBuilder();
                 column.render(context, rowValue, sb);
                 wrapper.getElement().setInnerHTML(sb.toSafeHtml().asString());
-                wrapper.setStyleName("cell");
+                wrapper.setStyleName(TableCssName.CELL);
             }
 
             data.add(wrapper);
@@ -193,7 +194,7 @@ public class BaseRenderer<T> implements Renderer<T> {
                 data.setTextAlign(textAlign);
             }
             if(column.isNumeric()) {
-                data.addStyleName("numeric");
+                data.addStyleName(TableCssName.NUMERIC);
             }
 
             // Hide if defined as not visible
@@ -222,7 +223,7 @@ public class BaseRenderer<T> implements Renderer<T> {
             th.setTextAlign(textAlign);
         }
         if(column.isNumeric()) {
-            th.addStyleName("numeric");
+            th.addStyleName(TableCssName.NUMERIC);
         }
         th.setVisible(true);
         return th;

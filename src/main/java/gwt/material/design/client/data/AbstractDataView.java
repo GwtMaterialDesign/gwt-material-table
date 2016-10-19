@@ -34,6 +34,7 @@ import com.google.gwt.view.client.Range;
 import com.google.gwt.view.client.RangeChangeEvent;
 import com.google.gwt.view.client.RangeChangeEvent.Handler;
 import com.google.gwt.view.client.RowCountChangeEvent;
+import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.jquery.client.api.JQueryElement;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.data.component.CategoryComponent;
@@ -441,7 +442,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             progressWidget.setTop(0);
             progressWidget.setGwtDisplay(Display.NONE);
             TableRow progressRow = new TableRow();
-            progressRow.addStyleName("stickyExclude");
+            progressRow.addStyleName(TableCssName.STICKYEXCLUDE);
             progressRow.setHeight("3px");
             TableData progressTd = new TableData();
             progressTd.getElement().setAttribute("colspan", "999");
@@ -454,7 +455,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             if(useRowExpansion) {
                 // Add the expand header
                 TableHeader expandHeader = new TableHeader();
-                expandHeader.setStyleName("colex");
+                expandHeader.setStyleName(TableCssName.COLEX);
                 addHeader(0, expandHeader, null);
             }
 

@@ -24,6 +24,7 @@ package gwt.material.design.client.ui.table;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.WidgetCollection;
 import gwt.material.design.client.base.MaterialWidget;
+import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.js.Js;
@@ -58,7 +59,7 @@ public class TableSubHeader extends TableRow {
     }
 
     private void initialize() {
-        addStyleName("subheader");
+        addStyleName(TableCssName.SUBHEADER);
 
         iconTh = new TableHeader();
         icon = new MaterialIcon(openIcon);
@@ -137,7 +138,7 @@ public class TableSubHeader extends TableRow {
     }
 
     public boolean isOpen() {
-        return $this().hasClass("expanded");
+        return $this().hasClass(TableCssName.EXPANDED);
     }
 
     public int getScrollPosition() {
