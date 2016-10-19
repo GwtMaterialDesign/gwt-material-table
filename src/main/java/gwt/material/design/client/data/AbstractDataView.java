@@ -840,7 +840,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                     sort(th, column, index);
                     return true;
                 });
-                th.addStyleName("sortable");
+                th.addStyleName(TableCssName.SORTABLE);
             }
 
             addHeader(index, th, column);
@@ -880,7 +880,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
         Components<RowComponent<T>> rows = new Components<>(this.rows, RowComponent::new);
         if(doSort(sortContext, rows)) {
-            th.addStyleName("selected");
+            th.addStyleName(TableCssName.SELECTED);
 
             // Draw and apply the sort icon.
             renderer.drawSortIcon(th, sortContext);
@@ -1027,7 +1027,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         // Setup select all checkbox
         TableHeader th = new TableHeader();
         th.setId("col0");
-        th.setStyleName("selection");
+        th.setStyleName(TableCssName.SELECTION);
         if(selectionType.equals(SelectionType.MULTIPLE)) {
             new MaterialCheckBox(th.getElement());
 
