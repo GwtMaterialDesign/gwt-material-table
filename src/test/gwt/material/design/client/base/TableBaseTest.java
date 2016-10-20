@@ -21,11 +21,13 @@ package gwt.material.design.client.base;
 
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.Range;
 import gwt.material.design.client.MaterialDesign;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.HideOn;
+import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.constants.TextAlign;
 import gwt.material.design.client.data.SelectionType;
 import gwt.material.design.client.data.component.RowComponent;
@@ -34,8 +36,7 @@ import gwt.material.design.client.factory.PersonRowFactory;
 import gwt.material.design.client.model.Person;
 import gwt.material.design.client.renderer.CustomRenderer;
 import gwt.material.design.client.resources.MaterialTableBundle;
-import gwt.material.design.client.ui.MaterialBadge;
-import gwt.material.design.client.ui.MaterialImage;
+import gwt.material.design.client.ui.*;
 import gwt.material.design.client.ui.table.MaterialDataTable;
 import gwt.material.design.client.ui.table.TableEvents;
 import gwt.material.design.client.ui.table.TableScaffolding;
@@ -58,6 +59,49 @@ public class TableBaseTest extends TestCase {
         checkEventHandlers(table);
         checkColumnsRows(table);
         checkStructure(table);
+        checkStretch(table);
+        checkDynamicColumn(table);
+    }
+
+    public <T extends MaterialDataTable<Person>> void checkDynamicColumn(T table) {
+        // Remove Column
+        final int COL_INDEX = 0;
+        table.removeColumn(COL_INDEX);
+        assertEquals(table.getColumns().size(), 8);
+        assertEquals(table.getColumnOffset(), COL_INDEX);
+
+        // Insert Column
+        Column<Person, ?> insertedCol = new TextColumn<Person>() {
+            @Override
+            public Comparator<? super RowComponent<Person>> getSortComparator() {
+                return (o1, o2) -> o1.getData().getFirstName().compareToIgnoreCase(o2.getData().getFirstName());
+            }
+
+            @Override
+            public String getValue(Person object) {
+                return object.getFirstName();
+            }
+        };
+        table.insertColumn(0, insertedCol, "insertedCol");
+        assertEquals(table.getColumns().get(0), insertedCol);
+        assertEquals(table.getColumns().size(), 9);
+    }
+
+    public <T extends MaterialDataTable<Person>> void checkStretch(T table) {
+        table.stretch();
+        assertTrue(table.getElement().hasClassName(TableCssName.STRETCH));
+        assertTrue(table.body().asElement().hasClassName(TableCssName.OVERFLOW_HIDDEN));
+        table.stretch();
+        assertFalse(table.getElement().hasClassName(TableCssName.STRETCH));
+        assertFalse(table.body().asElement().hasClassName(TableCssName.OVERFLOW_HIDDEN));
+        // Stretch Event
+        boolean[] isStretchEventFired = {false};
+        table.addStretchHandler((e, param1) -> {
+            isStretchEventFired[0] = true;
+            return true;
+        });
+        table.stretch(true);
+        assertTrue(isStretchEventFired[0]);
     }
 
     public <T extends MaterialDataTable<Person>> void checkProperties(T table) {
@@ -102,14 +146,35 @@ public class TableBaseTest extends TestCase {
 
     public <T extends MaterialDataTable<Person>> void checkStructure(T table) {
         final String TABLE_TITLE = "table title";
+        // Table Title
         table.setTitle(TABLE_TITLE);
         assertEquals(table.getTitle(), TABLE_TITLE);
         TableScaffolding scaffolding = table.getScaffolding();
+        MaterialIcon tableIcon = table.getTableIcon();
+        assertEquals(tableIcon.getIconType(), IconType.VIEW_LIST);
         assertTrue(scaffolding.getInfoPanel().getElement().hasClassName(TableCssName.INFO_PANEL));
         assertTrue(scaffolding.getTable().getElement().hasClassName(TableCssName.TABLE));
         assertTrue(scaffolding.getTableBody().getElement().hasClassName(TableCssName.TABLE_BODY));
         assertTrue(scaffolding.getToolPanel().getElement().hasClassName(TableCssName.TOOL_PANEL));
+        // Stretch Icon
+        MaterialIcon stretchIcon = table.getStretchIcon();
+        assertEquals(stretchIcon.getIconType(), IconType.FULLSCREEN);
+        assertEquals(stretchIcon.getId(), "stretch");
+        // Column Menu Icon
+        MaterialIcon columnMenuIcon = table.getColumnMenuIcon();
+        assertEquals(columnMenuIcon.getIconType(), IconType.MORE_VERT);
+        assertEquals(columnMenuIcon.getId(), "columnToggle");
         assertTrue(scaffolding.getTopPanel().getElement().hasClassName(TableCssName.TOP_PANEL));
+        // Dropdown Menu
+        MaterialDropDown dropDown = table.getMenu();
+        assertEquals(dropDown.getWidgetCount(), 9);
+        int index = 0;
+        for (Widget w : dropDown) {
+            assertTrue(w instanceof MaterialCheckBox);
+            MaterialCheckBox checkBox = (MaterialCheckBox) w;
+            assertEquals(table.getColumns().get(index).getName(), checkBox.getText());
+            index++;
+        }
     }
 
     public <T extends MaterialDataTable<Person>> void checkColumnsRows(T table) {
@@ -230,10 +295,10 @@ public class TableBaseTest extends TestCase {
         // Generate 20 categories
         int rowIndex = 0;
         List<Person> people = new ArrayList<>();
-        for(int k = 1; k <= 10; k++){
+        for (int k = 1; k <= 10; k++) {
             // Generate 100 rows
-            for(int i = 1; i <= 15; i++, rowIndex++) {
-                people.add(new Person(i, "http://joashpereira.com/templates/material_one_pager/img/avatar1.png", "Field " + rowIndex, "Field " + i, "No " + i,"Category " + k));
+            for (int i = 1; i <= 15; i++, rowIndex++) {
+                people.add(new Person(i, "http://joashpereira.com/templates/material_one_pager/img/avatar1.png", "Field " + rowIndex, "Field " + i, "No " + i, "Category " + k));
             }
         }
     }
