@@ -147,9 +147,6 @@
           <excludes>
             <exclude>**/*Test.java</exclude>
           </excludes>
-          <includes>
-            <include>**/MaterialTableTest*.java</include>
-          </includes>
           <additionalClasspathElements>
             <additionalClasspathElement>${project.build.sourceDirectory}</additionalClasspathElement>
             <additionalClasspathElement>${project.build.testSourceDirectory}</additionalClasspathElement>
