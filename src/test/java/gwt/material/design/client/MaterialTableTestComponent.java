@@ -19,44 +19,23 @@
  */
 package gwt.material.design.client;
 
-import com.google.gwt.junit.client.GWTTestCase;
-import gwt.material.design.client.resources.MaterialResources;
-import gwt.material.design.client.resources.WithJQueryResources;
+import gwt.material.design.client.base.TableBaseTest;
+import gwt.material.design.client.model.Person;
+import gwt.material.design.client.ui.table.MaterialDataTable;
+import gwt.material.design.client.ui.table.MaterialInfiniteDataTable;
 import org.junit.Test;
 
-import static gwt.material.design.jquery.client.api.JQuery.$;
-
-public class MaterialTableTestComponent extends GWTTestCase {
-
-    @Override
-    public String getModuleName() {
-        return "gwt.material.design.GwtMaterialTable";
-    }
-
-    @Override
-    protected void gwtSetUp() throws Exception {
-        super.gwtSetUp();
-        setup();
-    }
-
-    public void setup() {
-        // Test JQuery
-        MaterialDesign.injectJs(WithJQueryResources.INSTANCE.jQuery());
-        assertTrue(MaterialDesign.isjQueryLoaded());
-        // Test Materialize
-        MaterialDesign.injectJs(MaterialResources.INSTANCE.materializeJs());
-        assertTrue(MaterialDesign.isMaterializeLoaded());
-        // gwt-material-jquery Test
-        assertNotNull($("body"));
-    }
+public class MaterialTableTestComponent extends TableBaseTest {
 
     @Test
     public void testStandardTable() {
-        new StandardTableTest().init();
+        MaterialDataTable<Person> standardTable = new MaterialDataTable<>();
+        checkTable(standardTable);
     }
 
     @Test
     public void testInfiniteTable() {
-        new InfiniteTableTest().init();
+        MaterialInfiniteDataTable<Person> infiniteDataTable = new MaterialInfiniteDataTable<>();
+        checkTable(infiniteDataTable);
     }
 }

@@ -20,6 +20,7 @@
 package gwt.material.design.client.base;
 
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.junit.client.GWTTestCase;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.Range;
@@ -37,7 +38,9 @@ import gwt.material.design.client.factory.CustomCategoryFactory;
 import gwt.material.design.client.factory.PersonRowFactory;
 import gwt.material.design.client.model.Person;
 import gwt.material.design.client.renderer.CustomRenderer;
+import gwt.material.design.client.resources.MaterialResources;
 import gwt.material.design.client.resources.MaterialTableBundle;
+import gwt.material.design.client.resources.WithJQueryResources;
 import gwt.material.design.client.ui.*;
 import gwt.material.design.client.ui.pager.MaterialDataPager.*;
 import gwt.material.design.client.ui.pager.MaterialDataPager;
@@ -56,7 +59,34 @@ import java.util.List;
 
 import static gwt.material.design.jquery.client.api.JQuery.$;
 
-public class TableBaseTest extends TestCase {
+public class TableBaseTest extends GWTTestCase {
+
+    @Override
+    public String getModuleName() {
+        return "gwt.material.design.GwtMaterialTable";
+    }
+
+    @Override
+    protected void gwtSetUp() throws Exception {
+        super.gwtSetUp();
+        setup();
+    }
+
+    public void setup() {
+        // Test JQuery
+        MaterialDesign.injectJs(WithJQueryResources.INSTANCE.jQuery());
+        assertTrue(MaterialDesign.isjQueryLoaded());
+        // Test Materialize
+        MaterialDesign.injectJs(MaterialResources.INSTANCE.materializeJs());
+        assertTrue(MaterialDesign.isMaterializeLoaded());
+        // Inject Resources
+        MaterialDesign.injectJs(MaterialTableBundle.INSTANCE.jQueryExt());
+        MaterialDesign.injectJs(MaterialTableBundle.INSTANCE.stickyth());
+        MaterialDesign.injectJs(MaterialTableBundle.INSTANCE.tableSubHeaders());
+        MaterialDesign.injectJs(MaterialTableBundle.INSTANCE.greedyScroll());
+        // gwt-material-jquery Test
+        assertNotNull($("body"));
+    }
 
     public <T extends MaterialDataTable<Person>> void checkTable(T table) {
         setup(table);
@@ -69,11 +99,6 @@ public class TableBaseTest extends TestCase {
     }
 
     public <T extends MaterialDataTable<Person>> void setup(T table) {
-        // Inject Resources
-        MaterialDesign.injectJs(MaterialTableBundle.INSTANCE.jQueryExt());
-        MaterialDesign.injectJs(MaterialTableBundle.INSTANCE.stickyth());
-        MaterialDesign.injectJs(MaterialTableBundle.INSTANCE.tableSubHeaders());
-        MaterialDesign.injectJs(MaterialTableBundle.INSTANCE.greedyScroll());
         final String HEIGHT = "calc(100vh - 131px)";
         table.setHeight(HEIGHT);
         //table.setUseStickyHeader(true);
