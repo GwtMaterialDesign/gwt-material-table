@@ -22,6 +22,7 @@ package gwt.material.design.client;
 import com.google.gwt.junit.client.GWTTestCase;
 import gwt.material.design.client.resources.MaterialResources;
 import gwt.material.design.client.resources.WithJQueryResources;
+import org.junit.Test;
 
 import static gwt.material.design.jquery.client.api.JQuery.$;
 
@@ -49,7 +50,13 @@ public class MaterialTableTestComponent extends GWTTestCase {
         assertNotNull($("body"));
     }
 
+    @Test
     public void testStandardTable() {
         new StandardTableTest().init();
+    }
+
+    @Test
+    public void testInfiniteTable() {
+        new InfiniteTableTest().init();
     }
 }
