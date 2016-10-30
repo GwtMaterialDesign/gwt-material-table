@@ -10,9 +10,13 @@ A complex table component designed for the material design specifications!
 Support documentation can be found [here](https://github.com/GwtMaterialDesign/gwt-material-table/wiki)
 
 ## Maven
-Current Version (Still in snapshot until GMD 2.0 release)
+Current Version 1.0-rc1
 ```xml
-Coming soon!
+<dependency>
+    <groupId>com.github.gwtmaterialdesign</groupId>
+    <artifactId>gwt-material-table</artifactId>
+    <version>1.0-rc1</version>
+</dependency>
 ```
 
 Snapshot Version 1.0-SNAPSHOT
