@@ -181,6 +181,11 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
+    public String getViewId() {
+        return dataView.getViewId();
+    }
+
+    @Override
     public void setDisplay(DataView<T> display) {
         // Nothing by default
     }

@@ -34,6 +34,10 @@ public class MaterialInfiniteDataTable<T> extends MaterialDataTable<T> {
     public MaterialInfiniteDataTable() {
     }
 
+    public MaterialInfiniteDataTable(String name, int totalRows, int viewSize, InfiniteDataSource<T> dataSource) {
+        super(new InfiniteDataView<>(name, totalRows, viewSize, dataSource));
+    }
+
     public MaterialInfiniteDataTable(int totalRows, int viewSize, InfiniteDataSource<T> dataSource) {
         super(new InfiniteDataView<>(totalRows, viewSize, dataSource));
     }

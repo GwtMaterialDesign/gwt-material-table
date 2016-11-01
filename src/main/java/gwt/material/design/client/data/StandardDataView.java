@@ -28,7 +28,10 @@ import com.google.gwt.view.client.ProvidesKey;
  */
 public class StandardDataView<T> extends AbstractDataView<T> {
 
+    private static int views = 0;
+
     public StandardDataView() {
+        this("sdv" + ++views);
     }
 
     public StandardDataView(String name) {

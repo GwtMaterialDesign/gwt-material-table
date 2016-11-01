@@ -98,6 +98,11 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
     Panel getContainer();
 
     /**
+     * Get the data views id.
+     */
+    String getViewId();
+
+    /**
      * Set the data views display view.
      */
     void setDisplay(DataView<T> display);

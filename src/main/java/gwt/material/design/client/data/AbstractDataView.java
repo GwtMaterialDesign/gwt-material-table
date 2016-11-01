@@ -86,7 +86,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     private static final Logger logger = Logger.getLogger(AbstractDataView.class.getName());
 
     // Main
-    protected final String name;
+    protected final String id;
     protected DataView<T> display;
     protected DataSource<T> dataSource;
     protected Renderer<T> renderer;
@@ -142,16 +142,16 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         this("DataView");
     }
 
-    public AbstractDataView(String name) {
-        this(name, null);
+    public AbstractDataView(String id) {
+        this(id, null);
     }
 
     public AbstractDataView(ProvidesKey<T> keyProvider) {
         this("DataView", keyProvider);
     }
 
-    public AbstractDataView(String name, ProvidesKey<T> keyProvider) {
-        this.name = name;
+    public AbstractDataView(String id, ProvidesKey<T> keyProvider) {
+        this.id = id;
         this.keyProvider = keyProvider;
         this.categoryFactory = new CategoryComponentFactory();
         this.rowFactory = new RowComponentFactory<>();
@@ -476,14 +476,14 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             setupSubHeaders();
 
             // Setup the resize event handlers
-            tableBody.on("resize." + name, e -> {
+            tableBody.on("resize." + id, e -> {
                 refreshView();
                 return true;
             });
 
             // We will check the window resize just in case
             // it has updated the view size of the data view.
-            $(window()).on("resize." + name, e -> {
+            $(window()).on("resize." + id, e -> {
                 refreshView();
                 return true;
             });
@@ -501,12 +501,12 @@ public abstract class AbstractDataView<T> implements DataView<T> {
      */
     protected void prepareRows() {
         JQueryElement rows = $table.find("tr.data-row");
-        rows.off("." + name);
+        rows.off("." + id);
 
         if(!selectionType.equals(SelectionType.NONE)) {
             // Select row click bind
             // This will also update the check status of check all input.
-            rows.on("tap." + name + " click." + name, (e, o) -> {
+            rows.on("tap." + id + " click." + id, (e, o) -> {
                 if (!selectionType.equals(SelectionType.NONE)) {
                     Element row = $(e.getCurrentTarget()).asElement();
                     int rowIndex = getRowIndexByElement(row);
@@ -540,7 +540,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             });
         }
 
-        rows.on("contextmenu." + name, (e, o) -> {
+        rows.on("contextmenu." + id, (e, o) -> {
             Element row = $(e.getCurrentTarget()).asElement();
 
             // Fire row select event
@@ -550,7 +550,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             return false;
         });
 
-        rows.on("dblclick." + name, (e, o) -> {
+        rows.on("dblclick." + id, (e, o) -> {
             Element row = $(e.getCurrentTarget()).asElement();
 
             // Fire row select event
@@ -579,10 +579,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         }, longPressDuration);
 
         JQueryElement expands = $table.find("i#expand");
-        expands.off("." + name);
+        expands.off("." + id);
         if(useRowExpansion) {
             // Expand current row extra information
-            expands.on("tap." + name + " click." + name, e -> {
+            expands.on("tap." + id + " click." + id, e -> {
                 final boolean[] recalculated = {false};
 
                 JQueryElement tr = $(e.getCurrentTarget()).parent().parent();
@@ -1034,8 +1034,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             // Select all row click bind
             // This will also update the check status of check all input.
             JQueryElement selectAll = $(th).find("label");
-            selectAll.off("." + name);
-            selectAll.on("tap." + name + " click." + name, (e) -> {
+            selectAll.off("." + id);
+            selectAll.on("tap." + id + " click." + id, (e) -> {
                 JQueryElement input = $("input", th);
 
                 boolean marked = Js.isTrue(input.prop("checked")) ||
@@ -1682,6 +1682,11 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     @Override
     public Panel getContainer() {
         return display.getContainer();
+    }
+
+    @Override
+    public String getViewId() {
+        return id;
     }
 
     @Override
