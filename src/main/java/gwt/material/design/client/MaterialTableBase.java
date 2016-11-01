@@ -35,6 +35,7 @@ public class MaterialTableBase extends MaterialDesignBase {
         injectJs(MaterialTableBundle.INSTANCE.stickyth());
         injectJs(MaterialTableBundle.INSTANCE.tableSubHeaders());
         injectJs(MaterialTableBundle.INSTANCE.greedyScroll());
+
         StyleInjector.inject(MaterialTableBundle.INSTANCE.style().getText());
         StyleInjector.inject(MaterialDataPagerClientBundle.INSTANCE.dataPagerCss().getText());
     }

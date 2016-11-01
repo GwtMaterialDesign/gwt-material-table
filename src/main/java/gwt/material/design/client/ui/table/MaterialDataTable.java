@@ -151,7 +151,7 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> {
 
             String forBox = (String) $this.attr("for");
             if(Js.isTrue(forBox)) {
-                JQueryElement thd = $("th#" + forBox + ",td#" + forBox);
+                JQueryElement thd = $("th#" + forBox + ",td#" + forBox, this);
                 boolean checked = $this.prev().is(":checked");
 
                 thd.each((index, el) -> {

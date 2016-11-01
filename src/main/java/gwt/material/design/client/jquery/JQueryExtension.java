@@ -35,7 +35,6 @@ package gwt.material.design.client.jquery;
  * #L%
  */
 
-
 import com.google.gwt.dom.client.Element;
 import gwt.material.design.jquery.client.api.Event;
 import gwt.material.design.jquery.client.api.Functions.MouseEventFunc;
@@ -50,7 +49,7 @@ import jsinterop.annotations.JsType;
  *
  * @author Ben Dol
  */
-@JsType(isNative = true)
+@JsType(name = "jQuery", isNative = true)
 public class JQueryExtension extends JQueryElement {
 
     @JsMethod(name = "$", namespace = JsPackage.GLOBAL)
