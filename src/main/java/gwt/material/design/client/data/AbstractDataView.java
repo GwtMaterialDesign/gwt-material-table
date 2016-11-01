@@ -646,14 +646,14 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected void setupStickyHeader() {
         if($table != null && display != null) {
             $table.stickyTableHeaders(StickyTableOptions.create(
-                $(".table-body", display.getContainer())));
+                $(".table-body", getContainer())));
         }
     }
 
     protected void setupSubHeaders() {
         if($table != null && display != null) {
             subheaderLib = JsTableSubHeaders.newInstance(
-                $(".table-body", display.getContainer()), "tr.subheader");
+                $(".table-body", getContainer()), "tr.subheader");
 
             final JQueryElement header = $table.find("thead");
             $(subheaderLib).on("before-recalculate", e -> {
@@ -1017,7 +1017,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 reindexColumns();
             } else if (selectionType.equals(SelectionType.NONE) && hadSelection) {
                 removeHeader(0);
-                $("td#col0").remove();
+                $("td#col0", getContainer()).remove();
                 reindexColumns();
             }
         }
@@ -1721,7 +1721,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         input.prop("indeterminate", false);
         input.prop("checked", false);
 
-        if($("tr.data-row:visible").length() > 0) {
+        if($("tr.data-row:visible", getContainer()).length() > 0) {
             boolean fullSelection = !hasUnselectedRows(false);
 
             if (!fullSelection && hasSelectedRows(true)) {
@@ -1790,7 +1790,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     protected void clearExpansions() {
-        $("tr.expansion").remove();
+        $("tr.expansion", getContainer()).remove();
     }
 
     /**
