@@ -60,7 +60,7 @@
 
     <!-- Libraries -->
     <gwt.version>2.8.0</gwt.version>
-    <gwt-material.version>2.0-SNAPSHOT</gwt-material.version>
+    <gwt-material.version>2.0-rc2</gwt-material.version>
 
     <!-- Testing -->
     <junit.version>4.11</junit.version>
