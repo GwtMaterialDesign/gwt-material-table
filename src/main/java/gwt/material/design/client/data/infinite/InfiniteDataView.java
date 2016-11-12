@@ -210,7 +210,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
         });
 
         // Setup the scroll event handlers
-        JQueryExtension.$(tableBody).scrollY(name, (e, scroll) ->  onScrollY(e));
+        JQueryExtension.$(tableBody).scrollY(id, (e, scroll) ->  onScrollY());
     }
 
     @Override
@@ -326,7 +326,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
         return tableBody.height() - topPanel.height() - headerRow.$this().height();
     }
 
-    protected Object onScrollY(Object event) {
+    protected Object onScrollY() {
         if(!rendering) {
             int index = (int) Math.ceil(tableBody.scrollTop() / getCalculatedRowHeight());
             if(index == 0 || index != viewIndex) {

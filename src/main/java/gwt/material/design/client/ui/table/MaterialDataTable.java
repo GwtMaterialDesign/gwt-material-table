@@ -9,9 +9,9 @@ package gwt.material.design.client.ui.table;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -149,9 +149,9 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> {
         $menu.find("li label").on("tap click", e -> {
             JQueryElement $this = $(e.getCurrentTarget());
 
-            String forBox = (String) $this.attr("for");
+            String forBox = ((String) $this.attr("for")).replace(getViewId() + "-", "");
             if(Js.isTrue(forBox)) {
-                JQueryElement thd = $("th#" + forBox + ",td#" + forBox);
+                JQueryElement thd = $("th#" + forBox + ",td#" + forBox, this);
                 boolean checked = $this.prev().is(":checked");
 
                 thd.each((index, el) -> {
@@ -185,7 +185,7 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> {
         super.insertColumn(beforeIndex, col, header);
 
         int index = beforeIndex + getColumnOffset();
-        String ref = "col" + index;
+        String ref = getViewId() + "-col" + index;
 
         MaterialCheckBox toggleBox = new MaterialCheckBox(new ListItem().getElement());
         JQueryElement input = $(toggleBox).find("input");
@@ -219,7 +219,7 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> {
     private void reindexToggles() {
         int colOffset = getColumnOffset();
         $("li", menu).each((index, e) -> {
-            String ref = "col" + ((Double)index + colOffset);
+            String ref = getViewId() + "-col" + ((Double)index + colOffset);
 
             JQueryElement input = $(e).find("input");
             input.attr("id", ref);
