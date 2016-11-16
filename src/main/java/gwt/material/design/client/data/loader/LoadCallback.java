@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,15 +17,16 @@
  * limitations under the License.
  * #L%
  */
-package gwt.material.design.client.data;
+package gwt.material.design.client.data.loader;
 
+public interface LoadCallback<T> {
+    /**
+     * Should be called when async load success.
+     */
+    public void onSuccess(LoadResult<T> loadResult);
 
-import gwt.material.design.client.data.loader.LoadCallback;
-import gwt.material.design.client.data.loader.LoadConfig;
-
-public interface DataSource<T> {
-
-    void load(LoadConfig<T> loadConfig, LoadCallback<T> callback);
-
-    boolean useRemoteSort();
+    /**
+     * Should be called when async load failed.
+     */
+    public void onFailure(Throwable caught);
 }
