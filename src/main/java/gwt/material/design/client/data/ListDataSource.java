@@ -21,6 +21,10 @@ package gwt.material.design.client.data;
  */
 
 
+import gwt.material.design.client.data.loader.LoadCallback;
+import gwt.material.design.client.data.loader.LoadConfig;
+import gwt.material.design.client.data.loader.LoadResult;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -46,19 +50,33 @@ public class ListDataSource<T> implements DataSource<T> {
         this.data = data;
     }
 
-    public void load(int startIndex, int viewSize) {
-        load(dataView, startIndex, viewSize);
-    }
-
     @Override
-    public void load(DataView<T> dataView, int startIndex, int viewSize) {
+    public void load(LoadConfig<T> loadConfig, LoadCallback<T> callback) {
         try {
-            dataView.loaded(startIndex, data.subList(startIndex - 1, startIndex - 1 + viewSize));
+            final List<T> subList = data.subList(loadConfig.getOffset() - 1, loadConfig.getOffset() - 1 + loadConfig.getLimit());
+            callback.onSuccess(new LoadResult<T>() {
+                @Override
+                public List<T> getData() {
+                    return subList;
+                }
+
+                @Override
+                public int getOffset() {
+                    return loadConfig.getOffset();
+                }
+
+                @Override
+                public int getTotalLength() {
+                    return this.getData().size();
+                }
+            });
         } catch (IndexOutOfBoundsException ex) {
             // Silently ignore index out of bounds exceptions
             logger.log(Level.FINE, "ListDataSource threw index out of bounds.", ex);
+            callback.onFailure(ex);
         }
     }
+
 
     public void add(int startIndex, List<T> list) {
         data.addAll(startIndex, list);
@@ -66,10 +84,6 @@ public class ListDataSource<T> implements DataSource<T> {
 
     public void remove(List<T> list) {
         data.removeAll(list);
-    }
-
-    public int getDataSize(){
-        return data.size();
     }
 
     @Override

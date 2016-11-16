@@ -21,10 +21,14 @@ package gwt.material.design.client.data.infinite;
  */
 
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.view.client.ProvidesKey;
 import com.google.gwt.view.client.Range;
+import gwt.material.design.client.data.loader.LoadCallback;
+import gwt.material.design.client.data.loader.LoadConfig;
+import gwt.material.design.client.data.loader.LoadResult;
 import gwt.material.design.jquery.client.api.Event;
 import gwt.material.design.jquery.client.api.Functions.EventFunc3;
 import gwt.material.design.jquery.client.api.JQueryElement;
@@ -54,7 +58,7 @@ import static gwt.material.design.jquery.client.api.JQuery.$;
  * <b>How to use:</b>
  * <ul>
  *   <li>View size can be configured manually or can be set to dynamic view using {@link #DYNAMIC_VIEW}.</li>
- *   <li>Provide a valid {@link InfiniteDataSource} implementation to call {@link #loaded(int, List, int, boolean)}.</li>
+ *   <li>Provide a valid {@link DataSource} implementation.</li>
  * </ul>
  *
  * @author Ben Dol
@@ -103,11 +107,11 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
     // Cached models
     private InfiniteDataCache<T> dataCache = new InfiniteDataCache<>();
 
-    public InfiniteDataView(int totalRows, InfiniteDataSource<T> dataSource) {
+    public InfiniteDataView(int totalRows, DataSource<T> dataSource) {
         this(totalRows, DYNAMIC_VIEW, dataSource);
     }
 
-    public InfiniteDataView(int totalRows, int viewSize, InfiniteDataSource<T> dataSource) {
+    public InfiniteDataView(int totalRows, int viewSize, DataSource<T> dataSource) {
         super();
         this.viewSize = viewSize;
 
@@ -115,22 +119,22 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
         setDataSource(dataSource);
     }
 
-    public InfiniteDataView(String name, int totalRows, InfiniteDataSource<T> dataSource) {
+    public InfiniteDataView(String name, int totalRows, DataSource<T> dataSource) {
         this(name, totalRows, null, dataSource);
     }
 
-    public InfiniteDataView(String name, int totalRows, ProvidesKey<T> keyProvider, InfiniteDataSource<T> dataSource) {
+    public InfiniteDataView(String name, int totalRows, ProvidesKey<T> keyProvider, DataSource<T> dataSource) {
         super(name, keyProvider);
 
         setTotalRows(totalRows);
         setDataSource(dataSource);
     }
 
-    public InfiniteDataView(String name, int totalRows, int viewSize, InfiniteDataSource<T> dataSource) {
+    public InfiniteDataView(String name, int totalRows, int viewSize, DataSource<T> dataSource) {
         this(name, totalRows, viewSize, null, dataSource);
     }
 
-    public InfiniteDataView(String name, int totalRows, int viewSize, ProvidesKey<T> keyProvider, InfiniteDataSource<T> dataSource) {
+    public InfiniteDataView(String name, int totalRows, int viewSize, ProvidesKey<T> keyProvider, DataSource<T> dataSource) {
         super(name, keyProvider);
         this.viewSize = viewSize;
 
@@ -298,14 +302,6 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
     }
 
     @Override
-    public void setDataSource(DataSource<T> dataSource) {
-        if(!(dataSource instanceof InfiniteDataSource)) {
-            throw new IllegalArgumentException("InfiniteDataView data source must be InfiniteDataSource class.");
-        }
-        this.dataSource = dataSource;
-    }
-
-    @Override
     public void addCategory(CategoryComponent category) {
         super.addCategory(category);
         // Update the view size to accommodate the new category
@@ -375,7 +371,40 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
                 display.setLoadMask(true);
             });
 
-            dataSource.load(this, loaderIndex, loaderSize);
+            final InfiniteDataView<T> dataView = this;
+
+            dataSource.load(new LoadConfig<T>() {
+                @Override
+                public int getOffset() {
+                    return loaderIndex;
+                }
+
+                @Override
+                public int getLimit() {
+                    return loaderSize;
+                }
+
+                @Override
+                public SortContext<T> getSortContext() {
+                    return dataView.getSortContext();
+                }
+
+                @Override
+                public List<CategoryComponent> getCategories() {
+                    return dataView.getOpenCategories();
+                }
+            }, new LoadCallback<T>() {
+                @Override
+                public void onSuccess(LoadResult<T> loadResult) {
+                    dataView.loaded(loadResult.getOffset(), loadResult.getData() );
+                }
+
+                @Override
+                public void onFailure(Throwable caught) {
+                    GWT.log("Load failure", caught);
+                    //TODO: What we need to do on failure? May be clear table?
+                }
+            });
         }
     }
 

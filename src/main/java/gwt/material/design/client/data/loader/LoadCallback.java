@@ -1,5 +1,3 @@
-package gwt.material.design.client.data;
-
 /*
  * #%L
  * GwtMaterial
@@ -19,14 +17,16 @@ package gwt.material.design.client.data;
  * limitations under the License.
  * #L%
  */
+package gwt.material.design.client.data.loader;
 
+public interface LoadCallback<T> {
+    /**
+     * Should be called when async load success.
+     */
+    public void onSuccess(LoadResult<T> loadResult);
 
-import gwt.material.design.client.data.loader.LoadCallback;
-import gwt.material.design.client.data.loader.LoadConfig;
-
-public interface DataSource<T> {
-
-    void load(LoadConfig<T> loadConfig, LoadCallback<T> callback);
-
-    boolean useRemoteSort();
+    /**
+     * Should be called when async load failed.
+     */
+    public void onFailure(Throwable caught);
 }
