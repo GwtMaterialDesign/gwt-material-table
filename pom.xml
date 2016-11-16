@@ -108,18 +108,7 @@
     <!-- GWT -->
     <dependency>
       <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-servlet</artifactId>
-      <version>${gwt.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
-      <version>${gwt.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-dev</artifactId>
       <version>${gwt.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -150,18 +139,6 @@
           <useManifestOnlyJar>false</useManifestOnlyJar>
           <forkMode>always</forkMode>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>gwt-maven-plugin</artifactId>
-        <version>${gwt-maven-plugin.version}</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>test</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
