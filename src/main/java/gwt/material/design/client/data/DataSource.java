@@ -21,12 +21,9 @@ package gwt.material.design.client.data;
  */
 
 
-import gwt.material.design.client.data.loader.LoadCallback;
-import gwt.material.design.client.data.loader.LoadConfig;
-
 public interface DataSource<T> {
 
-    void load(LoadConfig<T> loadConfig, LoadCallback<T> callback);
+    void load(DataView<T> dataView, int startIndex, int viewSize);
 
-    boolean useRemoteSort();
+    int getDataSize();
 }

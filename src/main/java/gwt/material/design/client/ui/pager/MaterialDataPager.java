@@ -21,16 +21,8 @@ package gwt.material.design.client.ui.pager;
  */
 
 
-import com.google.gwt.core.client.GWT;
 import gwt.material.design.client.data.DataSource;
-import gwt.material.design.client.data.SortContext;
-import gwt.material.design.client.data.component.CategoryComponent;
-import gwt.material.design.client.data.loader.LoadCallback;
-import gwt.material.design.client.data.loader.LoadConfig;
-import gwt.material.design.client.data.loader.LoadResult;
 import gwt.material.design.client.ui.table.MaterialDataTable;
-
-import java.util.List;
 
 /**
  * Material Data Pager - a simple pager for Material Data Table component
@@ -60,12 +52,8 @@ public class MaterialDataPager<T> extends MaterialDataPagerBase<T> {
             getRowsPerPagePanel().setVisible(true);
         }
 
-        if (getDataSource().useRemoteSort()){
-            table.addSortColumnHandler((e, sortContext, columnIndex) -> {
-                this.refresh();
-                return true;
-            });
-        }
+        // Must set the total rows for the calculation of page numbers
+        setTotalRows(getDataSource().getDataSize());
 
         getListRowsPerPage().clear();
         for(int i : rowCountOptions) {
@@ -143,54 +131,14 @@ public class MaterialDataPager<T> extends MaterialDataPagerBase<T> {
         // Check if the first row and row count  is bigger than the getTotalRows
         if(getFirstRow() + getRowCount() > getTotalRows()) {
             if(getRowCount() > getTotalRows()) {
-                doLoad(getFirstRow(), getTotalRows());
+                getDataSource().load(table, getFirstRow(), getTotalRows());
             } else {
-                doLoad(getFirstRow(), getTotalRows() - (getFirstRow() - 1));
+                getDataSource().load(table, getFirstRow(), getTotalRows() - (getFirstRow() - 1));
             }
         } else {
-            doLoad(getFirstRow(), getRowCount());
+            getDataSource().load(table, getFirstRow(), getRowCount());
         }
     }
-
-    private void doLoad(int offset, int limit){
-
-        table.getSortContext();
-
-        getDataSource().load(new LoadConfig<T>() {
-            @Override
-            public int getOffset() {
-                return offset;
-            }
-
-            @Override
-            public int getLimit() {
-                return limit;
-            }
-
-            @Override
-            public SortContext<T> getSortContext() {
-                return table.getSortContext();
-            }
-
-            @Override
-            public List<CategoryComponent> getCategories() {
-                return table.getOpenCategories();
-            }
-        }, new LoadCallback<T>() {
-            @Override
-            public void onSuccess(LoadResult<T> loadResult) {
-                setTotalRows(loadResult.getTotalLength());
-                table.loaded(loadResult.getOffset(),loadResult.getData());
-            }
-
-            @Override
-            public void onFailure(Throwable caught) {
-                GWT.log("Load failure", caught);
-                //TODO: What we need to do on failure? May be clear table?
-            }
-        });
-    }
-
 
     /**
      * Get the row count options.
