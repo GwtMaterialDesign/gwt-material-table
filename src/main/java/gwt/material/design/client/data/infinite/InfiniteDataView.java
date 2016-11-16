@@ -487,7 +487,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
     @Override
     public List<T> getSelectedRowModels(boolean visibleOnly) {
         if(visibleOnly) {
-            return super.getSelectedRowModels(visibleOnly);
+            return super.getSelectedRowModels(true);
         } else {
             return selectedModels;
         }
