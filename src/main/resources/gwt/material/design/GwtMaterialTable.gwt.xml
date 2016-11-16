@@ -19,8 +19,8 @@
   #L%
   -->
 
-<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.7.0//EN"
-        "http://google-web-toolkit.googlecode.com/svn/tags/2.7.0/distro-source/core/src/gwt-module.dtd">
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 1.6//EN"
+        "http://google-web-toolkit.googlecode.com/svn/releases/1.6/distro-source/core/src/gwt-module.dtd">
 <module rename-to='gwtmaterialtable'>
     <inherits name='gwt.material.design.GwtMaterialTableBase'/>
     <inherits name='gwt.material.design.Resources'/>
