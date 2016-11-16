@@ -71,4 +71,9 @@ public class ListDataSource<T> implements DataSource<T> {
     public int getDataSize(){
         return data.size();
     }
+
+    @Override
+    public boolean useRemoteSort() {
+        return false;
+    }
 }

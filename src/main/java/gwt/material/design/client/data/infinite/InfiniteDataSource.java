@@ -53,4 +53,9 @@ public abstract class InfiniteDataSource<T> implements DataSource<T> {
     public int getDataSize() {
         return 0; // Not required for infinite
     }
+
+    @Override
+    public boolean useRemoteSort() {
+        return true;
+    }
 }

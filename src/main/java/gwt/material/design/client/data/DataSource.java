@@ -26,4 +26,6 @@ public interface DataSource<T> {
     void load(DataView<T> dataView, int startIndex, int viewSize);
 
     int getDataSize();
+
+    boolean useRemoteSort();
 }

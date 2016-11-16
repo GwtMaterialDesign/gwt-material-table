@@ -288,14 +288,6 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
     }
 
     @Override
-    protected boolean doSort(SortContext<T> sortContext, Components<RowComponent<T>> rows) {
-        // The sorting should be handled by an external
-        // data source rather than re-ordered by the
-        // client comparator.
-        return true;
-    }
-
-    @Override
     public void refreshView() {
         super.refreshView();
         int rangeStart = range.getStart();

@@ -901,6 +901,14 @@ public abstract class AbstractDataView<T> implements DataView<T> {
      * @return true if the data was sorted, false if no sorting was performed.
      */
     protected boolean doSort(SortContext<T> sortContext, Components<RowComponent<T>> rows) {
+
+        if (dataSource.useRemoteSort()){
+            // The sorting should be handled by an external
+            // data source rather than re-ordered by the
+            // client comparator.
+            return true;
+        }
+
         Comparator<? super RowComponent<T>> comparator = sortContext != null
             ? sortContext.getSortColumn().getSortComparator() : null;
         if (isUseCategories() && !categories.isEmpty()) {
