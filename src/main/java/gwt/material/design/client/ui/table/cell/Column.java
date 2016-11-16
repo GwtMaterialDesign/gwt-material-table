@@ -28,14 +28,18 @@ import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import gwt.material.design.client.base.HasHideOn;
 import gwt.material.design.client.base.HasTextAlign;
+import gwt.material.design.client.base.constants.StyleName;
 import gwt.material.design.client.constants.HideOn;
 import gwt.material.design.client.constants.TextAlign;
 import gwt.material.design.client.data.component.RowComponent;
 
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A representation of a column in a table.
@@ -59,9 +63,12 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
 
     private boolean isDefaultSortAscending = true;
     private boolean isNumeric = false;
-    private String name = null;
+    private String name;
+    private String headerWidth;
     private HideOn hideOn;
     private TextAlign textAlign;
+
+    private Map<StyleName, String> styleProps;
 
     private Comparator<? super RowComponent<T>> sortComparator;
 
@@ -205,13 +212,65 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
         return textAlign;
     }
 
+    /**
+     * Set a style property using its name as the key. Please ensure the style name and value
+     * are appropriately configured or it may result in unexpected behavior.
+     *
+     * @param styleName the style name as seen here {@link Style#STYLE_Z_INDEX} for example.
+     * @param value the string value required for the given style property.
+     */
+    public void setStyleProperty(StyleName styleName, String value) {
+        if(styleProps == null) {
+            styleProps = new HashMap<>();
+        }
+        styleProps.put(styleName, value);
+    }
+
+    /**
+     * Get a styles property.
+     * @param styleName the styles name as represented in a {@link Style} class.
+     * @return null if the style property is not set.
+     */
+    public String getStyleProperty(StyleName styleName) {
+        return styleProps!=null ? styleProps.get(styleName) : null;
+    }
+
+    /**
+     * Return the registered style properties.
+     * @return null if no styles are added.
+     */
+    public Map<StyleName, String> getStyleProperties() {
+        return styleProps!=null ? styleProps : null;
+    }
+
+    /**
+     * Get the columns header width.
+     * @return null if not defined.
+     */
+    public String getHeaderWidth() {
+        return headerWidth;
+    }
+
+    /**
+     * Set the columns header width.
+     */
+    public void setHeaderWidth(String headerWidth) {
+        this.headerWidth = headerWidth;
+    }
+
     @Override
     public String toString() {
         return "Column{" +
-          "cell=" + cell +
-          ", isDefaultSortAscending=" + isDefaultSortAscending +
-          ", isSortable=" + isSortable() +
-          ", name='" + name + '\'' +
-          '}';
+            "cell=" + cell +
+            ", fieldUpdater=" + fieldUpdater +
+            ", isDefaultSortAscending=" + isDefaultSortAscending +
+            ", isNumeric=" + isNumeric +
+            ", name='" + name + '\'' +
+            ", headerWidth='" + headerWidth + '\'' +
+            ", hideOn=" + hideOn +
+            ", textAlign=" + textAlign +
+            ", styleProps=" + styleProps +
+            ", sortComparator=" + sortComparator +
+            '}';
     }
 }
