@@ -68,7 +68,7 @@
     <!-- Plugin Versions -->
     <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
     <maven-compiler-plugin.version>3.2</maven-compiler-plugin.version>
-    <gwt-maven-plugin.version>2.8.0-rc3</gwt-maven-plugin.version>
+    <gwt-maven-plugin.version>2.8.0</gwt-maven-plugin.version>
   </properties>
 
   <licenses>
