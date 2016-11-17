@@ -395,7 +395,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
             dataSource.load(new LoadConfig<T>() {
                 @Override
                 public int getOffset() {
-                    return loaderIndex;
+                    return loaderIndex-1;
                 }
                 @Override
                 public int getLimit() {
@@ -412,7 +412,8 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
             }, new LoadCallback<T>() {
                 @Override
                 public void onSuccess(LoadResult<T> loadResult) {
-                    dataView.loaded(loadResult.getOffset(), loadResult.getData(), loadResult.getTotalLength(), loadResult.isCacheData());
+                    // table.loaded(int StartIndex) expect StartIndex starting from 1
+                    dataView.loaded(loadResult.getOffset() + 1, loadResult.getData(), loadResult.getTotalLength(), loadResult.isCacheData());
                 }
                 @Override
                 public void onFailure(Throwable caught) {

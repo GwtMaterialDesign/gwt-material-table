@@ -31,6 +31,7 @@ public abstract class LoadResult<T> {
 
     /**
      * Return actual offset of the result. In most cases equals requested offset.
+     * Starting from "0".
      */
     public abstract int getOffset();
 

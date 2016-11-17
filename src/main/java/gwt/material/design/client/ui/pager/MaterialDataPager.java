@@ -127,38 +127,27 @@ public class MaterialDataPager<T> extends MaterialDataPagerBase<T> {
         updateDataTable();
     }
 
-    /**
-     * Refresh and redraw the table and set the visible range with the given params.
-     */
-    private void updateDataTable() {
+    private void updateToolbarLabels(){
+        getActionLabel().setText(getFirstRow() + "-" + getLastRow() + " of " + getTotalRows());
+
         getListPages().clear();
         for(int i = 1; i <= getNumPages(); i++) {
             getListPages().addItem(String.valueOf(i));
         }
-        getActionLabel().setText(getFirstRow() + "-" + getLastRow() + " of " + getTotalRows());
-        table.setVisibleRange(getFirstRow(), getRowCount());
 
-        // Check if the first row and row count  is bigger than the getTotalRows
-        if(getFirstRow() + getRowCount() > getTotalRows()) {
-            if(getRowCount() > getTotalRows()) {
-                doLoad(getFirstRow(), getTotalRows());
-            } else {
-                doLoad(getFirstRow(), getTotalRows() - (getFirstRow() - 1));
-            }
-        } else {
-            doLoad(getFirstRow(), getRowCount());
-        }
+        table.setVisibleRange(getFirstRow(), getRowCount());
     }
 
-    private void doLoad(int offset, int limit){
+    private void updateDataTable(){
+
         getDataSource().load(new LoadConfig<T>() {
             @Override
             public int getOffset() {
-                return offset;
+                return getFirstRow()-1;
             }
             @Override
             public int getLimit() {
-                return limit;
+                return getRowCount();
             }
             @Override
             public SortContext<T> getSortContext() {
@@ -172,7 +161,10 @@ public class MaterialDataPager<T> extends MaterialDataPagerBase<T> {
             @Override
             public void onSuccess(LoadResult<T> loadResult) {
                 setTotalRows(loadResult.getTotalLength());
-                table.loaded(loadResult.getOffset(), loadResult.getData());
+                setLastRow(loadResult.getOffset() + loadResult.getData().size());
+                updateToolbarLabels();
+                // table.loaded(int StartIndex) expect StartIndex starting from 1
+                table.loaded(loadResult.getOffset() + 1, loadResult.getData());
             }
             @Override
             public void onFailure(Throwable caught) {

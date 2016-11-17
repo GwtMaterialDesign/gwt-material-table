@@ -27,7 +27,7 @@ import java.util.List;
 public interface LoadConfig<T> {
 
     /**
-     * Get load offset.
+     * Get load offset, starting from "0".
      */
     int getOffset();
 
