@@ -29,23 +29,23 @@ public interface LoadConfig<T> {
     /**
      * Get load offset.
      */
-    public int getOffset();
+    int getOffset();
 
     /**
      * Get load limit. Set to "0" for no limit.
      */
-    public int getLimit();
+    int getLimit();
 
     /**
      * Get sorters to use when loading. Usually used for remote data sources.
      * Return null if no sort context exists.
      */
-    public SortContext<T> getSortContext();
+    SortContext<T> getSortContext();
 
     /**
      * Get categories to load.
      * Return null if no categories exists.
      * FIXME: CategoryComponent belongs to table package, need to make similar class in data package
      */
-    public List<CategoryComponent> getCategories();
+    List<CategoryComponent> getOpenCategories();
 }

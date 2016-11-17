@@ -20,7 +20,6 @@ package gwt.material.design.client.data;
  * #L%
  */
 
-
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.view.client.HasKeyProvider;

@@ -20,26 +20,36 @@
 package gwt.material.design.client.data.loader;
 
 import java.util.List;
+import gwt.material.design.client.data.DataView;
 
-public interface LoadResult<T> {
+public abstract class LoadResult<T> {
 
     /**
      * Return result data.
      */
-    public List<T> getData();
+    public abstract List<T> getData();
 
     /**
      * Return actual offset of the result. In most cases equals requested offset.
      */
-    public int getOffset();
+    public abstract int getOffset();
 
     /**
      * Return total length of the data.
      * <br/>
      * <ul>
      *  <li>For non-paging requests equals size of the data.</li>
-     *  <li><For paging requests should equals total number of records/li>
+     *  <li>For paging requests should equals total number of records</li>
      * </ul>
      */
-    public int getTotalLength();
+    public abstract int getTotalLength();
+
+    /**
+     * Should we cache the data, retrieved, it is worth noting that not all
+     * {@link DataView} implementations will cache data.
+     * @return true by default.
+     */
+    public boolean isCacheData() {
+        return true;
+    }
 }
