@@ -1,5 +1,3 @@
-package gwt.material.design.client.ui.pager;
-
 /*
  * #%L
  * GwtMaterial
@@ -19,7 +17,7 @@ package gwt.material.design.client.ui.pager;
  * limitations under the License.
  * #L%
  */
-
+package gwt.material.design.client.ui.pager;
 
 import com.google.gwt.core.client.GWT;
 import gwt.material.design.client.data.DataSource;
@@ -60,7 +58,7 @@ public class MaterialDataPager<T> extends MaterialDataPagerBase<T> {
             getRowsPerPagePanel().setVisible(true);
         }
 
-        if (getDataSource().useRemoteSort()){
+        if (getDataSource().useRemoteSort()) {
             table.addSortColumnHandler((e, sortContext, columnIndex) -> {
                 this.refresh();
                 return true;
@@ -153,36 +151,29 @@ public class MaterialDataPager<T> extends MaterialDataPagerBase<T> {
     }
 
     private void doLoad(int offset, int limit){
-
-        table.getSortContext();
-
         getDataSource().load(new LoadConfig<T>() {
             @Override
             public int getOffset() {
                 return offset;
             }
-
             @Override
             public int getLimit() {
                 return limit;
             }
-
             @Override
             public SortContext<T> getSortContext() {
                 return table.getSortContext();
             }
-
             @Override
-            public List<CategoryComponent> getCategories() {
+            public List<CategoryComponent> getOpenCategories() {
                 return table.getOpenCategories();
             }
         }, new LoadCallback<T>() {
             @Override
             public void onSuccess(LoadResult<T> loadResult) {
                 setTotalRows(loadResult.getTotalLength());
-                table.loaded(loadResult.getOffset(),loadResult.getData());
+                table.loaded(loadResult.getOffset(), loadResult.getData());
             }
-
             @Override
             public void onFailure(Throwable caught) {
                 GWT.log("Load failure", caught);
@@ -190,7 +181,6 @@ public class MaterialDataPager<T> extends MaterialDataPagerBase<T> {
             }
         });
     }
-
 
     /**
      * Get the row count options.

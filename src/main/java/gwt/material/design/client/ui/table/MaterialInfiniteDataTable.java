@@ -1,5 +1,3 @@
-package gwt.material.design.client.ui.table;
-
 /*
  * #%L
  * GwtMaterial
@@ -19,7 +17,7 @@ package gwt.material.design.client.ui.table;
  * limitations under the License.
  * #L%
  */
-
+package gwt.material.design.client.ui.table;
 
 import gwt.material.design.client.data.DataSource;
 import gwt.material.design.client.data.infinite.InfiniteDataView;
@@ -42,7 +40,8 @@ public class MaterialInfiniteDataTable<T> extends MaterialDataTable<T> {
         super(new InfiniteDataView<>(totalRows, viewSize, dataSource));
     }
 
-    public MaterialInfiniteDataTable(TableScaffolding scaffolding, int totalRows, int viewSize, DataSource<T> dataSource) {
+    public MaterialInfiniteDataTable(TableScaffolding scaffolding, int totalRows, int viewSize,
+                                     DataSource<T> dataSource) {
         super(new InfiniteDataView<>(totalRows, viewSize, dataSource), scaffolding);
     }
 

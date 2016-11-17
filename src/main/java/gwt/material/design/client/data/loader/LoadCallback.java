@@ -23,10 +23,10 @@ public interface LoadCallback<T> {
     /**
      * Should be called when async load success.
      */
-    public void onSuccess(LoadResult<T> loadResult);
+    void onSuccess(LoadResult<T> loadResult);
 
     /**
      * Should be called when async load failed.
      */
-    public void onFailure(Throwable caught);
+    void onFailure(Throwable caught);
 }

@@ -302,6 +302,27 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
     }
 
     @Override
+    public void setDataSource(final DataSource<T> dataSource) {
+        if(!dataSource.useRemoteSort()) {
+            logger.warning("It is recommended that an InfiniteDataView only use a remote sorting " +
+                "DataSource, this will be set for you.");
+
+            super.setDataSource(new DataSource<T>() {
+                @Override
+                public void load(LoadConfig<T> loadConfig, LoadCallback<T> callback) {
+                    dataSource.load(loadConfig, callback);
+                }
+                @Override
+                public boolean useRemoteSort() {
+                    return true;
+                }
+            });
+        } else {
+            super.setDataSource(dataSource);
+        }
+    }
+
+    @Override
     public void addCategory(CategoryComponent category) {
         super.addCategory(category);
         // Update the view size to accommodate the new category
@@ -367,9 +388,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
             loaderCache.clear();
             loaderCache = null;
         } else {
-            Scheduler.get().scheduleFinally(() -> {
-                display.setLoadMask(true);
-            });
+            Scheduler.get().scheduleFinally(() -> display.setLoadMask(true));
 
             final InfiniteDataView<T> dataView = this;
 
@@ -378,31 +397,27 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
                 public int getOffset() {
                     return loaderIndex;
                 }
-
                 @Override
                 public int getLimit() {
                     return loaderSize;
                 }
-
                 @Override
                 public SortContext<T> getSortContext() {
                     return dataView.getSortContext();
                 }
-
                 @Override
-                public List<CategoryComponent> getCategories() {
+                public List<CategoryComponent> getOpenCategories() {
                     return dataView.getOpenCategories();
                 }
             }, new LoadCallback<T>() {
                 @Override
                 public void onSuccess(LoadResult<T> loadResult) {
-                    dataView.loaded(loadResult.getOffset(), loadResult.getData() );
+                    dataView.loaded(loadResult.getOffset(), loadResult.getData(), loadResult.getTotalLength(), loadResult.isCacheData());
                 }
-
                 @Override
                 public void onFailure(Throwable caught) {
                     GWT.log("Load failure", caught);
-                    //TODO: What we need to do on failure? May be clear table?
+                    //TODO: What we need to do on failure? Maybe clear table?
                 }
             });
         }

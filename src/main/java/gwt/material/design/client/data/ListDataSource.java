@@ -20,7 +20,6 @@ package gwt.material.design.client.data;
  * #L%
  */
 
-
 import gwt.material.design.client.data.loader.LoadCallback;
 import gwt.material.design.client.data.loader.LoadConfig;
 import gwt.material.design.client.data.loader.LoadResult;
@@ -38,36 +37,36 @@ public class ListDataSource<T> implements DataSource<T> {
     private Logger logger = Logger.getLogger(ListDataSource.class.getName());
 
     private List<T> data;
-    private DataView<T> dataView;
 
-    public ListDataSource(DataView<T> dataView) {
-        this.dataView = dataView;
+    public ListDataSource() {
         data = new ArrayList<>();
     }
 
-    public ListDataSource(DataView<T> dataView, List<T> data) {
-        this.dataView = dataView;
+    public ListDataSource(List<T> data) {
         this.data = data;
     }
 
     @Override
     public void load(LoadConfig<T> loadConfig, LoadCallback<T> callback) {
         try {
-            final List<T> subList = data.subList(loadConfig.getOffset() - 1, loadConfig.getOffset() - 1 + loadConfig.getLimit());
+            final List<T> subList = data.subList(loadConfig.getOffset() - 1,
+                ((loadConfig.getOffset() - 1) + loadConfig.getLimit()));
             callback.onSuccess(new LoadResult<T>() {
                 @Override
                 public List<T> getData() {
                     return subList;
                 }
-
                 @Override
                 public int getOffset() {
                     return loadConfig.getOffset();
                 }
-
                 @Override
                 public int getTotalLength() {
-                    return this.getData().size();
+                    return getData().size();
+                }
+                @Override
+                public boolean isCacheData() {
+                    return cacheData();
                 }
             });
         } catch (IndexOutOfBoundsException ex) {
@@ -77,13 +76,16 @@ public class ListDataSource<T> implements DataSource<T> {
         }
     }
 
-
     public void add(int startIndex, List<T> list) {
         data.addAll(startIndex, list);
     }
 
     public void remove(List<T> list) {
         data.removeAll(list);
+    }
+
+    public boolean cacheData() {
+        return true;
     }
 
     @Override

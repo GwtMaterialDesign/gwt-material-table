@@ -434,8 +434,8 @@ public class TableBaseTest extends GWTTestCase {
     }
 
     public <T extends MaterialDataTable<Person>> void checkPager(T table) {
-        ListDataSource<Person> dataSource = new ListDataSource<>(table);
-        MaterialDataPager pager = new MaterialDataPager(table, dataSource);
+        ListDataSource<Person> dataSource = new ListDataSource<>();
+        MaterialDataPager pager = new MaterialDataPager<>(table, dataSource);
         RootPanel.get().add(pager);
         assertEquals(pager.getCurrentPage(), 0);
         pager.setFirstRow(5);

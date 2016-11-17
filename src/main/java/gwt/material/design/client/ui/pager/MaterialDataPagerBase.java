@@ -20,7 +20,6 @@ package gwt.material.design.client.ui.pager;
  * #L%
  */
 
-
 import com.google.gwt.dom.client.Document;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.constants.CssName;

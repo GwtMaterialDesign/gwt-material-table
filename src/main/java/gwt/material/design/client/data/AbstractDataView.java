@@ -902,7 +902,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
      */
     protected boolean doSort(SortContext<T> sortContext, Components<RowComponent<T>> rows) {
 
-        if (dataSource.useRemoteSort()){
+        if (dataSource != null && dataSource.useRemoteSort()) {
             // The sorting should be handled by an external
             // data source rather than re-ordered by the
             // client comparator.
