@@ -243,7 +243,7 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
     boolean isSetup();
 
     /**
-     * Set a values associated with the rows in the visible range.
+     * Set values associated with the rows in the visible range.
      *
      * @param start the start index of the data
      * @param values the values within the range

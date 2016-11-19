@@ -49,8 +49,8 @@ public class ListDataSource<T> implements DataSource<T> {
     @Override
     public void load(LoadConfig<T> loadConfig, LoadCallback<T> callback) {
         try {
-            final List<T> subList = data.subList(loadConfig.getOffset() - 1,
-                ((loadConfig.getOffset() - 1) + loadConfig.getLimit()));
+            final List<T> subList = data.subList(loadConfig.getOffset(),
+                    (loadConfig.getOffset() + loadConfig.getLimit()));
             callback.onSuccess(new LoadResult<T>() {
                 @Override
                 public List<T> getData() {
@@ -62,7 +62,7 @@ public class ListDataSource<T> implements DataSource<T> {
                 }
                 @Override
                 public int getTotalLength() {
-                    return getData().size();
+                    return data.size();
                 }
                 @Override
                 public boolean isCacheData() {
