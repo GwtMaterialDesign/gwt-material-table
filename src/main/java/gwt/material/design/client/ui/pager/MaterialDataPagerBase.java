@@ -22,13 +22,13 @@ package gwt.material.design.client.ui.pager;
 
 import com.google.gwt.dom.client.Document;
 import gwt.material.design.client.base.constants.TableCssName;
-import gwt.material.design.client.constants.CssName;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.constants.WavesType;
-import gwt.material.design.client.data.DataSource;
-import gwt.material.design.client.ui.*;
+import gwt.material.design.client.ui.MaterialColumn;
+import gwt.material.design.client.ui.MaterialIcon;
+import gwt.material.design.client.ui.MaterialListValueBox;
+import gwt.material.design.client.ui.MaterialRow;
 import gwt.material.design.client.ui.html.Span;
-import gwt.material.design.client.ui.table.MaterialDataTable;
 
 /**
  * Base class implementation of MaterialDataPager which builds the User Interface of the overall pager
@@ -36,30 +36,26 @@ import gwt.material.design.client.ui.table.MaterialDataTable;
  */
 public class MaterialDataPagerBase<T> extends MaterialRow {
 
-    protected final MaterialDataTable<T> table;
-
     // Number Page Panel
-    private MaterialColumn numPagePanel = new MaterialColumn();
-    private Span pageLabel = new Span("Page");
-    private MaterialListBox listPages = new MaterialListBox();
+    protected MaterialColumn numPagePanel = new MaterialColumn();
+    protected Span pageLabel = new Span("Page");
+    protected MaterialListValueBox<Integer> listPages = new MaterialListValueBox<Integer>();
 
     // Rows per Page Panel
-    private MaterialColumn rowsPerPagePanel = new MaterialColumn();
-    private Span rowsPerPageLabel = new Span("Rows per page");
-    private MaterialListBox listRowsPerPage = new MaterialListBox();
+    protected MaterialColumn rowsPerPagePanel = new MaterialColumn();
+    protected Span rowsPerPageLabel = new Span("Rows per page");
+    protected MaterialListValueBox<Integer> listLimitOptions = new MaterialListValueBox<Integer>();
 
     // Action Page Panel
-    private MaterialColumn actionPagePanel = new MaterialColumn();
-    private Span actionLabel = new Span();
-    private MaterialIcon iconNext = new MaterialIcon(IconType.KEYBOARD_ARROW_RIGHT);
-    private MaterialIcon iconPrev = new MaterialIcon(IconType.KEYBOARD_ARROW_LEFT);
+    protected MaterialColumn actionPagePanel = new MaterialColumn();
+    protected Span actionLabel = new Span();
+    protected MaterialIcon iconNext = new MaterialIcon(IconType.KEYBOARD_ARROW_RIGHT);
+    protected MaterialIcon iconPrev = new MaterialIcon(IconType.KEYBOARD_ARROW_LEFT);
 
-    public MaterialDataPagerBase(MaterialDataTable<T> table, DataSource<T> dataSource) {
+    public MaterialDataPagerBase() {
         super(Document.get().createDivElement(), TableCssName.DATA_PAGER, TableCssName.ROW);
-        this.table = table;
-        this.table.setDataSource(dataSource);
         buildNumPagePanel();
-        buildRowsPerPagePanel();
+        buildLimitOptionsPanel();
         buildActionPanel();
     }
 
@@ -78,10 +74,10 @@ public class MaterialDataPagerBase<T> extends MaterialRow {
     /**
      * Build the rows per page panel - where you can set the range of row count into listbox
      */
-    private void buildRowsPerPagePanel() {
+    private void buildLimitOptionsPanel() {
         rowsPerPagePanel.setInitialClasses(TableCssName.ROWS_PER_PAGE_PANEL);
         rowsPerPagePanel.setGrid("s12 m4 l3");
-        rowsPerPagePanel.add(listRowsPerPage);
+        rowsPerPagePanel.add(listLimitOptions);
         rowsPerPagePanel.add(rowsPerPageLabel);
         add(rowsPerPagePanel);
     }
@@ -101,89 +97,5 @@ public class MaterialDataPagerBase<T> extends MaterialRow {
         iconPrev.setCircle(true);
         actionPagePanel.add(actionLabel);
         add(actionPagePanel);
-    }
-
-    /**
-     * Get the data table implemented and used by this data pager.
-     */
-    public MaterialDataTable getTable() {
-        return table;
-    }
-
-    /**
-     * Get the tables data source.
-     */
-    public DataSource<T> getDataSource() {
-        return table.getDataSource();
-    }
-
-    /**
-     * Get the number page panel.
-     */
-    public MaterialColumn getNumPagePanel() {
-        return numPagePanel;
-    }
-
-    /**
-     * Get the page label.
-     */
-    public Span getPageLabel() {
-        return pageLabel;
-    }
-
-    /**
-     * Get the list pages list box.
-     */
-    public MaterialListBox getListPages() {
-        return listPages;
-    }
-
-    /**
-     * Get rows per page panel.
-     */
-    public MaterialColumn getRowsPerPagePanel() {
-        return rowsPerPagePanel;
-    }
-
-    /**
-     * Get rows per page label.
-     */
-    public Span getRowsPerPageLabel() {
-        return rowsPerPageLabel;
-    }
-
-    /**
-     * Get list rows per page listbox.
-     */
-    public MaterialListBox getListRowsPerPage() {
-        return listRowsPerPage;
-    }
-
-    /**
-     * Get the action page panel.
-     */
-    public MaterialColumn getActionPagePanel() {
-        return actionPagePanel;
-    }
-
-    /**
-     * Get the action label.
-     */
-    public Span getActionLabel() {
-        return actionLabel;
-    }
-
-    /**
-     * Get the icon next.
-     */
-    public MaterialIcon getIconNext() {
-        return iconNext;
-    }
-
-    /**
-     * Get the icon previous.
-     */
-    public MaterialIcon getIconPrev() {
-        return iconPrev;
     }
 }
