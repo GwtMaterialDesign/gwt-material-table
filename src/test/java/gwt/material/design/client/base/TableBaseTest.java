@@ -434,13 +434,21 @@ public class TableBaseTest extends GWTTestCase {
     }
 
     public <T extends MaterialDataTable<Person>> void checkPager(T table) {
+        RootPanel.get().add(table);
+
         ListDataSource<Person> dataSource = new ListDataSource<>();
-        MaterialDataPager pager = new MaterialDataPager<>(table, dataSource);
+        MaterialDataPager<Person> pager = new MaterialDataPager<>(table, dataSource);
         RootPanel.get().add(pager);
-        assertEquals(pager.getCurrentPage(), 0);
-        // TODO Update recent changes for pager tests
+        assertEquals(pager.getCurrentPage(), 1);
         pager.next();
+        pager.next();
+        assertEquals(pager.getCurrentPage(), 3);
         pager.previous();
+        assertEquals(pager.getCurrentPage(), 2);
+        pager.gotoPage(5);
+        assertEquals(pager.getCurrentPage(), 5);
+        assertFalse(pager.isNext());
+        assertTrue(pager.isPrevious());
     }
 
     protected List<Person> getAllPerson() {
