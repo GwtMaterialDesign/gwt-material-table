@@ -1,5 +1,3 @@
-package gwt.material.design.client.ui.pager;
-
 /*
  * #%L
  * GwtMaterial
@@ -19,249 +17,222 @@ package gwt.material.design.client.ui.pager;
  * limitations under the License.
  * #L%
  */
+package gwt.material.design.client.ui.pager;
 
-
+import com.google.gwt.core.client.GWT;
 import gwt.material.design.client.data.DataSource;
+import gwt.material.design.client.data.SortContext;
+import gwt.material.design.client.data.component.CategoryComponent;
+import gwt.material.design.client.data.loader.LoadCallback;
+import gwt.material.design.client.data.loader.LoadConfig;
+import gwt.material.design.client.data.loader.LoadResult;
+import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.table.MaterialDataTable;
+
+import java.util.List;
 
 /**
  * Material Data Pager - a simple pager for Material Data Table component
  *
  * @author kevzlou7979
  */
-public class MaterialDataPager<T> extends MaterialDataPagerBase<T> {
+public class MaterialDataPager<T> extends MaterialDataPagerBase<T> implements HasPager {
 
-    private int[] rowCountOptions = new int[] {5, 10, 15};
-    private int numPages, firstRow, lastRow, totalRows;
-
-    private boolean useRowCountOptions = true;
+    private MaterialDataTable<T> table;
+    private DataSource<T> dataSource;
+    private int offset = 0;
+    private int limit = 0;
+    private int currentPage = 1;
+    private int totalRows = 0;
+    private int[] limitOptions = new int[]{5, 10, 20};
 
     public MaterialDataPager(MaterialDataTable<T> table, DataSource<T> dataSource) {
-        super(table, dataSource);
+        super();
+        this.table = table;
+        this.dataSource = dataSource;
     }
 
     @Override
     protected void onLoad() {
         super.onLoad();
-
-        if(!useRowCountOptions) {
-            getRowsPerPagePanel().setVisible(false);
-            getNumPagePanel().setOffset("l6");
-        } else {
-            setRowCount(getRowCountOptions()[0]);
-            getRowsPerPagePanel().setVisible(true);
-        }
-
-        // Must set the total rows for the calculation of page numbers
-        setTotalRows(getDataSource().getDataSize());
-
-        getListRowsPerPage().clear();
-        for(int i : rowCountOptions) {
-            getListRowsPerPage().addItem(String.valueOf(i));
-        }
-
-        getListRowsPerPage().addValueChangeHandler(valueChangeEvent -> {
-            goToPage(Integer.parseInt(valueChangeEvent.getValue()), getCurrentPage());
-        });
-
-        getListPages().addValueChangeHandler(valueChangeEvent -> {
-            goToPage(getRowCount(), Integer.parseInt(valueChangeEvent.getValue()));
-        });
-
-        getIconNext().addClickHandler(clickEvent -> next());
-        getIconPrev().addClickHandler(clickEvent -> previous());
-        goToPage(getRowCount(), 1);
+        initialize();
     }
 
     /**
-     * Update the pager properties.
+     * Initialize the data pager for navigation
      */
-    private void goToPage(int rowCount, int currentPage) {
+    protected void initialize() {
+        limit = limitOptions[0];
+        firstPage();
+        iconNext.addClickHandler(event -> next());
+        iconPrev.addClickHandler(event -> previous());
 
-        // Check if the row's num page is less than the current page selection
-        // If yes, then we will navigate to last page
-        if(getNumPages() < currentPage) {
-            lastPage();
-            return;
+        listPages.addValueChangeHandler(event -> {
+            gotoPage(event.getValue());
+        });
+
+        // Build the limit options listbox
+        for (int limitOption : limitOptions) {
+            listLimitOptions.addItem(limitOption);
         }
-
-        // Check if data pager is on first page, if yes then the previous button will be disabled
-        if(currentPage >= getNumPages()) {
-            getIconNext().setEnabled(false);
-            getIconPrev().setEnabled(true);
-        } else {
-            getIconNext().setEnabled(true);
-        }
-
-        // Check if data pager is on last page, if yes then the next button will be disabled.
-        if(currentPage <= 1) {
-            getIconNext().setEnabled(true);
-            getIconPrev().setEnabled(false);
-        } else {
-            getIconPrev().setEnabled(true);
-        }
-
-        // Check if data pager has only one page, if yes then the next and previous button will be disabled.
-        if(getNumPages() == 1) {
-            getIconNext().setEnabled(false);
-            getIconPrev().setEnabled(false);
-        }
-        setRowCount(rowCount);
-        setFirstRow(((Math.max(0, currentPage - 1)) * rowCount) + 1);
-        setLastRow(currentPage * rowCount);
-        updateDataTable();
-        setCurrentPage(currentPage);
-    }
-
-    public void refresh() {
-        updateDataTable();
-    }
-
-    /**
-     * Refresh and redraw the table and set the visible range with the given params.
-     */
-    private void updateDataTable() {
-        getListPages().clear();
-        for(int i = 1; i <= getNumPages(); i++) {
-            getListPages().addItem(String.valueOf(i));
-        }
-        getActionLabel().setText(getFirstRow() + "-" + getLastRow() + " of " + getTotalRows());
-        table.setVisibleRange(getFirstRow(), getRowCount());
-
-        // Check if the first row and row count  is bigger than the getTotalRows
-        if(getFirstRow() + getRowCount() > getTotalRows()) {
-            if(getRowCount() > getTotalRows()) {
-                getDataSource().load(table, getFirstRow(), getTotalRows());
-            } else {
-                getDataSource().load(table, getFirstRow(), getTotalRows() - (getFirstRow() - 1));
+        listLimitOptions.addValueChangeHandler(valueChangeEvent -> {
+            limit = valueChangeEvent.getValue();
+            if ((totalRows / currentPage) < limit) {
+                lastPage();
+                return;
             }
-        } else {
-            getDataSource().load(table, getFirstRow(), getRowCount());
-        }
+            gotoPage(listPages.getValue());
+        });
     }
 
-    /**
-     * Get the row count options.
-     * @return an array of integers for the series of options (How many rows should be displayed)
-     */
-    public int[] getRowCountOptions() {
-        return rowCountOptions;
-    }
-
-    /**
-     * Set how many rows should be displayed into the data table,
-     * a series of options (e.g 5, 10, 15) which will be added to listbox options
-     */
-    public void setRowCountOptions(int... rowCountOptions) {
-        this.rowCountOptions = rowCountOptions;
-    }
-
-    /**
-     * Get the specific selected row count list box option.
-     * @return the row count
-     */
-    public int getRowCount() {
-        if(getListRowsPerPage().getSelectedItemText() != null && isUseRowCountOptions()) {
-            return Integer.parseInt(getListRowsPerPage().getSelectedItemText());
-        }
-        return table.getVisibleRange().getLength();
-    }
-
-    /**
-     * Set directly the selected row count
-     */
-    public void setRowCount(int rowCount) {
-        getListRowsPerPage().setSelectedValue(String.valueOf(rowCount));
-    }
-
-    /**
-     * Get the current page.
-     * @return currentPage
-     */
-    public int getCurrentPage() {
-        if(getListPages().getSelectedItemText() != null) {
-            return Integer.parseInt(getListPages().getSelectedItemText());
-        }
-        return 0;
-    }
-
-    /**
-     * Set the current page.
-     */
-    public void setCurrentPage(int currentPage) {
-        getListPages().setSelectedValue(String.valueOf(currentPage));
-    }
-
-    /**
-     * Get the total number of pages.
-     */
-    public int getNumPages() {
-        if(getTotalRows() % getRowCount() > 0) {
-            return (totalRows / getRowCount()) + 1;
-        }
-        return totalRows / getRowCount();
-    }
-
-    /**
-     * Advance the starting row by 'pageSize' rows.
-     */
+    @Override
     public void next() {
-        goToPage(getRowCount(), getCurrentPage() + 1);
+        currentPage++;
+        gotoPage(currentPage);
     }
 
-    /**
-     * Move the starting row back by 'pageSize' rows.
-     */
+    @Override
     public void previous() {
-        goToPage(getRowCount(), getCurrentPage() - 1);
+        currentPage--;
+        gotoPage(currentPage);
     }
 
-    /**
-     * Go to the first page.
-     */
-    public void firstPage() {
-        goToPage(getRowCount(), 1);
-    }
-
-    /**
-     * Go to the last page.
-     */
+    @Override
     public void lastPage() {
-        goToPage(getRowCount(), getNumPages());
-    }
-
-    public int getFirstRow() {
-        return firstRow;
-    }
-
-    public void setFirstRow(int firstRow) {
-        this.firstRow = firstRow;
-    }
-
-    public int getLastRow() {
-        if(lastRow > getTotalRows()) {
-            lastRow = getTotalRows();
+        if (isExcess()) {
+            gotoPage((totalRows / limit) + 1);
+        }else {
+            gotoPage(totalRows / limit);
         }
-        return lastRow;
+
+        listPages.setSelectedIndex(currentPage - 1);
     }
 
-    public void setLastRow(int lastRow) {
-        this.lastRow = lastRow;
+    @Override
+    public void firstPage() {
+        gotoPage(1);
     }
 
-    public int getTotalRows() {
-        return totalRows;
+    @Override
+    public void gotoPage(int page) {
+        this.currentPage = page;
+        doLoad((page * limit) - limit, limit);
     }
 
-    public void setTotalRows(int totalRows) {
-        this.totalRows = totalRows;
+    @Override
+    public int getCurrentPage() {
+        return currentPage;
     }
 
-    public boolean isUseRowCountOptions() {
-        return useRowCountOptions;
+    @Override
+    public void setLimit(int limit) {
+        this.limit = limit;
     }
 
-    public void setUseRowCountOptions(boolean useRowCountOptions) {
-        this.useRowCountOptions = useRowCountOptions;
+    @Override
+    public boolean isNext() {
+        return offset + limit < totalRows;
+    }
+
+    @Override
+    public boolean isPrevious() {
+        return offset - limit >= 0;
+    }
+
+    /**
+     * Set the limit as an array of options to be populated inside the rows per page listbox
+     */
+    public void setLimitOptions(int... limitOptions) {
+        this.limitOptions = limitOptions;
+    }
+
+    /**
+     * Check whether there are excess rows to be rendered with given limit
+     */
+    protected boolean isExcess() {
+        return totalRows % limit > 0;
+    }
+
+    /**
+     * Check whether the pager is on the last currentPage.
+     */
+    protected boolean isLastPage() {
+        return currentPage == (totalRows / limit) + 1;
+    }
+
+    /**
+     * Load the datasource within a given offset and limit
+     */
+    protected void doLoad(int offset, int limit) {
+        this.offset = offset;
+        dataSource.load(new LoadConfig<T>() {
+            @Override
+            public int getOffset() {
+                return offset;
+            }
+
+            @Override
+            public int getLimit() {
+                // Check whether the pager has excess rows with given limit
+                if (isLastPage() & isExcess()) {
+                    // Get the difference between total rows and excess rows
+                    return totalRows - offset;
+                }
+                return limit;
+            }
+
+            @Override
+            public SortContext<T> getSortContext() {
+                return table.getSortContext();
+            }
+
+            @Override
+            public List<CategoryComponent> getOpenCategories() {
+                return table.getOpenCategories();
+            }
+        }, new LoadCallback<T>() {
+            @Override
+            public void onSuccess(LoadResult<T> loadResult) {
+                totalRows = loadResult.getTotalLength();
+                table.setVisibleRange(offset, limit);
+                table.loaded(loadResult.getOffset(), loadResult.getData());
+                updateUi();
+            }
+
+            @Override
+            public void onFailure(Throwable caught) {
+                GWT.log("Load failure", caught);
+                //TODO: What we need to do on failure? May be clear table?
+            }
+        });
+    }
+
+    /**
+     * Set and update the ui fields of the pager after the datasource load callback
+     */
+    protected void updateUi() {
+
+        // Action label (current selection)
+        int lastRow = (isExcess() & isLastPage()) ? totalRows : (offset + limit);
+        actionLabel.setText((offset + 1) + "-" + lastRow + " of " + totalRows);
+
+        // Build the currentPage number listbox
+        listPages.clear();
+        int pages = (isExcess()) ? (totalRows / limit) + 1 : totalRows / limit;
+        for (int i = 1; i <= pages; i++) {
+            listPages.addItem(i);
+        }
+        listPages.setSelectedIndex(currentPage - 1);
+
+        iconNext.setEnabled(true);
+        iconPrev.setEnabled(true);
+
+        if (isLastPage() || currentPage == (totalRows / limit)) {
+            iconNext.setEnabled(false);
+        }
+
+        if (!isPrevious()) {
+            iconPrev.setEnabled(false);
+        }
     }
 }

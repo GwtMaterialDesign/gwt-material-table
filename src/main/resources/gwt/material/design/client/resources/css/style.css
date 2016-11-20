@@ -426,7 +426,7 @@ table.table tbody tr.expansion td div h4.expanded_header {
 }
 
 /* --- Expanded Paragraph --- */
-table.table tbody tr.expansion td div p {
+table.table tbody tr.expansion td > div p {
     margin: 4px 0 4px 0 !important;
     padding: 0 !important;
 }

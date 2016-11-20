@@ -17,14 +17,16 @@
  * limitations under the License.
  * #L%
  */
-package gwt.material.design.client.data;
+package gwt.material.design.client.data.loader;
 
-import gwt.material.design.client.data.loader.LoadCallback;
-import gwt.material.design.client.data.loader.LoadConfig;
+public interface LoadCallback<T> {
+    /**
+     * Should be called when async load success.
+     */
+    void onSuccess(LoadResult<T> loadResult);
 
-public interface DataSource<T> {
-
-    void load(LoadConfig<T> loadConfig, LoadCallback<T> callback);
-
-    boolean useRemoteSort();
+    /**
+     * Should be called when async load failed.
+     */
+    void onFailure(Throwable caught);
 }

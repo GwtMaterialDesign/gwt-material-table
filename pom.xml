@@ -6,11 +6,11 @@
   <parent>
     <artifactId>gwt-material-parent</artifactId>
     <groupId>com.github.gwtmaterialdesign</groupId>
-    <version>2.0-rc2</version>
+    <version>2.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>gwt-material-table</artifactId>
-  <version>1.0-rc2</version>
+  <version>1.0-SNAPSHOT</version>
 
   <name>Gwt Material Table</name>
   <description>A complex table component designed for the material design specifications</description>
@@ -60,7 +60,7 @@
 
     <!-- Libraries -->
     <gwt.version>2.8.0</gwt.version>
-    <gwt-material.version>2.0-rc2</gwt-material.version>
+    <gwt-material.version>2.0-SNAPSHOT</gwt-material.version>
 
     <!-- Testing -->
     <junit.version>4.11</junit.version>
@@ -68,7 +68,7 @@
     <!-- Plugin Versions -->
     <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
     <maven-compiler-plugin.version>3.2</maven-compiler-plugin.version>
-    <gwt-maven-plugin.version>2.8.0-rc3</gwt-maven-plugin.version>
+    <gwt-maven-plugin.version>2.8.0</gwt-maven-plugin.version>
   </properties>
 
   <licenses>
@@ -102,24 +102,13 @@
     <dependency>
       <groupId>com.github.gwtmaterialdesign</groupId>
       <artifactId>gwt-material-jquery</artifactId>
-      <version>1.0-rc2</version>
+      <version>1.0-SNAPSHOT</version>
     </dependency>
 
     <!-- GWT -->
     <dependency>
       <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-servlet</artifactId>
-      <version>${gwt.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
-      <version>${gwt.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-dev</artifactId>
       <version>${gwt.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -135,6 +124,15 @@
   </dependencies>
 
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/java</directory>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
+
     <plugins>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -150,18 +148,6 @@
           <useManifestOnlyJar>false</useManifestOnlyJar>
           <forkMode>always</forkMode>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>gwt-maven-plugin</artifactId>
-        <version>${gwt-maven-plugin.version}</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>test</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

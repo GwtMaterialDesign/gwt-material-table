@@ -20,7 +20,6 @@ package gwt.material.design.client.data.component;
  * #L%
  */
 
-
 import gwt.material.design.client.ui.table.TableSubHeader;
 
 /**

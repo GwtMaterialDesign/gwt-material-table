@@ -20,6 +20,9 @@ package gwt.material.design.client.data;
  * #L%
  */
 
+import gwt.material.design.client.data.loader.LoadCallback;
+import gwt.material.design.client.data.loader.LoadConfig;
+import gwt.material.design.client.data.loader.LoadResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,29 +37,42 @@ public class ListDataSource<T> implements DataSource<T> {
     private Logger logger = Logger.getLogger(ListDataSource.class.getName());
 
     private List<T> data;
-    private DataView<T> dataView;
 
-    public ListDataSource(DataView<T> dataView) {
-        this.dataView = dataView;
+    public ListDataSource() {
         data = new ArrayList<>();
     }
 
-    public ListDataSource(DataView<T> dataView, List<T> data) {
-        this.dataView = dataView;
+    public ListDataSource(List<T> data) {
         this.data = data;
     }
 
-    public void load(int startIndex, int viewSize) {
-        load(dataView, startIndex, viewSize);
-    }
-
     @Override
-    public void load(DataView<T> dataView, int startIndex, int viewSize) {
+    public void load(LoadConfig<T> loadConfig, LoadCallback<T> callback) {
         try {
-            dataView.loaded(startIndex, data.subList(startIndex - 1, startIndex - 1 + viewSize));
+            final List<T> subList = data.subList(loadConfig.getOffset(),
+                    (loadConfig.getOffset() + loadConfig.getLimit()));
+            callback.onSuccess(new LoadResult<T>() {
+                @Override
+                public List<T> getData() {
+                    return subList;
+                }
+                @Override
+                public int getOffset() {
+                    return loadConfig.getOffset();
+                }
+                @Override
+                public int getTotalLength() {
+                    return data.size();
+                }
+                @Override
+                public boolean isCacheData() {
+                    return cacheData();
+                }
+            });
         } catch (IndexOutOfBoundsException ex) {
             // Silently ignore index out of bounds exceptions
             logger.log(Level.FINE, "ListDataSource threw index out of bounds.", ex);
+            callback.onFailure(ex);
         }
     }
 
@@ -68,7 +84,12 @@ public class ListDataSource<T> implements DataSource<T> {
         data.removeAll(list);
     }
 
-    public int getDataSize(){
-        return data.size();
+    public boolean cacheData() {
+        return true;
+    }
+
+    @Override
+    public boolean useRemoteSort() {
+        return false;
     }
 }

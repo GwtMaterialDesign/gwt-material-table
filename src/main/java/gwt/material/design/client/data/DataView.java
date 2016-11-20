@@ -20,7 +20,6 @@ package gwt.material.design.client.data;
  * #L%
  */
 
-
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.view.client.HasKeyProvider;
@@ -244,7 +243,7 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
     boolean isSetup();
 
     /**
-     * Set a values associated with the rows in the visible range.
+     * Set values associated with the rows in the visible range.
      *
      * @param start the start index of the data
      * @param values the values within the range

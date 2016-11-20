@@ -23,9 +23,11 @@ package gwt.material.design.client.data;
 
 import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import gwt.material.design.client.base.constants.StyleName;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.constants.HideOn;
 import gwt.material.design.client.constants.IconSize;
@@ -46,6 +48,7 @@ import gwt.material.design.client.ui.table.cell.Column;
 import gwt.material.design.client.ui.table.cell.WidgetColumn;
 
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -197,6 +200,13 @@ public class BaseRenderer<T> implements Renderer<T> {
                 data.addStyleName(TableCssName.NUMERIC);
             }
 
+            // Apply the style properties
+            Style style = data.getElement().getStyle();
+            Map<StyleName, String> styleProps = column.getStyleProperties();
+            if(styleProps != null) {
+                styleProps.forEach((s, v) -> style.setProperty(s.styleName(), v));
+            }
+
             // Hide if defined as not visible
             // This can be the case when a header is toggled off.
             if(!visible) {
@@ -224,6 +234,19 @@ public class BaseRenderer<T> implements Renderer<T> {
         }
         if(column.isNumeric()) {
             th.addStyleName(TableCssName.NUMERIC);
+        }
+
+        // Apply the style properties
+        Style style = th.getElement().getStyle();
+        Map<StyleName, String> styleProps = column.getStyleProperties();
+        if(styleProps != null) {
+            styleProps.forEach((s, v) -> style.setProperty(s.styleName(), v));
+        }
+
+        // Set the headers width
+        String width = column.getHeaderWidth();
+        if(width != null) {
+            th.setWidth(width);
         }
         th.setVisible(true);
         return th;
