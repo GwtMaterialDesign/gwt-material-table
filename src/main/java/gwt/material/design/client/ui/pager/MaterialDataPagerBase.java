@@ -54,15 +54,12 @@ public class MaterialDataPagerBase<T> extends MaterialRow {
 
     public MaterialDataPagerBase() {
         super(Document.get().createDivElement(), TableCssName.DATA_PAGER, TableCssName.ROW);
-        buildNumPagePanel();
-        buildLimitOptionsPanel();
-        buildActionPanel();
     }
 
     /**
      * Build the number page panel - where user can change the page number into a listbox
      */
-    private void buildNumPagePanel() {
+    protected void buildNumPagePanel() {
         numPagePanel.setInitialClasses(TableCssName.NUM_PAGE_PANEL);
         numPagePanel.setGrid("s12 m4 l3");
         numPagePanel.setOffset("l3");
@@ -74,7 +71,7 @@ public class MaterialDataPagerBase<T> extends MaterialRow {
     /**
      * Build the rows per page panel - where you can set the range of row count into listbox
      */
-    private void buildLimitOptionsPanel() {
+    protected void buildLimitOptionsPanel() {
         rowsPerPagePanel.setInitialClasses(TableCssName.ROWS_PER_PAGE_PANEL);
         rowsPerPagePanel.setGrid("s12 m4 l3");
         rowsPerPagePanel.add(listLimitOptions);
@@ -85,7 +82,7 @@ public class MaterialDataPagerBase<T> extends MaterialRow {
     /**
      * Build the action panel - contains a page detail including the arrow next / previous icons.
      */
-    private void buildActionPanel() {
+    protected void buildActionPanel() {
         actionPagePanel.setInitialClasses(TableCssName.ACTION_PAGE_PANEL);
         actionPagePanel.setGrid("s12 m4 l3");
         actionLabel.setText("41 - 640 of 2014");

@@ -26,7 +26,6 @@ import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.data.loader.LoadCallback;
 import gwt.material.design.client.data.loader.LoadConfig;
 import gwt.material.design.client.data.loader.LoadResult;
-import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.table.MaterialDataTable;
 
 import java.util.List;
@@ -52,9 +51,14 @@ public class MaterialDataPager<T> extends MaterialDataPagerBase<T> implements Ha
         this.dataSource = dataSource;
     }
 
+    public MaterialDataPager() {
+        super();
+    }
+
     @Override
     protected void onLoad() {
         super.onLoad();
+
         initialize();
     }
 
@@ -62,6 +66,10 @@ public class MaterialDataPager<T> extends MaterialDataPagerBase<T> implements Ha
      * Initialize the data pager for navigation
      */
     protected void initialize() {
+        buildNumPagePanel();
+        buildLimitOptionsPanel();
+        buildActionPanel();
+
         limit = limitOptions[0];
         firstPage();
         iconNext.addClickHandler(event -> next());
@@ -72,6 +80,7 @@ public class MaterialDataPager<T> extends MaterialDataPagerBase<T> implements Ha
         });
 
         // Build the limit options listbox
+        listLimitOptions.clear();
         for (int limitOption : limitOptions) {
             listLimitOptions.addItem(limitOption);
         }
@@ -234,5 +243,21 @@ public class MaterialDataPager<T> extends MaterialDataPagerBase<T> implements Ha
         if (!isPrevious()) {
             iconPrev.setEnabled(false);
         }
+    }
+
+    public MaterialDataTable<T> getTable() {
+        return table;
+    }
+
+    public void setTable(MaterialDataTable<T> table) {
+        this.table = table;
+    }
+
+    public DataSource<T> getDataSource() {
+        return dataSource;
+    }
+
+    public void setDataSource(DataSource<T> dataSource) {
+        this.dataSource = dataSource;
     }
 }
