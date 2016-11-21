@@ -23,6 +23,7 @@
     base.$el = $(el);
     base.el = el;
     base.id = id++;
+    base.name = base.name + base.id;
     base.$window = $(window);
     base.$document = $(document);
 

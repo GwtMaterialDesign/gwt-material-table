@@ -47,7 +47,7 @@ function TableSubHeaders($table, $stickies) {
   base.loaded = false;
   base.scrollBarWidth = 13;
   base.debug = {
-    enabled: true,
+    enabled: false,
     smartScroll: { table: 0, window: 0, outer: 0 },
     touchmove: { table: 0, window: 0, outer: 0 },
     resize: { table: 0, window: 0 }
@@ -56,7 +56,7 @@ function TableSubHeaders($table, $stickies) {
   var defaults = {
     marginTop: 0,
     marginLeft: 0,
-    scrollThrottle: 20,
+    scrollThrottle: 10,
     resizeThrottle: 100
   };
 
@@ -121,10 +121,6 @@ function TableSubHeaders($table, $stickies) {
       if(base.debug.enabled) base.debug.smartScroll.table++;
       base.scroll(e, scroll);
     }));
-    // $table.on("touchmove." + base.name, $.throttle(scrollThrottle, function(e, scroll) {
-    //   if(base.debug.enabled) base.debug.touchmove.table++;
-    //   base.scroll(e, scroll);
-    // }));
     $table.on("resize." + base.name, $.debounce(resizeThrottle, function() {
       if(base.debug.enabled) base.resize.table++;
       base.recalculate(true);
@@ -134,10 +130,6 @@ function TableSubHeaders($table, $stickies) {
       if(base.debug.enabled) base.debug.smartScroll.window++;
       base.alignment(e, scroll);
     }));
-    // base.$window.on("touchmove." + base.name, $.throttle(scrollThrottle, function() {
-    //   if(base.debug.enabled) base.debug.touchmove.window++;
-    //   base.alignment();
-    // }));
     base.$window.on("resize." + base.name, $.debounce(resizeThrottle, function() {
       if(base.debug.enabled) base.debug.resize.window++;
       base.recalculate(true);
