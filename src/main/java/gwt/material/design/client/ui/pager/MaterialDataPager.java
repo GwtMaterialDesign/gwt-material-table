@@ -75,9 +75,7 @@ public class MaterialDataPager<T> extends MaterialDataPagerBase<T> implements Ha
         iconNext.addClickHandler(event -> next());
         iconPrev.addClickHandler(event -> previous());
 
-        listPages.addValueChangeHandler(event -> {
-            gotoPage(event.getValue());
-        });
+        listPages.addValueChangeHandler(event -> gotoPage(event.getValue()));
 
         // Build the limit options listbox
         listLimitOptions.clear();
