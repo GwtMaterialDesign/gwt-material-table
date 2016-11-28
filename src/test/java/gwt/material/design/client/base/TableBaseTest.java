@@ -19,6 +19,7 @@
  */
 package gwt.material.design.client.base;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.junit.client.GWTTestCase;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -74,7 +75,8 @@ public class TableBaseTest extends GWTTestCase {
 
     public void setup() {
         // Test JQuery
-        MaterialDesign.injectJs(WithJQueryResources.INSTANCE.jQuery());
+        WithJQueryResources jquery = GWT.create(WithJQueryResources.class);
+        MaterialDesign.injectJs(jquery.jQuery());
         assertTrue(MaterialDesign.isjQueryLoaded());
         // Test Materialize
         MaterialDesign.injectJs(MaterialResources.INSTANCE.materializeJs());
