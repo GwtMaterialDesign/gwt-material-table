@@ -74,9 +74,9 @@ public class TableBaseTest extends GWTTestCase {
     }
 
     public void setup() {
+        WithJQueryResources jQueryResources = GWT.create(WithJQueryResources.class);
         // Test JQuery
-        WithJQueryResources jquery = GWT.create(WithJQueryResources.class);
-        MaterialDesign.injectJs(jquery.jQuery());
+        MaterialDesign.injectJs(jQueryResources.jQuery());
         assertTrue(MaterialDesign.isjQueryLoaded());
         // Test Materialize
         MaterialDesign.injectJs(MaterialResources.INSTANCE.materializeJs());
