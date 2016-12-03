@@ -27,7 +27,6 @@
     <inherits name="com.google.gwt.logging.Logging"/>
 
     <inherits name="gwt.material.design.jquery.JQuery" />
-    <inherits name='gwt.material.design.GwtMaterialDesign'/>
 
     <!-- Specify the paths for translatable code -->
     <source path='client'/>
