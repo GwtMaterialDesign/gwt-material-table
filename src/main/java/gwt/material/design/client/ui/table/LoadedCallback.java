@@ -19,6 +19,9 @@
  */
 package gwt.material.design.client.ui.table;
 
+/**
+ * Fired when the {@link AbstractDataTable} has been setup & attached.
+ */
 public interface LoadedCallback {
     void onLoaded();
 }

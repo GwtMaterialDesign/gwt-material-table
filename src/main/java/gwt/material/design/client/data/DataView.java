@@ -55,6 +55,11 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
     void setup(TableScaffolding scaffolding) throws Exception;
 
     /**
+     * Destroy the data view.
+     */
+    void destroy();
+
+    /**
      * Data views loader has loaded data for use.
      */
     void loaded(int startIndex, List<T> data);

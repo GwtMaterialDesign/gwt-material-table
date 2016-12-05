@@ -496,6 +496,16 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         }
     }
 
+    @Override
+    public void destroy() {
+        rows.clearComponents();
+        categories.clearComponents();
+
+        container.off("." + id);
+        tableBody.off("." + id);
+        $(window()).off("." + id);
+    }
+
     /**
      * Prepare all row specific functionality.
      */
@@ -545,7 +555,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
             // Fire row select event
             container.trigger(TableEvents.ROW_CONTEXTMENU, new Object[] {
-                e, getModelByRowElement(row), row
+                    e, getModelByRowElement(row), row
             });
             return false;
         });
@@ -555,7 +565,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
             // Fire row select event
             container.trigger(TableEvents.ROW_DOUBLECLICK, new Object[] {
-                e, getModelByRowElement(row), row
+                    e, getModelByRowElement(row), row
             });
             return false;
         });
@@ -565,7 +575,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
             // Fire row select event
             container.trigger(TableEvents.ROW_LONGPRESS, new Object[] {
-                e, getModelByRowElement(row), row
+                    e, getModelByRowElement(row), row
             });
             return true;
         }, e -> {
@@ -573,7 +583,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
             // Fire row select event
             container.trigger(TableEvents.ROW_SHORTPRESS, new Object[] {
-                e, getModelByRowElement(row), row
+                    e, getModelByRowElement(row), row
             });
             return true;
         }, longPressDuration);
@@ -591,16 +601,16 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
                     if (expansion[0].length() < 1) {
                         expansion[0] = $("<tr class='expansion'>" +
-                            "<td class='expansion' colspan='100%'>" +
-                            "<div>" +
-                            "<section class='overlay'>" +
-                            "<div class='progress' style='height:4px;top:-1px;'>" +
-                            "<div class='indeterminate'></div>" +
-                            "</div>" +
-                            "</section>" +
-                            "<div class='content'><br/><br/><br/></div>" +
-                            "</div>" +
-                            "</td></tr>");
+                                "<td class='expansion' colspan='100%'>" +
+                                "<div>" +
+                                "<section class='overlay'>" +
+                                "<div class='progress' style='height:4px;top:-1px;'>" +
+                                "<div class='indeterminate'></div>" +
+                                "</div>" +
+                                "</section>" +
+                                "<div class='content'><br/><br/><br/></div>" +
+                                "</div>" +
+                                "</td></tr>");
 
                         expansion[0].insertAfter(tr);
                         expansion[0] = expansion[0].find("td.expansion div");
@@ -610,21 +620,21 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                     final JQueryElement expandRow = tr.next();
 
                     expansion[0].one("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd",
-                        (e1, param1) -> {
-                            if (!recalculated[0]) {
-                                // Recalculate subheaders
-                                subheaderLib.recalculate(true);
-                                recalculated[0] = true;
+                            (e1, param1) -> {
+                                if (!recalculated[0]) {
+                                    // Recalculate subheaders
+                                    subheaderLib.recalculate(true);
+                                    recalculated[0] = true;
 
-                                // Apply overlay
-                                JQueryElement overlay = expandRow.find("section.overlay");
-                                overlay.height(expandRow.outerHeight(false));
+                                    // Apply overlay
+                                    JQueryElement overlay = expandRow.find("section.overlay");
+                                    overlay.height(expandRow.outerHeight(false));
 
-                                // Fire table expand event
-                                container.trigger(TableEvents.ROW_EXPANDED, new RowExpand(expandRow, expanding));
-                            }
-                            return true;
-                        });
+                                    // Fire table expand event
+                                    container.trigger(TableEvents.ROW_EXPANDED, new RowExpand(expandRow, expanding));
+                                }
+                                return true;
+                            });
 
                     // Fire table expand event
                     container.trigger(TableEvents.ROW_EXPAND, new RowExpand(expandRow, expanding));
@@ -646,14 +656,14 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected void setupStickyHeader() {
         if($table != null && display != null) {
             $table.stickyTableHeaders(StickyTableOptions.create(
-                $(".table-body", getContainer())));
+                    $(".table-body", getContainer())));
         }
     }
 
     protected void setupSubHeaders() {
         if($table != null && display != null) {
             subheaderLib = JsTableSubHeaders.newInstance(
-                $(".table-body", getContainer()), "tr.subheader");
+                    $(".table-body", getContainer()), "tr.subheader");
 
             final JQueryElement header = $table.find("thead");
             $(subheaderLib).on("before-recalculate", e -> {
@@ -910,7 +920,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         }
 
         Comparator<? super RowComponent<T>> comparator = sortContext != null
-            ? sortContext.getSortColumn().getSortComparator() : null;
+                ? sortContext.getSortColumn().getSortComparator() : null;
         if (isUseCategories() && !categories.isEmpty()) {
             // Split row data into categories
             Map<String, List<RowComponent<T>>> splitMap = new HashMap<>();
@@ -1047,7 +1057,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 JQueryElement input = $("input", th);
 
                 boolean marked = Js.isTrue(input.prop("checked")) ||
-                    Js.isTrue(input.prop("indeterminate"));
+                        Js.isTrue(input.prop("indeterminate"));
 
                 selectAllRows(!marked || hasUnselectedRows(true));
                 return false;
@@ -1167,7 +1177,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         if(fireEvent) {
             // Fire select all event
             container.trigger(TableEvents.SELECT_ALL, new Object[]{
-                getModelsByRowElements(rows), rows, select
+                    getModelsByRowElements(rows), rows, select
             });
         }
     }
@@ -1202,7 +1212,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             if(fireEvent) {
                 // Fire row select event
                 container.trigger(TableEvents.ROW_SELECT, new Object[] {
-                    getModelByRowElement(row), row, !selected
+                        getModelByRowElement(row), row, !selected
                 });
             }
         }
@@ -1229,7 +1239,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             if(fireEvent) {
                 // Fire row select event
                 container.trigger(TableEvents.ROW_SELECT, new Object[] {
-                    getModelByRowElement(row), row, true
+                        getModelByRowElement(row), row, true
                 });
             }
         }
@@ -1250,7 +1260,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             if(fireEvent) {
                 // Fire row select event
                 container.trigger(TableEvents.ROW_SELECT, new Object[] {
-                    getModelByRowElement(row), row, false
+                        getModelByRowElement(row), row, false
                 });
             }
         }
@@ -1259,20 +1269,20 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     @Override
     public boolean hasUnselectedRows(boolean visibleOnly) {
         return $table.find("tr:not([disabled]):not(.disabled) td#col0 input:not(:checked)"
-            + (visibleOnly ? ":visible" : "")).length() > 0;
+                + (visibleOnly ? ":visible" : "")).length() > 0;
     }
 
     @Override
     public boolean hasSelectedRows(boolean visibleOnly) {
         return $table.find("tr:not([disabled]):not(.disabled) td#col0 input:checked"
-            + (visibleOnly ? ":visible" : "")).length() > 0;
+                + (visibleOnly ? ":visible" : "")).length() > 0;
     }
 
     @Override
     public List<T> getSelectedRowModels(boolean visibleOnly) {
         final List<T> models = new ArrayList<>();
         $table.find("tr:not([disabled]):not(.disabled) td#col0 input:checked"
-            + (visibleOnly ? ":visible" : "")).each((i, e) -> {
+                + (visibleOnly ? ":visible" : "")).each((i, e) -> {
             T model = getModelByRowElement($(e).parent().parent().asElement());
             if(model != null) {
                 models.add(model);
@@ -1609,8 +1619,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             if(isUseLoadOverlay()) {
                 if (maskElement == null) {
                     maskElement = $("<div style='position:absolute;width:100%;height:100%;top:0;opacity:0.2;background-color:black;z-index:9999;'>" +
-                        "<!--i style='left:50%;top:20%;z-index:9999;position:absolute;color:white' class='fa fa-3x fa-spinner fa-spin'></i-->" +
-                        "</div>");
+                            "<!--i style='left:50%;top:20%;z-index:9999;position:absolute;color:white' class='fa fa-3x fa-spinner fa-spin'></i-->" +
+                            "</div>");
                 }
                 $table.prepend(maskElement);
             }
@@ -1814,6 +1824,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected void clearRows(boolean clearData) {
         if(clearData) {
             rows.clear();
+        } else {
+            rows.clearElements();
         }
     }
 
