@@ -118,6 +118,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     protected DataView<T> dataView;
     protected TableScaffolding scaffolding;
+    protected LoadedCallback loadedCallback;
 
     private boolean setup;
     private boolean focused;
@@ -159,9 +160,13 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
             try {
                 setup = true;
                 setup(scaffolding);
+
+                if(loadedCallback != null) {
+                    loadedCallback.onLoaded();
+                }
             } catch (Exception ex) {
                 logger.log(Level.SEVERE,
-                        "Could not setup AbstractDataTable due to previous errors.", ex);
+                    "Could not setup AbstractDataTable due to previous errors.", ex);
             }
         }
     }
@@ -317,6 +322,10 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
      */
     public TableScaffolding getScaffolding() {
         return scaffolding;
+    }
+
+    public void setLoadedCallback(LoadedCallback callback) {
+        this.loadedCallback = callback;
     }
 
     // Data View Methods

@@ -975,7 +975,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     @Override
     public int getColumnOffset() {
-        return !selectionType.equals(SelectionType.NONE) ? 1 : 0;
+        return selectionType.equals(SelectionType.NONE) ? 0 : 1;
     }
 
     /**
