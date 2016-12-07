@@ -84,6 +84,7 @@ public abstract class TableScaffolding {
      * @param container the base container for the scaffolding.
      */
     protected void apply(HasWidgets container) {
+        container.clear();
         container.add(topPanel);
         container.add(tableBody);
 
