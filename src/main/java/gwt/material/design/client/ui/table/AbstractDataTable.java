@@ -360,6 +360,21 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
+    public void clearRows(boolean clearData) {
+        dataView.clearRows(clearData);
+    }
+
+    @Override
+    public void clearRowsAndCategories(boolean clearData) {
+        dataView.clearRowsAndCategories(clearData);
+    }
+
+    @Override
+    public void clearCategories() {
+        dataView.clearCategories();
+    }
+
+    @Override
     public List<Column<T, ?>> getColumns() {
         return dataView.getColumns();
     }

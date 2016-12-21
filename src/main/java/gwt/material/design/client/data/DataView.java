@@ -107,6 +107,25 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
     String getViewId();
 
     /**
+     * Clear data rows.
+     *
+     * @param clearData should we also clear the stored data.
+     */
+    void clearRows(boolean clearData);
+
+    /**
+     * Clear all rows and categories.
+     *
+     * @param clearData should we also clear the stored data.
+     */
+    void clearRowsAndCategories(boolean clearData);
+
+    /**
+     * Clear all categories.
+     */
+    void clearCategories();
+
+    /**
      * Set the data views display view.
      */
     void setDisplay(DataView<T> display);

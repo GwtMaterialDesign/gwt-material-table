@@ -1816,12 +1816,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         $("tr.expansion", getContainer()).remove();
     }
 
-    /**
-     * Clear all rows.
-     *
-     * @param clearData should we also clear the stored data.
-     */
-    protected void clearRows(boolean clearData) {
+    @Override
+    public void clearRows(boolean clearData) {
         if(clearData) {
             rows.clear();
         } else {
@@ -1829,10 +1825,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         }
     }
 
-    /**
-     * Clear all categories.
-     */
-    protected void clearCategories() {
+    @Override
+    public void clearCategories() {
         for(CategoryComponent category : categories) {
             TableSubHeader subheader = category.getElement();
             if(subheader != null) {
@@ -1842,12 +1836,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         categories.clear();
     }
 
-    /**
-     * Clear all rows and categories.
-     *
-     * @param clearData should we also clear the stored data.
-     */
-    protected void clearRowsAndCategories(boolean clearData) {
+    @Override
+    public void clearRowsAndCategories(boolean clearData) {
         clearRows(clearData);
         clearCategories();
     }
