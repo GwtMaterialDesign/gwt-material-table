@@ -229,7 +229,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         Range visibleRange = getVisibleRange();
 
         // Check if we need to redraw categories
-        if(redrawCategories) {
+        if(isUseCategories() && redrawCategories) {
             redrawCategories = false;
 
             // When we perform a category redraw we have
