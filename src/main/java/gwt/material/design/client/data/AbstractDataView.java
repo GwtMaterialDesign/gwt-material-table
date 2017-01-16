@@ -618,26 +618,27 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
                     final boolean expanding = !expansion[0].hasClass("expanded");
                     final JQueryElement expandRow = tr.next();
+                    final T model = getModelByRowElement(tr.asElement());
 
                     expansion[0].one("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd",
-                            (e1, param1) -> {
-                                if (!recalculated[0]) {
-                                    // Recalculate subheaders
-                                    subheaderLib.recalculate(true);
-                                    recalculated[0] = true;
+                        (e1, param1) -> {
+                            if (!recalculated[0]) {
+                                // Recalculate subheaders
+                                subheaderLib.recalculate(true);
+                                recalculated[0] = true;
 
-                                    // Apply overlay
-                                    JQueryElement overlay = expandRow.find("section.overlay");
-                                    overlay.height(expandRow.outerHeight(false));
+                                // Apply overlay
+                                JQueryElement overlay = expandRow.find("section.overlay");
+                                overlay.height(expandRow.outerHeight(false));
 
-                                    // Fire table expand event
-                                    container.trigger(TableEvents.ROW_EXPANDED, new RowExpand(expandRow, expanding));
-                                }
-                                return true;
-                            });
+                                // Fire table expand event
+                                container.trigger(TableEvents.ROW_EXPANDED, new RowExpand<>(model, expandRow, expanding));
+                            }
+                            return true;
+                        });
 
                     // Fire table expand event
-                    container.trigger(TableEvents.ROW_EXPAND, new RowExpand(expandRow, expanding));
+                    container.trigger(TableEvents.ROW_EXPAND, new RowExpand<>(model, expandRow, expanding));
 
                     Scheduler.get().scheduleDeferred(() -> {
                         expansion[0].toggleClass("expanded");
