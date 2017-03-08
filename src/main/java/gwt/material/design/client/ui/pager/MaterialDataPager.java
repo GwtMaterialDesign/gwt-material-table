@@ -234,7 +234,7 @@ public class MaterialDataPager<T> extends MaterialDataPagerBase<T> implements Ha
         iconNext.setEnabled(true);
         iconPrev.setEnabled(true);
 
-        if (isLastPage() || currentPage == (totalRows / limit)) {
+        if (!isNext()) {
             iconNext.setEnabled(false);
         }
 
