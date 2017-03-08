@@ -28,15 +28,21 @@ import gwt.material.design.jquery.client.api.JQueryElement;
  *
  * @author Ben Dol
  */
-public class RowExpand {
+public class RowExpand<T> {
+    final T model;
     final JQueryElement row;
     final JQueryElement overlay;
     final boolean expand;
 
-    public RowExpand(JQueryElement row, boolean expand) {
+    public RowExpand(T model, JQueryElement row, boolean expand) {
+        this.model = model;
         this.row = row;
         this.overlay = row.find("section.overlay");
         this.expand = expand;
+    }
+
+    public T getModel() {
+        return model;
     }
 
     public JQueryElement getRow() {

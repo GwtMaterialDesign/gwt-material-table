@@ -40,6 +40,11 @@ import java.util.List;
 public interface TableEventHandlers<T> {
 
     /**
+     * Remove all registered handlers.
+     */
+    void removeAllHandlers();
+
+    /**
      * Add a handler that is triggered when select all rows is executed.
      * @param handler the handler consuming: List of models involved, List of row elements involved, selection state.
      */

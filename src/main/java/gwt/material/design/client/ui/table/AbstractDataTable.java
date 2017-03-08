@@ -20,7 +20,6 @@ package gwt.material.design.client.ui.table;
  * #L%
  */
 
-
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.cell.client.FieldUpdater;
@@ -118,6 +117,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     protected DataView<T> dataView;
     protected TableScaffolding scaffolding;
+    protected LoadedCallback loadedCallback;
 
     private boolean setup;
     private boolean focused;
@@ -159,11 +159,23 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
             try {
                 setup = true;
                 setup(scaffolding);
+
+                if(loadedCallback != null) {
+                    loadedCallback.onLoaded();
+                }
             } catch (Exception ex) {
                 logger.log(Level.SEVERE,
-                        "Could not setup AbstractDataTable due to previous errors.", ex);
+                    "Could not setup AbstractDataTable due to previous errors.", ex);
             }
         }
+    }
+
+    @Override
+    protected void onUnload() {
+        super.onUnload();
+
+        destroy();
+        setup = false;
     }
 
     @Override
@@ -173,6 +185,12 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         if(height != null) {
             setHeight(height);
         }
+    }
+
+    @Override
+    public void destroy() {
+        dataView.destroy();
+        removeAllHandlers();
     }
 
     @Override
@@ -319,6 +337,10 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         return scaffolding;
     }
 
+    public void setLoadedCallback(LoadedCallback callback) {
+        this.loadedCallback = callback;
+    }
+
     // Data View Methods
 
     @Override
@@ -334,6 +356,21 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     @Override
     public void refreshView() {
         dataView.refreshView();
+    }
+
+    @Override
+    public void clearRows(boolean clearData) {
+        dataView.clearRows(clearData);
+    }
+
+    @Override
+    public void clearRowsAndCategories(boolean clearData) {
+        dataView.clearRowsAndCategories(clearData);
+    }
+
+    @Override
+    public void clearCategories() {
+        dataView.clearCategories();
     }
 
     @Override
@@ -654,8 +691,13 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     // Event Handler Methods
 
     @Override
+    public void removeAllHandlers() {
+        $this().off("." + getViewId());
+    }
+
+    @Override
     public void addSelectAllHandler(EventFunc3<List<T>, List<JQueryElement>, Boolean> handler) {
-        $this().on(TableEvents.SELECT_ALL, handler);
+        $this().on(TableEvents.SELECT_ALL + "." + getViewId(), handler);
     }
 
     @Override
@@ -670,7 +712,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     @Override
     public void addRowSelectHandler(EventFunc3<T, Element, Boolean> handler) {
-        $this().on(TableEvents.ROW_SELECT, handler);
+        $this().on(TableEvents.ROW_SELECT + "." + getViewId(), handler);
     }
 
     @Override
@@ -685,7 +727,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     @Override
     public void addStretchHandler(EventFunc1<Boolean> handler) {
-        $this().on(TableEvents.STRETCH, handler);
+        $this().on(TableEvents.STRETCH + "." + getViewId(), handler);
     }
 
     @Override
@@ -700,7 +742,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     @Override
     public void addRowExpandHandler(EventFunc1<RowExpand> handler) {
-        $this().on(TableEvents.ROW_EXPAND, handler);
+        $this().on(TableEvents.ROW_EXPAND + "." + getViewId(), handler);
     }
 
     @Override
@@ -715,7 +757,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     @Override
     public void addRowExpandedHandler(EventFunc1<RowExpand> handler) {
-        $this().on(TableEvents.ROW_EXPANDED, handler);
+        $this().on(TableEvents.ROW_EXPANDED + "." + getViewId(), handler);
     }
 
     @Override
@@ -730,7 +772,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     @Override
     public void addRowCountChangeHandler(EventFunc2<Integer, Boolean> handler) {
-        $this().on(TableEvents.ROW_COUNT_CHANGE, handler);
+        $this().on(TableEvents.ROW_COUNT_CHANGE + "." + getViewId(), handler);
     }
 
     @Override
@@ -745,7 +787,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     @Override
     public void addRowContextMenuHandler(EventFunc3<MouseEvent, T, Element> handler) {
-        $this().on(TableEvents.ROW_CONTEXTMENU, handler);
+        $this().on(TableEvents.ROW_CONTEXTMENU + "." + getViewId(), handler);
     }
 
     @Override
@@ -760,7 +802,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     @Override
     public void addRowDoubleClickHandler(EventFunc3<MouseEvent, T, Element> handler) {
-        $this().on(TableEvents.ROW_DOUBLECLICK, handler);
+        $this().on(TableEvents.ROW_DOUBLECLICK + "." + getViewId(), handler);
     }
 
     @Override
@@ -775,7 +817,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     @Override
     public void addRowLongPressHandler(EventFunc3<MouseEvent, T, Element> handler) {
-        $this().on(TableEvents.ROW_LONGPRESS, handler);
+        $this().on(TableEvents.ROW_LONGPRESS + "." + getViewId(), handler);
     }
 
     @Override
@@ -790,7 +832,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     @Override
     public void addRowShortPressHandler(EventFunc3<MouseEvent, T, Element> handler) {
-        $this().on(TableEvents.ROW_SHORTPRESS, handler);
+        $this().on(TableEvents.ROW_SHORTPRESS + "." + getViewId(), handler);
     }
 
     @Override
@@ -805,7 +847,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     @Override
     public void addSortColumnHandler(EventFunc2<SortContext, Integer> handler) {
-        $this().on(TableEvents.SORT_COLUMN, handler);
+        $this().on(TableEvents.SORT_COLUMN + "." + getViewId(), handler);
     }
 
     @Override
@@ -820,7 +862,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     @Override
     public void addCategoryOpenedHandler(EventFunc1<String> handler) {
-        $this().on(TableEvents.CATEGORY_OPENED, handler);
+        $this().on(TableEvents.CATEGORY_OPENED + "." + getViewId(), handler);
     }
 
     @Override
@@ -835,7 +877,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     @Override
     public void addCategoryClosedHandler(EventFunc1<String> handler) {
-        $this().on(TableEvents.CATEGORY_CLOSED, handler);
+        $this().on(TableEvents.CATEGORY_CLOSED + "." + getViewId(), handler);
     }
 
     @Override

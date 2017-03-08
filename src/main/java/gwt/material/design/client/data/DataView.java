@@ -55,6 +55,11 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
     void setup(TableScaffolding scaffolding) throws Exception;
 
     /**
+     * Destroy the data view.
+     */
+    void destroy();
+
+    /**
      * Data views loader has loaded data for use.
      */
     void loaded(int startIndex, List<T> data);
@@ -100,6 +105,25 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
      * Get the data views id.
      */
     String getViewId();
+
+    /**
+     * Clear data rows.
+     *
+     * @param clearData should we also clear the stored data.
+     */
+    void clearRows(boolean clearData);
+
+    /**
+     * Clear all rows and categories.
+     *
+     * @param clearData should we also clear the stored data.
+     */
+    void clearRowsAndCategories(boolean clearData);
+
+    /**
+     * Clear all categories.
+     */
+    void clearCategories();
 
     /**
      * Set the data views display view.
