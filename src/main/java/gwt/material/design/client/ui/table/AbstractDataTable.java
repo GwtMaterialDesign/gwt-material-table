@@ -20,7 +20,6 @@ package gwt.material.design.client.ui.table;
  * #L%
  */
 
-
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.cell.client.FieldUpdater;
