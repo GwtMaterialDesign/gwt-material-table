@@ -26,6 +26,9 @@ import gwt.material.design.client.data.infinite.InfiniteDataView;
  * "Infinite" Material data table extending {@link MaterialDataTable}.
  *
  * @author Ben Dol
+ *
+ * @see <a href="http://gwtmaterialdesign.github.io/gwt-material-demo/#datatable">Material Data Table</a>
+ * @see <a href="https://material.io/guidelines/components/data-tables.html">Material Design Specification</a>
  */
 public class MaterialInfiniteDataTable<T> extends MaterialDataTable<T> {
 
