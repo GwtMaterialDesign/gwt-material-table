@@ -34,9 +34,8 @@ import com.google.gwt.view.client.Range;
 import com.google.gwt.view.client.RangeChangeEvent;
 import com.google.gwt.view.client.RangeChangeEvent.Handler;
 import com.google.gwt.view.client.RowCountChangeEvent;
-import gwt.material.design.client.base.constants.TableCssName;
-import gwt.material.design.jquery.client.api.JQueryElement;
 import gwt.material.design.client.base.MaterialWidget;
+import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.data.component.CategoryComponent.OrphanCategoryComponent;
 import gwt.material.design.client.data.component.Component;
@@ -51,22 +50,12 @@ import gwt.material.design.client.js.JsTableSubHeaders;
 import gwt.material.design.client.js.StickyTableOptions;
 import gwt.material.design.client.ui.MaterialCheckBox;
 import gwt.material.design.client.ui.MaterialProgress;
-import gwt.material.design.client.ui.table.Table;
-import gwt.material.design.client.ui.table.TableData;
-import gwt.material.design.client.ui.table.TableEvents;
-import gwt.material.design.client.ui.table.TableHeader;
-import gwt.material.design.client.ui.table.TableRow;
-import gwt.material.design.client.ui.table.TableScaffolding;
-import gwt.material.design.client.ui.table.TableSubHeader;
+import gwt.material.design.client.ui.table.*;
 import gwt.material.design.client.ui.table.cell.Column;
 import gwt.material.design.client.ui.table.events.RowExpand;
+import gwt.material.design.jquery.client.api.JQueryElement;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -500,6 +489,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     public void destroy() {
         rows.clearComponents();
         categories.clearComponents();
+        columns.clear();
 
         container.off("." + id);
         tableBody.off("." + id);
