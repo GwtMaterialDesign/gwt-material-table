@@ -489,7 +489,6 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     public void destroy() {
         rows.clearComponents();
         categories.clearComponents();
-        columns.clear();
 
         container.off("." + id);
         tableBody.off("." + id);
