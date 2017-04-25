@@ -215,7 +215,7 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> {
         super.removeColumn(colIndex);
 
         int index = colIndex + getColumnOffset();
-        $(menu).find("li input#col" + index).parent().remove();
+        $(menu).find("li").get(index).removeFromParent();
         reindexToggles();
     }
 
