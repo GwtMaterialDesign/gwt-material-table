@@ -55,10 +55,11 @@ public class TableSubHeader extends TableRow {
 
     public TableSubHeader(CategoryComponent category) {
         super(category);
-        initialize();
+        build();
     }
 
-    private void initialize() {
+    @Override
+    protected void build() {
         addStyleName(TableCssName.SUBHEADER);
 
         iconTh = new TableHeader();
