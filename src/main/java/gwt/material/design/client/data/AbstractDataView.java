@@ -20,7 +20,6 @@ package gwt.material.design.client.data;
  * #L%
  */
 
-
 import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
@@ -489,6 +488,12 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     public void destroy() {
         rows.clearComponents();
         categories.clearComponents();
+
+        columns.clear();
+        headers.clear();
+        headerRow.clear();
+
+        rendering = false;
 
         container.off("." + id);
         tableBody.off("." + id);
