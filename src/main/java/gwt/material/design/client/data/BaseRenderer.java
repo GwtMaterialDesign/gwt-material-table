@@ -270,8 +270,10 @@ public class BaseRenderer<T> implements Renderer<T> {
     public void setExpectedRowHeight(int expectedRowHeight) {
         if(expectedRowHeight < 33) {
             logger.warning("Expected row height must be 33px or higher, setting row height to 33px.");
+            this.expectedRowHeight = 33;
+        } else {
+            this.expectedRowHeight = expectedRowHeight;
         }
-        this.expectedRowHeight = expectedRowHeight;
     }
 
     @Override
