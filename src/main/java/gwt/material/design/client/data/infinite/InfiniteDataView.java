@@ -224,7 +224,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
         bufferTop.height(topHeight);
 
         int categoryMod = isUseCategories() ? categories.size() : 0;
-        int bottomHeight = ((totalRows + categoryMod) * calcRowHeight) - (topHeight - calcRowHeight);
+        int bottomHeight = ((totalRows + categoryMod - viewSize - indexOffset) * calcRowHeight) - (topHeight - calcRowHeight);
         bufferBottom.height(bottomHeight);
 
         super.render(components);
