@@ -31,7 +31,6 @@ import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.HideOn;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.constants.TextAlign;
-import gwt.material.design.client.data.DataSource;
 import gwt.material.design.client.data.ListDataSource;
 import gwt.material.design.client.data.SelectionType;
 import gwt.material.design.client.data.component.RowComponent;
@@ -43,16 +42,13 @@ import gwt.material.design.client.resources.MaterialResources;
 import gwt.material.design.client.resources.MaterialTableBundle;
 import gwt.material.design.client.resources.WithJQueryResources;
 import gwt.material.design.client.ui.*;
-import gwt.material.design.client.ui.pager.MaterialDataPager.*;
 import gwt.material.design.client.ui.pager.MaterialDataPager;
 import gwt.material.design.client.ui.table.MaterialDataTable;
 import gwt.material.design.client.ui.table.TableEvents;
-import gwt.material.design.client.ui.table.TableRow;
 import gwt.material.design.client.ui.table.TableScaffolding;
 import gwt.material.design.client.ui.table.cell.Column;
 import gwt.material.design.client.ui.table.cell.TextColumn;
 import gwt.material.design.client.ui.table.cell.WidgetColumn;
-import junit.framework.TestCase;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -439,18 +435,52 @@ public class TableBaseTest extends GWTTestCase {
         RootPanel.get().add(table);
 
         ListDataSource<Person> dataSource = new ListDataSource<>();
+        List<Person> people = new ArrayList<>();
+        int rowIndex = 1;
+        for(int k = 1; k <= 5; k++){
+            // Generate 100 rows
+            for(int i = 1; i <= 3; i++, rowIndex++){
+                people.add(new Person(i, "http://joashpereira.com/templates/material_one_pager/img/avatar1.png", "Field " + rowIndex, "Field " + i,"Category " + k));
+            }
+        }
+        dataSource.add(0, people);
+        table.setDataSource(dataSource);
+
         MaterialDataPager<Person> pager = new MaterialDataPager<>(table, dataSource);
+        pager.setLimitOptions(5, 10, 15);
+
         RootPanel.get().add(pager);
+
+        // Expected by default : 5
+        assertEquals(pager.getLimit(), pager.getLimitOptions()[0]);
+        assertEquals(pager.getLimit(), 5);
+        // Expected false (Excess) because 15 (totalRows) % 5 (limit) > 0 which returns false
+        assertFalse(pager.isExcess());
+
+        // Pager row limit per page is 10 and the total data is 15 so we assume that we have an excess of 5 rows.
+        // Current Page : Expected 1
         assertEquals(pager.getCurrentPage(), 1);
+        // Total Rows : Expected 15
+        assertEquals(pager.getTotalRows(), 15);
+        // Set the limit to 10 to assume it will be excess
+        pager.setLimit(10);
+        // Limit : Expected 10
+        assertEquals(pager.getLimit(), 10);
+        // Excess : Expected true
+        assertTrue(pager.isExcess());
+
+        // Check Navigation
+        assertEquals(pager.getCurrentPage(), 1);
+        // The isPrevious() will be false because the current is currently the first page.
+        assertFalse(pager.isPrevious());
         pager.next();
-        pager.next();
-        assertEquals(pager.getCurrentPage(), 3);
-        pager.previous();
-        assertEquals(pager.getCurrentPage(), 2);
-        pager.gotoPage(5);
-        assertEquals(pager.getCurrentPage(), 5);
+        // Going to page 2 which is the last page and has 5 rows.
+        // Check the isNext() which will be expected to be false
         assertFalse(pager.isNext());
-        assertTrue(pager.isPrevious());
+        assertTrue(pager.isLastPage());
+        assertEquals(pager.getCurrentPage(), 2);
+        pager.previous();
+        assertEquals(pager.getCurrentPage(), 1);
     }
 
     protected List<Person> getAllPerson() {
