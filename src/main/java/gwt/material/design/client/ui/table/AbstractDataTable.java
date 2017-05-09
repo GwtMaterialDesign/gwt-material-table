@@ -123,6 +123,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     private boolean focused;
     private boolean refreshing;
     private boolean cellIsEditing;
+    private boolean destroyOnUnload;
     private String height;
 
     public AbstractDataTable() {
@@ -174,8 +175,10 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     protected void onUnload() {
         super.onUnload();
 
-        destroy();
-        setup = false;
+        if(destroyOnUnload) {
+            destroy();
+            setup = false;
+        }
     }
 
     @Override
@@ -339,6 +342,14 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     public void setLoadedCallback(LoadedCallback callback) {
         this.loadedCallback = callback;
+    }
+
+    public boolean isDestroyOnUnload() {
+        return destroyOnUnload;
+    }
+
+    public void setDestroyOnUnload(boolean destroyOnUnload) {
+        this.destroyOnUnload = destroyOnUnload;
     }
 
     // Data View Methods

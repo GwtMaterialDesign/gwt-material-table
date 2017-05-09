@@ -45,6 +45,9 @@ import static gwt.material.design.jquery.client.api.JQuery.$;
  * table icon, table title, stretch functionality, column toggling, etc.
  *
  * @author Ben Dol
+ *
+ * @see <a href="http://gwtmaterialdesign.github.io/gwt-material-demo/#datatable">Material Data Table</a>
+ * @see <a href="https://material.io/guidelines/components/data-tables.html">Material Design Specification</a>
  */
 public class MaterialDataTable<T> extends AbstractDataTable<T> {
 
@@ -212,7 +215,7 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> {
         super.removeColumn(colIndex);
 
         int index = colIndex + getColumnOffset();
-        $(menu).find("li input#col" + index).parent().remove();
+        $(menu).find("li").get(index).removeFromParent();
         reindexToggles();
     }
 

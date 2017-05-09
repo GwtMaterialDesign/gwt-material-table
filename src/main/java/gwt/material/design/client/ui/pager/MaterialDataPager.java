@@ -156,14 +156,14 @@ public class MaterialDataPager<T> extends MaterialDataPagerBase<T> implements Ha
     /**
      * Check whether there are excess rows to be rendered with given limit
      */
-    protected boolean isExcess() {
+    public boolean isExcess() {
         return totalRows % limit > 0;
     }
 
     /**
      * Check whether the pager is on the last currentPage.
      */
-    protected boolean isLastPage() {
+    public boolean isLastPage() {
         return currentPage == (totalRows / limit) + 1;
     }
 
@@ -234,7 +234,7 @@ public class MaterialDataPager<T> extends MaterialDataPagerBase<T> implements Ha
         iconNext.setEnabled(true);
         iconPrev.setEnabled(true);
 
-        if (isLastPage() || currentPage == (totalRows / limit)) {
+        if (!isNext()) {
             iconNext.setEnabled(false);
         }
 
@@ -257,5 +257,21 @@ public class MaterialDataPager<T> extends MaterialDataPagerBase<T> implements Ha
 
     public void setDataSource(DataSource<T> dataSource) {
         this.dataSource = dataSource;
+    }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    public int getLimit() {
+        return limit;
+    }
+
+    public int getTotalRows() {
+        return totalRows;
+    }
+
+    public int[] getLimitOptions() {
+        return limitOptions;
     }
 }

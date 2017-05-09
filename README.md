@@ -1,4 +1,5 @@
 <img src="http://i.imgur.com/SYbHcYN.png" />
+
 # GWT Material Table [![Build Status](https://travis-ci.org/GwtMaterialDesign/gwt-material-table.svg?branch=master)](https://travis-ci.org/GwtMaterialDesign/gwt-material-table)
 
 A complex table component designed for the material design specifications!
@@ -10,12 +11,12 @@ A complex table component designed for the material design specifications!
 Support documentation can be found [here](https://github.com/GwtMaterialDesign/gwt-material-table/wiki)
 
 ## Maven
-Current Version 1.0-rc4
+Current Version 2.0-rc5
 ```xml
 <dependency>
     <groupId>com.github.gwtmaterialdesign</groupId>
     <artifactId>gwt-material-table</artifactId>
-    <version>1.0-rc4</version>
+    <version>2.0-rc5</version>
 </dependency>
 ```
 
