@@ -58,8 +58,6 @@ public class MaterialDataPager<T> extends MaterialDataPagerBase<T> implements Ha
     @Override
     protected void onLoad() {
         super.onLoad();
-
-        initialize();
     }
 
     /**
