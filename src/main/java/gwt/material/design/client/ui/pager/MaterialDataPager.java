@@ -55,16 +55,10 @@ public class MaterialDataPager<T> extends MaterialDataPagerBase<T> implements Ha
         super();
     }
 
-    @Override
-    protected void onLoad() {
-        super.onLoad();
-
-        initialize();
-    }
-
     /**
      * Initialize the data pager for navigation
      */
+    @Override
     protected void initialize() {
         buildNumPagePanel();
         buildLimitOptionsPanel();
