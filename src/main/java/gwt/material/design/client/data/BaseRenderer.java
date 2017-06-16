@@ -152,7 +152,7 @@ public class BaseRenderer<T> implements Renderer<T> {
     public TableData drawSelectionCell() {
         TableData checkBox = new TableData();
         checkBox.setId("col0");
-        checkBox.setStyleName(TableCssName.SELECTION);
+        checkBox.addStyleName(TableCssName.SELECTION);
         new MaterialCheckBox(checkBox.getElement());
         return checkBox;
     }

@@ -36,9 +36,6 @@ package gwt.material.design.client.jquery;
  */
 
 import com.google.gwt.dom.client.Element;
-import gwt.material.design.jquery.client.api.Event;
-import gwt.material.design.jquery.client.api.Functions.MouseEventFunc;
-import gwt.material.design.jquery.client.api.Functions.FuncRet2;
 import gwt.material.design.jquery.client.api.JQueryElement;
 import jsinterop.annotations.JsMethod;
 import jsinterop.annotations.JsPackage;
@@ -49,44 +46,15 @@ import jsinterop.annotations.JsType;
  *
  * @author Ben Dol
  */
-@JsType(name = "jQuery", isNative = true)
-public class JQueryExtension extends JQueryElement {
+@JsType(isNative = true)
+public class JQueryExtension {
 
-    @JsMethod(name = "$", namespace = JsPackage.GLOBAL)
-    public static native JQueryExtension $(JQueryElement element);
+    @JsMethod(namespace = JsPackage.GLOBAL)
+    public static native JQueryExtElement $(JQueryElement element);
 
-    @JsMethod(name = "$", namespace = JsPackage.GLOBAL)
-    public static native JQueryExtension $(Element element);
+    @JsMethod(namespace = JsPackage.GLOBAL)
+    public static native JQueryExtElement $(Element element);
 
-    public native JQueryExtension insertAt(int index, Element element);
-
-    public native JQueryExtension longpress(MouseEventFunc longCallback, MouseEventFunc shortCallback, int duration);
-
-    public native boolean hasVerticalScrollBar();
-
-    public native boolean hasHorizontalScrollBar();
-
-    public native boolean hasScrollBar();
-
-    public native int scrollBarWidth();
-
-    public native boolean isScrollStart();
-
-    public native boolean isScrollEnd();
-
-    public native boolean scrollHandler(Object dir, String name, FuncRet2<Event, String> handler);
-
-    public native boolean smartScroll(String name, FuncRet2<Event, String> handler);
-
-    public native boolean scrollY(String name, FuncRet2<Event, String> handler);
-
-    public native boolean scrollX(String name, FuncRet2<Event, String> handler);
-
-    public native boolean onScrollUp(String name, FuncRet2<Event, String> handler);
-
-    public native boolean onScrollDown(String name, FuncRet2<Event, String> handler);
-
-    public native boolean onScrollLeft(String name, FuncRet2<Event, String> handler);
-
-    public native boolean onScrollRight(String name, FuncRet2<Event, String> handler);
+    @JsMethod(namespace = "$")
+    public static native int scrollBarWidth();
 }

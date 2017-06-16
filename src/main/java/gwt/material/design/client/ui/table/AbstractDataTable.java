@@ -78,7 +78,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     private static final Logger logger = Logger.getLogger(AbstractDataTable.class.getName());
 
-    public static class DefaultTableScaffolding extends TableScaffolding {
+    public static class DefaultTableScaffolding extends AbstractTableScaffolding {
         @Override
         public MaterialWidget createTableBody() {
             MaterialWidget tableBody = new MaterialWidget(DOM.createDiv());
@@ -112,6 +112,11 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
             Table table = new Table();
             table.addStyleName(TableCssName.TABLE);
             return table;
+        }
+
+        @Override
+        protected XScrollPanel createXScrollPanel() {
+            return new XScrollPanel();
         }
     }
 

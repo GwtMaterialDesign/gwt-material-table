@@ -26,6 +26,8 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ProvidesKey;
@@ -43,6 +45,7 @@ import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.client.data.factory.CategoryComponentFactory;
 import gwt.material.design.client.data.factory.RowComponentFactory;
 import gwt.material.design.client.jquery.JQueryExtension;
+import gwt.material.design.client.jquery.JQueryMutate;
 import gwt.material.design.client.js.Js;
 import gwt.material.design.client.js.JsTableElement;
 import gwt.material.design.client.js.JsTableSubHeaders;
@@ -54,7 +57,12 @@ import gwt.material.design.client.ui.table.cell.Column;
 import gwt.material.design.client.ui.table.events.RowExpand;
 import gwt.material.design.jquery.client.api.JQueryElement;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -84,6 +92,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected ProvidesKey<T> keyProvider;
     //protected List<ComponentFactory<?, T>> componentFactories;
     protected JsTableSubHeaders subheaderLib;
+    protected XScrollPanel xScrollPanel;
 
     // DOM
     protected Table table;
@@ -95,6 +104,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected JsTableElement $table;
     protected JQueryElement maskElement;
     protected JQueryElement tableBody;
+    protected JQueryElement innerScroll;
     protected JQueryElement topPanel;
 
     // Configurations
@@ -417,7 +427,9 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             container = $(getContainer());
             table = scaffolding.getTable();
             tableBody = $(scaffolding.getTableBody());
+            innerScroll = $(scaffolding.getTableBody()).children("*").first();
             topPanel = $(scaffolding.getTopPanel());
+            xScrollPanel = scaffolding.getXScrollPanel();
             tbody = table.getBody();
             thead = table.getHead();
             $table = table.getJsElement();
@@ -474,6 +486,32 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             $(window()).on("resize." + id, e -> {
                 refreshView();
                 return true;
+            });
+
+            // XScroll Setup
+            $table.on("resize." + id, e -> {
+                xScrollPanel.setWidth(innerScroll.asElement().getScrollWidth() + "px");
+                return true;
+            });
+
+            // Setup inner scroll x scroll binding
+            JQueryElement $xScrollPanel = $(xScrollPanel);
+            $xScrollPanel.on("scroll." + id, e -> {
+                innerScroll.prop("scrollLeft", $xScrollPanel.scrollLeft());
+                return true;
+            });
+
+            innerScroll.on("scroll." + id, e -> {
+                $xScrollPanel.prop("scrollLeft", innerScroll.scrollLeft());
+                return true;
+            });
+
+            JQueryMutate.$(innerScroll).mutate("scrollWidth", (el, info) -> {
+                xScrollPanel.setWidth(el.getScrollWidth() + "px");
+            });
+
+            Scheduler.get().scheduleDeferred(() -> {
+                innerScroll.css("margin-left", "60px");
             });
 
             setup = true;
@@ -549,7 +587,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
             // Fire row select event
             container.trigger(TableEvents.ROW_CONTEXTMENU, new Object[] {
-                    e, getModelByRowElement(row), row
+                e, getModelByRowElement(row), row
             });
             return false;
         });
@@ -559,7 +597,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
             // Fire row select event
             container.trigger(TableEvents.ROW_DOUBLECLICK, new Object[] {
-                    e, getModelByRowElement(row), row
+                e, getModelByRowElement(row), row
             });
             return false;
         });
@@ -569,7 +607,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
             // Fire row select event
             container.trigger(TableEvents.ROW_LONGPRESS, new Object[] {
-                    e, getModelByRowElement(row), row
+                e, getModelByRowElement(row), row
             });
             return true;
         }, e -> {
@@ -577,7 +615,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
             // Fire row select event
             container.trigger(TableEvents.ROW_SHORTPRESS, new Object[] {
-                    e, getModelByRowElement(row), row
+                e, getModelByRowElement(row), row
             });
             return true;
         }, longPressDuration);
@@ -651,14 +689,14 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected void setupStickyHeader() {
         if($table != null && display != null) {
             $table.stickyTableHeaders(StickyTableOptions.create(
-                    $(".table-body", getContainer())));
+                $(".table-body", getContainer())));
         }
     }
 
     protected void setupSubHeaders() {
         if($table != null && display != null) {
             subheaderLib = JsTableSubHeaders.newInstance(
-                    $(".table-body", getContainer()), "tr.subheader");
+                $(".table-body", getContainer()), "tr.subheader");
 
             final JQueryElement header = $table.find("thead");
             $(subheaderLib).on("before-recalculate", e -> {
@@ -928,11 +966,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 if(row != null) {
                     String category = row.getDataCategory();
                     if(category != null) {
-                        List<RowComponent<T>> data = splitMap.get(category);
-                        if (data == null) {
-                            data = new ArrayList<>();
-                            splitMap.put(category, data);
-                        }
+                        List<RowComponent<T>> data = splitMap.computeIfAbsent(category, k -> new ArrayList<>());
                         data.add(row);
                     } else {
                         orphanRows.add(row);
@@ -948,13 +982,13 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             for (Map.Entry<String, List<RowComponent<T>>> entry : splitMap.entrySet()) {
                 List<RowComponent<T>> list = entry.getValue();
                 if (comparator != null) {
-                    Collections.sort(list, new DataSort<>(comparator, sortContext.getSortDir()));
+                    list.sort(new DataSort<>(comparator, sortContext.getSortDir()));
                 }
                 rows.addAll(list);
             }
         } else {
             if (comparator != null) {
-                Collections.sort(rows, new DataSort<>(comparator, sortContext.getSortDir()));
+                rows.sort(new DataSort<>(comparator, sortContext.getSortDir()));
             } else {
                 return false;
             }
@@ -1043,7 +1077,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         // Setup select all checkbox
         TableHeader th = new TableHeader();
         th.setId("col0");
-        th.setStyleName(TableCssName.SELECTION);
+        th.addStyleName("frozen-col");
+        th.addStyleName(TableCssName.SELECTION);
         if(selectionType.equals(SelectionType.MULTIPLE)) {
             new MaterialCheckBox(th.getElement());
 
@@ -1055,7 +1090,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 JQueryElement input = $("input", th);
 
                 boolean marked = Js.isTrue(input.prop("checked")) ||
-                        Js.isTrue(input.prop("indeterminate"));
+                    Js.isTrue(input.prop("indeterminate"));
 
                 selectAllRows(!marked || hasUnselectedRows(true));
                 return false;
@@ -1131,8 +1166,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             // Destroy existing sticky header function
             $table.stickyTableHeaders("destroy");
 
-            // Initialize sticky header
-            setupStickyHeader();
+            if(useStickyHeader) {
+                // Initialize sticky header
+                setupStickyHeader();
+            }
         }
     }
 
@@ -1554,12 +1591,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             }
 
             if(category != null) {
-                List<RowComponent<T>> rowList = dataMap.get(category);
-                if(rowList == null) {
-                    rowList = new ArrayList<>();
-                    dataMap.put(category, rowList);
-                }
-                rowList.add(row);
+                dataMap.computeIfAbsent(category, k -> new ArrayList<>()).add(row);
             }
         }
         return dataMap;
@@ -1617,8 +1649,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             if(isUseLoadOverlay()) {
                 if (maskElement == null) {
                     maskElement = $("<div style='position:absolute;width:100%;height:100%;top:0;opacity:0.2;background-color:black;z-index:9999;'>" +
-                            "<!--i style='left:50%;top:20%;z-index:9999;position:absolute;color:white' class='fa fa-3x fa-spinner fa-spin'></i-->" +
-                            "</div>");
+                        "<!--i style='left:50%;top:20%;z-index:9999;position:absolute;color:white' class='fa fa-3x fa-spinner fa-spin'></i-->" +
+                        "</div>");
                 }
                 $table.prepend(maskElement);
             }
