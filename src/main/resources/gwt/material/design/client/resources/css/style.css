@@ -81,7 +81,7 @@ tbody [type="checkbox"].filled-in+label {
 }
 
 .inner-scroll {
-    overflow-x:auto;
+    overflow-x:hidden;
     overflow-y:visible;
     /*margin-left:5em;*/
 }
