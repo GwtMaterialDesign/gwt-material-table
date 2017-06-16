@@ -49,8 +49,11 @@ public class ListDataSource<T> implements DataSource<T> {
     @Override
     public void load(LoadConfig<T> loadConfig, LoadCallback<T> callback) {
         try {
-            final List<T> subList = data.subList(loadConfig.getOffset(),
-                    (loadConfig.getOffset() + loadConfig.getLimit()));
+            int size = loadConfig.getOffset() + loadConfig.getLimit();
+            if(size > data.size()){
+                size = data.size();
+            }
+            final List<T> subList = size == 0 ? new ArrayList<>() : data.subList(loadConfig.getOffset(), size);
             callback.onSuccess(new LoadResult<T>() {
                 @Override
                 public List<T> getData() {
