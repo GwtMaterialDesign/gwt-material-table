@@ -26,8 +26,6 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ProvidesKey;
@@ -92,7 +90,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected ProvidesKey<T> keyProvider;
     //protected List<ComponentFactory<?, T>> componentFactories;
     protected JsTableSubHeaders subheaderLib;
-    protected XScrollPanel xScrollPanel;
+    protected Panel xScrollPanel;
 
     // DOM
     protected Table table;

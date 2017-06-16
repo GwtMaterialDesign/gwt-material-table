@@ -37,7 +37,6 @@ public interface TableScaffolding {
     Panel getTopPanel();
     Panel getInfoPanel();
     Panel getToolPanel();
+    Panel getXScrollPanel();
     Table getTable();
-
-    XScrollPanel getXScrollPanel();
 }

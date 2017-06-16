@@ -84,7 +84,7 @@
           if (typeof shortCallback === "function") {
             shortCallback.call($(this), e);
           } else if (typeof shortCallback === "undefined") {
-            ;
+            // nothing for now
           } else {
             $.error('Optional callback for short press should be a function.');
           }
@@ -140,7 +140,7 @@
     var w1 = inner.offsetWidth;
     outer.style.overflow = "scroll";
     var w2 = inner.offsetWidth;
-    if (w1 == w2) w2 = outer.clientWidth;
+    if (w1 === w2) w2 = outer.clientWidth;
   
     document.body.removeChild(outer);
   
@@ -175,13 +175,13 @@
           index = 0;
       if(lastScroll.y > scrollTop) {
         scroll.dirs[index++] = "up";
-      } else if(lastScroll.y != scrollTop) {
+      } else if(lastScroll.y !== scrollTop) {
         scroll.dirs[index++] = "down";
       }
 
       if(lastScroll.x > scrollLeft) {
         scroll.dirs[index++] = "left";
-      } else if(lastScroll.x != scrollLeft) {
+      } else if(lastScroll.x !== scrollLeft) {
         scroll.dirs[index++] = "right";
       }
 
@@ -193,7 +193,7 @@
               break; // Found at least one match
             }
           }
-        } else if(dir == "any" || $.inArray(dir, scroll.dirs) > -1) {
+        } else if(dir === "any" || $.inArray(dir, scroll.dirs) > -1) {
           handler(e, scroll);
         }
       } else {

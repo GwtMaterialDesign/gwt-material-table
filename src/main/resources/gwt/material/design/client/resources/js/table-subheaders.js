@@ -184,7 +184,7 @@ function TableSubHeaders($table, $stickies) {
     // Get all until next subheader
 
     var $icon = $subheader.find("i");
-    if($icon != null) {
+    if($icon !== null) {
       var closeIcon = $subheader.attr("data-close-icon");
       if(closeIcon === undefined) {
         closeIcon = "remove";
@@ -215,7 +215,7 @@ function TableSubHeaders($table, $stickies) {
     $base.trigger("closing", [$subheader]);
 
     var $icon = $subheader.find("i");
-    if($icon != null) {
+    if($icon !== null) {
       var openIcon = $subheader.attr("data-open-icon");
       if(openIcon === undefined) {
         openIcon = "add";
@@ -470,15 +470,15 @@ function TableSubHeaders($table, $stickies) {
   };
 
   base.setCellWidths = function (widths, $sticky) {
-    $sticky.find("th,td").each(function (index) {
+    /*$sticky.find("th,td").each(function (index) {
       var $this = $(this),
           width = widths[index];
 
-      /*$this.css({
+      $this.css({
         "min-width": width,
         "max-width": width
-      });*/
-    });
+      });
+    });*/
   };
 
   base.getCellWidths = function ($headers) {
