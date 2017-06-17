@@ -833,8 +833,11 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             checkColumnBounds(beforeIndex);
         }
 
-        // Set the columns name
-        column.setName(header);
+        String name = column.getName();
+        if(name == null || name.isEmpty()) {
+            // Set the columns name
+            column.setName(header);
+        }
 
         int index = beforeIndex + getColumnOffset();
 

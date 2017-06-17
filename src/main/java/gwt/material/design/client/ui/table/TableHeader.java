@@ -84,7 +84,6 @@ public class TableHeader extends TableData {
             if(iconSize == null) {
                 this.sortIcon.setIconSize(IconSize.SMALL);
             }
-            String iconPx = sortIcon.getIconSize().getPixelSize() + "px";
             this.sortIcon.getElement().getStyle().setFloat(Float.LEFT);
             headerWrap.insert(this.sortIcon, 0);
         }
