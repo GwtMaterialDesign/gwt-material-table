@@ -22,17 +22,37 @@ package gwt.material.design.client.data.loader;
 import java.util.List;
 import gwt.material.design.client.data.DataView;
 
-public abstract class LoadResult<T> {
+public class LoadResult<T> {
+
+    private final List<T> data;
+    private final int offset;
+    private final int totalLength;
+    private final boolean cacheData;
+
+    public LoadResult(List<T> data, int offset, int totalLength) {
+        this(data, offset, totalLength, true);
+    }
+
+    public LoadResult(List<T> data, int offset, int totalLength, boolean cacheData) {
+        this.data = data;
+        this.offset = offset;
+        this.totalLength = totalLength;
+        this.cacheData = cacheData;
+    }
 
     /**
      * Return result data.
      */
-    public abstract List<T> getData();
+    public List<T> getData() {
+        return data;
+    }
 
     /**
      * Return actual offset of the result. In most cases equals requested offset.
      */
-    public abstract int getOffset();
+    public int getOffset() {
+        return offset;
+    }
 
     /**
      * Return total length of the data.
@@ -42,7 +62,9 @@ public abstract class LoadResult<T> {
      *  <li>For paging requests should equals total number of records</li>
      * </ul>
      */
-    public abstract int getTotalLength();
+    public int getTotalLength() {
+        return totalLength;
+    }
 
     /**
      * Should we cache the data, retrieved, it is worth noting that not all
@@ -50,6 +72,6 @@ public abstract class LoadResult<T> {
      * @return true by default.
      */
     public boolean isCacheData() {
-        return true;
+        return cacheData;
     }
 }

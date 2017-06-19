@@ -24,19 +24,18 @@ package gwt.material.design.client.data.infinite;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.view.client.ProvidesKey;
-import com.google.gwt.view.client.Range;
 import gwt.material.design.client.data.loader.LoadCallback;
 import gwt.material.design.client.data.loader.LoadConfig;
 import gwt.material.design.client.data.loader.LoadResult;
+import gwt.material.design.client.ui.table.YScrollPanel;
 import gwt.material.design.jquery.client.api.Event;
 import gwt.material.design.jquery.client.api.Functions.EventFunc3;
-import gwt.material.design.jquery.client.api.JQueryElement;
 import gwt.material.design.client.base.InterruptibleTask;
-import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.data.AbstractDataView;
 import gwt.material.design.client.data.DataSource;
-import gwt.material.design.client.data.SortContext;
 import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.data.component.Component;
 import gwt.material.design.client.data.component.Components;
@@ -44,12 +43,14 @@ import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.client.jquery.JQueryExtension;
 import gwt.material.design.client.ui.table.TableEvents;
 import gwt.material.design.client.ui.table.TableScaffolding;
+import gwt.material.design.jquery.client.api.Offset;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
 import static gwt.material.design.jquery.client.api.JQuery.$;
+import static gwt.material.design.jquery.client.api.JQuery.window;
 
 /**
  * The InfiniteDataView is designed for lazy loading data, while using minimal DOM row elements.<br/>
@@ -77,18 +78,12 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
     private int viewSize = DYNAMIC_VIEW;
     private boolean dynamicView = true;
 
-    // Buffers for artificial spacing when
-    // cycling the rows within the view.
-    private JQueryElement bufferTop;
-    private JQueryElement bufferBottom;
-
     // The current index of the view.
     protected int viewIndex;
     protected int indexOffset = 10;
 
     // Lading new data flag
     private boolean loading;
-    private boolean forceScroll;
 
     // Data loading task
     private InterruptibleTask loaderTask;
@@ -106,6 +101,8 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
 
     // Cached models
     private InfiniteDataCache<T> dataCache = new InfiniteDataCache<>();
+
+    private YScrollPanel yScrollPanel;
 
     public InfiniteDataView(int totalRows, DataSource<T> dataSource) {
         this(totalRows, DYNAMIC_VIEW, dataSource);
@@ -151,25 +148,28 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
     public void setup(TableScaffolding scaffolding) throws Exception {
         super.setup(scaffolding);
 
+        container.addClass("infinite");
+
+        Panel body = scaffolding.getTableBody();
+        if(yScrollPanel == null) {
+            int top = body.getAbsoluteTop();
+            Offset offset  = $(tableBody).offset();
+            double right = $(window()).width() - (offset.left + tableBody.outerWidth(true));
+
+            yScrollPanel = new YScrollPanel(getHeight(), top, right);
+            getContainer().add(yScrollPanel);
+        }
+
         dynamicView = viewSize == DYNAMIC_VIEW;
         if(dynamicView) {
             setVisibleRange(0, getVisibleRowCapacity());
             setViewSize(range.getLength());
         }
 
-        JQueryElement topWrapper = $("<div>");
-        bufferTop = $("<div class='bufferTop'>");
-        topWrapper.append(bufferTop);
-        tbody.insert(new MaterialWidget(topWrapper.asElement()), 0);
-
-        bufferBottom = $("<div class='bufferBottom'>");
-        tableBody.append(bufferBottom);
-
         container.off(TableEvents.CATEGORY_OPENED);
         container.on(TableEvents.CATEGORY_OPENED, (e, category) -> {
             dataCache.clear();
             updateRows(viewIndex, true);
-            forceScroll = true;
             return true;
         });
 
@@ -177,7 +177,6 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
         container.on(TableEvents.CATEGORY_CLOSED, (e, category) -> {
             dataCache.clear();
             updateRows(viewIndex, true);
-            forceScroll = true;
             return true;
         });
 
@@ -214,77 +213,19 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
         });
 
         // Setup the scroll event handlers
-        JQueryExtension.$(tableBody).scrollY(id, (e, scroll) ->  onScrollY());
+        JQueryExtension.$(tableBody).scrollY(id, (e, scroll) ->  onVerticalScroll());
     }
 
     @Override
     public void render(Components<Component<?>> components) {
-        int calcRowHeight = getCalculatedRowHeight();
-        int topHeight = loaderIndex * calcRowHeight;
-        bufferTop.height(topHeight);
-
-        int categoryMod = isUseCategories() ? categories.size() : 0;
-        int bottomHeight = ((totalRows + categoryMod) * calcRowHeight) - (topHeight - calcRowHeight);
-        bufferBottom.height(bottomHeight);
 
         super.render(components);
     }
 
     @Override
     public void renderRows(Components<RowComponent<T>> rows) {
-        int prevCategories = categories.size();
+
         super.renderRows(rows);
-
-        if(isUseCategories()) {
-            // Update the view size to accommodate the new categories
-            int newCatCount = categories.size() - prevCategories;
-            if(newCatCount != 0) {
-                setVisibleRange(viewIndex, viewSize - newCatCount);
-                setViewSize(range.getLength());
-            }
-
-            // show all the categories
-            List<CategoryComponent> lastHidden = new ArrayList<>();
-            for (CategoryComponent category : categories) {
-                if (category.isRendered()) {
-                    category.getElement().setVisible(true);
-                }
-
-                boolean hidden = false;
-                if (isCategoryEmpty(category)) {
-                    Range range = getVisibleRange();
-                    int reach = range.getStart() + range.getLength();
-
-                    if (reach < getTotalRows()) {
-                        if (category.isRendered()) {
-                            category.getElement().setVisible(false);
-                        }
-                        lastHidden.add(category);
-                        hidden = true;
-                    }
-                }
-
-                if (!hidden) {
-                    // Reshow the previously hidden categories
-                    // This is because we have found a valid category
-                    // after these were hidden, implying valid data.
-                    for (CategoryComponent hiddenCategory : lastHidden) {
-                        if (hiddenCategory.isRendered()) {
-                            hiddenCategory.getElement().setVisible(true);
-                        }
-                    }
-                }
-            }
-
-            // hide passed empty categories
-            for (CategoryComponent category : getPassedCategories()) {
-                if (category.isRendered()) {
-                    category.getElement().setVisible(false);
-                }
-            }
-
-            subheaderLib.recalculate(true);
-        }
     }
 
     protected void setViewSize(int viewSize) {
@@ -294,11 +235,9 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
     @Override
     public void refreshView() {
         super.refreshView();
-        int rangeStart = range.getStart();
-        setVisibleRange(rangeStart, dynamicView ? getVisibleRowCapacity() : viewSize);
+        setVisibleRange(range.getStart(), dynamicView ? getVisibleRowCapacity() : viewSize);
         setViewSize(range.getLength());
         updateRows(viewIndex, true);
-        forceScroll = true;
     }
 
     @Override
@@ -332,10 +271,10 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
 
     public double getVisibleHeight() {
         // We only want to account for row space.
-        return tableBody.height() - topPanel.height() - headerRow.$this().height();
+        return tableBody.height() - headerRow.$this().height();
     }
 
-    protected Object onScrollY() {
+    protected Object onVerticalScroll() {
         if(!rendering) {
             int index = (int) Math.ceil(tableBody.scrollTop() / getCalculatedRowHeight());
             if(index == 0 || index != viewIndex) {
@@ -351,10 +290,10 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
         requestData(viewIndex, !reload);
     }
 
-    protected boolean requestData(int index, boolean checkCache) {
+    protected void requestData(int index, boolean checkCache) {
         if(loading) {
             // Avoid loading again before the last load
-            return false;
+            return;
         }
         logger.finest("requestData() offset: " + index + ", viewSize: " + viewSize);
         loaderIndex = Math.max(0, index - indexOffset);
@@ -363,21 +302,19 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
             loaderTask = new InterruptibleTask() {
                 @Override
                 public void onExecute() {
+                    if(checkCache) {
+                        List<T> cachedData = dataCache.getCache(loaderIndex, loaderSize);
+                        if (!cachedData.isEmpty()) {
+                            // Found in the cache
+                            loaderCache = cachedData;
+                        }
+                    }
                     doLoad();
                 }
             };
         }
 
-        if(checkCache) {
-            List<T> cachedData = dataCache.getCache(loaderIndex, loaderSize);
-            if (!cachedData.isEmpty()) {
-                // Found in the cache
-                loaderCache = cachedData;
-            }
-        }
-
         loaderTask.delay(loaderDelay);
-        return true;
     }
 
     protected void doLoad() {
@@ -390,29 +327,11 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
         } else {
             Scheduler.get().scheduleFinally(() -> display.setLoadMask(true));
 
-            final InfiniteDataView<T> dataView = this;
-
-            dataSource.load(new LoadConfig<T>() {
+            dataSource.load(new LoadConfig<>(loaderIndex, loaderSize, getSortContext(), getOpenCategories()),
+                    new LoadCallback<T>() {
                 @Override
-                public int getOffset() {
-                    return loaderIndex;
-                }
-                @Override
-                public int getLimit() {
-                    return loaderSize;
-                }
-                @Override
-                public SortContext<T> getSortContext() {
-                    return dataView.getSortContext();
-                }
-                @Override
-                public List<CategoryComponent> getOpenCategories() {
-                    return dataView.getOpenCategories();
-                }
-            }, new LoadCallback<T>() {
-                @Override
-                public void onSuccess(LoadResult<T> loadResult) {
-                    dataView.loaded(loadResult.getOffset(), loadResult.getData(), loadResult.getTotalLength(), loadResult.isCacheData());
+                public void onSuccess(LoadResult<T> result) {
+                    loaded(result.getOffset(), result.getData(), result.getTotalLength(), result.isCacheData());
                 }
                 @Override
                 public void onFailure(Throwable caught) {
@@ -425,17 +344,14 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
 
     @Override
     public void setLoadMask(boolean loadMask) {
-        if(loadMask || !forceScroll) {
-            super.setLoadMask(loadMask);
+        super.setLoadMask(loadMask);
 
-            // Ensure the mask element uses max height
-            Scheduler.get().scheduleDeferred(() -> {
-                if (loadMask && maskElement != null) {
-                    maskElement.height(bufferBottom.outerHeight(true) + bufferTop.outerHeight(true)
-                        + tableBody.outerHeight(true) + 1000 + "px");
-                }
-            });
-        }
+        // Ensure the mask element uses max height
+        Scheduler.get().scheduleDeferred(() -> {
+            if (loadMask && maskElement != null) {
+                maskElement.height(tableBody.outerHeight(true) + "px");
+            }
+        });
     }
 
     @Override
@@ -468,11 +384,6 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
         }
         super.loaded(startIndex, data);
         loading = false;
-
-        if(forceScroll) {
-            forceScroll = false;
-            updateRows((int) Math.ceil(tableBody.scrollTop() / getCalculatedRowHeight()), false);
-        }
 
         // Ensure selection persistence
         for(T model : selectedModels) {
@@ -529,21 +440,6 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
         }
     }
 
-    protected List<CategoryComponent> getPassedCategories() {
-        List<CategoryComponent> passed = new ArrayList<>();
-        int scrollTop = tableBody.scrollTop();
-        for(CategoryComponent category : categories) {
-            if(isCategoryEmpty(category) && scrollTop > (getRowHeight() + thead.$this().height())) {
-                passed.add(category);
-            } else {
-                // Hit the current category
-                return passed;
-            }
-        }
-        // No categories are populated.
-        return new ArrayList<>();
-    }
-
     public int getIndexOffset() {
         return indexOffset;
     }
@@ -554,5 +450,14 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
      */
     public void setIndexOffset(int indexOffset) {
         this.indexOffset = indexOffset;
+    }
+
+    @Override
+    public void setHeight(String height) {
+        super.setHeight(height);
+
+        if(yScrollPanel != null) {
+            yScrollPanel.setHeight(height);
+        }
     }
 }

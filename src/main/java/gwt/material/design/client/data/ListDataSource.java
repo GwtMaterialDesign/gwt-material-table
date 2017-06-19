@@ -54,24 +54,7 @@ public class ListDataSource<T> implements DataSource<T> {
                 size = data.size();
             }
             final List<T> subList = size == 0 ? new ArrayList<>() : data.subList(loadConfig.getOffset(), size);
-            callback.onSuccess(new LoadResult<T>() {
-                @Override
-                public List<T> getData() {
-                    return subList;
-                }
-                @Override
-                public int getOffset() {
-                    return loadConfig.getOffset();
-                }
-                @Override
-                public int getTotalLength() {
-                    return data.size();
-                }
-                @Override
-                public boolean isCacheData() {
-                    return cacheData();
-                }
-            });
+            callback.onSuccess(new LoadResult<>(subList, loadConfig.getOffset(), data.size(), cacheData()));
         } catch (IndexOutOfBoundsException ex) {
             // Silently ignore index out of bounds exceptions
             logger.log(Level.FINE, "ListDataSource threw index out of bounds.", ex);

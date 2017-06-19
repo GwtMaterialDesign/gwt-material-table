@@ -25,6 +25,7 @@ import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.ValueUpdater;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.TableCellElement;
@@ -129,7 +130,6 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     private boolean refreshing;
     private boolean cellIsEditing;
     private boolean destroyOnUnload;
-    private String height;
 
     public AbstractDataTable() {
         this(new StandardDataView<>());
@@ -189,10 +189,6 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     @Override
     public void setup(TableScaffolding scaffolding) throws Exception {
         dataView.setup(scaffolding);
-
-        if(height != null) {
-            setHeight(height);
-        }
     }
 
     @Override
@@ -218,12 +214,12 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     @Override
     public void setHeight(String height) {
-       this.height = height;
+        dataView.setHeight(height);
+    }
 
-        // Avoid setting the height prematurely.
-        if(setup) {
-            JQuery.$(scaffolding.getTableBody()).height(height);
-        }
+    @Override
+    public String getHeight() {
+        return dataView.getHeight();
     }
 
     @Override

@@ -91,6 +91,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     //protected List<ComponentFactory<?, T>> componentFactories;
     protected JsTableSubHeaders subheaderLib;
     protected Panel xScrollPanel;
+    protected String height;
 
     // DOM
     protected Table table;
@@ -513,6 +514,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             });
 
             setup = true;
+
+            if(height != null) {
+                setHeight(height);
+            }
         }
         catch (Exception ex) {
             logger.log(Level.SEVERE, "Problem setting up the DataView.", ex);
@@ -1909,5 +1914,20 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     protected void setRedrawCategories(boolean redrawCategories) {
         this.redrawCategories = redrawCategories;
+    }
+
+    @Override
+    public void setHeight(String height) {
+        this.height = height;
+
+        // Avoid setting the height prematurely.
+        if(setup) {
+            tableBody.height(height);
+        }
+    }
+
+    @Override
+    public String getHeight() {
+        return height;
     }
 }
