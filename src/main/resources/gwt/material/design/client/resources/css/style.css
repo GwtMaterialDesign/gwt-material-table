@@ -99,6 +99,7 @@ tbody [type="checkbox"].filled-in+label {
 }
 
 .table-container {
+    position: relative;
     height:100%;
     width: 100%;
     background-color: #fff;
@@ -285,7 +286,7 @@ section.table-container div.tool-panel ul.dropdown-content li > span {
 }
 
 .infinite .table-body {
-    overflow-y: hidden;
+    /*overflow-y: hidden;*/
 }
 
 .table-body {

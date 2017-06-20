@@ -30,6 +30,7 @@ import com.google.gwt.view.client.ProvidesKey;
 import gwt.material.design.client.data.loader.LoadCallback;
 import gwt.material.design.client.data.loader.LoadConfig;
 import gwt.material.design.client.data.loader.LoadResult;
+import gwt.material.design.client.jquery.JQueryMutate;
 import gwt.material.design.client.ui.table.YScrollPanel;
 import gwt.material.design.jquery.client.api.Event;
 import gwt.material.design.jquery.client.api.Functions.EventFunc3;
@@ -43,6 +44,7 @@ import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.client.jquery.JQueryExtension;
 import gwt.material.design.client.ui.table.TableEvents;
 import gwt.material.design.client.ui.table.TableScaffolding;
+import gwt.material.design.jquery.client.api.JQueryElement;
 import gwt.material.design.jquery.client.api.Offset;
 
 import java.util.ArrayList;
@@ -150,13 +152,8 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
 
         container.addClass("infinite");
 
-        Panel body = scaffolding.getTableBody();
         if(yScrollPanel == null) {
-            int top = body.getAbsoluteTop();
-            Offset offset  = $(tableBody).offset();
-            double right = $(window()).width() - (offset.left + tableBody.outerWidth(true));
-
-            yScrollPanel = new YScrollPanel(getHeight(), top, right);
+            yScrollPanel = new YScrollPanel(getHeight(), scaffolding.getTopPanel().getOffsetHeight(), 0);
             getContainer().add(yScrollPanel);
         }
 
@@ -212,8 +209,31 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
             }
         });
 
+        JQueryMutate.$(tableBody).mutate("scrollHeight", (el, info) -> {
+            Scheduler.get().scheduleDeferred(() -> {
+                yScrollPanel.setScrollHeight(el.getScrollHeight() + "px");
+            });
+        });
+
+        JQueryExtension.$(yScrollPanel.$this()).scrollY(id, (e, scroll) -> {
+            tableBody.prop("scrollTop", $(yScrollPanel).scrollTop());
+            return true;
+        });
+
         // Setup the scroll event handlers
-        JQueryExtension.$(tableBody).scrollY(id, (e, scroll) ->  onVerticalScroll());
+        JQueryExtension.$(tableBody).scrollY(id, (e, scroll) -> onVerticalScroll());
+    }
+
+    protected Object onVerticalScroll() {
+        $(yScrollPanel).prop("scrollTop", tableBody.scrollTop());
+
+        if(!rendering) {
+            int index = (int) Math.ceil(tableBody.scrollTop() / getCalculatedRowHeight());
+            if(index == 0 || index != viewIndex) {
+                //updateRows(index, false);
+            }
+        }
+        return true;
     }
 
     @Override
@@ -272,16 +292,6 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
     public double getVisibleHeight() {
         // We only want to account for row space.
         return tableBody.height() - headerRow.$this().height();
-    }
-
-    protected Object onVerticalScroll() {
-        if(!rendering) {
-            int index = (int) Math.ceil(tableBody.scrollTop() / getCalculatedRowHeight());
-            if(index == 0 || index != viewIndex) {
-                updateRows(index, false);
-            }
-        }
-        return true;
     }
 
     protected void updateRows(int newIndex, boolean reload) {

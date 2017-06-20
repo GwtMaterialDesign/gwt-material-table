@@ -506,7 +506,9 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             });
 
             JQueryMutate.$(innerScroll).mutate("scrollWidth", (el, info) -> {
-                xScrollPanel.setWidth(el.getScrollWidth() + "px");
+                Scheduler.get().scheduleDeferred(() -> {
+                    xScrollPanel.setWidth(el.getScrollWidth() + "px");
+                });
             });
 
             Scheduler.get().scheduleDeferred(() -> {
