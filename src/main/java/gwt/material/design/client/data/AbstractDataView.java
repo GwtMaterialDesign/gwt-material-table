@@ -1384,14 +1384,17 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     protected CategoryComponent buildCategoryComponent(RowComponent<T> row) {
-        if(row != null) {
+        return row != null ? buildCategoryComponent(row.getDataCategory()) : null;
+    }
+
+    protected CategoryComponent buildCategoryComponent(String category) {
+        if(category != null) {
             // Generate the category if not exists
-            String categoryName = row.getDataCategory();
             if (categoryFactory != null) {
-                if (!hasCategory(categoryName)) {
-                    return categoryFactory.generate(categoryName);
+                if (!hasCategory(category)) {
+                    return categoryFactory.generate(category);
                 } else {
-                    return getCategory(categoryName);
+                    return getCategory(category);
                 }
             }
         }
@@ -1454,6 +1457,13 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             renderer.calculateRowHeight(rows.get(0));
         }
         return renderer.getCalculatedRowHeight();
+    }
+
+    @Override
+    public void addCategory(String category) {
+        if(category != null) {
+            addCategory(buildCategoryComponent(category));
+        }
     }
 
     @Override

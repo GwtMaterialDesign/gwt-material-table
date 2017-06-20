@@ -571,6 +571,11 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
+    public void addCategory(String category) {
+        dataView.addCategory(category);
+    }
+
+    @Override
     public void addCategory(CategoryComponent category) {
         dataView.addCategory(category);
     }

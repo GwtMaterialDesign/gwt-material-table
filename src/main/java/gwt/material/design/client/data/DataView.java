@@ -295,6 +295,13 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
     boolean isCategoryEmpty(CategoryComponent category);
 
     /**
+     * Explicitly add a category, which will be drawn to the table.
+     * If the category already exists then it will be ignored.
+     * @param category The category name.
+     */
+    void addCategory(String category);
+
+    /**
      * Explicitly add a {@link CategoryComponent}, which will be drawn to the table.
      * If the category already exists then it will be ignored.
      * @param category The category data defined.
