@@ -107,6 +107,18 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
     String getViewId();
 
     /**
+     * Get a row by its representing model.
+     * @param model the model assigned to a row.
+     */
+    RowComponent<T> getRow(T model);
+
+    /**
+     * Get a row by its rendered index.
+     * @param index the value of the render index.
+     */
+    RowComponent<T> getRow(int index);
+
+    /**
      * Clear data rows.
      *
      * @param clearData should we also clear the stored data.
