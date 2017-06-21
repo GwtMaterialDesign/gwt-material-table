@@ -1507,6 +1507,26 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         this.redraw = redraw;
     }
 
+    @Override
+    public RowComponent<T> getRow(T model) {
+        for(RowComponent<T> row : rows) {
+            if(row.getData().equals(model)) {
+                return row;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public RowComponent<T> getRow(int index) {
+        for(RowComponent<T> row : rows) {
+            if(row.isRendered() && row.getIndex() == index) {
+                return row;
+            }
+        }
+        return null;
+    }
+
     protected int getRowIndexByElement(Element rowElement) {
         int index = 0;
         for(RowComponent<T> row : rows) {
