@@ -96,19 +96,6 @@ public class BaseRenderer<T> implements Renderer<T> {
                 Context context = new Context(rowComponent.getIndex(), colIndex, valueKey);
                 drawColumn(row, context, data, columns.get(c), colIndex, dataView.isHeaderVisible(colIndex));
             }
-
-            if(dataView.isUseRowExpansion()) {
-                TableData expand = new TableData();
-                expand.setId("colex");
-                MaterialIcon expandIcon = new MaterialIcon();
-                expandIcon.setId("expand");
-                expandIcon.setWidth("100%");
-                expandIcon.setIconType(IconType.KEYBOARD_ARROW_DOWN);
-                expandIcon.setWaves(WavesType.LIGHT);
-                expandIcon.getElement().getStyle().setCursor(Cursor.POINTER);
-                expand.add(expandIcon);
-                row.add(expand);
-            }
         } else {
             if(redraw || rowComponent.isRedraw()) {
                 // Rebuild the columns
@@ -121,6 +108,23 @@ public class BaseRenderer<T> implements Renderer<T> {
                 }
                 rowComponent.setRedraw(false);
             }
+        }
+
+        if(dataView.isUseRowExpansion()) {
+            if(!row.hasExpansionColumn()) {
+                TableData expand = new TableData();
+                expand.setId("colex");
+                MaterialIcon expandIcon = new MaterialIcon();
+                expandIcon.setId("expand");
+                expandIcon.setWidth("100%");
+                expandIcon.setIconType(IconType.KEYBOARD_ARROW_DOWN);
+                expandIcon.setWaves(WavesType.LIGHT);
+                expandIcon.getElement().getStyle().setCursor(Cursor.POINTER);
+                expand.add(expandIcon);
+                row.add(expand);
+            }
+        } else if(row.hasExpansionColumn()) {
+            row.removeExpansionColumn();
         }
 
         Scheduler.get().scheduleDeferred(() -> {

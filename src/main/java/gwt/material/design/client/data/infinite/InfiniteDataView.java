@@ -363,17 +363,16 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
             loaderTask = new InterruptibleTask() {
                 @Override
                 public void onExecute() {
+                    if(checkCache) {
+                        List<T> cachedData = dataCache.getCache(loaderIndex, loaderSize);
+                        if (!cachedData.isEmpty()) {
+                            // Found in the cache
+                            loaderCache = cachedData;
+                        }
+                    }
                     doLoad();
                 }
             };
-        }
-
-        if(checkCache) {
-            List<T> cachedData = dataCache.getCache(loaderIndex, loaderSize);
-            if (!cachedData.isEmpty()) {
-                // Found in the cache
-                loaderCache = cachedData;
-            }
         }
 
         loaderTask.delay(loaderDelay);
