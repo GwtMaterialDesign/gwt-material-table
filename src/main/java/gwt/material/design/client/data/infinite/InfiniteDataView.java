@@ -221,11 +221,11 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
     public void render(Components<Component<?>> components) {
         int calcRowHeight = getCalculatedRowHeight();
         int topHeight = loaderIndex * calcRowHeight;
-        int catHeight = (getPassedCategories().size() * 45);
-        bufferTop.height(topHeight + catHeight);
+        int catHeight = getCategoryHeight();
+        bufferTop.height(topHeight + (isUseCategories() ? (getPassedCategories().size() * catHeight) : 0));
 
-        int categoryMod = isUseCategories() ? getVisibleCategories().size() : 0;
-        int bottomHeight = ((totalRows + categoryMod) * calcRowHeight) - (topHeight - calcRowHeight);
+        int categories = isUseCategories() ? getCategories().size() : 0;
+        int bottomHeight = ((totalRows - viewSize) * calcRowHeight) - (categories * catHeight) - topHeight;
         bufferBottom.height(bottomHeight);
 
         super.render(components);
@@ -511,21 +511,6 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
         } else {
             return selectedModels;
         }
-    }
-
-    protected List<CategoryComponent> getPassedCategories() {
-        List<CategoryComponent> passed = new ArrayList<>();
-        int scrollTop = tableBody.scrollTop();
-        for(CategoryComponent category : categories) {
-            if(isCategoryEmpty(category) && scrollTop > (getRowHeight() + thead.$this().height())) {
-                passed.add(category);
-            } else {
-                // Hit the current category
-                return passed;
-            }
-        }
-        // No categories are populated.
-        return new ArrayList<>();
     }
 
     public int getIndexOffset() {
