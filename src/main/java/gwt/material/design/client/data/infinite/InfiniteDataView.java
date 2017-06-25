@@ -84,6 +84,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
     // The current index of the view.
     protected int viewIndex;
     protected int indexOffset = 10;
+    protected int lastScrollTop = 0;
 
     // Lading new data flag
     private boolean loading;
@@ -213,20 +214,23 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
         });
 
         // Setup the scroll event handlers
-        JQueryExtension.$(tableBody).scrollY(id, (e, scroll) ->  onScrollY());
+        JQueryExtension.$(tableBody).scrollY(id, (e, scroll) ->  onVerticalScroll());
     }
 
     @Override
     public void render(Components<Component<?>> components) {
         int calcRowHeight = getCalculatedRowHeight();
         int topHeight = loaderIndex * calcRowHeight;
-        bufferTop.height(topHeight);
+        int catHeight = (getPassedCategories().size() * 45);
+        bufferTop.height(topHeight + catHeight);
 
-        int categoryMod = isUseCategories() ? categories.size() : 0;
+        int categoryMod = isUseCategories() ? getVisibleCategories().size() : 0;
         int bottomHeight = ((totalRows + categoryMod) * calcRowHeight) - (topHeight - calcRowHeight);
         bufferBottom.height(bottomHeight);
 
         super.render(components);
+
+        tableBody.scrollTop(lastScrollTop);
     }
 
     @Override
@@ -331,10 +335,10 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
 
     public double getVisibleHeight() {
         // We only want to account for row space.
-        return tableBody.height() - topPanel.height() - headerRow.$this().height();
+        return tableBody.height() - headerRow.$this().height();
     }
 
-    protected Object onScrollY() {
+    protected Object onVerticalScroll() {
         if(!rendering) {
             int index = (int) Math.ceil(tableBody.scrollTop() / getCalculatedRowHeight());
             if(index == 0 || index != viewIndex) {
@@ -350,10 +354,10 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
         requestData(viewIndex, !reload);
     }
 
-    protected boolean requestData(int index, boolean checkCache) {
+    protected void requestData(int index, boolean checkCache) {
         if(loading) {
             // Avoid loading again before the last load
-            return false;
+            return;
         }
         logger.finest("requestData() offset: " + index + ", viewSize: " + viewSize);
         loaderIndex = Math.max(0, index - indexOffset);
@@ -362,21 +366,19 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
             loaderTask = new InterruptibleTask() {
                 @Override
                 public void onExecute() {
+                    if(checkCache) {
+                        List<T> cachedData = dataCache.getCache(loaderIndex, loaderSize);
+                        if (!cachedData.isEmpty()) {
+                            // Found in the cache
+                            loaderCache = cachedData;
+                        }
+                    }
                     doLoad();
                 }
             };
         }
 
-        if(checkCache) {
-            List<T> cachedData = dataCache.getCache(loaderIndex, loaderSize);
-            if (!cachedData.isEmpty()) {
-                // Found in the cache
-                loaderCache = cachedData;
-            }
-        }
-
         loaderTask.delay(loaderDelay);
-        return true;
     }
 
     protected void doLoad() {
@@ -441,6 +443,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
      * @param totalRows the new total row count
      */
     public void loaded(int startIndex, List<T> data, int totalRows, boolean cacheData) {
+        lastScrollTop = tableBody.scrollTop();
         setTotalRows(totalRows);
         setVisibleRange(startIndex, loaderSize);
 
@@ -482,7 +485,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
 
         logger.finest("row height: " + rh + " visibleHeight: " + visibleHeight + " visible rows: "
             + rows + " calcHeight: " + calcHeight);
-        return rows + (isUseCategories() ? categories.size() : 1);
+        return rows;
     }
 
     @Override
