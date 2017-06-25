@@ -214,7 +214,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
         });
 
         // Setup the scroll event handlers
-        JQueryExtension.$(tableBody).scrollY(id, (e, scroll) ->  onScrollY());
+        JQueryExtension.$(tableBody).scrollY(id, (e, scroll) ->  onVerticalScroll());
     }
 
     @Override
@@ -335,7 +335,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
         return tableBody.height() - topPanel.height() - headerRow.$this().height();
     }
 
-    protected Object onScrollY() {
+    protected Object onVerticalScroll() {
         if(!rendering) {
             int index = (int) Math.ceil(tableBody.scrollTop() / getCalculatedRowHeight());
             if(index == 0 || index != viewIndex) {
@@ -351,10 +351,10 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
         requestData(viewIndex, !reload);
     }
 
-    protected boolean requestData(int index, boolean checkCache) {
+    protected void requestData(int index, boolean checkCache) {
         if(loading) {
             // Avoid loading again before the last load
-            return false;
+            return;
         }
         logger.finest("requestData() offset: " + index + ", viewSize: " + viewSize);
         loaderIndex = Math.max(0, index - indexOffset);
@@ -376,7 +376,6 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
         }
 
         loaderTask.delay(loaderDelay);
-        return true;
     }
 
     protected void doLoad() {
