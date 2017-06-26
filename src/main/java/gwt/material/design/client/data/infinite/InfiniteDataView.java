@@ -226,7 +226,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
         bufferTop.height(topHeight + (isUseCategories() ? (getPassedCategories().size() * catHeight) : 0));
 
         int categories = isUseCategories() ? getCategories().size() : 0;
-        int bottomHeight = ((totalRows - viewSize) * calcRowHeight) - (categories * catHeight) - topHeight;
+        int bottomHeight = ((totalRows - viewSize - indexOffset) * calcRowHeight) - (categories * catHeight) - topHeight;
         bufferBottom.height(bottomHeight);
 
         super.render(components);
@@ -541,6 +541,6 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
      * This can be useful in removing and loading delays. Defaults to 10.
      */
     public void setIndexOffset(int indexOffset) {
-        this.indexOffset = indexOffset;
+        this.indexOffset = Math.max(1, indexOffset);
     }
 }
