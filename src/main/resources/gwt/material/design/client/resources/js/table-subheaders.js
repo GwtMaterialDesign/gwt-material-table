@@ -514,18 +514,18 @@ function TableSubHeaders($table, $stickies) {
   };
 
   base.updateWidth = function($sticky, width) {
-    if(width) {
+    /*if(width) {
       $sticky.width(width);
     }
 
     // Calculate new cell widths
-    base.updateCellWidths($sticky);
+    base.updateCellWidths($sticky);*/
   };
 
   base.updateWidths = function() {
-    base.$stickies.each(function() {
+    /*base.$stickies.each(function() {
       base.updateWidth($(this));
-    });
+    });*/
   };
 
   base.updateHeights = function() {
