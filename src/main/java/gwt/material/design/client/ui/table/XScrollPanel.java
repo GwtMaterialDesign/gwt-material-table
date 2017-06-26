@@ -19,7 +19,6 @@
  */
 package gwt.material.design.client.ui.table;
 
-import com.google.gwt.user.client.Window;
 import gwt.material.design.client.jquery.JQueryExtension;
 import gwt.material.design.client.ui.html.Div;
 
@@ -32,8 +31,9 @@ public class XScrollPanel extends Div {
 
         add(scrollBar);
 
-        super.setStyle("width: calc(100% - "+ JQueryExtension.scrollBarWidth() +"px)");
-        setHeight("16px");
+        int barSize = JQueryExtension.scrollBarWidth();
+        super.setStyle("width: calc(100% - " + barSize + "px)");
+        setHeight((barSize + 1) + "px");
     }
 
     @Override
