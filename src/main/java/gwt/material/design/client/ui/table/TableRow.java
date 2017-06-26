@@ -23,6 +23,7 @@ package gwt.material.design.client.ui.table;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.data.component.CategoryComponent;
 
@@ -51,6 +52,15 @@ public class TableRow extends MaterialWidget {
         super.insert(child, beforeIndex);
     }
 
+    public void clearColumnsFromIndex(int colIndex) {
+        for(int i = colIndex; i < getChildren().size(); i++) {
+            TableData column = getColumn(i);
+            if(column != null) {
+                column.clear();
+            }
+        }
+    }
+
     public TableData getColumn(int index) {
         try {
             return (TableData) getWidget(index);
@@ -71,6 +81,23 @@ public class TableRow extends MaterialWidget {
     public void copy(TableRow tableRow) {
         if(tableRow != null) {
             this.category = tableRow.category;
+        }
+    }
+
+    public boolean hasExpansionColumn() {
+        for(Widget column : getChildren()) {
+            if(column.getElement().getId().equals("colex")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void removeExpansionColumn() {
+        for(Widget column : getChildren()) {
+            if(column.getElement().getId().equals("colex")) {
+                column.removeFromParent();
+            }
         }
     }
 }

@@ -85,6 +85,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
     // The current index of the view.
     protected int viewIndex;
     protected int indexOffset = 10;
+    protected int lastScrollTop = 0;
 
     // Lading new data flag
     private boolean loading;
@@ -214,20 +215,23 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
         });
 
         // Setup the scroll event handlers
-        JQueryExtension.$(tableBody).scrollY(id, (e, scroll) ->  onScrollY());
+        JQueryExtension.$(tableBody).scrollY(id, (e, scroll) ->  onVerticalScroll());
     }
 
     @Override
     public void render(Components<Component<?>> components) {
         int calcRowHeight = getCalculatedRowHeight();
         int topHeight = loaderIndex * calcRowHeight;
-        bufferTop.height(topHeight);
+        int catHeight = getCategoryHeight();
+        bufferTop.height(topHeight + (isUseCategories() ? (getPassedCategories().size() * catHeight) : 0));
 
-        int categoryMod = isUseCategories() ? categories.size() : 0;
-        int bottomHeight = ((totalRows + categoryMod) * calcRowHeight) - (topHeight - calcRowHeight);
+        int categories = isUseCategories() ? getCategories().size() : 0;
+        int bottomHeight = ((totalRows - viewSize - indexOffset) * calcRowHeight) - (categories * catHeight) - topHeight;
         bufferBottom.height(bottomHeight);
 
         super.render(components);
+
+        tableBody.scrollTop(lastScrollTop);
     }
 
     @Override
@@ -332,10 +336,10 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
 
     public double getVisibleHeight() {
         // We only want to account for row space.
-        return tableBody.height() - topPanel.height() - headerRow.$this().height();
+        return tableBody.height() - headerRow.$this().height();
     }
 
-    protected Object onScrollY() {
+    protected Object onVerticalScroll() {
         if(!rendering) {
             int index = (int) Math.ceil(tableBody.scrollTop() / getCalculatedRowHeight());
             if(index == 0 || index != viewIndex) {
@@ -351,10 +355,10 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
         requestData(viewIndex, !reload);
     }
 
-    protected boolean requestData(int index, boolean checkCache) {
+    protected void requestData(int index, boolean checkCache) {
         if(loading) {
             // Avoid loading again before the last load
-            return false;
+            return;
         }
         logger.finest("requestData() offset: " + index + ", viewSize: " + viewSize);
         loaderIndex = Math.max(0, index - indexOffset);
@@ -363,21 +367,19 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
             loaderTask = new InterruptibleTask() {
                 @Override
                 public void onExecute() {
+                    if(checkCache) {
+                        List<T> cachedData = dataCache.getCache(loaderIndex, loaderSize);
+                        if (!cachedData.isEmpty()) {
+                            // Found in the cache
+                            loaderCache = cachedData;
+                        }
+                    }
                     doLoad();
                 }
             };
         }
 
-        if(checkCache) {
-            List<T> cachedData = dataCache.getCache(loaderIndex, loaderSize);
-            if (!cachedData.isEmpty()) {
-                // Found in the cache
-                loaderCache = cachedData;
-            }
-        }
-
         loaderTask.delay(loaderDelay);
-        return true;
     }
 
     protected void doLoad() {
@@ -460,6 +462,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
      * @param totalRows the new total row count
      */
     public void loaded(int startIndex, List<T> data, int totalRows, boolean cacheData) {
+        lastScrollTop = tableBody.scrollTop();
         setTotalRows(totalRows);
         setVisibleRange(startIndex, loaderSize);
 
@@ -501,7 +504,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
 
         logger.finest("row height: " + rh + " visibleHeight: " + visibleHeight + " visible rows: "
             + rows + " calcHeight: " + calcHeight);
-        return rows + (isUseCategories() ? categories.size() : 1);
+        return rows;
     }
 
     @Override
@@ -529,21 +532,6 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
         }
     }
 
-    protected List<CategoryComponent> getPassedCategories() {
-        List<CategoryComponent> passed = new ArrayList<>();
-        int scrollTop = tableBody.scrollTop();
-        for(CategoryComponent category : categories) {
-            if(isCategoryEmpty(category) && scrollTop > (getRowHeight() + thead.$this().height())) {
-                passed.add(category);
-            } else {
-                // Hit the current category
-                return passed;
-            }
-        }
-        // No categories are populated.
-        return new ArrayList<>();
-    }
-
     public int getIndexOffset() {
         return indexOffset;
     }
@@ -553,6 +541,6 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
      * This can be useful in removing and loading delays. Defaults to 10.
      */
     public void setIndexOffset(int indexOffset) {
-        this.indexOffset = indexOffset;
+        this.indexOffset = Math.max(1, indexOffset);
     }
 }

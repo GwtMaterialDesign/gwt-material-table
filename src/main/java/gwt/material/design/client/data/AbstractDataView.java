@@ -84,6 +84,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected ProvidesKey<T> keyProvider;
     //protected List<ComponentFactory<?, T>> componentFactories;
     protected JsTableSubHeaders subheaderLib;
+    protected Integer categoryHeight;
 
     // DOM
     protected Table table;
@@ -1131,8 +1132,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             // Destroy existing sticky header function
             $table.stickyTableHeaders("destroy");
 
-            // Initialize sticky header
-            setupStickyHeader();
+            if(isUseStickyHeader()) {
+                // Initialize sticky header
+                setupStickyHeader();
+            }
         }
     }
 
@@ -1175,7 +1178,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         if(fireEvent) {
             // Fire select all event
             container.trigger(TableEvents.SELECT_ALL, new Object[]{
-                    getModelsByRowElements(rows), rows, select
+                getModelsByRowElements(rows), rows, select
             });
         }
     }
@@ -1210,7 +1213,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             if(fireEvent) {
                 // Fire row select event
                 container.trigger(TableEvents.ROW_SELECT, new Object[] {
-                        getModelByRowElement(row), row, !selected
+                    getModelByRowElement(row), row, !selected
                 });
             }
         }
@@ -1237,7 +1240,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             if(fireEvent) {
                 // Fire row select event
                 container.trigger(TableEvents.ROW_SELECT, new Object[] {
-                        getModelByRowElement(row), row, true
+                    getModelByRowElement(row), row, true
                 });
             }
         }
@@ -1258,7 +1261,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             if(fireEvent) {
                 // Fire row select event
                 container.trigger(TableEvents.ROW_SELECT, new Object[] {
-                        getModelByRowElement(row), row, false
+                    getModelByRowElement(row), row, false
                 });
             }
         }
@@ -1267,13 +1270,13 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     @Override
     public boolean hasUnselectedRows(boolean visibleOnly) {
         return $table.find("tr:not([disabled]):not(.disabled) td#col0 input:not(:checked)"
-                + (visibleOnly ? ":visible" : "")).length() > 0;
+            + (visibleOnly ? ":visible" : "")).length() > 0;
     }
 
     @Override
     public boolean hasSelectedRows(boolean visibleOnly) {
         return $table.find("tr:not([disabled]):not(.disabled) td#col0 input:checked"
-                + (visibleOnly ? ":visible" : "")).length() > 0;
+            + (visibleOnly ? ":visible" : "")).length() > 0;
     }
 
     @Override
@@ -1627,6 +1630,21 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         return visible;
     }
 
+    protected List<CategoryComponent> getPassedCategories() {
+        List<CategoryComponent> passed = new ArrayList<>();
+        int scrollTop = tableBody.scrollTop();
+        for(CategoryComponent category : categories) {
+            if(isCategoryEmpty(category) && scrollTop > (getRowHeight() + thead.$this().height())) {
+                passed.add(category);
+            } else {
+                // Hit the current category
+                return passed;
+            }
+        }
+        // No categories are populated.
+        return new ArrayList<>();
+    }
+
     @Override
     public void setRowFactory(RowComponentFactory<T> rowFactory) {
         this.rowFactory = rowFactory;
@@ -1817,6 +1835,13 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             }
         }
         return null;
+    }
+
+    public int getCategoryHeight() {
+        if(categoryHeight == null) {
+            categoryHeight = categories.get(0).getElement().getOffsetHeight();
+        }
+        return categoryHeight;
     }
 
     /**
