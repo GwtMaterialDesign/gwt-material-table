@@ -46,4 +46,5 @@ public interface TableCssName {
     String STICKYEXCLUDE = "stickyExclude";
     String COLEX = "colex";
     String SORTABLE = "sortable";
+    String FROZEN_COL = "frozen-col";
 }

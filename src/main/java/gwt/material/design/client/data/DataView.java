@@ -32,6 +32,7 @@ import gwt.material.design.client.data.factory.CategoryComponentFactory;
 import gwt.material.design.client.data.factory.RowComponentFactory;
 import gwt.material.design.client.js.JsTableSubHeaders;
 import gwt.material.design.client.ui.MaterialProgress;
+import gwt.material.design.client.ui.table.TableHeader;
 import gwt.material.design.client.ui.table.TableScaffolding;
 import gwt.material.design.client.ui.table.cell.Column;
 
@@ -146,6 +147,11 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
      * Check if a header with the given index is visible.
      */
     boolean isHeaderVisible(int colIndex);
+
+    /**
+     * Get the list of rendered header widgets.
+     */
+    List<TableHeader> getHeaders();
 
     /**
      * Add a new column to the data view.
@@ -431,4 +437,28 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
      * Get the table body height.
      */
     String getHeight();
+
+    /**
+     * Freeze left columns, based on the amount provided.
+     *
+     * @param columns number of columns from the left to freeze.
+     */
+    void setLeftFrozenColumns(int columns);
+
+    /**
+     * Get the number of left frozen columns.
+     */
+    int getLeftFrozenColumns();
+
+    /**
+     * Freeze right columns, based on the amount provided.
+     *
+     * @param columns number of columns from the right to freeze.
+     */
+    void setRightFrozenColumns(int columns);
+
+    /**
+     * Get the number of right frozen columns.
+     */
+    int getRightFrozenColumns();
 }

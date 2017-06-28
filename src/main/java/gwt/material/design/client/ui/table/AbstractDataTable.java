@@ -716,6 +716,31 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         dataView.setLongPressDuration(longPressDuration);
     }
 
+    @Override
+    public List<TableHeader> getHeaders() {
+        return dataView.getHeaders();
+    }
+
+    @Override
+    public void setLeftFrozenColumns(int columns) {
+        dataView.setLeftFrozenColumns(columns);
+    }
+
+    @Override
+    public int getLeftFrozenColumns() {
+        return dataView.getLeftFrozenColumns();
+    }
+
+    @Override
+    public void setRightFrozenColumns(int columns) {
+        dataView.setRightFrozenColumns(columns);
+    }
+
+    @Override
+    public int getRightFrozenColumns() {
+        return dataView.getRightFrozenColumns();
+    }
+
     // Event Handler Methods
 
     @Override

@@ -46,6 +46,8 @@ import gwt.material.design.client.ui.table.TableRow;
 import gwt.material.design.client.ui.table.TableSubHeader;
 import gwt.material.design.client.ui.table.cell.Column;
 import gwt.material.design.client.ui.table.cell.WidgetColumn;
+import gwt.material.design.jquery.client.api.JQueryElement;
+import gwt.material.design.jquery.client.api.Offset;
 
 import java.util.List;
 import java.util.Map;
@@ -74,7 +76,9 @@ public class BaseRenderer<T> implements Renderer<T> {
     public TableRow drawRow(DataView<T> dataView, RowComponent<T> rowComponent, Object valueKey,
                             List<Column<T, ?>> columns, boolean redraw) {
         T data = rowComponent.getData();
-        TableRow row = rowComponent.getElement();
+        TableRow row = rowComponent.getWidget();
+        List<TableHeader> headers = dataView.getHeaders();
+        boolean draw = true;
         if(row == null) {
             // Create a new row element
             row = new TableRow();
@@ -83,31 +87,31 @@ public class BaseRenderer<T> implements Renderer<T> {
             row.getElement().getStyle().setProperty("maxHeight", getExpectedRowHeight() + "px");
             row.getElement().getStyle().setProperty("minHeight", getExpectedRowHeight() + "px");
             row.setStyleName(TableCssName.DATA_ROW);
-            rowComponent.setElement(row);
+            rowComponent.setWidget(row);
 
             if(!dataView.getSelectionType().equals(SelectionType.NONE)) {
-                row.add(drawSelectionCell());
+                TableData selection = drawSelectionCell();
+                if(rowComponent.hasLeftFrozen()) {
+                    calculateColumnFreeze(selection, rowComponent, headers.get(0), 0, columns.size());
+                }
+                row.add(selection);
             }
+        } else if(!redraw && !rowComponent.isRedraw()) {
+            draw = false;
+        }
 
+        if(draw) {
             // Build the columns
             int colOffset = dataView.getColumnOffset();
-            for(int c = 0; c < columns.size(); c++) {
+            int colSize = columns.size();
+
+            for(int c = 0; c < colSize; c++) {
                 int colIndex = c + colOffset;
                 Context context = new Context(rowComponent.getIndex(), colIndex, valueKey);
-                drawColumn(row, context, data, columns.get(c), colIndex, dataView.isHeaderVisible(colIndex));
+                TableData column = drawColumn(row, context, data, columns.get(c), colIndex, dataView.isHeaderVisible(colIndex));
+                calculateColumnFreeze(column, rowComponent, headers.get(colIndex), colIndex, colSize);
             }
-        } else {
-            if(redraw || rowComponent.isRedraw()) {
-                // Rebuild the columns
-                int colOffset = dataView.getColumnOffset();
-                for(int c = 0; c < columns.size(); c++) {
-                    int colIndex = c + colOffset;
-                    Context context = new Context(rowComponent.getIndex(), colIndex, valueKey);
-                    drawColumn(row, context, rowComponent.getData(), columns.get(c), colIndex,
-                        dataView.isHeaderVisible(colIndex));
-                }
-                rowComponent.setRedraw(false);
-            }
+            rowComponent.setRedraw(false);
         }
 
         if(dataView.isUseRowExpansion()) {
@@ -136,7 +140,7 @@ public class BaseRenderer<T> implements Renderer<T> {
     @Override
     public TableSubHeader drawCategory(CategoryComponent category) {
         if(category != null) {
-            TableSubHeader subHeader = category.getElement();
+            TableSubHeader subHeader = category.getWidget();
             if(subHeader == null) {
                 subHeader = category.render();
             }
@@ -163,8 +167,7 @@ public class BaseRenderer<T> implements Renderer<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public TableData drawColumn(TableRow row, Context context, T rowValue, Column<T, ?> column,
-                                int beforeIndex, boolean visible) {
+    public TableData drawColumn(TableRow row, Context context, T rowValue, Column<T, ?> column, int beforeIndex, boolean visible) {
         TableData data = null;
         if(row != null && rowValue != null) {
             data = row.getColumn(beforeIndex);
@@ -266,6 +269,63 @@ public class BaseRenderer<T> implements Renderer<T> {
     }
 
     @Override
+    public void calculateColumnFreeze(TableData column, RowComponent<T> rowComponent, TableHeader header, int colIndex, int colSize) {
+        boolean hasLeftFrozen = rowComponent.hasLeftFrozen();
+        boolean hasRightFrozen = rowComponent.hasRightFrozen();
+        int leftEnd = rowComponent.getLeftFrozenColumns() - 1;
+        int rightStart = colSize - rowComponent.getRightFrozenColumns();
+
+        if((hasLeftFrozen && colIndex <= leftEnd) || (hasRightFrozen && colIndex >= rightStart)) {
+            column.addAttachHandler(event -> {
+                Scheduler.get().scheduleDeferred(() -> {
+                    int left = header.$this().prevAll().outerWidth();
+                    double width = header.$this().width();
+                    double height = rowComponent.getWidget().$this().outerHeight();
+
+                    String paddingTop = column.$this().css("padding-top");
+                    String paddingBottom = column.$this().css("padding-bottom");
+                    String paddingLeft= column.$this().css("padding-left");
+                    String paddingRight = column.$this().css("padding-right");
+
+                    String borderBottom = rowComponent.getWidget().$this().css("border-bottom");
+
+                    column.addStyleName(TableCssName.FROZEN_COL);
+                    header.addStyleName(TableCssName.FROZEN_COL);
+
+                    column.$this().width(width + "px");
+                    header.$this().width(width + "px");
+                    column.$this().height(height + "px");
+                    header.$this().height(height + "px");
+
+                    column.$this().css("border-bottom", borderBottom);
+                    header.$this().css("border-bottom", borderBottom);
+
+                    column.$this().css("padding-top", paddingTop);
+                    header.$this().css("padding-top", paddingTop);
+
+                    column.$this().css("padding-bottom", paddingBottom);
+                    header.$this().css("padding-bottom", paddingBottom);
+
+                    column.$this().css("padding-left", paddingLeft);
+                    header.$this().css("padding-left", paddingLeft);
+
+                    column.$this().css("padding-right", paddingRight);
+                    header.$this().css("padding-right", paddingRight);
+
+                    if(colIndex <= leftEnd) {
+                        // Left freeze
+                        column.setLeft(left);
+                        header.setLeft(left);
+                    } else {
+                        // Right freeze
+
+                    }
+                });
+            }, true);
+        }
+    }
+
+    @Override
     public int getExpectedRowHeight() {
         return expectedRowHeight;
     }
@@ -282,7 +342,7 @@ public class BaseRenderer<T> implements Renderer<T> {
 
     @Override
     public void calculateRowHeight(RowComponent<T> row) {
-        TableRow element = row.getElement();
+        TableRow element = row.getWidget();
         if(element != null) {
             int rowHeight = element.$this().outerHeight(true);
             if (rowHeight > 0 && rowHeight != calculatedRowHeight) {

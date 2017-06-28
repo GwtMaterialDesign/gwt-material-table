@@ -20,7 +20,6 @@ package gwt.material.design.client.data;
  * #L%
  */
 
-
 import com.google.gwt.cell.client.Cell.Context;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.data.component.CategoryComponent;
@@ -52,6 +51,8 @@ public interface Renderer<T> {
     TableHeader drawColumnHeader(Column<T, ?> column, String header, int index);
 
     void drawSortIcon(TableHeader th, SortContext<T> sortContext);
+
+    void calculateColumnFreeze(TableData column, RowComponent<T> rowComponent, TableHeader header, int colIndex, int colSize);
 
     int getExpectedRowHeight();
 

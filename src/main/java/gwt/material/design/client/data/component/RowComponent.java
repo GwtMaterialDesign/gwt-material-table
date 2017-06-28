@@ -35,9 +35,10 @@ public class RowComponent<T> extends Component<TableRow> {
     private T data;
     private int index;
     private String category;
+    private int leftFrozenColumns, rightFrozenColumns;
 
     public RowComponent(RowComponent<T> clone) {
-        super(clone.getElement(), clone.isRedraw());
+        super(clone.getWidget(), clone.isRedraw());
         data = clone.data;
         category = clone.category;
     }
@@ -67,9 +68,37 @@ public class RowComponent<T> extends Component<TableRow> {
         return category;
     }
 
+    public int getLeftFrozenColumns() {
+        return leftFrozenColumns;
+    }
+
+    public void setLeftFrozenColumns(int leftFrozenColumns) {
+        this.leftFrozenColumns = leftFrozenColumns;
+    }
+
+    public int getRightFrozenColumns() {
+        return rightFrozenColumns;
+    }
+
+    public void setRightFrozenColumns(int rightFrozenColumns) {
+        this.rightFrozenColumns = rightFrozenColumns;
+    }
+
+    public boolean hasFrozenColumns() {
+        return hasLeftFrozen() || hasRightFrozen();
+    }
+
+    public boolean hasLeftFrozen() {
+        return leftFrozenColumns > 0;
+    }
+
+    public boolean hasRightFrozen() {
+        return rightFrozenColumns > 0;
+    }
+
     @Override
     protected void clearElement() {
-        TableRow row = getElement();
+        TableRow row = getWidget();
         if(row != null) {
             clearRowExpansion();
         }
@@ -77,7 +106,7 @@ public class RowComponent<T> extends Component<TableRow> {
     }
 
     public void clearRowExpansion() {
-        JQueryElement next = JQuery.$(getElement()).next();
+        JQueryElement next = JQuery.$(getWidget()).next();
         if(next.is("tr.expansion")) {
             next.remove();
         }

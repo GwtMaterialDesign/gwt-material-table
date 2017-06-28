@@ -68,12 +68,11 @@ tbody [type="checkbox"].filled-in+label {
 }
 
 .frozen-col {
-    position: absolute;
-    width: 60px;
     left: 0;
     top: auto;
-    border-top-width: 1px;
-    margin-top: 14px;
+    position: absolute;
+    /*margin-top: 14px;*/
+    /*width: 60px;*/
 }
 
 .max-height {
@@ -517,6 +516,7 @@ table.table tbody tr.expansion td > div p {
         position: relative;
         width: 100% !important;
         display: block !important;
+        left: 0 !important;
     }
 
     table.table tbody tr.data-row td:first-child {
@@ -615,5 +615,9 @@ table.table tbody tr.expansion td > div p {
 
     tr.data-row td:before {
         content: attr(data-title);
+    }
+
+    .inner-scroll {
+        margin-left: 0 !important;
     }
 }
