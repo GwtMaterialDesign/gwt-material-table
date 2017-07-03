@@ -143,7 +143,7 @@ table.table .cell {
 
 table.table tbody td {
     border-radius: 0;
-    padding: 0 5px 0 20px !important;
+    padding: 0 5px 0 20px;
 }
 
 table.table td#col0.selection,

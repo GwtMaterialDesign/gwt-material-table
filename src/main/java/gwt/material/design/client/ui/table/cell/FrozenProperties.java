@@ -20,8 +20,9 @@ public class FrozenProperties extends HashMap<StyleName, String> {
      * @param styleName the style name as seen here {@link Style#STYLE_Z_INDEX} for example.
      * @param value the string value required for the given style property.
      */
-    public String setStyleProperty(StyleName styleName, String value) {
-        return put(styleName, value);
+    public FrozenProperties setStyleProperty(StyleName styleName, String value) {
+        put(styleName, value);
+        return this;
     }
 
     /**
@@ -37,7 +38,8 @@ public class FrozenProperties extends HashMap<StyleName, String> {
         return width;
     }
 
-    public void setWidth(String width) {
+    public FrozenProperties setWidth(String width) {
         this.width = width;
+        return this;
     }
 }

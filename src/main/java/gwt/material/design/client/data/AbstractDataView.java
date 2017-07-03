@@ -1975,6 +1975,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             if(column.isFrozenColumn()) {
                 if(left) {
                     leftFrozenColumns++;
+                    column.setFrozenLeft(true);
                 } else {
                     rightFrozenColumns++;
                 }

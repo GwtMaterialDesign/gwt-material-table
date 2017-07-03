@@ -45,6 +45,7 @@ import gwt.material.design.client.ui.table.TableHeader;
 import gwt.material.design.client.ui.table.TableRow;
 import gwt.material.design.client.ui.table.TableSubHeader;
 import gwt.material.design.client.ui.table.cell.Column;
+import gwt.material.design.client.ui.table.cell.FrozenProperties;
 import gwt.material.design.client.ui.table.cell.WidgetColumn;
 
 import java.util.List;
@@ -90,7 +91,7 @@ public class BaseRenderer<T> implements Renderer<T> {
             if(!dataView.getSelectionType().equals(SelectionType.NONE)) {
                 TableData selection = drawSelectionCell();
                 if(rowComponent.hasLeftFrozen()) {
-                    drawColumnFreeze(selection, rowComponent, headers.get(0), 0, columns.size());
+                    drawColumnFreeze(selection, rowComponent, headers.get(0), null);
                 }
                 row.add(selection);
             }
@@ -106,8 +107,9 @@ public class BaseRenderer<T> implements Renderer<T> {
             for(int c = 0; c < colSize; c++) {
                 int colIndex = c + colOffset;
                 Context context = new Context(rowComponent.getIndex(), colIndex, valueKey);
-                TableData column = drawColumn(row, context, data, columns.get(c), colIndex, dataView.isHeaderVisible(colIndex));
-                drawColumnFreeze(column, rowComponent, headers.get(colIndex), colIndex, colSize);
+                Column<T, ?> column = columns.get(c);
+                TableData td = drawColumn(row, context, data, column, colIndex, dataView.isHeaderVisible(colIndex));
+                drawColumnFreeze(td, rowComponent, headers.get(colIndex), column);
             }
             rowComponent.setRedraw(false);
         }
@@ -267,60 +269,64 @@ public class BaseRenderer<T> implements Renderer<T> {
     }
 
     @Override
-    public void drawColumnFreeze(TableData column, RowComponent<T> rowComponent, TableHeader header, int colIndex, int colSize) {
-        boolean hasLeftFrozen = rowComponent.hasLeftFrozen();
-        boolean hasRightFrozen = rowComponent.hasRightFrozen();
-        int leftEnd = rowComponent.getLeftFrozenColumns() - 1;
-        int rightStart = colSize - rowComponent.getRightFrozenColumns();
-
-        if((hasLeftFrozen && colIndex <= leftEnd) || (hasRightFrozen && colIndex >= rightStart)) {
+    public void drawColumnFreeze(TableData td, RowComponent<T> rowComponent, TableHeader header, Column<T, ?> column) {
+        if(column == null || column.isFrozenColumn()) {
             rowComponent.getWidget().$this().hover((e, param1) -> {
-                column.$this().addClass("hover");
+                td.$this().addClass("hover");
                 return true;
             }, (e, param1) -> {
-                column.$this().removeClass("hover");
+                td.$this().removeClass("hover");
                 return true;
             });
 
-            column.addAttachHandler(event -> {
+            td.addAttachHandler(event -> {
                 Scheduler.get().scheduleDeferred(() -> {
                     int left = header.$this().prevAll().outerWidth();
                     double width = header.$this().width();
                     double height = rowComponent.getWidget().$this().outerHeight();
 
-                    String paddingTop = column.$this().css("padding-top");
-                    String paddingBottom = column.$this().css("padding-bottom");
-                    String paddingLeft= column.$this().css("padding-left");
-                    String paddingRight = column.$this().css("padding-right");
+                    String paddingTop = td.$this().css("padding-top");
+                    String paddingBottom = td.$this().css("padding-bottom");
+                    String paddingLeft= td.$this().css("padding-left");
+                    String paddingRight = td.$this().css("padding-right");
 
                     String borderBottom = rowComponent.getWidget().$this().css("border-bottom");
 
-                    column.addStyleName(TableCssName.FROZEN_COL);
+                    td.addStyleName(TableCssName.FROZEN_COL);
                     header.addStyleName(TableCssName.FROZEN_COL);
 
-                    column.$this().width(width + "px");
+                    td.$this().width(width + "px");
                     header.$this().width(width + "px");
-                    column.$this().height(height + "px");
+                    td.$this().height(height + "px");
                     header.$this().height(height + "px");
 
-                    column.$this().css("border-bottom", borderBottom);
+                    td.$this().css("border-bottom", borderBottom);
                     header.$this().css("border-bottom", borderBottom);
 
-                    column.$this().css("padding-top", paddingTop);
+                    td.$this().css("padding-top", paddingTop);
                     header.$this().css("padding-top", paddingTop);
 
-                    column.$this().css("padding-bottom", paddingBottom);
+                    td.$this().css("padding-bottom", paddingBottom);
                     header.$this().css("padding-bottom", paddingBottom);
 
-                    column.$this().css("padding-left", paddingLeft);
+                    td.$this().css("padding-left", paddingLeft);
                     header.$this().css("padding-left", paddingLeft);
 
-                    column.$this().css("padding-right", paddingRight);
+                    td.$this().css("padding-right", paddingRight);
                     header.$this().css("padding-right", paddingRight);
 
-                    if(colIndex <= leftEnd) {
+                    if(column != null) {
+                        // Apply the style properties
+                        FrozenProperties frozenProps = column.getFrozenProperties();
+                        if(frozenProps != null) {
+                            Style style = td.getElement().getStyle();
+                            frozenProps.forEach((s, v) -> style.setProperty(s.styleName(), v));
+                        }
+                    }
+
+                    if(column == null || column.isFrozenLeft()) {
                         // Left freeze
-                        column.setLeft(left);
+                        td.setLeft(left);
                         header.setLeft(left);
                     } else {
                         // Right freeze

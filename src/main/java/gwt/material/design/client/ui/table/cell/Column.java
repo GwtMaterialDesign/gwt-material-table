@@ -72,6 +72,8 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
 
     private Comparator<? super RowComponent<T>> sortComparator;
 
+    private boolean frozenLeft;
+
     /**
      * Construct a new Column with a given {@link Cell}.
      * 
@@ -300,6 +302,14 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
 
     public final boolean isFrozenColumn() {
         return frozenProps != null;
+    }
+
+    public final boolean isFrozenLeft() {
+        return frozenLeft;
+    }
+
+    public final void setFrozenLeft(boolean frozenLeft) {
+        this.frozenLeft = frozenLeft;
     }
 
     public FrozenProperties frozenProperties() { return null; }
