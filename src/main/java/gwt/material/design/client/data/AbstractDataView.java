@@ -21,6 +21,7 @@ package gwt.material.design.client.data;
  */
 
 import com.google.gwt.cell.client.Cell.Context;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Display;
@@ -174,6 +175,9 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     @Override
     public void render(Components<Component<?>> components) {
+        // Calculate the frozen columns.
+        calculateFrozenColumns();
+
         // Clear the current row components
         // This does not clear the rows DOM elements
         this.rows.clearComponents();
@@ -185,6 +189,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
         redraw = false;
         prepareRows();
+
+        // Recheck the row height to ensure
+        // the calculated row height is accurate.
+        getCalculatedRowHeight();
 
         // Reset category indexes and row counts
         if(isUseCategories()) {
@@ -199,6 +207,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             frozenMarginLeft = 0;
             TableHeader lastFrozenHeader = headers.get(leftFrozenColumns + getColumnOffset());
             lastFrozenHeader.$this().prevAll().each((param1, el) -> frozenMarginLeft += $(el).outerWidth());
+            innerScroll.addClass("inner-shadow");
             innerScroll.css("margin-left", frozenMarginLeft + "px");
         }
 
@@ -276,24 +285,14 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             }
 
             if (isUseCategories()) {
-                CategoryComponent category = getCategory(row.getDataCategory());
-                if(category == null && !hasCategory(row.getDataCategory())) {
+                CategoryComponent category = row.getCategory();
+                if(category == null) {
                     category = buildCategoryComponent(row);
+                    categories.add(category);
                 }
 
-                if(category != null) {
-                    // Create or assign the category
-                    if (!categories.contains(category)) {
-                        categories.add(category);
-                    }
-
-                    if (!components.contains(category)) {
-                        //components.add(category);
-
-                        if (category.isRendered()) {
-                            category.getWidget().setVisible(true);
-                        }
-                    }
+                if (category.isRendered()) {
+                    category.getWidget().setVisible(true);
                 }
             }
 
@@ -331,9 +330,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 // Check if the row has a category
                 // Categories have been rendered before the rows
                 CategoryComponent category = null;
-                String rowCategory = rowComponent.getDataCategory();
                 if(isUseCategories()){
-                    category = getCategory(rowCategory);
+                    category = rowComponent.getCategory();
 
                     // Ensure the category exists and is rendered
                     if(category != null && !category.isRendered()) {
@@ -401,9 +399,13 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     public void refreshView() {
         // Recheck the row height to ensure
         // the calculated row height is accurate.
-        renderer.getCalculatedRowHeight();
+        getCalculatedRowHeight();
+
+        // Calculate the frozen columns
+        calculateFrozenColumns();
 
         if(redraw) {
+            // Render the rows
             renderRows(rows);
         }
     }
@@ -972,7 +974,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
             for (RowComponent<T> row : rows) {
                 if(row != null) {
-                    String category = row.getDataCategory();
+                    String category = row.getCategoryName();
                     if(category != null) {
                         List<RowComponent<T>> data = splitMap.computeIfAbsent(category, k -> new ArrayList<>());
                         data.add(row);
@@ -1380,26 +1382,25 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected RowComponent<T> buildRowComponent(T data) {
         if(data != null) {
             assert rowFactory != null : "The dataview's row factory cannot be null";
-            RowComponent<T> rowComponent = rowFactory.generate(data);
-            rowComponent.setLeftFrozenColumns(leftFrozenColumns);
-            rowComponent.setRightFrozenColumns(rightFrozenColumns);
+            RowComponent<T> rowComponent = rowFactory.generate(this, data);
             return /*buildCustomComponents(*/rowComponent/*)*/;
         }
         return null;
     }
 
     protected CategoryComponent buildCategoryComponent(RowComponent<T> row) {
-        return row != null ? buildCategoryComponent(row.getDataCategory()) : null;
+        return row != null ? buildCategoryComponent(row.getCategoryName()) : null;
     }
 
-    protected CategoryComponent buildCategoryComponent(String category) {
-        if(category != null) {
+    protected CategoryComponent buildCategoryComponent(String categoryName) {
+        if(categoryName != null) {
             // Generate the category if not exists
             if (categoryFactory != null) {
-                if (!hasCategory(category)) {
-                    return categoryFactory.generate(category);
+                CategoryComponent category = getCategory(categoryName);
+                if (category == null) {
+                    return categoryFactory.generate(this, categoryName);
                 } else {
-                    return getCategory(category);
+                    return category;
                 }
             }
         }
@@ -1473,7 +1474,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     @Override
     public void addCategory(final CategoryComponent category) {
-        if(category != null && !hasCategory(category.getCategory())) {
+        if(category != null && !hasCategory(category.getName())) {
             categories.add(category);
 
             if(isUseCategories()) {
@@ -1492,7 +1493,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     public boolean hasCategory(String categoryName) {
         if(categoryName != null) {
             for (CategoryComponent category : categories) {
-                if (category.getCategory().equals(categoryName)) {
+                if (category.getName().equals(categoryName)) {
                     return true;
                 }
             }
@@ -1531,7 +1532,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     @Override
     public boolean isCategoryEmpty(CategoryComponent category) {
         for(RowComponent<T> row : rows) {
-            if(row.getDataCategory().equals(category.getCategory())) {
+            if(row.getCategoryName().equals(category.getName())) {
                 return false;
             }
         }
@@ -1575,14 +1576,12 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     protected int getRowIndexByElement(Element rowElement) {
-        int index = 0;
         for(RowComponent<T> row : rows) {
-            index++;
             if(row.isRendered() && row.getWidget().getElement().equals(rowElement)) {
-                break;
+                return row.getIndex();
             }
         }
-        return index;
+        return -1;
     }
 
     protected Element getRowElementByModel(T model) {
@@ -1611,36 +1610,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         return models;
     }
 
-    protected Map<CategoryComponent, List<RowComponent<T>>> generateRowMap(Components<RowComponent<T>> rows, boolean autoCreate) {
-        Map<CategoryComponent, List<RowComponent<T>>> dataMap = new HashMap<>();
-
-        for(CategoryComponent category : categories) {
-            dataMap.put(category, new ArrayList<>());
-        }
-
-        for(RowComponent<T> row : rows) {
-            CategoryComponent category = getCategory(row.getDataCategory());
-            if(category == null && !hasCategory(row.getDataCategory())) {
-                if(autoCreate) {
-                    category = buildCategoryComponent(row);
-                } else {
-                    // When we are not auto creating we will
-                    // orphan the data without a category.
-                    category = getOrphansCategory();
-                }
-            }
-
-            if(category != null) {
-                dataMap.computeIfAbsent(category, k -> new ArrayList<>()).add(row);
-            }
-        }
-        return dataMap;
-    }
-
     protected List<RowComponent<T>> getRowsByCategory(Components<RowComponent<T>> rows, CategoryComponent category) {
         List<RowComponent<T>> byCategory = new ArrayList<>();
         for(RowComponent<T> row : rows) {
-            if(row.getDataCategory().equals(category.getCategory())) {
+            if(row.getCategoryName().equals(category.getName())) {
                 byCategory.add(row);
             }
         }
@@ -1851,10 +1824,11 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     /**
      * Get a stored data category by name.
      */
-    protected CategoryComponent getCategory(String name) {
+    @Override
+    public CategoryComponent getCategory(String name) {
         if(name != null) {
             for (CategoryComponent category : categories) {
-                if (category.getCategory().equals(name)) {
+                if (category.getName().equals(name)) {
                     return category;
                 }
             }
@@ -1959,7 +1933,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected int getCategoryRowCount(String category) {
         int count = 0;
         for(RowComponent<T> row : rows) {
-            String rowCategory = row.getDataCategory();
+            String rowCategory = row.getCategoryName();
             if(rowCategory != null) {
                 if(rowCategory.equals(category)) {
                     count++;
@@ -1991,19 +1965,28 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         return height;
     }
 
-    @Override
-    public void setLeftFrozenColumns(int leftFrozenColumns) {
-        this.leftFrozenColumns = leftFrozenColumns;
+    public void calculateFrozenColumns() {
+        // Count the left and right frozen columns
+        leftFrozenColumns = 0;
+        rightFrozenColumns = 0;
+
+        boolean left = true;
+        for(Column<T, ?> column : columns) {
+            if(column.isFrozenColumn()) {
+                if(left) {
+                    leftFrozenColumns++;
+                } else {
+                    rightFrozenColumns++;
+                }
+            } else {
+                left = false;
+            }
+        }
     }
 
     @Override
     public int getLeftFrozenColumns() {
         return leftFrozenColumns;
-    }
-
-    @Override
-    public void setRightFrozenColumns(int rightFrozenColumns) {
-        this.rightFrozenColumns = rightFrozenColumns;
     }
 
     @Override

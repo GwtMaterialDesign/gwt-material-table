@@ -52,7 +52,7 @@ public interface Renderer<T> {
 
     void drawSortIcon(TableHeader th, SortContext<T> sortContext);
 
-    void calculateColumnFreeze(TableData column, RowComponent<T> rowComponent, TableHeader header, int colIndex, int colSize);
+    void drawColumnFreeze(TableData column, RowComponent<T> rowComponent, TableHeader header, int colIndex, int colSize);
 
     int getExpectedRowHeight();
 

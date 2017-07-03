@@ -20,7 +20,7 @@ package gwt.material.design.client.data.component;
  * #L%
  */
 
-
+import gwt.material.design.client.data.DataView;
 import gwt.material.design.jquery.client.api.JQuery;
 import gwt.material.design.jquery.client.api.JQueryElement;
 import gwt.material.design.client.ui.table.TableRow;
@@ -34,18 +34,21 @@ import java.util.List;
 public class RowComponent<T> extends Component<TableRow> {
     private T data;
     private int index;
-    private String category;
-    private int leftFrozenColumns, rightFrozenColumns;
+    private final String categoryName;
+    private final DataView<T> dataView;
 
     public RowComponent(RowComponent<T> clone) {
         super(clone.getWidget(), clone.isRedraw());
         data = clone.data;
-        category = clone.category;
+        index = clone.index;
+        categoryName = clone.categoryName;
+        dataView = clone.dataView;
     }
 
-    public RowComponent(T data, String category) {
+    public RowComponent(T data, DataView<T> dataView, String categoryName) {
         this.data = data;
-        this.category = category;
+        this.dataView = dataView;
+        this.categoryName = categoryName;
     }
 
     public T getData() {
@@ -64,24 +67,24 @@ public class RowComponent<T> extends Component<TableRow> {
         this.index = index;
     }
 
-    public String getDataCategory() {
-        return category;
+    public DataView<T> getDataView() {
+        return dataView;
+    }
+
+    public CategoryComponent getCategory() {
+        return dataView.getCategory(categoryName);
+    }
+
+    public String getCategoryName() {
+        return categoryName;
     }
 
     public int getLeftFrozenColumns() {
-        return leftFrozenColumns;
-    }
-
-    public void setLeftFrozenColumns(int leftFrozenColumns) {
-        this.leftFrozenColumns = leftFrozenColumns;
+        return dataView.getLeftFrozenColumns();
     }
 
     public int getRightFrozenColumns() {
-        return rightFrozenColumns;
-    }
-
-    public void setRightFrozenColumns(int rightFrozenColumns) {
-        this.rightFrozenColumns = rightFrozenColumns;
+        return dataView.getRightFrozenColumns();
     }
 
     public boolean hasFrozenColumns() {
@@ -89,11 +92,11 @@ public class RowComponent<T> extends Component<TableRow> {
     }
 
     public boolean hasLeftFrozen() {
-        return leftFrozenColumns > 0;
+        return getLeftFrozenColumns() > 0;
     }
 
     public boolean hasRightFrozen() {
-        return rightFrozenColumns > 0;
+        return getRightFrozenColumns() > 0;
     }
 
     @Override

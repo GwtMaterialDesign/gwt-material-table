@@ -298,6 +298,12 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
     int getVisibleItemCount();
 
     /**
+     * Get a stored category component.
+     * @param categoryName name of the category component.
+     */
+    CategoryComponent getCategory(String categoryName);
+
+    /**
      * Get all registered category components.
      */
     List<CategoryComponent> getCategories();
@@ -439,23 +445,9 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
     String getHeight();
 
     /**
-     * Freeze left columns, based on the amount provided.
-     *
-     * @param columns number of columns from the left to freeze.
-     */
-    void setLeftFrozenColumns(int columns);
-
-    /**
      * Get the number of left frozen columns.
      */
     int getLeftFrozenColumns();
-
-    /**
-     * Freeze right columns, based on the amount provided.
-     *
-     * @param columns number of columns from the right to freeze.
-     */
-    void setRightFrozenColumns(int columns);
 
     /**
      * Get the number of right frozen columns.

@@ -46,8 +46,6 @@ import gwt.material.design.client.ui.table.TableRow;
 import gwt.material.design.client.ui.table.TableSubHeader;
 import gwt.material.design.client.ui.table.cell.Column;
 import gwt.material.design.client.ui.table.cell.WidgetColumn;
-import gwt.material.design.jquery.client.api.JQueryElement;
-import gwt.material.design.jquery.client.api.Offset;
 
 import java.util.List;
 import java.util.Map;
@@ -92,7 +90,7 @@ public class BaseRenderer<T> implements Renderer<T> {
             if(!dataView.getSelectionType().equals(SelectionType.NONE)) {
                 TableData selection = drawSelectionCell();
                 if(rowComponent.hasLeftFrozen()) {
-                    calculateColumnFreeze(selection, rowComponent, headers.get(0), 0, columns.size());
+                    drawColumnFreeze(selection, rowComponent, headers.get(0), 0, columns.size());
                 }
                 row.add(selection);
             }
@@ -109,7 +107,7 @@ public class BaseRenderer<T> implements Renderer<T> {
                 int colIndex = c + colOffset;
                 Context context = new Context(rowComponent.getIndex(), colIndex, valueKey);
                 TableData column = drawColumn(row, context, data, columns.get(c), colIndex, dataView.isHeaderVisible(colIndex));
-                calculateColumnFreeze(column, rowComponent, headers.get(colIndex), colIndex, colSize);
+                drawColumnFreeze(column, rowComponent, headers.get(colIndex), colIndex, colSize);
             }
             rowComponent.setRedraw(false);
         }
@@ -251,7 +249,7 @@ public class BaseRenderer<T> implements Renderer<T> {
         }
 
         // Set the headers width
-        String width = column.getHeaderWidth();
+        String width = column.getWidth();
         if(width != null) {
             th.setWidth(width);
         }
@@ -269,13 +267,21 @@ public class BaseRenderer<T> implements Renderer<T> {
     }
 
     @Override
-    public void calculateColumnFreeze(TableData column, RowComponent<T> rowComponent, TableHeader header, int colIndex, int colSize) {
+    public void drawColumnFreeze(TableData column, RowComponent<T> rowComponent, TableHeader header, int colIndex, int colSize) {
         boolean hasLeftFrozen = rowComponent.hasLeftFrozen();
         boolean hasRightFrozen = rowComponent.hasRightFrozen();
         int leftEnd = rowComponent.getLeftFrozenColumns() - 1;
         int rightStart = colSize - rowComponent.getRightFrozenColumns();
 
         if((hasLeftFrozen && colIndex <= leftEnd) || (hasRightFrozen && colIndex >= rightStart)) {
+            rowComponent.getWidget().$this().hover((e, param1) -> {
+                column.$this().addClass("hover");
+                return true;
+            }, (e, param1) -> {
+                column.$this().removeClass("hover");
+                return true;
+            });
+
             column.addAttachHandler(event -> {
                 Scheduler.get().scheduleDeferred(() -> {
                     int left = header.$this().prevAll().outerWidth();
@@ -318,7 +324,6 @@ public class BaseRenderer<T> implements Renderer<T> {
                         header.setLeft(left);
                     } else {
                         // Right freeze
-
                     }
                 });
             }, true);

@@ -602,6 +602,11 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
+    public CategoryComponent getCategory(String categoryName) {
+        return dataView.getCategory(categoryName);
+    }
+
+    @Override
     public List<CategoryComponent> getCategories() {
         return dataView.getCategories();
     }
@@ -722,18 +727,8 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
-    public void setLeftFrozenColumns(int columns) {
-        dataView.setLeftFrozenColumns(columns);
-    }
-
-    @Override
     public int getLeftFrozenColumns() {
         return dataView.getLeftFrozenColumns();
-    }
-
-    @Override
-    public void setRightFrozenColumns(int columns) {
-        dataView.setRightFrozenColumns(columns);
     }
 
     @Override

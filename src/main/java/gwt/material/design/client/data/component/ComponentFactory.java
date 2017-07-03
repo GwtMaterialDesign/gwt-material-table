@@ -22,6 +22,7 @@ package gwt.material.design.client.data.component;
 
 
 import gwt.material.design.client.data.AbstractDataView;
+import gwt.material.design.client.data.DataView;
 import gwt.material.design.client.data.component.Component;
 
 /**
@@ -40,5 +41,5 @@ public interface ComponentFactory<T extends Component, M> {
      * @param model model to define the component.
      * @return a fully formed {@link Component}.
      */
-    T generate(M model);
+    T generate(DataView<M> dataView, M model);
 }

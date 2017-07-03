@@ -21,6 +21,7 @@ package gwt.material.design.client.data.factory;
  */
 
 import gwt.material.design.client.data.AbstractDataView;
+import gwt.material.design.client.data.DataView;
 import gwt.material.design.client.data.HasDataCategory;
 import gwt.material.design.client.data.component.ComponentFactory;
 import gwt.material.design.client.data.component.RowComponent;
@@ -33,8 +34,8 @@ import gwt.material.design.client.data.component.RowComponent;
 public class RowComponentFactory<M> implements ComponentFactory<RowComponent<M>, M> {
 
     @Override
-    public RowComponent<M> generate(M model) {
-        return new RowComponent<>(model, getCategory(model));
+    public RowComponent<M> generate(DataView<M> dataView, M model) {
+        return new RowComponent<>(model, dataView, getCategory(model));
     }
 
     public String getCategory(M model) {

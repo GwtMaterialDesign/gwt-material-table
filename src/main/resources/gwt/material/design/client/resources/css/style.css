@@ -79,10 +79,15 @@ tbody [type="checkbox"].filled-in+label {
     height: 100% !important;
 }
 
+.inner-shadow {
+    -moz-box-shadow:    inset 18px 0 20px -20px #aaaaaa;
+    -webkit-box-shadow: inset 18px 0 20px -20px #aaaaaa;
+    box-shadow:         inset 18px 0 20px -20px #aaaaaa;
+}
+
 .inner-scroll {
     overflow-x:hidden;
     overflow-y:visible;
-    /*margin-left:5em;*/
 }
 
 .x-scroll {
@@ -361,6 +366,11 @@ table.table tbody tr.data-row {
 }
 
 table.table tbody tr.data-row:hover {
+    background: #EEEEEE;
+    color: #000000;
+}
+
+table.table tbody tr.data-row td.hover {
     background: #EEEEEE;
     color: #000000;
 }

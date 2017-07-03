@@ -40,16 +40,16 @@ public class CategoryComponent extends Component<TableSubHeader> {
         }
     }
 
-    private String category;
+    private String name;
     private int currentIndex = -1;
     private int rowCount = -1;
 
-    public CategoryComponent(String category) {
-        this.category = category;
+    public CategoryComponent(String name) {
+        this.name = name;
     }
 
-    public String getCategory() {
-        return category;
+    public String getName() {
+        return name;
     }
 
     /**
@@ -109,11 +109,11 @@ public class CategoryComponent extends Component<TableSubHeader> {
         if (o == null || getClass() != o.getClass()) return false;
 
         CategoryComponent that = (CategoryComponent) o;
-        return category.equals(that.category);
+        return name.equals(that.name);
     }
 
     @Override
     public int hashCode() {
-        return category.hashCode();
+        return name.hashCode();
     }
 }

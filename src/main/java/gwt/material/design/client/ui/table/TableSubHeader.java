@@ -22,7 +22,6 @@ package gwt.material.design.client.ui.table;
 
 
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.WidgetCollection;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.constants.IconType;
@@ -30,9 +29,6 @@ import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.js.Js;
 import gwt.material.design.client.ui.MaterialIcon;
 import gwt.material.design.client.ui.html.Text;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Ben Dol
@@ -72,8 +68,8 @@ public class TableSubHeader extends TableRow {
         nameTh.add(nameLbl);
         add(nameTh);
 
-        setName(category.getCategory());
-        setId(category.getCategory());
+        setName(category.getName());
+        setId(category.getName());
     }
 
     public void add(TableHeader tableHeader) {
