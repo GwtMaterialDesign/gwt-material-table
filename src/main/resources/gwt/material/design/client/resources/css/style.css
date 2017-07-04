@@ -14,7 +14,7 @@ table {
 
 th {
     text-transform: uppercase;
-    padding: 12px 5px 4px 20px !important;
+    padding: 12px 5px 4px 20px;
 }
 
 th span {
@@ -476,7 +476,7 @@ table.table tbody tr.expansion td > div p {
         /*width: 480px;*/ /* --- Overall Table Width --- */
     }
 
-    table.table thead tr {
+    div.inner-scroll:not(.inner-shadow) table.table thead tr {
         height: auto;
     }
 

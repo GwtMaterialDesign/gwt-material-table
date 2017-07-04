@@ -290,7 +290,7 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
     public final void setFrozenProperties(FrozenProperties frozenProps) {
         if(frozenProps != null) {
             // Width is a required property for frozen columns
-            setWidth(frozenProps.getWidth());
+            setWidth(frozenProps.getStyleProperty(StyleName.WIDTH));
         }
 
         this.frozenProps = frozenProps;

@@ -319,8 +319,11 @@ public class BaseRenderer<T> implements Renderer<T> {
                         // Apply the style properties
                         FrozenProperties frozenProps = column.getFrozenProperties();
                         if(frozenProps != null) {
-                            Style style = td.getElement().getStyle();
-                            frozenProps.forEach((s, v) -> style.setProperty(s.styleName(), v));
+                            Style styleTd = td.getElement().getStyle();
+                            frozenProps.forEach((s, v) -> styleTd.setProperty(s.styleName(), v));
+
+                            Style styleHeader = header.getElement().getStyle();
+                            frozenProps.getHeaderStyleProperties().forEach((s, v) -> styleHeader.setProperty(s.styleName(), v));
                         }
                     }
 
