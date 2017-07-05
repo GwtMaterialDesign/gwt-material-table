@@ -35,7 +35,7 @@ public class RowComponent<T> extends Component<TableRow> {
     private T data;
     private int index;
     private final String categoryName;
-    private final DataView<T> dataView;
+    private final DataView dataView;
 
     public RowComponent(RowComponent<T> clone) {
         super(clone.getWidget(), clone.isRedraw());
@@ -45,7 +45,7 @@ public class RowComponent<T> extends Component<TableRow> {
         dataView = clone.dataView;
     }
 
-    public RowComponent(T data, DataView<T> dataView, String categoryName) {
+    public RowComponent(T data, DataView dataView, String categoryName) {
         this.data = data;
         this.dataView = dataView;
         this.categoryName = categoryName;
@@ -67,7 +67,7 @@ public class RowComponent<T> extends Component<TableRow> {
         this.index = index;
     }
 
-    public DataView<T> getDataView() {
+    public DataView getDataView() {
         return dataView;
     }
 

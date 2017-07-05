@@ -26,6 +26,7 @@ import com.google.gwt.view.client.HasKeyProvider;
 import com.google.gwt.view.client.HasRows;
 import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.data.component.Component;
+import gwt.material.design.client.data.component.ComponentFactory;
 import gwt.material.design.client.data.component.Components;
 import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.client.data.factory.CategoryComponentFactory;
@@ -365,7 +366,7 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
     /**
      * Set your own custom {@link CategoryComponentFactory} to generate your categories.
      */
-    void setCategoryFactory(CategoryComponentFactory categoryFactory);
+    void setCategoryFactory(ComponentFactory<? extends CategoryComponent, String> categoryFactory);
 
     /**
      * Set the data views loading mask.

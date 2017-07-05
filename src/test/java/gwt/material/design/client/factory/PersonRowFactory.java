@@ -28,7 +28,7 @@ import gwt.material.design.client.model.Person;
 public class PersonRowFactory extends RowComponentFactory<Person> {
 
     @Override
-    public RowComponent<Person> generate(DataView<Person> dataView, Person model) {
+    public RowComponent<Person> generate(DataView dataView, Person model) {
         // We won't change the way it loads the RowComponent
         return super.generate(dataView, model);
     }

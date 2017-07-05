@@ -101,7 +101,7 @@ public class Component<E extends Widget> {
     }
 
     public void removeFromParent() {
-        if(widget != null) {
+        if(widget != null && widget.isAttached()) {
             widget.removeFromParent();
         }
 
@@ -110,7 +110,7 @@ public class Component<E extends Widget> {
     }
 
     protected void clearElement() {
-        if(widget != null) {
+        if(widget != null && widget.isAttached()) {
             widget.removeFromParent();
             widget = null;
         }

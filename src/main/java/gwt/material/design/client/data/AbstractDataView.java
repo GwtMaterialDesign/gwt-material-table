@@ -21,7 +21,6 @@ package gwt.material.design.client.data;
  */
 
 import com.google.gwt.cell.client.Cell.Context;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Display;
@@ -39,6 +38,7 @@ import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.data.component.CategoryComponent.OrphanCategoryComponent;
 import gwt.material.design.client.data.component.Component;
+import gwt.material.design.client.data.component.ComponentFactory;
 import gwt.material.design.client.data.component.Components;
 import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.client.data.factory.CategoryComponentFactory;
@@ -87,7 +87,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected Renderer<T> renderer;
     protected SortContext<T> sortContext;
     protected RowComponentFactory<T> rowFactory;
-    protected CategoryComponentFactory categoryFactory;
+    protected ComponentFactory<? extends CategoryComponent, String> categoryFactory;
     protected ProvidesKey<T> keyProvider;
     //protected List<ComponentFactory<?, T>> componentFactories;
     protected JsTableSubHeaders subheaderLib;
@@ -1663,7 +1663,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
-    public void setCategoryFactory(CategoryComponentFactory categoryFactory) {
+    public void setCategoryFactory(ComponentFactory<? extends CategoryComponent, String> categoryFactory) {
         this.categoryFactory = categoryFactory;
     }
 
@@ -1895,7 +1895,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     public void clearCategories() {
         for(CategoryComponent category : categories) {
             TableSubHeader subheader = category.getWidget();
-            if(subheader != null) {
+            if(subheader != null && subheader.isAttached()) {
                 subheader.removeFromParent();
             }
         }
