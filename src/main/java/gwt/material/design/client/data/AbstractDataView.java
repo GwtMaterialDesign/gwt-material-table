@@ -941,8 +941,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             // Draw and apply the sort icon.
             renderer.drawSortIcon(th, sortContext);
 
-            // Render the new sort order.
-            renderRows(rows);
+            if (dataSource == null || !dataSource.useRemoteSort()) {
+                // Render the new sort order.
+                renderRows(rows);
+            }
 
             container.trigger(TableEvents.SORT_COLUMN, new Object[]{sortContext, index});
         } else {
