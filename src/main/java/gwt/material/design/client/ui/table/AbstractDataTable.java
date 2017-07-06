@@ -25,7 +25,6 @@ import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.ValueUpdater;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.TableCellElement;
@@ -44,7 +43,6 @@ import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.jquery.client.api.Functions.EventFunc1;
 import gwt.material.design.jquery.client.api.Functions.EventFunc2;
 import gwt.material.design.jquery.client.api.Functions.EventFunc3;
-import gwt.material.design.jquery.client.api.JQuery;
 import gwt.material.design.jquery.client.api.JQueryElement;
 import gwt.material.design.jquery.client.api.MouseEvent;
 import gwt.material.design.jscore.client.api.core.Element;
@@ -58,7 +56,6 @@ import gwt.material.design.client.data.SelectionType;
 import gwt.material.design.client.data.SortContext;
 import gwt.material.design.client.data.component.Component;
 import gwt.material.design.client.data.component.Components;
-import gwt.material.design.client.data.factory.CategoryComponentFactory;
 import gwt.material.design.client.data.factory.RowComponentFactory;
 import gwt.material.design.client.js.JsTableSubHeaders;
 import gwt.material.design.client.ui.MaterialProgress;
@@ -518,13 +515,13 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
-    public void unselectRow(com.google.gwt.dom.client.Element row, boolean fireEvent) {
-        dataView.unselectRow(row, fireEvent);
+    public void deselectRow(com.google.gwt.dom.client.Element row, boolean fireEvent) {
+        dataView.deselectRow(row, fireEvent);
     }
 
     @Override
-    public boolean hasUnselectedRows(boolean visibleOnly) {
-        return dataView.hasUnselectedRows(visibleOnly);
+    public boolean hasDeselectedRows(boolean visibleOnly) {
+        return dataView.hasDeselectedRows(visibleOnly);
     }
 
     @Override

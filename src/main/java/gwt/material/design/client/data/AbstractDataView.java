@@ -1103,7 +1103,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 boolean marked = Js.isTrue(input.prop("checked")) ||
                     Js.isTrue(input.prop("indeterminate"));
 
-                selectAllRows(!marked || hasUnselectedRows(true));
+                selectAllRows(!marked || hasDeselectedRows(true));
                 return false;
             });
         }
@@ -1242,7 +1242,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 $("td#col0 input", row).prop("checked", false);
                 $row.removeClass("selected");
             } else {
-                // unselect all rows when using single selection
+                // deselect all rows when using single selection
                 if(selectionType.equals(SelectionType.SINGLE)) {
                     selectAllRows(false, true);
                 }
@@ -1269,7 +1269,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         JQueryElement $row = $(row);
         if(!$row.hasClass("disabled") && !$row.is("[disabled]")) {
             if(!Js.isTrue($row.hasClass("selected"))) {
-                // unselect all rows when using single selection
+                // deselect all rows when using single selection
                 if(selectionType.equals(SelectionType.SINGLE)) {
                     selectAllRows(false, true);
                 }
@@ -1292,7 +1292,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
-    public void unselectRow(Element row, boolean fireEvent) {
+    public void deselectRow(Element row, boolean fireEvent) {
         JQueryElement $row = $(row);
         if(!$row.hasClass("disabled") && !$row.is("[disabled]")) {
             if(Js.isTrue($row.hasClass("selected"))) {
@@ -1313,7 +1313,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
-    public boolean hasUnselectedRows(boolean visibleOnly) {
+    public boolean hasDeselectedRows(boolean visibleOnly) {
         return $table.find("tr:not([disabled]):not(.disabled) td#col0 input:not(:checked)"
             + (visibleOnly ? ":visible" : "")).length() > 0;
     }
@@ -1805,7 +1805,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         input.prop("checked", false);
 
         if($("tr.data-row:visible", getContainer()).length() > 0) {
-            boolean fullSelection = !hasUnselectedRows(false);
+            boolean fullSelection = !hasDeselectedRows(false);
 
             if (!fullSelection && hasSelectedRows(true)) {
                 input.prop("indeterminate", true);

@@ -255,7 +255,7 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
     /**
      * Unselect a selected row.
      */
-    void unselectRow(Element row, boolean fireEvent);
+    void deselectRow(Element row, boolean fireEvent);
 
     /**
      * Does this view have unselected rows.
@@ -263,7 +263,7 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
      * @param visibleOnly should we restrict this check to visible rows only.
      * @return true if there are unselected rows in this view.
      */
-    boolean hasUnselectedRows(boolean visibleOnly);
+    boolean hasDeselectedRows(boolean visibleOnly);
 
     /**
      * Does this view have selected rows.
