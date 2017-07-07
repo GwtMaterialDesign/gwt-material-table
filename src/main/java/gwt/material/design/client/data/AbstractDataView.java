@@ -1395,15 +1395,13 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     protected CategoryComponent buildCategoryComponent(String categoryName) {
-        if(categoryName != null) {
-            // Generate the category if not exists
-            if (categoryFactory != null) {
-                CategoryComponent category = getCategory(categoryName);
-                if (category == null) {
-                    return categoryFactory.generate(this, categoryName);
-                } else {
-                    return category;
-                }
+        // Generate the category if not exists
+        if (categoryFactory != null) {
+            CategoryComponent category = getCategory(categoryName);
+            if (category == null) {
+                return categoryFactory.generate(this, categoryName);
+            } else {
+                return category;
             }
         }
         return null;
