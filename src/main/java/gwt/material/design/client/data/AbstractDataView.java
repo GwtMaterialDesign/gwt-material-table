@@ -555,11 +555,12 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         JQueryElement rows = $table.find("tr.data-row");
         rows.off("." + id);
 
-        if(!selectionType.equals(SelectionType.NONE)) {
+        // TODO PATCH TO ENABLE ROW SELECT FIRING OF EVENT - EVEN THE SELECTION TYPE IS NONE.
+        /*if(!selectionType.equals(SelectionType.NONE)) {*/
             // Select row click bind
             // This will also update the check status of check all input.
             rows.on("tap." + id + " click." + id, (e, o) -> {
-                if (!selectionType.equals(SelectionType.NONE)) {
+                /*if (!selectionType.equals(SelectionType.NONE)) {*/
                     Element row = $(e.getCurrentTarget()).asElement();
                     int rowIndex = getRowIndexByElement(row);
                     if (selectionType.equals(SelectionType.MULTIPLE) && shiftDown) {
@@ -587,10 +588,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                     } else {
                         toggleRowSelect(row);
                     }
-                }
+                /*}*/
                 return false;
             });
-        }
+        /*}*/
 
         rows.on("contextmenu." + id, (e, o) -> {
             Element row = $(e.getCurrentTarget()).asElement();
