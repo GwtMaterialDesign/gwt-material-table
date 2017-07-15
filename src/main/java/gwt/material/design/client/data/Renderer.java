@@ -30,6 +30,7 @@ import gwt.material.design.client.ui.table.TableHeader;
 import gwt.material.design.client.ui.table.TableRow;
 import gwt.material.design.client.ui.table.TableSubHeader;
 import gwt.material.design.client.ui.table.cell.Column;
+import gwt.material.design.client.ui.table.cell.FrozenSide;
 
 import java.util.List;
 
@@ -52,7 +53,7 @@ public interface Renderer<T> {
 
     void drawSortIcon(TableHeader th, SortContext<T> sortContext);
 
-    void drawColumnFreeze(TableData td, RowComponent<T> rowComponent, TableHeader header, Column<T, ?> column);
+    void drawColumnFreeze(TableData td, RowComponent<T> rowComponent, TableHeader header, Column<T, ?> column, FrozenSide side);
 
     int getExpectedRowHeight();
 

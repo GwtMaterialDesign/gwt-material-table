@@ -72,7 +72,7 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
 
     private Comparator<? super RowComponent<T>> sortComparator;
 
-    private boolean frozenLeft;
+    private FrozenSide frozenSide = FrozenSide.NONE;
 
     /**
      * Construct a new Column with a given {@link Cell}.
@@ -300,16 +300,24 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
         return frozenProps;
     }
 
+    public FrozenSide getFrozenSide() {
+        return frozenSide;
+    }
+
     public final boolean isFrozenColumn() {
         return frozenProps != null;
     }
 
     public final boolean isFrozenLeft() {
-        return frozenLeft;
+        return frozenSide.equals(FrozenSide.LEFT);
     }
 
-    public final void setFrozenLeft(boolean frozenLeft) {
-        this.frozenLeft = frozenLeft;
+    public final boolean isFrozenRight() {
+        return frozenSide.equals(FrozenSide.RIGHT);
+    }
+
+    public final void setFrozenSide(FrozenSide frozenLeft) {
+        this.frozenSide = frozenLeft;
     }
 
     public FrozenProperties frozenProperties() { return null; }

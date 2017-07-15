@@ -71,8 +71,6 @@ tbody [type="checkbox"].filled-in+label {
     left: 0;
     top: auto;
     position: absolute;
-    /*margin-top: 14px;*/
-    /*width: 60px;*/
 }
 
 .max-height {

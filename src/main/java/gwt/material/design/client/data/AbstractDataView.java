@@ -53,6 +53,7 @@ import gwt.material.design.client.ui.MaterialCheckBox;
 import gwt.material.design.client.ui.MaterialProgress;
 import gwt.material.design.client.ui.table.*;
 import gwt.material.design.client.ui.table.cell.Column;
+import gwt.material.design.client.ui.table.cell.FrozenSide;
 import gwt.material.design.client.ui.table.events.RowExpand;
 import gwt.material.design.jquery.client.api.JQueryElement;
 
@@ -202,13 +203,29 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             }
         }
 
-        // Assign frozen column margin
+        // Assign left frozen column margin
         if (leftFrozenColumns > 0) {
             frozenMarginLeft = 0;
             TableHeader lastFrozenHeader = headers.get(leftFrozenColumns + getColumnOffset());
             lastFrozenHeader.$this().prevAll().each((param1, el) -> frozenMarginLeft += $(el).outerWidth());
             innerScroll.addClass("inner-shadow");
             innerScroll.css("margin-left", frozenMarginLeft + "px");
+        }
+
+        // Assign right frozen column margin
+        if(rightFrozenColumns > 0) {
+            frozenMarginRight = 0;
+            int firstRightIndex = 0;
+            for(Column column : columns) {
+                if(column.isFrozenRight()) {
+                    break;
+                }
+                firstRightIndex++;
+            }
+            TableHeader firstFrozenHeader = headers.get(firstRightIndex + getColumnOffset());
+            firstFrozenHeader.$this().nextAll().each((param1, el) -> frozenMarginRight += $(el).outerWidth());
+            innerScroll.addClass("inner-shadow");
+            innerScroll.css("margin-right", frozenMarginRight + "px");
         }
 
         if(!components.isEmpty()) {
@@ -555,42 +572,38 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         JQueryElement rows = $table.find("tr.data-row");
         rows.off("." + id);
 
-        if(!selectionType.equals(SelectionType.NONE)) {
-            // Select row click bind
-            // This will also update the check status of check all input.
-            rows.on("tap." + id + " click." + id, (e, o) -> {
-                if (!selectionType.equals(SelectionType.NONE)) {
-                    Element row = $(e.getCurrentTarget()).asElement();
-                    int rowIndex = getRowIndexByElement(row);
-                    if (selectionType.equals(SelectionType.MULTIPLE) && shiftDown) {
-                        if (lastSelected < rowIndex) {
-                            // Increment
-                            for (int i = lastSelected; i < rowIndex; i++) {
-                                if (i < getVisibleItemCount()) {
-                                    RowComponent<T> rowComponent = this.rows.get(i);
-                                    if (rowComponent != null && rowComponent.isRendered()) {
-                                        selectRow(rowComponent.getWidget().getElement(), true);
-                                    }
-                                }
-                            }
-                        } else {
-                            // Decrement
-                            for (int i = lastSelected - 1; i >= rowIndex - 1; i--) {
-                                if (i >= 0) {
-                                    RowComponent<T> rowComponent = this.rows.get(i);
-                                    if (rowComponent != null && rowComponent.isRendered()) {
-                                        selectRow(rowComponent.getWidget().getElement(), true);
-                                    }
-                                }
+        // Select row click bind
+        // This will also update the check status of check all input.
+        rows.on("tap." + id + " click." + id, (e, o) -> {
+            Element row = $(e.getCurrentTarget()).asElement();
+            int rowIndex = getRowIndexByElement(row);
+            if (selectionType.equals(SelectionType.MULTIPLE) && shiftDown) {
+                if (lastSelected < rowIndex) {
+                    // Increment
+                    for (int i = lastSelected; i < rowIndex; i++) {
+                        if (i < getVisibleItemCount()) {
+                            RowComponent<T> rowComponent = this.rows.get(i);
+                            if (rowComponent != null && rowComponent.isRendered()) {
+                                selectRow(rowComponent.getWidget().getElement(), true);
                             }
                         }
-                    } else {
-                        toggleRowSelect(row);
+                    }
+                } else {
+                    // Decrement
+                    for (int i = lastSelected - 1; i >= rowIndex - 1; i--) {
+                        if (i >= 0) {
+                            RowComponent<T> rowComponent = this.rows.get(i);
+                            if (rowComponent != null && rowComponent.isRendered()) {
+                                selectRow(rowComponent.getWidget().getElement(), true);
+                            }
+                        }
                     }
                 }
-                return false;
-            });
-        }
+            } else {
+                toggleRowSelect(row);
+            }
+            return false;
+        });
 
         rows.on("contextmenu." + id, (e, o) -> {
             Element row = $(e.getCurrentTarget()).asElement();
@@ -1243,7 +1256,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 $row.removeClass("selected");
             } else {
                 // deselect all rows when using single selection
-                if(selectionType.equals(SelectionType.SINGLE)) {
+                if(!selectionType.equals(SelectionType.MULTIPLE)) {
                     selectAllRows(false, true);
                 }
 
@@ -1975,13 +1988,19 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             if(column.isFrozenColumn()) {
                 if(left) {
                     leftFrozenColumns++;
-                    column.setFrozenLeft(true);
+                    column.setFrozenSide(FrozenSide.LEFT);
                 } else {
                     rightFrozenColumns++;
+                    column.setFrozenSide(FrozenSide.RIGHT);
                 }
             } else {
                 left = false;
             }
+        }
+
+        if(isUseStickyHeader() && (leftFrozenColumns > 0 || rightFrozenColumns > 0)) {
+            logger.warning("Sticky header is not supported with frozen columns, this will be disabled automatically.");
+            setUseStickyHeader(false);
         }
     }
 
