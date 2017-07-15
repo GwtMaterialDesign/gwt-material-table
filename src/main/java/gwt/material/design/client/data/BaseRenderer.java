@@ -46,6 +46,7 @@ import gwt.material.design.client.ui.table.TableRow;
 import gwt.material.design.client.ui.table.TableSubHeader;
 import gwt.material.design.client.ui.table.cell.Column;
 import gwt.material.design.client.ui.table.cell.FrozenProperties;
+import gwt.material.design.client.ui.table.cell.FrozenSide;
 import gwt.material.design.client.ui.table.cell.WidgetColumn;
 
 import java.util.List;
@@ -91,7 +92,7 @@ public class BaseRenderer<T> implements Renderer<T> {
             if(!dataView.getSelectionType().equals(SelectionType.NONE)) {
                 TableData selection = drawSelectionCell();
                 if(rowComponent.hasLeftFrozen()) {
-                    drawColumnFreeze(selection, rowComponent, headers.get(0), null);
+                    drawColumnFreeze(selection, rowComponent, headers.get(0), null, FrozenSide.LEFT);
                 }
                 row.add(selection);
             }
@@ -109,7 +110,7 @@ public class BaseRenderer<T> implements Renderer<T> {
                 Context context = new Context(rowComponent.getIndex(), colIndex, valueKey);
                 Column<T, ?> column = columns.get(c);
                 TableData td = drawColumn(row, context, data, column, colIndex, dataView.isHeaderVisible(colIndex));
-                drawColumnFreeze(td, rowComponent, headers.get(colIndex), column);
+                drawColumnFreeze(td, rowComponent, headers.get(colIndex), column, column.getFrozenSide());
             }
             rowComponent.setRedraw(false);
         }
@@ -125,6 +126,10 @@ public class BaseRenderer<T> implements Renderer<T> {
                 expandIcon.setWaves(WavesType.LIGHT);
                 expandIcon.getElement().getStyle().setCursor(Cursor.POINTER);
                 expand.add(expandIcon);
+
+                if(rowComponent.hasRightFrozen()) {
+                    drawColumnFreeze(expand, rowComponent, headers.get(0), null, FrozenSide.RIGHT);
+                }
                 row.add(expand);
             }
         } else if(row.hasExpansionColumn()) {
@@ -269,7 +274,7 @@ public class BaseRenderer<T> implements Renderer<T> {
     }
 
     @Override
-    public void drawColumnFreeze(TableData td, RowComponent<T> rowComponent, TableHeader header, Column<T, ?> column) {
+    public void drawColumnFreeze(TableData td, RowComponent<T> rowComponent, TableHeader header, Column<T, ?> column, FrozenSide side) {
         if(column == null || column.isFrozenColumn()) {
             rowComponent.getWidget().$this().hover((e, param1) -> {
                 td.$this().addClass("hover");
@@ -282,6 +287,8 @@ public class BaseRenderer<T> implements Renderer<T> {
             td.addAttachHandler(event -> {
                 Scheduler.get().scheduleDeferred(() -> {
                     int left = header.$this().prevAll().outerWidth();
+                    int right = header.$this().nextAll().outerWidth();
+
                     double width = header.$this().width();
                     double height = rowComponent.getWidget().$this().outerHeight();
 
@@ -327,12 +334,16 @@ public class BaseRenderer<T> implements Renderer<T> {
                         }
                     }
 
-                    if(column == null || column.isFrozenLeft()) {
+                    if((column != null && column.isFrozenLeft()) || side.equals(FrozenSide.LEFT)) {
                         // Left freeze
                         td.setLeft(left);
                         header.setLeft(left);
-                    } else {
+                    } else if((column != null && column.isFrozenRight()) || side.equals(FrozenSide.RIGHT)) {
                         // Right freeze
+                        td.setRight(right);
+                        td.$this().css("left", "auto");
+                        header.setRight(right);
+                        header.$this().css("left", "auto");
                     }
                 });
             }, true);
