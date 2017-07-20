@@ -344,6 +344,26 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
     void disableCategory(String categoryName);
 
     /**
+     * Open an existing Category.
+     */
+    void openCategory(String categoryName);
+
+    /**
+     * Open an existing Category.
+     */
+    void openCategory(CategoryComponent category);
+
+    /**
+     * Close an existing Category.
+     */
+    void closeCategory(String categoryName);
+
+    /**
+     * Close an existing Category.
+     */
+    void closeCategory(CategoryComponent category);
+
+    /**
      * Get the data views current sort context, or null if no sort context is applied.
      */
     SortContext<T> getSortContext();
