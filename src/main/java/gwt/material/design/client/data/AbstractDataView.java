@@ -499,42 +499,38 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         JQueryElement rows = $table.find("tr.data-row");
         rows.off("." + id);
 
-        if(!selectionType.equals(SelectionType.NONE)) {
-            // Select row click bind
-            // This will also update the check status of check all input.
-            rows.on("tap." + id + " click." + id, (e, o) -> {
-                if (!selectionType.equals(SelectionType.NONE)) {
-                    Element row = $(e.getCurrentTarget()).asElement();
-                    int rowIndex = getRowIndexByElement(row);
-                    if (selectionType.equals(SelectionType.MULTIPLE) && shiftDown) {
-                        if (lastSelected < rowIndex) {
-                            // Increment
-                            for (int i = lastSelected; i < rowIndex; i++) {
-                                if (i < getVisibleItemCount()) {
-                                    RowComponent<T> rowComponent = this.rows.get(i);
-                                    if (rowComponent != null && rowComponent.isRendered()) {
-                                        selectRow(rowComponent.getWidget().getElement(), true);
-                                    }
-                                }
-                            }
-                        } else {
-                            // Decrement
-                            for (int i = lastSelected - 1; i >= rowIndex - 1; i--) {
-                                if (i >= 0) {
-                                    RowComponent<T> rowComponent = this.rows.get(i);
-                                    if (rowComponent != null && rowComponent.isRendered()) {
-                                        selectRow(rowComponent.getWidget().getElement(), true);
-                                    }
-                                }
+        // Select row click bind
+        // This will also update the check status of check all input.
+        rows.on("tap." + id + " click." + id, (e, o) -> {
+             Element row = $(e.getCurrentTarget()).asElement();
+            int rowIndex = getRowIndexByElement(row);
+            if (selectionType.equals(SelectionType.MULTIPLE) && shiftDown) {
+                if (lastSelected < rowIndex) {
+                    // Increment
+                    for (int i = lastSelected; i < rowIndex; i++) {
+                        if (i < getVisibleItemCount()) {
+                            RowComponent<T> rowComponent = this.rows.get(i);
+                            if (rowComponent != null && rowComponent.isRendered()) {
+                                selectRow(rowComponent.getWidget().getElement(), true);
                             }
                         }
-                    } else {
-                        toggleRowSelect(row);
+                    }
+                } else {
+                    // Decrement
+                    for (int i = lastSelected - 1; i >= rowIndex - 1; i--) {
+                        if (i >= 0) {
+                            RowComponent<T> rowComponent = this.rows.get(i);
+                            if (rowComponent != null && rowComponent.isRendered()) {
+                                selectRow(rowComponent.getWidget().getElement(), true);
+                            }
+                        }
                     }
                 }
-                return false;
-            });
-        }
+            } else {
+                toggleRowSelect(row);
+            }
+            return false;
+        });
 
         rows.on("contextmenu." + id, (e, o) -> {
             Element row = $(e.getCurrentTarget()).asElement();
@@ -1191,7 +1187,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 $row.removeClass("selected");
             } else {
                 // deselect all rows when using single selection
-                if(selectionType.equals(SelectionType.SINGLE)) {
+                if(!selectionType.equals(SelectionType.MULTIPLE)) {
                     selectAllRows(false, true);
                 }
 
