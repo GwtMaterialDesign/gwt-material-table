@@ -1877,6 +1877,11 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         clearCategories();
     }
 
+    @Override
+    public List<TableHeader> getHeaders() {
+        return Collections.unmodifiableList(headers);
+    }
+
     protected void addHeader(int index, TableHeader header, Column<T, ?> column) {
         if(headers.size() < 1) {
             headers.add(header);
@@ -1892,10 +1897,6 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             headerRow.remove(index);
         }
         refreshStickyHeaders();
-    }
-
-    protected List<TableHeader> getHeaders() {
-        return Collections.unmodifiableList(headers);
     }
 
     protected int getCategoryRowCount(String category) {

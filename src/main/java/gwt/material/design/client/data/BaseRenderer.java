@@ -75,6 +75,7 @@ public class BaseRenderer<T> implements Renderer<T> {
                             List<Column<T, ?>> columns, boolean redraw) {
         T data = rowComponent.getData();
         TableRow row = rowComponent.getWidget();
+        boolean draw = true;
         if(row == null) {
             // Create a new row element
             row = new TableRow();
@@ -86,28 +87,24 @@ public class BaseRenderer<T> implements Renderer<T> {
             rowComponent.setWidget(row);
 
             if(!dataView.getSelectionType().equals(SelectionType.NONE)) {
-                row.add(drawSelectionCell());
+                TableData selection = drawSelectionCell();
+                row.add(selection);
             }
+        } else if(!redraw && !rowComponent.isRedraw()) {
+            draw = false;
+        }
 
+        if(draw) {
             // Build the columns
             int colOffset = dataView.getColumnOffset();
-            for(int c = 0; c < columns.size(); c++) {
+            int colSize = columns.size();
+
+            for(int c = 0; c < colSize; c++) {
                 int colIndex = c + colOffset;
                 Context context = new Context(rowComponent.getIndex(), colIndex, valueKey);
-                drawColumn(row, context, data, columns.get(c), colIndex, dataView.isHeaderVisible(colIndex));
+                TableData column = drawColumn(row, context, data, columns.get(c), colIndex, dataView.isHeaderVisible(colIndex));
             }
-        } else {
-            if(redraw || rowComponent.isRedraw()) {
-                // Rebuild the columns
-                int colOffset = dataView.getColumnOffset();
-                for(int c = 0; c < columns.size(); c++) {
-                    int colIndex = c + colOffset;
-                    Context context = new Context(rowComponent.getIndex(), colIndex, valueKey);
-                    drawColumn(row, context, rowComponent.getData(), columns.get(c), colIndex,
-                        dataView.isHeaderVisible(colIndex));
-                }
-                rowComponent.setRedraw(false);
-            }
+            rowComponent.setRedraw(false);
         }
 
         if(dataView.isUseRowExpansion()) {

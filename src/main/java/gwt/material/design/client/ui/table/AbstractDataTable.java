@@ -740,6 +740,11 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         dataView.setLongPressDuration(longPressDuration);
     }
 
+    @Override
+    public List<TableHeader> getHeaders() {
+        return dataView.getHeaders();
+    }
+
     // Event Handler Methods
 
     @Override

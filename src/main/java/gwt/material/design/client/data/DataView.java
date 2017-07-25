@@ -33,6 +33,7 @@ import gwt.material.design.client.data.factory.CategoryComponentFactory;
 import gwt.material.design.client.data.factory.RowComponentFactory;
 import gwt.material.design.client.js.JsTableSubHeaders;
 import gwt.material.design.client.ui.MaterialProgress;
+import gwt.material.design.client.ui.table.TableHeader;
 import gwt.material.design.client.ui.table.TableScaffolding;
 import gwt.material.design.client.ui.table.cell.Column;
 
@@ -147,6 +148,11 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
      * Check if a header with the given index is visible.
      */
     boolean isHeaderVisible(int colIndex);
+
+    /**
+     * Get the list of rendered header widgets.
+     */
+    List<TableHeader> getHeaders();
 
     /**
      * Add a new column to the data view.
