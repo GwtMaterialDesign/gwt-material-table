@@ -94,7 +94,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected JsTableSubHeaders subheaderLib;
     protected Panel xScrollPanel;
     protected String height;
-    protected Integer categoryHeight;
+    protected int categoryHeight = 0;
     protected int frozenMarginLeft;
     protected int frozenMarginRight;
     protected boolean rendering;
@@ -1864,7 +1864,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     public int getCategoryHeight() {
-        if(categoryHeight == null) {
+        if (isUseCategories() && categoryHeight == 0) {
             categoryHeight = categories.get(0).getWidget().getOffsetHeight();
         }
         return categoryHeight;
