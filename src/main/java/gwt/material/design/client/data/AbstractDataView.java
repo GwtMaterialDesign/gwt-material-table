@@ -84,7 +84,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected ProvidesKey<T> keyProvider;
     //protected List<ComponentFactory<?, T>> componentFactories;
     protected JsTableSubHeaders subheaderLib;
-    protected Integer categoryHeight;
+    protected int categoryHeight = 0;
 
     // DOM
     protected Table table;
@@ -1838,7 +1838,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     public int getCategoryHeight() {
-        if(categoryHeight == null) {
+        if (isUseCategories() && categoryHeight == 0) {
             categoryHeight = categories.get(0).getElement().getOffsetHeight();
         }
         return categoryHeight;
