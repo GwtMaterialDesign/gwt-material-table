@@ -72,8 +72,8 @@ public class TableSubHeader extends TableRow {
         nameTh.add(nameLbl);
         add(nameTh);
 
-        setName(category.getCategory());
-        setId(category.getCategory());
+        setName(category.getName());
+        setId(category.getName());
     }
 
     public void add(TableHeader tableHeader) {

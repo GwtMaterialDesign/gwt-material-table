@@ -292,6 +292,12 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
     int getVisibleItemCount();
 
     /**
+     * Get a stored category component.
+     * @param categoryName name of the category component.
+     */
+    CategoryComponent getCategory(String categoryName);
+
+    /**
      * Get all registered category components.
      */
     List<CategoryComponent> getCategories();

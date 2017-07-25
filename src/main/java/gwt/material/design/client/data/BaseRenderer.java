@@ -248,7 +248,7 @@ public class BaseRenderer<T> implements Renderer<T> {
         }
 
         // Set the headers width
-        String width = column.getHeaderWidth();
+        String width = column.getWidth();
         if(width != null) {
             th.setWidth(width);
         }
