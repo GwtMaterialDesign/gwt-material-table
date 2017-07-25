@@ -57,7 +57,6 @@ import gwt.material.design.client.data.SelectionType;
 import gwt.material.design.client.data.SortContext;
 import gwt.material.design.client.data.component.Component;
 import gwt.material.design.client.data.component.Components;
-import gwt.material.design.client.data.factory.CategoryComponentFactory;
 import gwt.material.design.client.data.factory.RowComponentFactory;
 import gwt.material.design.client.js.JsTableSubHeaders;
 import gwt.material.design.client.ui.MaterialProgress;
@@ -517,13 +516,13 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
-    public void unselectRow(com.google.gwt.dom.client.Element row, boolean fireEvent) {
-        dataView.unselectRow(row, fireEvent);
+    public void deselectRow(com.google.gwt.dom.client.Element row, boolean fireEvent) {
+        dataView.deselectRow(row, fireEvent);
     }
 
     @Override
-    public boolean hasUnselectedRows(boolean visibleOnly) {
-        return dataView.hasUnselectedRows(visibleOnly);
+    public boolean hasDeselectedRows(boolean visibleOnly) {
+        return dataView.hasDeselectedRows(visibleOnly);
     }
 
     @Override
