@@ -20,9 +20,7 @@ package gwt.material.design.client.ui.table;
  * #L%
  */
 
-
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.WidgetCollection;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.constants.IconType;
@@ -31,8 +29,7 @@ import gwt.material.design.client.js.Js;
 import gwt.material.design.client.ui.MaterialIcon;
 import gwt.material.design.client.ui.html.Text;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * @author Ben Dol
@@ -138,6 +135,10 @@ public class TableSubHeader extends TableRow {
         return iconTh;
     }
 
+    public MaterialIcon getIcon() {
+        return icon;
+    }
+
     public boolean isOpen() {
         return $this().hasClass(TableCssName.EXPANDED);
     }
@@ -176,7 +177,11 @@ public class TableSubHeader extends TableRow {
     public void removeFromParent() {
         Widget parent = getParent();
         if(parent != null && parent instanceof MaterialWidget) {
-            ((MaterialWidget) parent).getChildren().remove(this);
+            try {
+                ((MaterialWidget) parent).getChildren().remove(this);
+            } catch (NoSuchElementException ex) {
+                // This means we have already removed this subheader.
+            }
         }
         $this().parent().remove();
     }

@@ -251,7 +251,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
             List<CategoryComponent> lastHidden = new ArrayList<>();
             for (CategoryComponent category : categories) {
                 if (category.isRendered()) {
-                    category.getElement().setVisible(true);
+                    category.getWidget().setVisible(true);
                 }
 
                 boolean hidden = false;
@@ -261,7 +261,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
 
                     if (reach < getTotalRows()) {
                         if (category.isRendered()) {
-                            category.getElement().setVisible(false);
+                            category.getWidget().setVisible(false);
                         }
                         lastHidden.add(category);
                         hidden = true;
@@ -274,7 +274,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
                     // after these were hidden, implying valid data.
                     for (CategoryComponent hiddenCategory : lastHidden) {
                         if (hiddenCategory.isRendered()) {
-                            hiddenCategory.getElement().setVisible(true);
+                            hiddenCategory.getWidget().setVisible(true);
                         }
                     }
                 }
@@ -283,7 +283,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
             // hide passed empty categories
             for (CategoryComponent category : getPassedCategories()) {
                 if (category.isRendered()) {
-                    category.getElement().setVisible(false);
+                    category.getWidget().setVisible(false);
                 }
             }
 

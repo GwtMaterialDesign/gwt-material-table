@@ -74,7 +74,7 @@ public class BaseRenderer<T> implements Renderer<T> {
     public TableRow drawRow(DataView<T> dataView, RowComponent<T> rowComponent, Object valueKey,
                             List<Column<T, ?>> columns, boolean redraw) {
         T data = rowComponent.getData();
-        TableRow row = rowComponent.getElement();
+        TableRow row = rowComponent.getWidget();
         if(row == null) {
             // Create a new row element
             row = new TableRow();
@@ -83,7 +83,7 @@ public class BaseRenderer<T> implements Renderer<T> {
             row.getElement().getStyle().setProperty("maxHeight", getExpectedRowHeight() + "px");
             row.getElement().getStyle().setProperty("minHeight", getExpectedRowHeight() + "px");
             row.setStyleName(TableCssName.DATA_ROW);
-            rowComponent.setElement(row);
+            rowComponent.setWidget(row);
 
             if(!dataView.getSelectionType().equals(SelectionType.NONE)) {
                 row.add(drawSelectionCell());
@@ -136,7 +136,7 @@ public class BaseRenderer<T> implements Renderer<T> {
     @Override
     public TableSubHeader drawCategory(CategoryComponent category) {
         if(category != null) {
-            TableSubHeader subHeader = category.getElement();
+            TableSubHeader subHeader = category.getWidget();
             if(subHeader == null) {
                 subHeader = category.render();
             }
@@ -282,7 +282,7 @@ public class BaseRenderer<T> implements Renderer<T> {
 
     @Override
     public void calculateRowHeight(RowComponent<T> row) {
-        TableRow element = row.getElement();
+        TableRow element = row.getWidget();
         if(element != null) {
             int rowHeight = element.$this().outerHeight(true);
             if (rowHeight > 0 && rowHeight != calculatedRowHeight) {

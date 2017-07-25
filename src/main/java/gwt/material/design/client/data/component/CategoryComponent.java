@@ -66,17 +66,17 @@ public class CategoryComponent extends Component<TableSubHeader> {
      * @return a fully formed {@link TableSubHeader} object.
      */
     public final TableSubHeader render() {
-        TableSubHeader element = getElement();
+        TableSubHeader element = getWidget();
         if(element == null) {
             element = new TableSubHeader(this);
-            setElement(element);
+            setWidget(element);
         }
         render(element);
         return element;
     }
 
     public boolean isOpen() {
-        return isRendered() && getElement().isOpen();
+        return isRendered() && getWidget().isOpen();
     }
 
     public int getCurrentIndex() {
@@ -96,11 +96,11 @@ public class CategoryComponent extends Component<TableSubHeader> {
     }
 
     @Override
-    public void setElement(TableSubHeader element) {
+    public void setWidget(TableSubHeader widget) {
         // copy the elements style and info
-        element.copy(getElement());
+        widget.copy(getWidget());
 
-        super.setElement(element);
+        super.setWidget(widget);
     }
 
     @Override

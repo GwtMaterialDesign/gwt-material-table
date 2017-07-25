@@ -34,7 +34,7 @@ import gwt.material.design.client.data.component.RowComponent;
 public class RowComponentFactory<M> implements ComponentFactory<RowComponent<M>, M> {
 
     @Override
-    public RowComponent<M> generate(DataView<M> dataView, M model) {
+    public RowComponent<M> generate(DataView dataView, M model) {
         return new RowComponent<>(model, dataView, getCategory(model));
     }
 

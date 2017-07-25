@@ -35,17 +35,17 @@ public class RowComponent<T> extends Component<TableRow> {
     private T data;
     private int index;
     private final String categoryName;
-    private final DataView<T> dataView;
+    private final DataView dataView;
 
     public RowComponent(RowComponent<T> clone) {
-        super(clone.getElement(), clone.isRedraw());
+        super(clone.getWidget(), clone.isRedraw());
         data = clone.data;
         index = clone.index;
         categoryName = clone.categoryName;
         dataView = clone.dataView;
     }
 
-    public RowComponent(T data, DataView<T> dataView, String categoryName) {
+    public RowComponent(T data, DataView dataView, String categoryName) {
         this.data = data;
         this.dataView = dataView;
         this.categoryName = categoryName;
@@ -67,7 +67,7 @@ public class RowComponent<T> extends Component<TableRow> {
         this.index = index;
     }
 
-    public DataView<T> getDataView() {
+    public DataView getDataView() {
         return dataView;
     }
 
@@ -81,7 +81,7 @@ public class RowComponent<T> extends Component<TableRow> {
 
     @Override
     protected void clearElement() {
-        TableRow row = getElement();
+        TableRow row = getWidget();
         if(row != null) {
             clearRowExpansion();
         }
@@ -89,7 +89,7 @@ public class RowComponent<T> extends Component<TableRow> {
     }
 
     public void clearRowExpansion() {
-        JQueryElement next = JQuery.$(getElement()).next();
+        JQueryElement next = JQuery.$(getWidget()).next();
         if(next.is("tr.expansion")) {
             next.remove();
         }

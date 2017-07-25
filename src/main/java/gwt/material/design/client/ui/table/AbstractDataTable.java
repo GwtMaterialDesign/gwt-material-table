@@ -38,6 +38,7 @@ import com.google.gwt.view.client.Range;
 import com.google.gwt.view.client.RangeChangeEvent.Handler;
 import com.google.gwt.view.client.RowCountChangeEvent;
 import gwt.material.design.client.base.constants.TableCssName;
+import gwt.material.design.client.data.component.ComponentFactory;
 import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.jquery.client.api.Functions.EventFunc1;
 import gwt.material.design.jquery.client.api.Functions.EventFunc2;
@@ -626,7 +627,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
-    public void setCategoryFactory(CategoryComponentFactory categoryFactory) {
+    public void setCategoryFactory(ComponentFactory<? extends CategoryComponent, String> categoryFactory) {
         dataView.setCategoryFactory(categoryFactory);
     }
 

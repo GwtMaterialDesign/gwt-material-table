@@ -38,6 +38,7 @@ import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.data.component.CategoryComponent.OrphanCategoryComponent;
 import gwt.material.design.client.data.component.Component;
+import gwt.material.design.client.data.component.ComponentFactory;
 import gwt.material.design.client.data.component.Components;
 import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.client.data.factory.CategoryComponentFactory;
@@ -80,7 +81,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected Renderer<T> renderer;
     protected SortContext<T> sortContext;
     protected RowComponentFactory<T> rowFactory;
-    protected CategoryComponentFactory categoryFactory;
+    protected ComponentFactory<? extends CategoryComponent, String> categoryFactory;
     protected ProvidesKey<T> keyProvider;
     //protected List<ComponentFactory<?, T>> componentFactories;
     protected JsTableSubHeaders subheaderLib;
@@ -191,7 +192,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             // This can be improved later.
             Scheduler.get().scheduleDeferred(() -> {
                 Component<?> component = components.get(components.size() - 1);
-                Widget componentWidget = component.getElement();
+                Widget componentWidget = component.getWidget();
                 if (componentWidget == null || componentWidget.isAttached()) {
                     rendering = false;
                 } else {
@@ -234,7 +235,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                     renderComponent(category);
 
                     if (openCategories.contains(category) && category.isRendered()) {
-                        subheaderLib.open(category.getElement().$this());
+                        subheaderLib.open(category.getWidget().$this());
                     }
                 }
             } else {
@@ -262,7 +263,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 }
 
                 if (category.isRendered()) {
-                    category.getElement().setVisible(true);
+                    category.getWidget().setVisible(true);
                 }
             }
 
@@ -272,7 +273,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 if(existingRow != null) {
                     // Replace the rows element with the
                     // existing indexes element.
-                    row.setElement(existingRow.getElement());
+                    row.setWidget(existingRow.getWidget());
                     row.setRedraw(true);
 
                     // Rebuild the rows custom components
@@ -318,7 +319,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                         if(categories.size() > 1) {
                             int categoryIndex = category.getCurrentIndex();
                             if(categoryIndex == -1) {
-                                categoryIndex = tbody.getWidgetIndex(category.getElement());
+                                categoryIndex = tbody.getWidgetIndex(category.getWidget());
                                 category.setCurrentIndex(categoryIndex);
                             }
 
@@ -330,7 +331,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                         }
 
                         // Check the display of the row
-                        TableSubHeader element = category.getElement();
+                        TableSubHeader element = category.getWidget();
                         if (element != null && element.isOpen()) {
                             row.getElement().getStyle().clearDisplay();
                         }
@@ -512,7 +513,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                                 if (i < getVisibleItemCount()) {
                                     RowComponent<T> rowComponent = this.rows.get(i);
                                     if (rowComponent != null && rowComponent.isRendered()) {
-                                        selectRow(rowComponent.getElement().getElement(), true);
+                                        selectRow(rowComponent.getWidget().getElement(), true);
                                     }
                                 }
                             }
@@ -522,7 +523,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                                 if (i >= 0) {
                                     RowComponent<T> rowComponent = this.rows.get(i);
                                     if (rowComponent != null && rowComponent.isRendered()) {
-                                        selectRow(rowComponent.getElement().getElement(), true);
+                                        selectRow(rowComponent.getWidget().getElement(), true);
                                     }
                                 }
                             }
@@ -853,7 +854,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
         for (RowComponent<T> row : rows) {
             Context context = new Context(row.getIndex(), index, getValueKey(row.getData()));
-            renderer.drawColumn(row.getElement(), context, row.getData(), column, index, true);
+            renderer.drawColumn(row.getWidget(), context, row.getData(), column, index, true);
         }
 
         refreshStickyHeaders();
@@ -959,7 +960,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         headerRow.remove(index);
 
         for(RowComponent<T> row : getRows()) {
-            row.getElement().remove(index);
+            row.getWidget().remove(index);
         }
         columns.remove(colIndex);
 
@@ -1019,7 +1020,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
                 // Rebuild the columns
                 for (RowComponent<T> row : getRows()) {
-                    row.getElement().insert(renderer.drawSelectionCell(), 0);
+                    row.getWidget().insert(renderer.drawSelectionCell(), 0);
                 }
                 reindexColumns();
             } else if (selectionType.equals(SelectionType.NONE) && hadSelection) {
@@ -1075,7 +1076,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         int colMod = getColumnOffset();
 
         for(RowComponent<T> row : getRows()) {
-            TableRow tableRow = row.getElement();
+            TableRow tableRow = row.getWidget();
             for(int i = colMod; i < tableRow.getWidgetCount(); i++) {
                 TableData td = tableRow.getColumn(i);
                 if(!td.getStyleName().contains("colex")) {
@@ -1451,8 +1452,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     public void disableCategory(String categoryName) {
         CategoryComponent category = getCategory(categoryName);
         if(category != null && category.isRendered()) {
-            subheaderLib.close(category.getElement().$this());
-            category.getElement().setEnabled(false);
+            subheaderLib.close(category.getWidget().$this());
+            category.getWidget().setEnabled(false);
         }
     }
 
@@ -1466,7 +1467,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         List<CategoryComponent> openCategories = new ArrayList<>();
         if(isUseCategories()) {
             for (CategoryComponent category : categories) {
-                TableSubHeader element = category.getElement();
+                TableSubHeader element = category.getWidget();
                 if (element != null && element.isOpen()) {
                     openCategories.add(category);
                 }
@@ -1523,7 +1524,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     protected int getRowIndexByElement(Element rowElement) {
         for(RowComponent<T> row : rows) {
-            if(row.isRendered() && row.getElement().getElement().equals(rowElement)) {
+            if(row.isRendered() && row.getWidget().getElement().equals(rowElement)) {
                 return row.getIndex();
             }
         }
@@ -1533,7 +1534,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected Element getRowElementByModel(T model) {
         for(RowComponent<T> row : rows) {
             if(row.getData().equals(model)) {
-                return row.getElement().getElement();
+                return row.getWidget().getElement();
             }
         }
         return null;
@@ -1541,7 +1542,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     protected T getModelByRowElement(Element rowElement) {
         for(RowComponent<T> row : rows) {
-            if(row.isRendered() && row.getElement().getElement().equals(rowElement)) {
+            if(row.isRendered() && row.getWidget().getElement().equals(rowElement)) {
                 return row.getData();
             }
         }
@@ -1569,7 +1570,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected List<CategoryComponent> getHiddenCategories() {
         List<CategoryComponent> hidden = new ArrayList<>();
         for(CategoryComponent category : categories) {
-            TableSubHeader element = category.getElement();
+            TableSubHeader element = category.getWidget();
             if(element != null && !element.isVisible()) {
                 hidden.add(category);
             }
@@ -1580,7 +1581,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected List<CategoryComponent> getVisibleCategories() {
         List<CategoryComponent> visible = new ArrayList<>();
         for(CategoryComponent category : categories) {
-            TableSubHeader element = category.getElement();
+            TableSubHeader element = category.getWidget();
             if(element != null && element.isVisible()) {
                 visible.add(category);
             }
@@ -1609,7 +1610,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
-    public void setCategoryFactory(CategoryComponentFactory categoryFactory) {
+    public void setCategoryFactory(ComponentFactory<? extends CategoryComponent, String> categoryFactory) {
         this.categoryFactory = categoryFactory;
     }
 
@@ -1798,7 +1799,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     public int getCategoryHeight() {
         if (isUseCategories() && categoryHeight == 0) {
-            categoryHeight = categories.get(0).getElement().getOffsetHeight();
+            categoryHeight = categories.get(0).getWidget().getOffsetHeight();
         }
         return categoryHeight;
     }
@@ -1808,7 +1809,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
      */
     protected TableSubHeader getTableSubHeader(String name) {
         CategoryComponent category  = getCategory(name);
-        return category != null ? category.getElement() : null;
+        return category != null ? category.getWidget() : null;
     }
 
     /**
@@ -1816,7 +1817,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
      */
     protected TableSubHeader getTableSubHeader(JQueryElement elem) {
         for(CategoryComponent category : categories) {
-            TableSubHeader subheader = category.getElement();
+            TableSubHeader subheader = category.getWidget();
             if(subheader != null && $(subheader).is(elem)) {
                 return subheader;
             }
@@ -1840,8 +1841,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     @Override
     public void clearCategories() {
         for(CategoryComponent category : categories) {
-            TableSubHeader subheader = category.getElement();
-            if(subheader != null) {
+            TableSubHeader subheader = category.getWidget();
+            if(subheader != null && subheader.isAttached()) {
                 subheader.removeFromParent();
             }
         }
