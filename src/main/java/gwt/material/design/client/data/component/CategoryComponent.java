@@ -42,7 +42,7 @@ public class CategoryComponent extends Component<TableSubHeader> {
 
     private String name;
     private int currentIndex = -1;
-    private int rowCount = -1;
+    private int rowCount = 0;
 
     public CategoryComponent(String name) {
         this.name = name;

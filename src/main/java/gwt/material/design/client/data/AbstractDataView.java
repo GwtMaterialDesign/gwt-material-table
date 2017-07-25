@@ -178,7 +178,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         if(isUseCategories()) {
             for (CategoryComponent category : categories) {
                 category.setCurrentIndex(-1);
-                category.setRowCount(-1);
+                category.setRowCount(0);
             }
         }
 
@@ -317,17 +317,17 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 if(row != null) {
                     if(category != null){
                         if(categories.size() > 1) {
-                            int categoryIndex = category.getCurrentIndex();
-                            if(categoryIndex == -1) {
+                            int categoryIndex = 0/*category.getCurrentIndex()*/;
+                            //if(categoryIndex == -1) {
                                 categoryIndex = tbody.getWidgetIndex(category.getWidget());
-                                category.setCurrentIndex(categoryIndex);
-                            }
+                                //category.setCurrentIndex(categoryIndex);
+                            //}
 
                             int categoryCount = category.getRowCount() + 1;
                             category.setRowCount(categoryCount);
 
                             // Calculate the rows index
-                            index = categoryIndex + categoryCount;
+                            index = (categoryIndex + categoryCount) - 1;
                         }
 
                         // Check the display of the row
@@ -1802,6 +1802,30 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             categoryHeight = categories.get(0).getWidget().getOffsetHeight();
         }
         return categoryHeight;
+    }
+
+    @Override
+    public void openCategory(String categoryName) {
+        openCategory(getCategory(categoryName));
+    }
+
+    @Override
+    public void openCategory(CategoryComponent category) {
+        if(category != null && category.isRendered()) {
+            subheaderLib.open(category.getWidget().$this());
+        }
+    }
+
+    @Override
+    public void closeCategory(String categoryName) {
+        closeCategory(getCategory(categoryName));
+    }
+
+    @Override
+    public void closeCategory(CategoryComponent category) {
+        if(category != null && category.isRendered()) {
+            subheaderLib.close(category.getWidget().$this());
+        }
     }
 
     /**
