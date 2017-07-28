@@ -20,7 +20,6 @@ package gwt.material.design.client.ui.table;
  * #L%
  */
 
-
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.TableCssName;

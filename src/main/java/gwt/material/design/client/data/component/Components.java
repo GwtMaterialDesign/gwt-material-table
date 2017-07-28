@@ -59,19 +59,28 @@ public class Components<T extends Component<?>> extends ArrayList<T> {
         }
     }
 
+    /**
+     * Clear both the Widget and Component.
+     */
     @Override
     public void clear() {
-        clearElements();
+        clearWidgets();
         super.clear();
     }
 
-    public void clearElements() {
+    /**
+     * Clear the components Widgets, without dumping the component.
+     */
+    public void clearWidgets() {
         // clear dom rows
         for(T component : this) {
-            component.clearElement();
+            component.clearWidget();
         }
     }
 
+    /**
+     * Clear the component data without touching the DOM.
+     */
     public void clearComponents() {
         super.clear();
     }
@@ -99,7 +108,7 @@ public class Components<T extends Component<?>> extends ArrayList<T> {
     public T remove(int index) {
         T component = super.get(index);
         if(component != null) {
-            component.clearElement();
+            component.clearWidget();
         }
         return softRemove(index);
     }
