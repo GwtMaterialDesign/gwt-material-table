@@ -62,7 +62,7 @@ import java.util.logging.Logger;
 import static gwt.material.design.jquery.client.api.JQuery.$;
 import static gwt.material.design.jquery.client.api.JQuery.window;
 
-/**fg
+/**
  * Abstract DataView handles the creation, preparation and UI logic for
  * the table rows and subheaders (if enabled). All of the basic table
  * rendering is handled.
@@ -594,7 +594,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
             // Fire row select event
             container.trigger(TableEvents.ROW_CONTEXTMENU, new Object[] {
-                    e, getModelByRowElement(row), row
+                e, getModelByRowElement(row), row
             });
             return false;
         });
@@ -604,7 +604,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
             // Fire row select event
             container.trigger(TableEvents.ROW_DOUBLECLICK, new Object[] {
-                    e, getModelByRowElement(row), row
+                e, getModelByRowElement(row), row
             });
             return false;
         });
@@ -614,7 +614,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
             // Fire row select event
             container.trigger(TableEvents.ROW_LONGPRESS, new Object[] {
-                    e, getModelByRowElement(row), row
+                e, getModelByRowElement(row), row
             });
             return true;
         }, e -> {
@@ -622,7 +622,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
             // Fire row select event
             container.trigger(TableEvents.ROW_SHORTPRESS, new Object[] {
-                    e, getModelByRowElement(row), row
+                e, getModelByRowElement(row), row
             });
             return true;
         }, longPressDuration);
@@ -703,7 +703,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected void setupSubHeaders() {
         if($table != null && display != null) {
             subheaderLib = JsTableSubHeaders.newInstance(
-                    $(".table-body", getContainer()), "tr.subheader");
+                $(".table-body", getContainer()), "tr.subheader");
 
             final JQueryElement header = $table.find("thead");
             $(subheaderLib).on("before-recalculate", e -> {
@@ -763,7 +763,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     @Override
     public int getRowCount() {
-        return rowCount;
+        return isExact ? rows.size() : rowCount;
     }
 
     @Override
@@ -1538,6 +1538,16 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
+    public void updateRow(final T model) {
+        RowComponent<T> row = getRowByModel(model);
+        if (row != null) {
+            row.setRedraw(true);
+            row.setData(model);
+            renderComponent(row);
+        }
+    }
+
+    @Override
     public RowComponent<T> getRow(T model) {
         for(RowComponent<T> row : rows) {
             if(row.getData().equals(model)) {
@@ -1551,6 +1561,16 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     public RowComponent<T> getRow(int index) {
         for(RowComponent<T> row : rows) {
             if(row.isRendered() && row.getIndex() == index) {
+                return row;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public RowComponent<T> getRowByModel(T model) {
+        for (final RowComponent<T> row : rows) {
+            if (row.getData().equals(model)) {
                 return row;
             }
         }

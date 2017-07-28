@@ -25,7 +25,6 @@ import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.ValueUpdater;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.TableCellElement;
@@ -45,7 +44,6 @@ import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.jquery.client.api.Functions.EventFunc1;
 import gwt.material.design.jquery.client.api.Functions.EventFunc2;
 import gwt.material.design.jquery.client.api.Functions.EventFunc3;
-import gwt.material.design.jquery.client.api.JQuery;
 import gwt.material.design.jquery.client.api.JQueryElement;
 import gwt.material.design.jquery.client.api.MouseEvent;
 import gwt.material.design.jscore.client.api.core.Element;
@@ -576,6 +574,11 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
+    public void updateRow(T model) {
+        dataView.updateRow(model);
+    }
+
+    @Override
     public RowComponent<T> getRow(T model) {
         return dataView.getRow(model);
     }
@@ -583,6 +586,11 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     @Override
     public RowComponent<T> getRow(int index) {
         return dataView.getRow(index);
+    }
+
+    @Override
+    public RowComponent<T> getRowByModel(T model) {
+        return dataView.getRowByModel(model);
     }
 
     @Override
