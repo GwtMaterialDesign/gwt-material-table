@@ -26,17 +26,15 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.view.client.ProvidesKey;
 import com.google.gwt.view.client.Range;
+import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.data.loader.LoadCallback;
 import gwt.material.design.client.data.loader.LoadConfig;
 import gwt.material.design.client.data.loader.LoadResult;
 import gwt.material.design.jquery.client.api.Event;
 import gwt.material.design.jquery.client.api.Functions.EventFunc3;
-import gwt.material.design.jquery.client.api.JQueryElement;
 import gwt.material.design.client.base.InterruptibleTask;
-import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.data.AbstractDataView;
 import gwt.material.design.client.data.DataSource;
-import gwt.material.design.client.data.SortContext;
 import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.data.component.Component;
 import gwt.material.design.client.data.component.Components;
@@ -44,6 +42,7 @@ import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.client.jquery.JQueryExtension;
 import gwt.material.design.client.ui.table.TableEvents;
 import gwt.material.design.client.ui.table.TableScaffolding;
+import gwt.material.design.jquery.client.api.JQueryElement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -392,29 +391,11 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
         } else {
             Scheduler.get().scheduleFinally(() -> display.setLoadMask(true));
 
-            final InfiniteDataView<T> dataView = this;
-
-            dataSource.load(new LoadConfig<T>() {
+            dataSource.load(new LoadConfig<>(loaderIndex, loaderSize, getSortContext(), getOpenCategories()),
+                    new LoadCallback<T>() {
                 @Override
-                public int getOffset() {
-                    return loaderIndex;
-                }
-                @Override
-                public int getLimit() {
-                    return loaderSize;
-                }
-                @Override
-                public SortContext<T> getSortContext() {
-                    return dataView.getSortContext();
-                }
-                @Override
-                public List<CategoryComponent> getOpenCategories() {
-                    return dataView.getOpenCategories();
-                }
-            }, new LoadCallback<T>() {
-                @Override
-                public void onSuccess(LoadResult<T> loadResult) {
-                    dataView.loaded(loadResult.getOffset(), loadResult.getData(), loadResult.getTotalLength(), loadResult.isCacheData());
+                public void onSuccess(LoadResult<T> result) {
+                    loaded(result.getOffset(), result.getData(), result.getTotalLength(), result.isCacheData());
                 }
                 @Override
                 public void onFailure(Throwable caught) {

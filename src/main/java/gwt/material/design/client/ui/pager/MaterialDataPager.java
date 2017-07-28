@@ -166,36 +166,19 @@ public class MaterialDataPager<T> extends MaterialDataPagerBase<T> implements Ha
      */
     protected void doLoad(int offset, int limit) {
         this.offset = offset;
-        dataSource.load(new LoadConfig<T>() {
-            @Override
-            public int getOffset() {
-                return offset;
-            }
 
-            @Override
-            public int getLimit() {
-                // Check whether the pager has excess rows with given limit
-                if (isLastPage() & isExcess()) {
-                    // Get the difference between total rows and excess rows
-                    return totalRows - offset;
-                }
-                return limit;
-            }
+        // Check whether the pager has excess rows with given limit
+        if (isLastPage() & isExcess()) {
+            // Get the difference between total rows and excess rows
+            limit = totalRows - offset;
+        }
 
-            @Override
-            public SortContext<T> getSortContext() {
-                return table.getSortContext();
-            }
-
-            @Override
-            public List<CategoryComponent> getOpenCategories() {
-                return table.getOpenCategories();
-            }
-        }, new LoadCallback<T>() {
+        int finalLimit = limit;
+        dataSource.load(new LoadConfig<>(offset, limit, table.getSortContext(), table.getOpenCategories()), new LoadCallback<T>() {
             @Override
             public void onSuccess(LoadResult<T> loadResult) {
                 totalRows = loadResult.getTotalLength();
-                table.setVisibleRange(offset, limit);
+                table.setVisibleRange(offset, finalLimit);
                 table.loaded(loadResult.getOffset(), loadResult.getData());
                 updateUi();
             }

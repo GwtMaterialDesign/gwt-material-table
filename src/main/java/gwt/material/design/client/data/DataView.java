@@ -454,4 +454,14 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
      * Set the long press duration requirement.
      */
     void setLongPressDuration(int longPressDuration);
+
+    /**
+     * Set the table body height.
+     */
+    void setHeight(String height);
+
+    /**
+     * Get the table body height.
+     */
+    String getHeight();
 }
