@@ -1338,7 +1338,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     protected CategoryComponent buildCategoryComponent(String categoryName) {
-        /*if(categoryName != null) {
+        if(categoryName != null) {
             // Generate the category if not exists
             if (categoryFactory != null) {
                 CategoryComponent category = getCategory(categoryName);
@@ -1348,7 +1348,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                     return category;
                 }
             }
-        }*/
+        }
         return null;
     }
 
