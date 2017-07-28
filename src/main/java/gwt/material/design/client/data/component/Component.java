@@ -20,7 +20,6 @@ package gwt.material.design.client.data.component;
  * #L%
  */
 
-
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.List;
@@ -30,28 +29,28 @@ import java.util.List;
  */
 public class Component<E extends Widget> {
 
-    private E element;
+    private E widget;
     private boolean redraw;
 
     private Components<Component<?>> children;
 
     public Component() {}
 
-    public Component(E element, boolean redraw) {
-        this.element = element;
+    public Component(E widget, boolean redraw) {
+        this.widget = widget;
         this.redraw = redraw;
     }
 
-    public E getElement() {
-        return element;
+    public E getWidget() {
+        return widget;
     }
 
-    public void setElement(E element) {
-        this.element = element;
+    public void setWidget(E widget) {
+        this.widget = widget;
     }
 
     public boolean isRendered() {
-        return element != null && element.getParent() != null;
+        return widget != null && widget.getParent() != null;
     }
 
     public boolean isRedraw() {
@@ -63,7 +62,7 @@ public class Component<E extends Widget> {
     }
 
     public boolean isDrawable() {
-        return element != null;
+        return widget != null;
     }
 
     public Components<Component<?>> getChildren() {
@@ -102,8 +101,8 @@ public class Component<E extends Widget> {
     }
 
     public void removeFromParent() {
-        if(element != null) {
-            element.removeFromParent();
+        if(widget != null && widget.isAttached()) {
+            widget.removeFromParent();
         }
 
         // clear children
@@ -111,9 +110,9 @@ public class Component<E extends Widget> {
     }
 
     protected void clearElement() {
-        if(element != null) {
-            element.removeFromParent();
-            element = null;
+        if(widget != null && widget.isAttached()) {
+            widget.removeFromParent();
+            widget = null;
         }
 
         // clear children

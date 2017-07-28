@@ -1,4 +1,4 @@
-package gwt.material.design.client.ui.table;
+package gwt.material.design.client.jquery;
 
 /*
  * #%L
@@ -20,23 +20,15 @@ package gwt.material.design.client.ui.table;
  * #L%
  */
 
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.dom.client.Element;
+import gwt.material.design.jquery.client.api.Functions;
+import jsinterop.annotations.JsType;
 
-/**
- * Table scaffolding that will construct the Panels for the table foundation.
- *
- * @author Ben Dol
- */
-public interface TableScaffolding {
+@JsType(name = "jQuery", isNative = true)
+public class JQueryMutateElement extends JQueryExtElement {
 
-    void build();
-    void apply(HasWidgets container);
+    public native JQueryMutateElement mutate(String events, Functions.Func2<Element, Object> callback);
 
-    Panel getTableBody();
-    Panel getTopPanel();
-    Panel getInfoPanel();
-    Panel getToolPanel();
-    Panel getXScrollPanel();
-    Table getTable();
+    public native JQueryMutateElement mutate(String events, Functions.Func2<Element, Object> callback, Functions.Func falseCallback);
 }
+

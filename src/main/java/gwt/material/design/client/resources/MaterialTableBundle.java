@@ -44,6 +44,12 @@ public interface MaterialTableBundle extends ClientBundle {
     @Source("js/greedyscroll.min.js")
     TextResource greedyScroll();
 
+    @Source("js/mutate-events.min.js")
+    TextResource mutateEvents();
+
+    @Source("js/mutate.min.js")
+    TextResource mutate();
+
     @Source("css/style.min.css")
     TextResource style();
 }

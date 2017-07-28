@@ -71,7 +71,7 @@ public class TableRow extends MaterialWidget {
 
     public void setDataCategory(CategoryComponent category) {
         this.category = category;
-        setDataAttribute("data-category", category.getCategory());
+        setDataAttribute("data-category", category.getName());
     }
 
     public CategoryComponent getDataCategory() {

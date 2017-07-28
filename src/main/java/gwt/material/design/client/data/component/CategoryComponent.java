@@ -40,16 +40,16 @@ public class CategoryComponent extends Component<TableSubHeader> {
         }
     }
 
-    private String category;
+    private String name;
     private int currentIndex = -1;
-    private int rowCount = -1;
+    private int rowCount = 0;
 
-    public CategoryComponent(String category) {
-        this.category = category;
+    public CategoryComponent(String name) {
+        this.name = name;
     }
 
-    public String getCategory() {
-        return category;
+    public String getName() {
+        return name;
     }
 
     /**
@@ -66,17 +66,17 @@ public class CategoryComponent extends Component<TableSubHeader> {
      * @return a fully formed {@link TableSubHeader} object.
      */
     public final TableSubHeader render() {
-        TableSubHeader element = getElement();
+        TableSubHeader element = getWidget();
         if(element == null) {
             element = new TableSubHeader(this);
-            setElement(element);
+            setWidget(element);
         }
         render(element);
         return element;
     }
 
     public boolean isOpen() {
-        return isRendered() && getElement().isOpen();
+        return isRendered() && getWidget().isOpen();
     }
 
     public int getCurrentIndex() {
@@ -96,11 +96,11 @@ public class CategoryComponent extends Component<TableSubHeader> {
     }
 
     @Override
-    public void setElement(TableSubHeader element) {
+    public void setWidget(TableSubHeader widget) {
         // copy the elements style and info
-        element.copy(getElement());
+        widget.copy(getWidget());
 
-        super.setElement(element);
+        super.setWidget(widget);
     }
 
     @Override
@@ -109,11 +109,11 @@ public class CategoryComponent extends Component<TableSubHeader> {
         if (o == null || getClass() != o.getClass()) return false;
 
         CategoryComponent that = (CategoryComponent) o;
-        return category.equals(that.category);
+        return name.equals(that.name);
     }
 
     @Override
     public int hashCode() {
-        return category.hashCode();
+        return name.hashCode();
     }
 }

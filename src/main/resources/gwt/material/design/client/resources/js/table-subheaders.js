@@ -184,7 +184,7 @@ function TableSubHeaders($table, $stickies) {
     // Get all until next subheader
 
     var $icon = $subheader.find("i");
-    if($icon != null) {
+    if($icon !== null) {
       var closeIcon = $subheader.attr("data-close-icon");
       if(closeIcon === undefined) {
         closeIcon = "remove";
@@ -215,7 +215,7 @@ function TableSubHeaders($table, $stickies) {
     $base.trigger("closing", [$subheader]);
 
     var $icon = $subheader.find("i");
-    if($icon != null) {
+    if($icon !== null) {
       var openIcon = $subheader.attr("data-open-icon");
       if(openIcon === undefined) {
         openIcon = "add";
@@ -329,7 +329,7 @@ function TableSubHeaders($table, $stickies) {
         } else {
           var width = $this.outerWidth();
           $this.removeClass("fixed").removeAttr("style");
-          $this.width(width);
+          //$this.width(width);
 
           // Try display the previous sticky
           $prevSticky.css({ "display": "" });
@@ -474,10 +474,10 @@ function TableSubHeaders($table, $stickies) {
       var $this = $(this),
           width = widths[index];
 
-      /*$this.css({
+      $this.css({
         "min-width": width,
         "max-width": width
-      });*/
+      });
     });
   };
 
@@ -516,10 +516,10 @@ function TableSubHeaders($table, $stickies) {
   base.updateWidth = function($sticky, width) {
     /*if(width) {
       $sticky.width(width);
-    }
+    }*/
 
     // Calculate new cell widths
-    base.updateCellWidths($sticky);*/
+    base.updateCellWidths($sticky);
   };
 
   base.updateWidths = function() {

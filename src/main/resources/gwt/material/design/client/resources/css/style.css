@@ -14,7 +14,7 @@ table {
 
 th {
     text-transform: uppercase;
-    padding: 12px 5px 4px 20px !important;
+    padding: 12px 5px 4px 20px;
 }
 
 th span {
@@ -67,8 +67,32 @@ tbody [type="checkbox"].filled-in+label {
     top:6px;
 }
 
+.frozen-col {
+    left: 0;
+    top: auto;
+    position: absolute;
+}
+
 .max-height {
     height: 100% !important;
+}
+
+.inner-shadow {
+    -moz-box-shadow:    inset 18px 0 20px -20px #aaaaaa;
+    -webkit-box-shadow: inset 18px 0 20px -20px #aaaaaa;
+    box-shadow:         inset 18px 0 20px -20px #aaaaaa;
+}
+
+.inner-scroll {
+    overflow-x:hidden;
+    overflow-y:visible;
+}
+
+.x-scroll {
+    overflow-x: scroll;
+    height: 15px;
+    width: 100%;
+    overflow-y: hidden;
 }
 
 .table-container {
@@ -117,7 +141,7 @@ table.table .cell {
 
 table.table tbody td {
     border-radius: 0;
-    padding: 0 5px 0 20px !important;
+    padding: 0 5px 0 20px;
 }
 
 table.table td#col0.selection,
@@ -257,16 +281,15 @@ section.table-container div.tool-panel ul.dropdown-content li > span {
     font-size: 16px;
 }
 
-.table-body {
-    width: 100%;
-}
 
 .table-body {
+    width: 100%;
     height: 100vh;
     /*top: -6px;*/
 
     position: relative;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .table-body:focus {
@@ -341,6 +364,11 @@ table.table tbody tr.data-row {
 }
 
 table.table tbody tr.data-row:hover {
+    background: #EEEEEE;
+    color: #000000;
+}
+
+table.table tbody tr.data-row td.hover {
     background: #EEEEEE;
     color: #000000;
 }
@@ -446,7 +474,7 @@ table.table tbody tr.expansion td > div p {
         /*width: 480px;*/ /* --- Overall Table Width --- */
     }
 
-    table.table thead tr {
+    div.inner-scroll:not(.inner-shadow) table.table thead tr {
         height: auto;
     }
 
@@ -496,6 +524,7 @@ table.table tbody tr.expansion td > div p {
         position: relative;
         width: 100% !important;
         display: block !important;
+        left: 0 !important;
     }
 
     table.table tbody tr.data-row td:first-child {
@@ -594,5 +623,9 @@ table.table tbody tr.expansion td > div p {
 
     tr.data-row td:before {
         content: attr(data-title);
+    }
+
+    .inner-scroll {
+        margin-left: 0 !important;
     }
 }

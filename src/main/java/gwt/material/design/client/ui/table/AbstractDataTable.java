@@ -38,11 +38,11 @@ import com.google.gwt.view.client.Range;
 import com.google.gwt.view.client.RangeChangeEvent.Handler;
 import com.google.gwt.view.client.RowCountChangeEvent;
 import gwt.material.design.client.base.constants.TableCssName;
+import gwt.material.design.client.data.component.ComponentFactory;
 import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.jquery.client.api.Functions.EventFunc1;
 import gwt.material.design.jquery.client.api.Functions.EventFunc2;
 import gwt.material.design.jquery.client.api.Functions.EventFunc3;
-import gwt.material.design.jquery.client.api.JQuery;
 import gwt.material.design.jquery.client.api.JQueryElement;
 import gwt.material.design.jquery.client.api.MouseEvent;
 import gwt.material.design.jscore.client.api.core.Element;
@@ -56,7 +56,6 @@ import gwt.material.design.client.data.SelectionType;
 import gwt.material.design.client.data.SortContext;
 import gwt.material.design.client.data.component.Component;
 import gwt.material.design.client.data.component.Components;
-import gwt.material.design.client.data.factory.CategoryComponentFactory;
 import gwt.material.design.client.data.factory.RowComponentFactory;
 import gwt.material.design.client.js.JsTableSubHeaders;
 import gwt.material.design.client.ui.MaterialProgress;
@@ -79,7 +78,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     private static final Logger logger = Logger.getLogger(AbstractDataTable.class.getName());
 
-    public static class DefaultTableScaffolding extends TableScaffolding {
+    public static class DefaultTableScaffolding extends AbstractTableScaffolding {
         @Override
         public MaterialWidget createTableBody() {
             MaterialWidget tableBody = new MaterialWidget(DOM.createDiv());
@@ -114,6 +113,11 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
             table.addStyleName(TableCssName.TABLE);
             return table;
         }
+
+        @Override
+        protected XScrollPanel createXScrollPanel() {
+            return new XScrollPanel();
+        }
     }
 
     protected DataView<T> dataView;
@@ -125,7 +129,6 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     private boolean refreshing;
     private boolean cellIsEditing;
     private boolean destroyOnUnload;
-    private String height;
 
     public AbstractDataTable() {
         this(new StandardDataView<>());
@@ -185,10 +188,6 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     @Override
     public void setup(TableScaffolding scaffolding) throws Exception {
         dataView.setup(scaffolding);
-
-        if(height != null) {
-            setHeight(height);
-        }
     }
 
     @Override
@@ -214,12 +213,12 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     @Override
     public void setHeight(String height) {
-       this.height = height;
+        dataView.setHeight(height);
+    }
 
-        // Avoid setting the height prematurely.
-        if(setup) {
-            JQuery.$(scaffolding.getTableBody()).height(height);
-        }
+    @Override
+    public String getHeight() {
+        return dataView.getHeight();
     }
 
     @Override
@@ -516,13 +515,13 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
-    public void unselectRow(com.google.gwt.dom.client.Element row, boolean fireEvent) {
-        dataView.unselectRow(row, fireEvent);
+    public void deselectRow(com.google.gwt.dom.client.Element row, boolean fireEvent) {
+        dataView.deselectRow(row, fireEvent);
     }
 
     @Override
-    public boolean hasUnselectedRows(boolean visibleOnly) {
-        return dataView.hasUnselectedRows(visibleOnly);
+    public boolean hasDeselectedRows(boolean visibleOnly) {
+        return dataView.hasDeselectedRows(visibleOnly);
     }
 
     @Override
@@ -601,6 +600,31 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
+    public void openCategory(String categoryName) {
+        dataView.openCategory(categoryName);
+    }
+
+    @Override
+    public void openCategory(CategoryComponent category) {
+        dataView.openCategory(category);
+    }
+
+    @Override
+    public void closeCategory(String categoryName) {
+        dataView.closeCategory(categoryName);
+    }
+
+    @Override
+    public void closeCategory(CategoryComponent category) {
+        dataView.closeCategory(category);
+    }
+
+    @Override
+    public CategoryComponent getCategory(String categoryName) {
+        return dataView.getCategory(categoryName);
+    }
+
+    @Override
     public List<CategoryComponent> getCategories() {
         return dataView.getCategories();
     }
@@ -621,7 +645,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
-    public void setCategoryFactory(CategoryComponentFactory categoryFactory) {
+    public void setCategoryFactory(ComponentFactory<? extends CategoryComponent, String> categoryFactory) {
         dataView.setCategoryFactory(categoryFactory);
     }
 
@@ -713,6 +737,21 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     @Override
     public void setLongPressDuration(int longPressDuration) {
         dataView.setLongPressDuration(longPressDuration);
+    }
+
+    @Override
+    public List<TableHeader> getHeaders() {
+        return dataView.getHeaders();
+    }
+
+    @Override
+    public int getLeftFrozenColumns() {
+        return dataView.getLeftFrozenColumns();
+    }
+
+    @Override
+    public int getRightFrozenColumns() {
+        return dataView.getRightFrozenColumns();
     }
 
     // Event Handler Methods

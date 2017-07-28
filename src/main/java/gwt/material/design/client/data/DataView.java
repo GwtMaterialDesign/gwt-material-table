@@ -26,12 +26,14 @@ import com.google.gwt.view.client.HasKeyProvider;
 import com.google.gwt.view.client.HasRows;
 import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.data.component.Component;
+import gwt.material.design.client.data.component.ComponentFactory;
 import gwt.material.design.client.data.component.Components;
 import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.client.data.factory.CategoryComponentFactory;
 import gwt.material.design.client.data.factory.RowComponentFactory;
 import gwt.material.design.client.js.JsTableSubHeaders;
 import gwt.material.design.client.ui.MaterialProgress;
+import gwt.material.design.client.ui.table.TableHeader;
 import gwt.material.design.client.ui.table.TableScaffolding;
 import gwt.material.design.client.ui.table.cell.Column;
 
@@ -148,6 +150,11 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
     boolean isHeaderVisible(int colIndex);
 
     /**
+     * Get the list of rendered header widgets.
+     */
+    List<TableHeader> getHeaders();
+
+    /**
      * Add a new column to the data view.
      *
      * @param column the column object
@@ -248,7 +255,7 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
     /**
      * Unselect a selected row.
      */
-    void unselectRow(Element row, boolean fireEvent);
+    void deselectRow(Element row, boolean fireEvent);
 
     /**
      * Does this view have unselected rows.
@@ -256,7 +263,7 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
      * @param visibleOnly should we restrict this check to visible rows only.
      * @return true if there are unselected rows in this view.
      */
-    boolean hasUnselectedRows(boolean visibleOnly);
+    boolean hasDeselectedRows(boolean visibleOnly);
 
     /**
      * Does this view have selected rows.
@@ -290,6 +297,12 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
      * Get the visible item count of the data view.
      */
     int getVisibleItemCount();
+
+    /**
+     * Get a stored category component.
+     * @param categoryName name of the category component.
+     */
+    CategoryComponent getCategory(String categoryName);
 
     /**
      * Get all registered category components.
@@ -331,6 +344,26 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
     void disableCategory(String categoryName);
 
     /**
+     * Open an existing Category.
+     */
+    void openCategory(String categoryName);
+
+    /**
+     * Open an existing Category.
+     */
+    void openCategory(CategoryComponent category);
+
+    /**
+     * Close an existing Category.
+     */
+    void closeCategory(String categoryName);
+
+    /**
+     * Close an existing Category.
+     */
+    void closeCategory(CategoryComponent category);
+
+    /**
      * Get the data views current sort context, or null if no sort context is applied.
      */
     SortContext<T> getSortContext();
@@ -353,7 +386,7 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
     /**
      * Set your own custom {@link CategoryComponentFactory} to generate your categories.
      */
-    void setCategoryFactory(CategoryComponentFactory categoryFactory);
+    void setCategoryFactory(ComponentFactory<? extends CategoryComponent, String> categoryFactory);
 
     /**
      * Set the data views loading mask.
@@ -421,4 +454,24 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
      * Set the long press duration requirement.
      */
     void setLongPressDuration(int longPressDuration);
+
+    /**
+     * Set the table body height.
+     */
+    void setHeight(String height);
+
+    /**
+     * Get the table body height.
+     */
+    String getHeight();
+
+    /**
+     * Get the number of left frozen columns.
+     */
+    int getLeftFrozenColumns();
+
+    /**
+     * Get the number of right frozen columns.
+     */
+    int getRightFrozenColumns();
 }

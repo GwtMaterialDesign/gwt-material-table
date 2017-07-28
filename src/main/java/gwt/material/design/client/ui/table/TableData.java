@@ -35,6 +35,10 @@ public class TableData extends MaterialWidget {
         super(DOM.createTD());
     }
 
+    public TableData(Element element, String classNames) {
+        super(element, classNames);
+    }
+
     public void setDataTitle(String title) {
         setDataAttribute("data-title", title);
     }

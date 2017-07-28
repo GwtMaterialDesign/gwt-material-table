@@ -43,6 +43,10 @@ public class TableHeader extends TableData {
         super(DOM.createTH());
     }
 
+    public TableHeader(String classNames) {
+        super(DOM.createTH(), classNames);
+    }
+
     public TableHeader(MaterialIcon sortIcon) {
         this();
         setSortIcon(sortIcon);

@@ -22,6 +22,7 @@ package gwt.material.design.client.data.factory;
 
 
 import gwt.material.design.client.data.AbstractDataView;
+import gwt.material.design.client.data.DataView;
 import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.data.component.CategoryComponent.OrphanCategoryComponent;
 import gwt.material.design.client.data.component.ComponentFactory;
@@ -34,7 +35,7 @@ import gwt.material.design.client.data.component.ComponentFactory;
 public class CategoryComponentFactory implements ComponentFactory<CategoryComponent, String> {
 
     @Override
-    public CategoryComponent generate(String categoryName) {
+    public CategoryComponent generate(DataView dataView, String categoryName) {
         return categoryName != null ? new CategoryComponent(categoryName) : new OrphanCategoryComponent();
     }
 }

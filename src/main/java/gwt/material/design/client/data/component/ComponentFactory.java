@@ -22,7 +22,7 @@ package gwt.material.design.client.data.component;
 
 
 import gwt.material.design.client.data.AbstractDataView;
-import gwt.material.design.client.data.component.Component;
+import gwt.material.design.client.data.DataView;
 
 /**
  * Component factory is used to generate {@link Component}'s.
@@ -40,5 +40,5 @@ public interface ComponentFactory<T extends Component, M> {
      * @param model model to define the component.
      * @return a fully formed {@link Component}.
      */
-    T generate(M model);
+    T generate(DataView dataView, M model);
 }
