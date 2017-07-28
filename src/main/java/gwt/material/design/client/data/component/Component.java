@@ -109,7 +109,7 @@ public class Component<E extends Widget> {
         destroyChildren();
     }
 
-    protected void clearElement() {
+    protected void clearWidget() {
         if(widget != null && widget.isAttached()) {
             widget.removeFromParent();
             widget = null;

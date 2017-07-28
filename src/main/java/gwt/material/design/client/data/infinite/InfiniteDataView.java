@@ -234,60 +234,62 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
     }
 
     @Override
-    public void renderRows(Components<RowComponent<T>> rows) {
+    public boolean renderRows(Components<RowComponent<T>> rows) {
         int prevCategories = categories.size();
-        super.renderRows(rows);
-
-        if(isUseCategories()) {
-            // Update the view size to accommodate the new categories
-            int newCatCount = categories.size() - prevCategories;
-            if(newCatCount != 0) {
-                setVisibleRange(viewIndex, viewSize - newCatCount);
-                setViewSize(range.getLength());
-            }
-
-            // show all the categories
-            List<CategoryComponent> lastHidden = new ArrayList<>();
-            for (CategoryComponent category : categories) {
-                if (category.isRendered()) {
-                    category.getWidget().setVisible(true);
+        if(super.renderRows(rows)) {
+            if (isUseCategories()) {
+                // Update the view size to accommodate the new categories
+                int newCatCount = categories.size() - prevCategories;
+                if (newCatCount != 0) {
+                    setVisibleRange(viewIndex, viewSize - newCatCount);
+                    setViewSize(range.getLength());
                 }
 
-                boolean hidden = false;
-                if (isCategoryEmpty(category)) {
-                    Range range = getVisibleRange();
-                    int reach = range.getStart() + range.getLength();
+                // show all the categories
+                List<CategoryComponent> lastHidden = new ArrayList<>();
+                for (CategoryComponent category : categories) {
+                    if (category.isRendered()) {
+                        category.getWidget().setVisible(true);
+                    }
 
-                    if (reach < getTotalRows()) {
-                        if (category.isRendered()) {
-                            category.getWidget().setVisible(false);
+                    boolean hidden = false;
+                    if (isCategoryEmpty(category)) {
+                        Range range = getVisibleRange();
+                        int reach = range.getStart() + range.getLength();
+
+                        if (reach < getTotalRows()) {
+                            if (category.isRendered()) {
+                                category.getWidget().setVisible(false);
+                            }
+                            lastHidden.add(category);
+                            hidden = true;
                         }
-                        lastHidden.add(category);
-                        hidden = true;
+                    }
+
+                    if (!hidden) {
+                        // Reshow the previously hidden categories
+                        // This is because we have found a valid category
+                        // after these were hidden, implying valid data.
+                        for (CategoryComponent hiddenCategory : lastHidden) {
+                            if (hiddenCategory.isRendered()) {
+                                hiddenCategory.getWidget().setVisible(true);
+                            }
+                        }
                     }
                 }
 
-                if (!hidden) {
-                    // Reshow the previously hidden categories
-                    // This is because we have found a valid category
-                    // after these were hidden, implying valid data.
-                    for (CategoryComponent hiddenCategory : lastHidden) {
-                        if (hiddenCategory.isRendered()) {
-                            hiddenCategory.getWidget().setVisible(true);
-                        }
+                // hide passed empty categories
+                for (CategoryComponent category : getPassedCategories()) {
+                    if (category.isRendered()) {
+                        category.getWidget().setVisible(false);
                     }
                 }
-            }
 
-            // hide passed empty categories
-            for (CategoryComponent category : getPassedCategories()) {
-                if (category.isRendered()) {
-                    category.getWidget().setVisible(false);
-                }
+                subheaderLib.recalculate(true);
             }
-
-            subheaderLib.recalculate(true);
+            return true;
         }
+        return false;
     }
 
     protected void setViewSize(int viewSize) {
