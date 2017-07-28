@@ -80,12 +80,12 @@ public class RowComponent<T> extends Component<TableRow> {
     }
 
     @Override
-    protected void clearElement() {
+    protected void clearWidget() {
         TableRow row = getWidget();
         if(row != null) {
             clearRowExpansion();
         }
-        super.clearElement();
+        super.clearWidget();
     }
 
     public void clearRowExpansion() {

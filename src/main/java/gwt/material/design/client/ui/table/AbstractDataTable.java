@@ -30,6 +30,7 @@ import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.dom.client.TableRowElement;
+import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
@@ -119,13 +120,14 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     protected DataView<T> dataView;
     protected TableScaffolding scaffolding;
-    protected LoadedCallback loadedCallback;
 
     private boolean setup;
     private boolean focused;
     private boolean refreshing;
     private boolean cellIsEditing;
     private boolean destroyOnUnload;
+
+    private HandlerRegistration attachHandler;
 
     public AbstractDataTable() {
         this(new StandardDataView<>());
@@ -162,9 +164,6 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
                 setup = true;
                 setup(scaffolding);
 
-                if(loadedCallback != null) {
-                    loadedCallback.onLoaded();
-                }
             } catch (Exception ex) {
                 logger.log(Level.SEVERE,
                     "Could not setup AbstractDataTable due to previous errors.", ex);
@@ -337,8 +336,18 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         return scaffolding;
     }
 
+    /**
+     * @deprecated Use {@link #addAttachHandler(AttachEvent.Handler)}
+     */
+    @Deprecated
     public void setLoadedCallback(LoadedCallback callback) {
-        this.loadedCallback = callback;
+        if(attachHandler == null) {
+            attachHandler = addAttachHandler(event -> {
+                if (event.isAttached()) {
+                    callback.onLoaded();
+                }
+            });
+        }
     }
 
     public boolean isDestroyOnUnload() {
