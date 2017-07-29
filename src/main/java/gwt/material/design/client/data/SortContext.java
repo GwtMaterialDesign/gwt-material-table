@@ -62,6 +62,10 @@ public class SortContext<T> {
         this.tableHeader = tableHeader;
     }
 
+    protected TableHeader getTableHeader() {
+        return tableHeader;
+    }
+
     protected void reverse() {
         sortDir = sortDir.reverse();
     }

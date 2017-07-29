@@ -1,5 +1,3 @@
-package gwt.material.design.client.data;
-
 /*
  * #%L
  * GwtMaterial
@@ -9,9 +7,9 @@ package gwt.material.design.client.data;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,6 +17,7 @@ package gwt.material.design.client.data;
  * limitations under the License.
  * #L%
  */
+package gwt.material.design.client.data;
 
 import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.core.client.Scheduler;
@@ -80,6 +79,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected DataSource<T> dataSource;
     protected Renderer<T> renderer;
     protected SortContext<T> sortContext;
+    protected Column<T, ?> autoSortColumn;
     protected RowComponentFactory<T> rowFactory;
     protected ComponentFactory<? extends CategoryComponent, String> categoryFactory;
     protected ProvidesKey<T> keyProvider;
@@ -526,6 +526,12 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             if(!pendingRows.isEmpty()) {
                 renderRows(pendingRows);
                 pendingRows.clearComponents();
+
+                if(maybeApplyAutoSortColumn()) {
+                    // We have an auto sort column, sort the pending rows.
+                    Column<T, ?> column = sortContext.getSortColumn();
+                    sort(sortContext.getTableHeader(), column, columns.indexOf(column) + getColumnOffset(), false);
+                }
             }
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "Problem setting up the DataView.", ex);
@@ -908,6 +914,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     protected void sort(TableHeader th, Column<T, ?> column, int index) {
+        sort(th, column, index, dataSource == null || !dataSource.useRemoteSort());
+    }
+
+    protected void sort(TableHeader th, Column<T, ?> column, int index, boolean renderRows) {
         SortContext<T> oldSortContext = this.sortContext;
         updateSortContext(th, column);
 
@@ -918,7 +928,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             // Draw and apply the sort icon.
             renderer.drawSortIcon(th, sortContext);
 
-            if (dataSource == null || !dataSource.useRemoteSort()) {
+            if (renderRows) {
                 // Render the new sort order.
                 renderRows(rows);
             }
@@ -945,8 +955,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         }
 
         Comparator<? super RowComponent<T>> comparator = sortContext != null
-                ? sortContext.getSortColumn().getSortComparator() : null;
-        if (isUseCategories() && !categories.isEmpty()) {
+            ? sortContext.getSortColumn().getSortComparator() : null;
+        if (isUseCategories()) {
             // Split row data into categories
             Map<String, List<RowComponent<T>>> splitMap = new HashMap<>();
             List<RowComponent<T>> orphanRows = new ArrayList<>();
@@ -955,11 +965,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 if(row != null) {
                     String category = row.getCategoryName();
                     if(category != null) {
-                        List<RowComponent<T>> data = splitMap.get(category);
-                        if (data == null) {
-                            data = new ArrayList<>();
-                            splitMap.put(category, data);
-                        }
+                        List<RowComponent<T>> data = splitMap.computeIfAbsent(category, k -> new ArrayList<>());
                         data.add(row);
                     } else {
                         orphanRows.add(row);
@@ -975,13 +981,13 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             for (Map.Entry<String, List<RowComponent<T>>> entry : splitMap.entrySet()) {
                 List<RowComponent<T>> list = entry.getValue();
                 if (comparator != null) {
-                    Collections.sort(list, new DataSort<>(comparator, sortContext.getSortDir()));
+                    list.sort(new DataSort<>(comparator, sortContext.getSortDir()));
                 }
                 rows.addAll(list);
             }
         } else {
             if (comparator != null) {
-                Collections.sort(rows, new DataSort<>(comparator, sortContext.getSortDir()));
+                rows.sort(new DataSort<>(comparator, sortContext.getSortDir()));
             } else {
                 return false;
             }
@@ -1358,8 +1364,51 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         // Ensure sort order is applied for new rows
         doSort(sortContext, rows);
 
-        // Render the new rows
+        // Render the new rows normally
         renderRows(rows);
+
+        if(maybeApplyAutoSortColumn()) {
+            // We have an auto sort column, sort the new rows.
+            Column<T, ?> column = sortContext.getSortColumn();
+            sort(sortContext.getTableHeader(), column, columns.indexOf(column) + getColumnOffset());
+        }
+    }
+
+    /**
+     * Check and apply the auto sort column {@link Column#setAutoSort(boolean)}
+     * if no sort has been invoked.
+     * @return true if the auto sort column is assigned.
+     */
+    protected boolean maybeApplyAutoSortColumn() {
+        // Check if we already have a sort column
+        if(sortContext == null || sortContext.getSortColumn() == null) {
+            Column<T, ?> autoSortColumn = getAutoSortColumn();
+
+            if(autoSortColumn != null) {
+                if(setup) {
+                    int index = columns.indexOf(autoSortColumn) + getColumnOffset();
+                    updateSortContext(headers.get(index), autoSortColumn);
+                }
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Get the auto sorting column, or null if no column is auto sorting.
+     */
+    protected Column<T, ?> getAutoSortColumn() {
+        if(autoSortColumn == null) {
+            for (Column<T, ?> column : columns) {
+                if (column.isAutoSort()) {
+                    autoSortColumn = column;
+                    return autoSortColumn;
+                }
+            }
+        }
+        return autoSortColumn;
     }
 
     protected RowComponent<T> buildRowComponent(T data) {
