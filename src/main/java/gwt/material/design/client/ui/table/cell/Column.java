@@ -22,6 +22,11 @@ package gwt.material.design.client.ui.table.cell;
 
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.Cell.Context;
+import com.google.gwt.cell.client.FieldUpdater;
+import com.google.gwt.cell.client.HasCell;
+import com.google.gwt.cell.client.ValueUpdater;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import gwt.material.design.client.base.HasHideOn;
@@ -50,6 +55,11 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
      */
     private final Cell<C> cell;
 
+    /**
+     * The {@link FieldUpdater} used for updating values in the column.
+     */
+    private FieldUpdater<T, C> fieldUpdater;
+
     private boolean isDefaultSortAscending = true;
     private boolean isNumeric = false;
     private boolean autoSort = false;
@@ -70,6 +80,7 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
     public Column(Cell<C> cell) {
         this.cell = cell;
 
+        setFieldUpdater(fieldUpdater());
         setDefaultSortAscending(defaultSortAscending());
         setAutoSort(autoSort());
         setNumeric(numeric());
@@ -79,6 +90,22 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
         setTextAlign(textAlign());
         setStyleProperties(styleProperties());
         setSortComparator(sortComparator());
+    }
+
+    /**
+     * Handle a browser event that took place within the column.
+     *
+     * @param context the cell context
+     * @param elem the parent Element
+     * @param object the base object to be updated
+     * @param event the native browser event
+     */
+    public void onBrowserEvent(Context context, Element elem, final T object, NativeEvent event) {
+        final int index = context.getIndex();
+        ValueUpdater<C> valueUpdater = (fieldUpdater == null) ? null : (ValueUpdater<C>) value -> {
+            fieldUpdater.update(index, object, value);
+        };
+        cell.onBrowserEvent(context, elem, getValue(object), event, valueUpdater);
     }
 
     /**
@@ -191,6 +218,17 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
 
     public Comparator<? super RowComponent<T>> sortComparator() { return null; }
 
+    @Override
+    public final FieldUpdater<T, C> getFieldUpdater() {
+        return fieldUpdater;
+    }
+
+    public final void setFieldUpdater(FieldUpdater<T, C> fieldUpdater) {
+        this.fieldUpdater = fieldUpdater;
+    }
+
+    public FieldUpdater<T, C> fieldUpdater() { return null; }
+
     public final boolean isNumeric() {
         return isNumeric;
     }
@@ -286,6 +324,7 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
     public String toString() {
         return "Column{" +
             "cell=" + cell +
+            ", fieldUpdater=" + fieldUpdater +
             ", isDefaultSortAscending=" + isDefaultSortAscending +
             ", isNumeric=" + isNumeric +
             ", name='" + name + '\'' +
