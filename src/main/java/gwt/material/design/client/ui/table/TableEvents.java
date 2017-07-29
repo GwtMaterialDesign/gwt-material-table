@@ -29,6 +29,8 @@ public class TableEvents {
     public static final String STRETCH = "stretch";
     public static final String ROW_EXPAND = "row-expand";
     public static final String ROW_EXPANDED = "row-expanded";
+    public static final String ROW_COLLAPSE = "row-collapse";
+    public static final String ROW_COLLAPSED = "row-collapsed";
     public static final String ROW_COUNT_CHANGE = "row-count-change";
     public static final String ROW_CONTEXTMENU = "row-contextmenu";
     public static final String ROW_DOUBLECLICK = "row-dblclick";

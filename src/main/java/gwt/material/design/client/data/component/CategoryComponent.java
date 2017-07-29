@@ -43,9 +43,15 @@ public class CategoryComponent extends Component<TableSubHeader> {
     private String name;
     private int currentIndex = -1;
     private int rowCount = 0;
+    private boolean openByDefault;
 
     public CategoryComponent(String name) {
+        this(name, false);
+    }
+
+    public CategoryComponent(String name, boolean openByDefault) {
         this.name = name;
+        this.openByDefault = openByDefault;
     }
 
     public String getName() {
@@ -93,6 +99,14 @@ public class CategoryComponent extends Component<TableSubHeader> {
 
     public void setRowCount(int rowCount) {
         this.rowCount = rowCount;
+    }
+
+    public boolean isOpenByDefault() {
+        return openByDefault;
+    }
+
+    public void setOpenByDefault(boolean openByDefault) {
+        this.openByDefault = openByDefault;
     }
 
     @Override
