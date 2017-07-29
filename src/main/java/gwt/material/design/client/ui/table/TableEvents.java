@@ -37,4 +37,6 @@ public class TableEvents {
     public static final String SORT_COLUMN = "sort-column";
     public static final String CATEGORY_OPENED = "category-opened";
     public static final String CATEGORY_CLOSED = "category-closed";
+    public static final String COMPONENTS_RENDERED = "components-rendered";
+    public static final String RENDERED = "rendered";
 }

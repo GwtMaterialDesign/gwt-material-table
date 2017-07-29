@@ -23,6 +23,7 @@ import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Display;
+import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Panel;
@@ -87,6 +88,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected JsTableSubHeaders subheaderLib;
     protected int categoryHeight = 0;
     protected String height;
+    private boolean pendingRenderEvent;
 
     // DOM
     protected Table table;
@@ -195,10 +197,23 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             Scheduler.get().scheduleDeferred(() -> {
                 Component<?> component = components.get(components.size() - 1);
                 Widget componentWidget = component.getWidget();
-                if (componentWidget == null || componentWidget.isAttached()) {
+                AttachEvent.Handler handler = event -> {
                     rendering = false;
+
+                    if(attachHandler != null) {
+                        attachHandler.removeHandler();
+                    }
+                    container.trigger(TableEvents.COMPONENTS_RENDERED, null);
+
+                    if(pendingRenderEvent) {
+                        container.trigger(TableEvents.RENDERED, null);
+                        pendingRenderEvent = false;
+                    }
+                };
+                if (componentWidget == null || componentWidget.isAttached()) {
+                    handler.onAttachOrDetach(null);
                 } else {
-                    attachHandler = componentWidget.addAttachHandler(event -> rendering = false);
+                    attachHandler = componentWidget.addAttachHandler(handler);
                 }
             });
         } else {
@@ -1363,6 +1378,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
         // Ensure sort order is applied for new rows
         doSort(sortContext, rows);
+
+        pendingRenderEvent = true;
 
         // Render the new rows normally
         renderRows(rows);
