@@ -1,5 +1,3 @@
-package gwt.material.design.client.data;
-
 /*
  * #%L
  * GwtMaterial
@@ -19,7 +17,7 @@ package gwt.material.design.client.data;
  * limitations under the License.
  * #L%
  */
-
+package gwt.material.design.client.data;
 
 import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.core.client.Scheduler;
