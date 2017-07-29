@@ -21,6 +21,7 @@ package gwt.material.design.client.ui.table;
  */
 
 
+import gwt.material.design.client.ui.table.events.RowExpansion;
 import gwt.material.design.jquery.client.api.Functions;
 import gwt.material.design.jquery.client.api.Functions.EventFunc1;
 import gwt.material.design.jquery.client.api.Functions.EventFunc2;
@@ -29,9 +30,6 @@ import gwt.material.design.jquery.client.api.JQueryElement;
 import gwt.material.design.jquery.client.api.MouseEvent;
 import gwt.material.design.jscore.client.api.core.Element;
 import gwt.material.design.client.data.SortContext;
-import gwt.material.design.client.data.SortDir;
-import gwt.material.design.client.ui.table.cell.Column;
-import gwt.material.design.client.ui.table.events.RowExpand;
 
 import java.util.List;
 
@@ -96,12 +94,12 @@ public interface TableEventHandlers<T> {
     /**
      * Add a handler that triggers when a row is expanding.
      */
-    void addRowExpandHandler(EventFunc1<RowExpand> handler);
+    void addRowExpandHandler(EventFunc1<RowExpansion> handler);
 
     /**
      * Remove the given row expand handler.
      */
-    void removeRowExpandHandler(EventFunc1<RowExpand> handler);
+    void removeRowExpandHandler(EventFunc1<RowExpansion> handler);
 
     /**
      * Remove all row expand handlers.
@@ -111,17 +109,47 @@ public interface TableEventHandlers<T> {
     /**
      * Add a handler that triggers when a row has expanded.
      */
-    void addRowExpandedHandler(EventFunc1<RowExpand> handler);
+    void addRowExpandedHandler(EventFunc1<RowExpansion> handler);
 
     /**
      * Remove the given row expanded handler.
      */
-    void removeRowExpandedHandler(EventFunc1<RowExpand> handler);
+    void removeRowExpandedHandler(EventFunc1<RowExpansion> handler);
 
     /**
      * Remove all row expanded handlers.
      */
     void removeRowExpandedHandlers();
+
+    /**
+     * Add a handler that triggers when a row is collapsing.
+     */
+    void addRowCollapseHandler(EventFunc1<RowExpansion> handler);
+
+    /**
+     * Remove the given row collapse handler.
+     */
+    void removeRowCollapseHandler(EventFunc1<RowExpansion> handler);
+
+    /**
+     * Remove all row collapse handlers.
+     */
+    void removeRowCollapseHandlers();
+
+    /**
+     * Add a handler that triggers when a row has collapsed.
+     */
+    void addRowCollapsedHandler(EventFunc1<RowExpansion> handler);
+
+    /**
+     * Remove the given row collapsed handler.
+     */
+    void removeRowCollapsedHandler(EventFunc1<RowExpansion> handler);
+
+    /**
+     * Remove all row collapsed handlers.
+     */
+    void removeRowCollapsedHandlers();
 
     /**
      * Add a handler that triggers when the row count changes.

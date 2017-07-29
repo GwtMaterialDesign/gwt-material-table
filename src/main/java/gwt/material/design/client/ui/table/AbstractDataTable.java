@@ -52,7 +52,7 @@ import gwt.material.design.client.data.factory.RowComponentFactory;
 import gwt.material.design.client.js.JsTableSubHeaders;
 import gwt.material.design.client.ui.MaterialProgress;
 import gwt.material.design.client.ui.table.cell.Column;
-import gwt.material.design.client.ui.table.events.RowExpand;
+import gwt.material.design.client.ui.table.events.RowExpansion;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -686,12 +686,12 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
-    public void addRowExpandHandler(EventFunc1<RowExpand> handler) {
+    public void addRowExpandHandler(EventFunc1<RowExpansion> handler) {
         $this().on(TableEvents.ROW_EXPAND + "." + getViewId(), handler);
     }
 
     @Override
-    public void removeRowExpandHandler(EventFunc1<RowExpand> handler) {
+    public void removeRowExpandHandler(EventFunc1<RowExpansion> handler) {
         $this().off(TableEvents.ROW_EXPAND, handler);
     }
 
@@ -701,18 +701,48 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
-    public void addRowExpandedHandler(EventFunc1<RowExpand> handler) {
+    public void addRowExpandedHandler(EventFunc1<RowExpansion> handler) {
         $this().on(TableEvents.ROW_EXPANDED + "." + getViewId(), handler);
     }
 
     @Override
-    public void removeRowExpandedHandler(EventFunc1<RowExpand> handler) {
+    public void removeRowExpandedHandler(EventFunc1<RowExpansion> handler) {
         $this().off(TableEvents.ROW_EXPANDED, handler);
     }
 
     @Override
     public void removeRowExpandedHandlers() {
         $this().off(TableEvents.ROW_EXPANDED);
+    }
+
+    @Override
+    public void addRowCollapseHandler(EventFunc1<RowExpansion> handler) {
+        $this().on(TableEvents.ROW_COLLAPSE + "." + getViewId(), handler);
+    }
+
+    @Override
+    public void removeRowCollapseHandler(EventFunc1<RowExpansion> handler) {
+        $this().off(TableEvents.ROW_COLLAPSE, handler);
+    }
+
+    @Override
+    public void removeRowCollapseHandlers() {
+        $this().off(TableEvents.ROW_COLLAPSE);
+    }
+
+    @Override
+    public void addRowCollapsedHandler(EventFunc1<RowExpansion> handler) {
+        $this().on(TableEvents.ROW_COLLAPSED + "." + getViewId(), handler);
+    }
+
+    @Override
+    public void removeRowCollapsedHandler(EventFunc1<RowExpansion> handler) {
+        $this().off(TableEvents.ROW_COLLAPSED, handler);
+    }
+
+    @Override
+    public void removeRowCollapsedHandlers() {
+        $this().off(TableEvents.ROW_COLLAPSED);
     }
 
     @Override

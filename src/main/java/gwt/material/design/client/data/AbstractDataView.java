@@ -52,7 +52,7 @@ import gwt.material.design.client.ui.MaterialCheckBox;
 import gwt.material.design.client.ui.MaterialProgress;
 import gwt.material.design.client.ui.table.*;
 import gwt.material.design.client.ui.table.cell.Column;
-import gwt.material.design.client.ui.table.events.RowExpand;
+import gwt.material.design.client.ui.table.events.RowExpansion;
 import gwt.material.design.jquery.client.api.JQueryElement;
 
 import java.util.*;
@@ -88,6 +88,9 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected JsTableSubHeaders subheaderLib;
     protected int categoryHeight = 0;
     protected String height;
+    protected boolean rendering;
+    protected boolean redraw;
+    protected boolean redrawCategories;
     private boolean pendingRenderEvent;
 
     // DOM
@@ -106,9 +109,6 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected Range range = new Range(0, 0);
     protected int totalRows = 20;
     protected int longPressDuration = 500;
-    protected boolean rendering;
-    protected boolean redraw;
-    protected boolean redrawCategories;
 
     private int rowCount;
     private int lastSelected;
@@ -585,7 +585,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             if (selectionType.equals(SelectionType.MULTIPLE) && shiftDown) {
                 if (lastSelected < rowIndex) {
                     // Increment
-                    for (int i = lastSelected; i < rowIndex; i++) {
+                    for (int i = lastSelected; i <= rowIndex; i++) {
                         if (i < getVisibleItemCount()) {
                             RowComponent<T> rowComponent = this.rows.get(i);
                             if (rowComponent != null && rowComponent.isRendered()) {
@@ -677,7 +677,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                     }
 
                     final boolean expanding = !expansion[0].hasClass("expanded");
-                    final JQueryElement expandRow = tr.next();
+                    final JQueryElement row = tr.next();
                     final T model = getModelByRowElement(tr.asElement());
 
                     expansion[0].one("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd",
@@ -688,17 +688,26 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                                 recalculated[0] = true;
 
                                 // Apply overlay
-                                JQueryElement overlay = expandRow.find("section.overlay");
-                                overlay.height(expandRow.outerHeight(false));
+                                JQueryElement overlay = row.find("section.overlay");
+                                overlay.height(row.outerHeight(false));
 
-                                // Fire table expand event
-                                container.trigger(TableEvents.ROW_EXPANDED, new RowExpand<>(model, expandRow, expanding));
+                                if(expanding) {
+                                    // Fire table expanded event
+                                    container.trigger(TableEvents.ROW_EXPANDED, new RowExpansion<>(model, row));
+                                } else {
+                                    // Fire table collapsed event
+                                    container.trigger(TableEvents.ROW_COLLAPSED, new RowExpansion<>(model, row));
+                                }
                             }
                             return true;
                         });
 
-                    // Fire table expand event
-                    container.trigger(TableEvents.ROW_EXPAND, new RowExpand<>(model, expandRow, expanding));
+                    if(expanding) {
+                        // Fire table expand event
+                        container.trigger(TableEvents.ROW_EXPAND, new RowExpansion<>(model, row));
+                    } else {
+                        container.trigger(TableEvents.ROW_COLLAPSE, new RowExpansion<>(model, row));
+                    }
 
                     Scheduler.get().scheduleDeferred(() -> {
                         expansion[0].toggleClass("expanded");
