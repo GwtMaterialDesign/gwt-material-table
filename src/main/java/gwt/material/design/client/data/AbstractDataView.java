@@ -356,8 +356,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                         }
 
                         // Check the display of the row
-                        TableSubHeader element = category.getWidget();
-                        if (element != null && element.isOpen()) {
+                        TableSubHeader subHeader = category.getWidget();
+                        if (subHeader != null && subHeader.isOpen()) {
                             row.getElement().getStyle().clearDisplay();
                         }
                     } else {
@@ -368,7 +368,13 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                     rows.add(rowComponent);
                 }
             } else if(component instanceof CategoryComponent) {
-                row = bindCategoryEvents(renderer.drawCategory((CategoryComponent)component));
+                CategoryComponent categoryComponent = (CategoryComponent)component;
+                row = bindCategoryEvents(renderer.drawCategory(categoryComponent));
+                row.addAttachHandler(event -> {
+                    if(categoryComponent.isOpenByDefault()) {
+                        openCategory(categoryComponent);
+                    }
+                }, true);
             } else {
                 row = renderer.drawCustom(component);
             }
