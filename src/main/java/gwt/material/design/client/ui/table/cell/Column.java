@@ -62,6 +62,7 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
 
     private boolean isDefaultSortAscending = true;
     private boolean isNumeric = false;
+    private boolean autoSort = false;
     private String name;
     private String width;
     private HideOn hideOn;
@@ -84,6 +85,7 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
 
         setFieldUpdater(fieldUpdater());
         setDefaultSortAscending(defaultSortAscending());
+        setAutoSort(autoSort());
         setNumeric(numeric());
         setName(name());
         setWidth(width());
@@ -182,6 +184,24 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
      * @return true if default sort is ascending, false if not
      */
     public boolean defaultSortAscending() { return true; }
+
+    /**
+     * Is this column auto sorting when rendered.
+     * @return true if this column is auto sorted.
+     */
+    public final boolean isAutoSort() {
+        return autoSort;
+    }
+
+    /**
+     * Make this column auto sort on rendering, if multiple columns are auto
+     * sorting it will be based on the first one set to auto sort.
+     */
+    public final void setAutoSort(boolean autoSort) {
+        this.autoSort = autoSort;
+    }
+
+    public boolean autoSort() { return false; }
 
     /**
      * Check if the column is sortable.

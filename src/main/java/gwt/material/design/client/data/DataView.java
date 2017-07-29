@@ -109,6 +109,12 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
     String getViewId();
 
     /**
+     * Update a models row within the table.
+     * @param model a model with a valid <code>equals</code> method.
+     */
+    void updateRow(T model);
+
+    /**
      * Get a row by its representing model.
      * @param model the model assigned to a row.
      */
@@ -119,6 +125,13 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
      * @param index the value of the render index.
      */
     RowComponent<T> getRow(int index);
+
+    /**
+     * Get a models {@link RowComponent} or null if not found.
+     * @param model a model with a valid <code>equals</code> method.
+     * @return the models representing {@link RowComponent}.
+     */
+    RowComponent<T> getRowByModel(T model);
 
     /**
      * Clear data rows.
