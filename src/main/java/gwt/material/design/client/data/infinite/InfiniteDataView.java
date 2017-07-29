@@ -27,6 +27,7 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.view.client.ProvidesKey;
 import com.google.gwt.view.client.Range;
 import gwt.material.design.client.base.MaterialWidget;
+import gwt.material.design.client.data.SortContext;
 import gwt.material.design.client.data.loader.LoadCallback;
 import gwt.material.design.client.data.loader.LoadConfig;
 import gwt.material.design.client.data.loader.LoadResult;
@@ -290,6 +291,17 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
             return true;
         }
         return false;
+    }
+
+    @Override
+    protected boolean doSort(SortContext<T> sortContext, Components<RowComponent<T>> rows) {
+        if(super.doSort(sortContext, rows)) {
+            // TODO: Potentially sort the cache data?
+            dataCache.clear(); // invalidate the cache upon successful sorts
+            return true;
+        } else {
+            return false;
+        }
     }
 
     protected void setViewSize(int viewSize) {
