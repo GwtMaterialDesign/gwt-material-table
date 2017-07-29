@@ -21,6 +21,7 @@ package gwt.material.design.client.ui.table;
  */
 
 
+import gwt.material.design.jquery.client.api.Functions;
 import gwt.material.design.jquery.client.api.Functions.EventFunc1;
 import gwt.material.design.jquery.client.api.Functions.EventFunc2;
 import gwt.material.design.jquery.client.api.Functions.EventFunc3;
@@ -249,4 +250,38 @@ public interface TableEventHandlers<T> {
      * Remove all category closed handlers.
      */
     void removeCategoryClosedHandlers();
+
+    /**
+     * Add a handler that triggers when all the components have rendered,
+     * this can fire multiple times depending on the table settings.<br><br>
+     * Also see {@link #addRenderedHandler(Functions.EventFunc)}.
+     */
+    void addComponentsRenderedHandler(Functions.EventFunc handler);
+
+    /**
+     * Remove the given components rendered handler.
+     */
+    void removeComponentsRenderedHandler(Functions.EventFunc handler);
+
+    /**
+     * Remove all components rendered handlers.
+     */
+    void removeComponentsRenderedHandlers();
+
+    /**
+     * Add a handler that triggers when all the row data has rendered after calling
+     * {@link AbstractDataTable#setRowData(int, List)}.<br>
+     * This will only fire once per call even if the data is re-rendered in the cases of sorting, etc.
+     */
+    void addRenderedHandler(Functions.EventFunc handler);
+
+    /**
+     * Remove the given rendered handler.
+     */
+    void removeRenderedHandler(Functions.EventFunc handler);
+
+    /**
+     * Remove all rendered handlers.
+     */
+    void removeRenderedHandlers();
 }
