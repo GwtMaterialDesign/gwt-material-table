@@ -20,9 +20,19 @@ package gwt.material.design.client.ui.table;
  * #L%
  */
 
+import com.google.gwt.cell.client.Cell;
+import com.google.gwt.cell.client.Cell.Context;
+import com.google.gwt.cell.client.FieldUpdater;
+import com.google.gwt.cell.client.HasCell;
+import com.google.gwt.cell.client.ValueUpdater;
+import com.google.gwt.dom.client.BrowserEvents;
+import com.google.gwt.dom.client.EventTarget;
+import com.google.gwt.dom.client.TableCellElement;
+import com.google.gwt.dom.client.TableRowElement;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.view.client.ProvidesKey;
 import com.google.gwt.view.client.Range;
@@ -55,6 +65,7 @@ import gwt.material.design.client.ui.table.cell.Column;
 import gwt.material.design.client.ui.table.events.RowExpansion;
 
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -115,6 +126,9 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     protected TableScaffolding scaffolding;
 
     private boolean setup;
+    private boolean focused;
+    private boolean refreshing;
+    private boolean cellIsEditing;
     private boolean destroyOnUnload;
 
     private HandlerRegistration attachHandler;
@@ -205,6 +219,118 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     @Override
     public String getHeight() {
         return dataView.getHeight();
+    }
+
+    @Override
+    public void onBrowserEvent(Event event) {
+        CellBasedWidgetImpl.get().onBrowserEvent(this, event);
+
+        // Ignore spurious events (such as onblur) while we refresh the table.
+        if (refreshing) {
+            return;
+        }
+
+        // Verify that the target is still a child of this widget. IE fires focus
+        // events even after the element has been removed from the DOM.
+        EventTarget eventTarget = event.getEventTarget();
+        if (!com.google.gwt.dom.client.Element.is(eventTarget)) {
+            return;
+        }
+        com.google.gwt.dom.client.Element target = com.google.gwt.dom.client.Element.as(eventTarget);
+        if (!getElement().isOrHasChild(com.google.gwt.dom.client.Element.as(eventTarget))) {
+            return;
+        }
+        super.onBrowserEvent(event);
+
+        String eventType = event.getType();
+        if (BrowserEvents.FOCUS.equals(eventType)) {
+            // Remember the focus state.
+            focused = true;
+            onFocus();
+        } else if (BrowserEvents.BLUR.equals(eventType)) {
+            // Remember the blur state.
+            focused = false;
+            onBlur();
+        } else if (BrowserEvents.KEYDOWN.equals(eventType)) {
+            // A key event indicates that we already have focus.
+            focused = true;
+        } else if (BrowserEvents.MOUSEDOWN.equals(eventType)
+            && CellBasedWidgetImpl.get().isFocusable(com.google.gwt.dom.client.Element.as(target))) {
+            // If a natively focusable element was just clicked, then we must have
+            // focus.
+            focused = true;
+        }
+    }
+
+    protected void onFocus() {
+        // Do nothing by default
+    }
+
+    protected void onBlur() {
+        // Do nothing by default
+    }
+
+    /**
+     * Get the index of the row value from the associated {@link TableRowElement}.
+     *
+     * @param row the row element
+     * @return the row value index
+     */
+    public final int getRowValueIndex(TableRowElement row) {
+        return row.getSectionRowIndex() + getVisibleRange().getStart();
+    }
+
+    /**
+     * Fire an event to the Cell within the specified {@link TableCellElement}.
+     */
+    private <C> void fireEventToCell(Event event, String eventType, com.google.gwt.dom.client.Element parentElem,
+                                     final T rowValue, Context context, HasCell<T, C> column) {
+        // Check if the cell consumes the event.
+        Cell<C> cell = column.getCell();
+        if (!cellConsumesEventType(cell, eventType)) {
+            return;
+        }
+
+        C cellValue = column.getValue(rowValue);
+        boolean cellWasEditing = cell.isEditing(context, parentElem, cellValue);
+        if (column instanceof Column) {
+          /*
+           * If the HasCell is a Column, let it handle the event itself. This is
+           * here for legacy support.
+           */
+            Column<T, C> col = (Column<T, C>) column;
+            col.onBrowserEvent(context, parentElem, rowValue, event);
+        } else {
+            // Create a FieldUpdater.
+            final FieldUpdater<T, C> fieldUpdater = column.getFieldUpdater();
+            final int index = context.getIndex();
+            ValueUpdater<C> valueUpdater = (fieldUpdater == null) ? null : (value) -> {
+                fieldUpdater.update(index, rowValue, value);
+            };
+
+            // Fire the event to the cell.
+            cell.onBrowserEvent(context, parentElem, cellValue, event, valueUpdater);
+        }
+
+        // Reset focus if needed.
+        cellIsEditing = cell.isEditing(context, parentElem, cellValue);
+        if (cellWasEditing && !cellIsEditing) {
+            CellBasedWidgetImpl.get().resetFocus(() -> {
+                setFocus(true);
+            });
+        }
+    }
+
+    /**
+     * Check if a cell consumes the specified event type.
+     *
+     * @param cell the cell
+     * @param eventType the event type to check
+     * @return true if consumed, false if not
+     */
+    protected boolean cellConsumesEventType(Cell<?> cell, String eventType) {
+        Set<String> consumedEvents = cell.getConsumedEvents();
+        return consumedEvents != null && consumedEvents.contains(eventType);
     }
 
     /**
