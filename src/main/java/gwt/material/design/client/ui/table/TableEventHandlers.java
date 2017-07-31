@@ -1,10 +1,8 @@
-package gwt.material.design.client.ui.table;
-
 /*
  * #%L
  * GwtMaterial
  * %%
- * Copyright (C) 2015 - 2016 GwtMaterialDesign
+ * Copyright (C) 2015 - 2017 GwtMaterialDesign
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +17,10 @@ package gwt.material.design.client.ui.table;
  * limitations under the License.
  * #L%
  */
+package gwt.material.design.client.ui.table;
 
-
+import gwt.material.design.client.ui.table.events.RowExpansion;
+import gwt.material.design.jquery.client.api.Functions;
 import gwt.material.design.jquery.client.api.Functions.EventFunc1;
 import gwt.material.design.jquery.client.api.Functions.EventFunc2;
 import gwt.material.design.jquery.client.api.Functions.EventFunc3;
@@ -28,9 +28,6 @@ import gwt.material.design.jquery.client.api.JQueryElement;
 import gwt.material.design.jquery.client.api.MouseEvent;
 import gwt.material.design.jscore.client.api.core.Element;
 import gwt.material.design.client.data.SortContext;
-import gwt.material.design.client.data.SortDir;
-import gwt.material.design.client.ui.table.cell.Column;
-import gwt.material.design.client.ui.table.events.RowExpand;
 
 import java.util.List;
 
@@ -95,12 +92,12 @@ public interface TableEventHandlers<T> {
     /**
      * Add a handler that triggers when a row is expanding.
      */
-    void addRowExpandHandler(EventFunc1<RowExpand> handler);
+    void addRowExpandHandler(EventFunc1<RowExpansion> handler);
 
     /**
      * Remove the given row expand handler.
      */
-    void removeRowExpandHandler(EventFunc1<RowExpand> handler);
+    void removeRowExpandHandler(EventFunc1<RowExpansion> handler);
 
     /**
      * Remove all row expand handlers.
@@ -110,17 +107,47 @@ public interface TableEventHandlers<T> {
     /**
      * Add a handler that triggers when a row has expanded.
      */
-    void addRowExpandedHandler(EventFunc1<RowExpand> handler);
+    void addRowExpandedHandler(EventFunc1<RowExpansion> handler);
 
     /**
      * Remove the given row expanded handler.
      */
-    void removeRowExpandedHandler(EventFunc1<RowExpand> handler);
+    void removeRowExpandedHandler(EventFunc1<RowExpansion> handler);
 
     /**
      * Remove all row expanded handlers.
      */
     void removeRowExpandedHandlers();
+
+    /**
+     * Add a handler that triggers when a row is collapsing.
+     */
+    void addRowCollapseHandler(EventFunc1<RowExpansion> handler);
+
+    /**
+     * Remove the given row collapse handler.
+     */
+    void removeRowCollapseHandler(EventFunc1<RowExpansion> handler);
+
+    /**
+     * Remove all row collapse handlers.
+     */
+    void removeRowCollapseHandlers();
+
+    /**
+     * Add a handler that triggers when a row has collapsed.
+     */
+    void addRowCollapsedHandler(EventFunc1<RowExpansion> handler);
+
+    /**
+     * Remove the given row collapsed handler.
+     */
+    void removeRowCollapsedHandler(EventFunc1<RowExpansion> handler);
+
+    /**
+     * Remove all row collapsed handlers.
+     */
+    void removeRowCollapsedHandlers();
 
     /**
      * Add a handler that triggers when the row count changes.
@@ -249,4 +276,38 @@ public interface TableEventHandlers<T> {
      * Remove all category closed handlers.
      */
     void removeCategoryClosedHandlers();
+
+    /**
+     * Add a handler that triggers when all the components have rendered,
+     * this can fire multiple times depending on the table settings.<br><br>
+     * Also see {@link #addRenderedHandler(Functions.EventFunc)}.
+     */
+    void addComponentsRenderedHandler(Functions.EventFunc handler);
+
+    /**
+     * Remove the given components rendered handler.
+     */
+    void removeComponentsRenderedHandler(Functions.EventFunc handler);
+
+    /**
+     * Remove all components rendered handlers.
+     */
+    void removeComponentsRenderedHandlers();
+
+    /**
+     * Add a handler that triggers when all the row data has rendered after calling
+     * {@link AbstractDataTable#setRowData(int, List)}.<br>
+     * This will only fire once per call even if the data is re-rendered in the cases of sorting, etc.
+     */
+    void addRenderedHandler(Functions.EventFunc handler);
+
+    /**
+     * Remove the given rendered handler.
+     */
+    void removeRenderedHandler(Functions.EventFunc handler);
+
+    /**
+     * Remove all rendered handlers.
+     */
+    void removeRenderedHandlers();
 }

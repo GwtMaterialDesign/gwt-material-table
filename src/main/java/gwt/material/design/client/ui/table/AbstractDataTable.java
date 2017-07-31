@@ -1,10 +1,8 @@
-package gwt.material.design.client.ui.table;
-
 /*
  * #%L
  * GwtMaterial
  * %%
- * Copyright (C) 2015 - 2016 GwtMaterialDesign
+ * Copyright (C) 2015 - 2017 GwtMaterialDesign
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +17,13 @@ package gwt.material.design.client.ui.table;
  * limitations under the License.
  * #L%
  */
+package gwt.material.design.client.ui.table;
 
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.ValueUpdater;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.TableCellElement;
@@ -42,6 +40,7 @@ import com.google.gwt.view.client.RowCountChangeEvent;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.data.component.ComponentFactory;
 import gwt.material.design.client.data.component.RowComponent;
+import gwt.material.design.jquery.client.api.Functions;
 import gwt.material.design.jquery.client.api.Functions.EventFunc1;
 import gwt.material.design.jquery.client.api.Functions.EventFunc2;
 import gwt.material.design.jquery.client.api.Functions.EventFunc3;
@@ -62,7 +61,7 @@ import gwt.material.design.client.data.factory.RowComponentFactory;
 import gwt.material.design.client.js.JsTableSubHeaders;
 import gwt.material.design.client.ui.MaterialProgress;
 import gwt.material.design.client.ui.table.cell.Column;
-import gwt.material.design.client.ui.table.events.RowExpand;
+import gwt.material.design.client.ui.table.events.RowExpansion;
 
 import java.util.List;
 import java.util.Set;
@@ -580,6 +579,11 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
+    public void updateRow(T model) {
+        dataView.updateRow(model);
+    }
+
+    @Override
     public RowComponent<T> getRow(T model) {
         return dataView.getRow(model);
     }
@@ -587,6 +591,11 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     @Override
     public RowComponent<T> getRow(int index) {
         return dataView.getRow(index);
+    }
+
+    @Override
+    public RowComponent<T> getRowByModel(T model) {
+        return dataView.getRowByModel(model);
     }
 
     @Override
@@ -817,12 +826,12 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
-    public void addRowExpandHandler(EventFunc1<RowExpand> handler) {
+    public void addRowExpandHandler(EventFunc1<RowExpansion> handler) {
         $this().on(TableEvents.ROW_EXPAND + "." + getViewId(), handler);
     }
 
     @Override
-    public void removeRowExpandHandler(EventFunc1<RowExpand> handler) {
+    public void removeRowExpandHandler(EventFunc1<RowExpansion> handler) {
         $this().off(TableEvents.ROW_EXPAND, handler);
     }
 
@@ -832,18 +841,48 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
-    public void addRowExpandedHandler(EventFunc1<RowExpand> handler) {
+    public void addRowExpandedHandler(EventFunc1<RowExpansion> handler) {
         $this().on(TableEvents.ROW_EXPANDED + "." + getViewId(), handler);
     }
 
     @Override
-    public void removeRowExpandedHandler(EventFunc1<RowExpand> handler) {
+    public void removeRowExpandedHandler(EventFunc1<RowExpansion> handler) {
         $this().off(TableEvents.ROW_EXPANDED, handler);
     }
 
     @Override
     public void removeRowExpandedHandlers() {
         $this().off(TableEvents.ROW_EXPANDED);
+    }
+
+    @Override
+    public void addRowCollapseHandler(EventFunc1<RowExpansion> handler) {
+        $this().on(TableEvents.ROW_COLLAPSE + "." + getViewId(), handler);
+    }
+
+    @Override
+    public void removeRowCollapseHandler(EventFunc1<RowExpansion> handler) {
+        $this().off(TableEvents.ROW_COLLAPSE, handler);
+    }
+
+    @Override
+    public void removeRowCollapseHandlers() {
+        $this().off(TableEvents.ROW_COLLAPSE);
+    }
+
+    @Override
+    public void addRowCollapsedHandler(EventFunc1<RowExpansion> handler) {
+        $this().on(TableEvents.ROW_COLLAPSED + "." + getViewId(), handler);
+    }
+
+    @Override
+    public void removeRowCollapsedHandler(EventFunc1<RowExpansion> handler) {
+        $this().off(TableEvents.ROW_COLLAPSED, handler);
+    }
+
+    @Override
+    public void removeRowCollapsedHandlers() {
+        $this().off(TableEvents.ROW_COLLAPSED);
     }
 
     @Override
@@ -964,5 +1003,35 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     @Override
     public void removeCategoryClosedHandlers() {
         $this().off(TableEvents.CATEGORY_CLOSED);
+    }
+
+    @Override
+    public void addComponentsRenderedHandler(Functions.EventFunc handler) {
+        $this().on(TableEvents.COMPONENTS_RENDERED + "." + getViewId(), handler);
+    }
+
+    @Override
+    public void removeComponentsRenderedHandler(Functions.EventFunc handler) {
+        $this().off(TableEvents.COMPONENTS_RENDERED, handler);
+    }
+
+    @Override
+    public void removeComponentsRenderedHandlers() {
+        $this().off(TableEvents.COMPONENTS_RENDERED);
+    }
+
+    @Override
+    public void addRenderedHandler(Functions.EventFunc handler) {
+        $this().on(TableEvents.RENDERED + "." + getViewId(), handler);
+    }
+
+    @Override
+    public void removeRenderedHandler(Functions.EventFunc handler) {
+        $this().off(TableEvents.RENDERED, handler);
+    }
+
+    @Override
+    public void removeRenderedHandlers() {
+        $this().off(TableEvents.RENDERED);
     }
 }

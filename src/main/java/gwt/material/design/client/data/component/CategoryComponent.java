@@ -1,10 +1,8 @@
-package gwt.material.design.client.data.component;
-
 /*
  * #%L
  * GwtMaterial
  * %%
- * Copyright (C) 2015 - 2016 GwtMaterialDesign
+ * Copyright (C) 2015 - 2017 GwtMaterialDesign
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +17,7 @@ package gwt.material.design.client.data.component;
  * limitations under the License.
  * #L%
  */
+package gwt.material.design.client.data.component;
 
 import gwt.material.design.client.ui.table.TableSubHeader;
 
@@ -43,9 +42,15 @@ public class CategoryComponent extends Component<TableSubHeader> {
     private String name;
     private int currentIndex = -1;
     private int rowCount = 0;
+    private boolean openByDefault;
 
     public CategoryComponent(String name) {
+        this(name, false);
+    }
+
+    public CategoryComponent(String name, boolean openByDefault) {
         this.name = name;
+        this.openByDefault = openByDefault;
     }
 
     public String getName() {
@@ -93,6 +98,14 @@ public class CategoryComponent extends Component<TableSubHeader> {
 
     public void setRowCount(int rowCount) {
         this.rowCount = rowCount;
+    }
+
+    public boolean isOpenByDefault() {
+        return openByDefault;
+    }
+
+    public void setOpenByDefault(boolean openByDefault) {
+        this.openByDefault = openByDefault;
     }
 
     @Override

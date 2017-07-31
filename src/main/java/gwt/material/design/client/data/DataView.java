@@ -1,10 +1,8 @@
-package gwt.material.design.client.data;
-
 /*
  * #%L
  * GwtMaterial
  * %%
- * Copyright (C) 2015 - 2016 GwtMaterialDesign
+ * Copyright (C) 2015 - 2017 GwtMaterialDesign
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +17,7 @@ package gwt.material.design.client.data;
  * limitations under the License.
  * #L%
  */
+package gwt.material.design.client.data;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.Panel;
@@ -109,6 +108,12 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
     String getViewId();
 
     /**
+     * Update a models row within the table.
+     * @param model a model with a valid <code>equals</code> method.
+     */
+    void updateRow(T model);
+
+    /**
      * Get a row by its representing model.
      * @param model the model assigned to a row.
      */
@@ -119,6 +124,13 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
      * @param index the value of the render index.
      */
     RowComponent<T> getRow(int index);
+
+    /**
+     * Get a models {@link RowComponent} or null if not found.
+     * @param model a model with a valid <code>equals</code> method.
+     * @return the models representing {@link RowComponent}.
+     */
+    RowComponent<T> getRowByModel(T model);
 
     /**
      * Clear data rows.

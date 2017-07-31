@@ -1,10 +1,8 @@
-package gwt.material.design.client.data.infinite;
-
 /*
  * #%L
  * GwtMaterial
  * %%
- * Copyright (C) 2015 - 2016 GwtMaterialDesign
+ * Copyright (C) 2015 - 2017 GwtMaterialDesign
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +17,7 @@ package gwt.material.design.client.data.infinite;
  * limitations under the License.
  * #L%
  */
-
+package gwt.material.design.client.data.infinite;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
@@ -27,6 +25,7 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.view.client.ProvidesKey;
 import com.google.gwt.view.client.Range;
 import gwt.material.design.client.base.MaterialWidget;
+import gwt.material.design.client.data.SortContext;
 import gwt.material.design.client.data.loader.LoadCallback;
 import gwt.material.design.client.data.loader.LoadConfig;
 import gwt.material.design.client.data.loader.LoadResult;
@@ -290,6 +289,17 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
             return true;
         }
         return false;
+    }
+
+    @Override
+    protected boolean doSort(SortContext<T> sortContext, Components<RowComponent<T>> rows) {
+        if(super.doSort(sortContext, rows)) {
+            // TODO: Potentially sort the cache data?
+            dataCache.clear(); // invalidate the cache upon successful sorts
+            return true;
+        } else {
+            return false;
+        }
     }
 
     protected void setViewSize(int viewSize) {

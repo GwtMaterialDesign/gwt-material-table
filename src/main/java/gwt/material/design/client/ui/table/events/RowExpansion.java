@@ -1,10 +1,8 @@
-package gwt.material.design.client.ui.table.events;
-
 /*
  * #%L
  * GwtMaterial
  * %%
- * Copyright (C) 2015 - 2016 GwtMaterialDesign
+ * Copyright (C) 2015 - 2017 GwtMaterialDesign
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,26 +17,24 @@ package gwt.material.design.client.ui.table.events;
  * limitations under the License.
  * #L%
  */
-
+package gwt.material.design.client.ui.table.events;
 
 import gwt.material.design.jquery.client.api.JQueryElement;
 
 /**
- * Row expansion invocation block.
+ * Row expansion block.
  *
  * @author Ben Dol
  */
-public class RowExpand<T> {
+public class RowExpansion<T> {
     final T model;
     final JQueryElement row;
     final JQueryElement overlay;
-    final boolean expand;
 
-    public RowExpand(T model, JQueryElement row, boolean expand) {
+    public RowExpansion(T model, JQueryElement row) {
         this.model = model;
         this.row = row;
         this.overlay = row.find("section.overlay");
-        this.expand = expand;
     }
 
     public T getModel() {
@@ -51,9 +47,5 @@ public class RowExpand<T> {
 
     public JQueryElement getOverlay() {
         return overlay;
-    }
-
-    public boolean isExpand() {
-        return expand;
     }
 }
