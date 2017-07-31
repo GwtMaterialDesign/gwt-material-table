@@ -34,6 +34,22 @@
  * @author Ben Dol
  */
 (function($) {
+  $.fn.forceRedraw = function(){
+    var element = this[0];
+
+    var n = document.createTextNode(' ');
+    var disp = element.style.display;  // don't worry about previous display style
+
+    element.appendChild(n);
+    element.style.display = 'none';
+
+    setTimeout(function(){
+        element.style.display = disp;
+        n.parentNode.removeChild(n);
+    }, 10); // you can play with this timeout to make it as short as possible
+    return this;
+  };
+
   $.fn.insertAt = function(index, element) {
     var lastIndex = this.children().size();
     if (index < 0) {

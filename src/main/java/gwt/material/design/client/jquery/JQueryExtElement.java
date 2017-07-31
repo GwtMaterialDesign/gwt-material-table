@@ -28,6 +28,8 @@ import jsinterop.annotations.JsType;
 @JsType(name = "jQuery", isNative = true)
 public class JQueryExtElement extends JQueryElement {
 
+    public native JQueryExtElement forceRedraw();
+
     public native JQueryExtElement insertAt(int index, Element element);
 
     public native JQueryExtElement longpress(Functions.MouseEventFunc longCallback, Functions.MouseEventFunc shortCallback, int duration);
