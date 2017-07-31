@@ -1,10 +1,8 @@
-package gwt.material.design.client.ui.table.cell;
-
 /*
  * #%L
  * GwtMaterial
  * %%
- * Copyright (C) 2015 - 2016 GwtMaterialDesign
+ * Copyright (C) 2015 - 2017 GwtMaterialDesign
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +17,7 @@ package gwt.material.design.client.ui.table.cell;
  * limitations under the License.
  * #L%
  */
-
+package gwt.material.design.client.ui.table.cell;
 
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.Cell.Context;
@@ -63,8 +61,9 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
 
     private boolean isDefaultSortAscending = true;
     private boolean isNumeric = false;
+    private boolean autoSort = false;
     private String name;
-    private String headerWidth;
+    private String width;
     private HideOn hideOn;
     private TextAlign textAlign;
 
@@ -79,6 +78,17 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
      */
     public Column(Cell<C> cell) {
         this.cell = cell;
+
+        setFieldUpdater(fieldUpdater());
+        setDefaultSortAscending(defaultSortAscending());
+        setAutoSort(autoSort());
+        setNumeric(numeric());
+        setName(name());
+        setWidth(width());
+        setHideOn(hideOn());
+        setTextAlign(textAlign());
+        setStyleProperties(styleProperties());
+        setSortComparator(sortComparator());
     }
 
     /**
@@ -103,15 +113,8 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
      * @return a Cell
      */
     @Override
-    public Cell<C> getCell() {
+    public final Cell<C> getCell() {
         return cell;
-    }
-
-    /**
-     * @return the database name of the column, or null if it's never been set
-     */
-    public String getName() {
-        return name;
     }
     
     /**
@@ -132,19 +135,31 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
 
     /**
      * Sets a string that identifies this column in a data query.
-     * 
+     *
      * @param name name of the column from the data store's perspective
      */
-    public void setName(String name) {
+    public final void setName(String name) {
         this.name = name;
     }
+
+    /**
+     * @return the database name of the column, or null if it's never been set
+     */
+    public final String getName() {
+        return name;
+    }
+
+    /**
+     * @return the database name of the column, or null if it's never been set
+     */
+    public String name() { return ""; }
 
     /**
      * Check if the default sort order of the column is ascending or descending.
      *
      * @return true if default sort is ascending, false if not
      */
-    public boolean isDefaultSortAscending() {
+    public final boolean isDefaultSortAscending() {
         return isDefaultSortAscending;
     }
 
@@ -154,9 +169,34 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
      * @param isAscending true to set the default order to ascending, false for
      *                    descending
      */
-    public void setDefaultSortAscending(boolean isAscending) {
+    public final void setDefaultSortAscending(boolean isAscending) {
         this.isDefaultSortAscending = isAscending;
     }
+
+    /**
+     * Check if the default sort order of the column is ascending or descending.
+     *
+     * @return true if default sort is ascending, false if not
+     */
+    public boolean defaultSortAscending() { return true; }
+
+    /**
+     * Is this column auto sorting when rendered.
+     * @return true if this column is auto sorted.
+     */
+    public final boolean isAutoSort() {
+        return autoSort;
+    }
+
+    /**
+     * Make this column auto sort on rendering, if multiple columns are auto
+     * sorting it will be based on the first one set to auto sort.
+     */
+    public final void setAutoSort(boolean autoSort) {
+        this.autoSort = autoSort;
+    }
+
+    public boolean autoSort() { return false; }
 
     /**
      * Check if the column is sortable.
@@ -167,50 +207,60 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
         return getSortComparator() != null;
     }
 
-    public void setSortComparator(Comparator<? super RowComponent<T>> sortComparator) {
+    public final void setSortComparator(Comparator<? super RowComponent<T>> sortComparator) {
         this.sortComparator = sortComparator;
     }
 
-    public Comparator<? super RowComponent<T>> getSortComparator() {
+    public final Comparator<? super RowComponent<T>> getSortComparator() {
         return sortComparator;
     }
 
+    public Comparator<? super RowComponent<T>> sortComparator() { return null; }
+
     @Override
-    public FieldUpdater<T, C> getFieldUpdater() {
+    public final FieldUpdater<T, C> getFieldUpdater() {
         return fieldUpdater;
     }
 
-    public void setFieldUpdater(FieldUpdater<T, C> fieldUpdater) {
+    public final void setFieldUpdater(FieldUpdater<T, C> fieldUpdater) {
         this.fieldUpdater = fieldUpdater;
     }
 
-    public boolean isNumeric() {
+    public FieldUpdater<T, C> fieldUpdater() { return null; }
+
+    public final boolean isNumeric() {
         return isNumeric;
     }
 
-    public void setNumeric(boolean numeric) {
+    public final void setNumeric(boolean numeric) {
         isNumeric = numeric;
     }
 
+    public boolean numeric() { return false; }
+
     @Override
-    public void setHideOn(HideOn hideOn) {
+    public final void setHideOn(HideOn hideOn) {
         this.hideOn = hideOn;
     }
 
     @Override
-    public HideOn getHideOn() {
+    public final HideOn getHideOn() {
         return hideOn;
     }
 
+    public HideOn hideOn() { return null; }
+
     @Override
-    public void setTextAlign(TextAlign align) {
+    public final void setTextAlign(TextAlign align) {
         this.textAlign = align;
     }
 
     @Override
-    public TextAlign getTextAlign() {
+    public final TextAlign getTextAlign() {
         return textAlign;
     }
+
+    public TextAlign textAlign() { return null; }
 
     /**
      * Set a style property using its name as the key. Please ensure the style name and value
@@ -219,7 +269,7 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
      * @param styleName the style name as seen here {@link Style#STYLE_Z_INDEX} for example.
      * @param value the string value required for the given style property.
      */
-    public void setStyleProperty(StyleName styleName, String value) {
+    public final void setStyleProperty(StyleName styleName, String value) {
         if(styleProps == null) {
             styleProps = new HashMap<>();
         }
@@ -231,7 +281,7 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
      * @param styleName the styles name as represented in a {@link Style} class.
      * @return null if the style property is not set.
      */
-    public String getStyleProperty(StyleName styleName) {
+    public final String getStyleProperty(StyleName styleName) {
         return styleProps!=null ? styleProps.get(styleName) : null;
     }
 
@@ -239,24 +289,35 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
      * Return the registered style properties.
      * @return null if no styles are added.
      */
-    public Map<StyleName, String> getStyleProperties() {
-        return styleProps!=null ? styleProps : null;
+    public final Map<StyleName, String> getStyleProperties() {
+        return styleProps;
+    }
+
+    /**
+     * Set the style properties map.
+     */
+    public void setStyleProperties(Map<StyleName, String> styleProps) {
+        this.styleProps = styleProps;
+    }
+
+    public Map<StyleName, String> styleProperties() { return null;}
+
+    /**
+     * Set the columns header width.
+     */
+    public final void setWidth(String width) {
+        this.width = width;
     }
 
     /**
      * Get the columns header width.
      * @return null if not defined.
      */
-    public String getHeaderWidth() {
-        return headerWidth;
+    public final String getWidth() {
+        return width;
     }
 
-    /**
-     * Set the columns header width.
-     */
-    public void setHeaderWidth(String headerWidth) {
-        this.headerWidth = headerWidth;
-    }
+    public String width() { return null; }
 
     @Override
     public String toString() {
@@ -266,7 +327,7 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
             ", isDefaultSortAscending=" + isDefaultSortAscending +
             ", isNumeric=" + isNumeric +
             ", name='" + name + '\'' +
-            ", headerWidth='" + headerWidth + '\'' +
+            ", width='" + width + '\'' +
             ", hideOn=" + hideOn +
             ", textAlign=" + textAlign +
             ", styleProps=" + styleProps +

@@ -1,10 +1,8 @@
-package gwt.material.design.client.ui.table;
-
 /*
  * #%L
  * GwtMaterial
  * %%
- * Copyright (C) 2015 - 2016 GwtMaterialDesign
+ * Copyright (C) 2015 - 2017 GwtMaterialDesign
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +17,10 @@ package gwt.material.design.client.ui.table;
  * limitations under the License.
  * #L%
  */
+package gwt.material.design.client.ui.table;
 
-
+import com.gargoylesoftware.htmlunit.attachment.AttachmentHandler;
+import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.user.client.ui.Panel;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.jquery.client.api.JQueryElement;
@@ -187,27 +187,35 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> {
     public void insertColumn(int beforeIndex, Column<T, ?> col, String header) {
         super.insertColumn(beforeIndex, col, header);
 
-        int index = beforeIndex + getColumnOffset();
-        String ref = getViewId() + "-col" + index;
+        AttachEvent.Handler hander = event -> {
+            int index = beforeIndex + getColumnOffset();
+            String ref = getViewId() + "-col" + index;
 
-        MaterialCheckBox toggleBox = new MaterialCheckBox(new ListItem().getElement());
-        JQueryElement input = $(toggleBox).find("input");
-        input.attr("id", ref);
+            MaterialCheckBox toggleBox = new MaterialCheckBox(new ListItem().getElement());
+            JQueryElement input = $(toggleBox).find("input");
+            input.attr("id", ref);
 
-        JQueryElement label = $(toggleBox).find("label");
-        label.text(col.getName());
-        label.attr("for", ref);
+            JQueryElement label = $(toggleBox).find("label");
+            label.text(col.getName());
+            label.attr("for", ref);
 
-        toggleBox.setValue(true);
-        menu.add(toggleBox);
+            toggleBox.setValue(true);
+            menu.add(toggleBox);
 
-        // We will hide the empty header menu items
-        if(header.isEmpty()) {
-            toggleBox.setVisible(false);
+            // We will hide the empty header menu items
+            if (header.isEmpty()) {
+                toggleBox.setVisible(false);
+            }
+
+            setupMenu();
+            reindexToggles();
+        };
+
+        if(isSetup()) {
+            hander.onAttachOrDetach(null);
+        } else {
+            addAttachHandler(hander, true);
         }
-
-        setupMenu();
-        reindexToggles();
     }
 
     @Override

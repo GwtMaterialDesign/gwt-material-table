@@ -1,5 +1,3 @@
-package gwt.material.design.client.data;
-
 /*
  * #%L
  * GwtMaterial
@@ -19,7 +17,7 @@ package gwt.material.design.client.data;
  * limitations under the License.
  * #L%
  */
-
+package gwt.material.design.client.data;
 
 import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.core.client.Scheduler;
@@ -74,7 +72,8 @@ public class BaseRenderer<T> implements Renderer<T> {
     public TableRow drawRow(DataView<T> dataView, RowComponent<T> rowComponent, Object valueKey,
                             List<Column<T, ?>> columns, boolean redraw) {
         T data = rowComponent.getData();
-        TableRow row = rowComponent.getElement();
+        TableRow row = rowComponent.getWidget();
+        boolean draw = true;
         if(row == null) {
             // Create a new row element
             row = new TableRow();
@@ -83,21 +82,31 @@ public class BaseRenderer<T> implements Renderer<T> {
             row.getElement().getStyle().setProperty("maxHeight", getExpectedRowHeight() + "px");
             row.getElement().getStyle().setProperty("minHeight", getExpectedRowHeight() + "px");
             row.setStyleName(TableCssName.DATA_ROW);
-            rowComponent.setElement(row);
+            rowComponent.setWidget(row);
 
             if(!dataView.getSelectionType().equals(SelectionType.NONE)) {
-                row.add(drawSelectionCell());
+                TableData selection = drawSelectionCell();
+                row.add(selection);
             }
+        } else if(!redraw && !rowComponent.isRedraw()) {
+            draw = false;
+        }
 
+        if(draw) {
             // Build the columns
             int colOffset = dataView.getColumnOffset();
-            for(int c = 0; c < columns.size(); c++) {
+            int colSize = columns.size();
+
+            for(int c = 0; c < colSize; c++) {
                 int colIndex = c + colOffset;
                 Context context = new Context(rowComponent.getIndex(), colIndex, valueKey);
-                drawColumn(row, context, data, columns.get(c), colIndex, dataView.isHeaderVisible(colIndex));
+                TableData column = drawColumn(row, context, data, columns.get(c), colIndex, dataView.isHeaderVisible(colIndex));
             }
+            rowComponent.setRedraw(false);
+        }
 
-            if(dataView.isUseRowExpansion()) {
+        if(dataView.isUseRowExpansion()) {
+            if(!row.hasExpansionColumn()) {
                 TableData expand = new TableData();
                 expand.setId("colex");
                 MaterialIcon expandIcon = new MaterialIcon();
@@ -109,18 +118,8 @@ public class BaseRenderer<T> implements Renderer<T> {
                 expand.add(expandIcon);
                 row.add(expand);
             }
-        } else {
-            if(redraw || rowComponent.isRedraw()) {
-                // Rebuild the columns
-                int colOffset = dataView.getColumnOffset();
-                for(int c = 0; c < columns.size(); c++) {
-                    int colIndex = c + colOffset;
-                    Context context = new Context(rowComponent.getIndex(), colIndex, valueKey);
-                    drawColumn(row, context, rowComponent.getData(), columns.get(c), colIndex,
-                        dataView.isHeaderVisible(colIndex));
-                }
-                rowComponent.setRedraw(false);
-            }
+        } else if(row.hasExpansionColumn()) {
+            row.removeExpansionColumn();
         }
 
         Scheduler.get().scheduleDeferred(() -> {
@@ -132,7 +131,7 @@ public class BaseRenderer<T> implements Renderer<T> {
     @Override
     public TableSubHeader drawCategory(CategoryComponent category) {
         if(category != null) {
-            TableSubHeader subHeader = category.getElement();
+            TableSubHeader subHeader = category.getWidget();
             if(subHeader == null) {
                 subHeader = category.render();
             }
@@ -244,7 +243,7 @@ public class BaseRenderer<T> implements Renderer<T> {
         }
 
         // Set the headers width
-        String width = column.getHeaderWidth();
+        String width = column.getWidth();
         if(width != null) {
             th.setWidth(width);
         }
@@ -278,7 +277,7 @@ public class BaseRenderer<T> implements Renderer<T> {
 
     @Override
     public void calculateRowHeight(RowComponent<T> row) {
-        TableRow element = row.getElement();
+        TableRow element = row.getWidget();
         if(element != null) {
             int rowHeight = element.$this().outerHeight(true);
             if (rowHeight > 0 && rowHeight != calculatedRowHeight) {

@@ -1,10 +1,8 @@
-package gwt.material.design.client.data.factory;
-
 /*
  * #%L
  * GwtMaterial
  * %%
- * Copyright (C) 2015 - 2016 GwtMaterialDesign
+ * Copyright (C) 2015 - 2017 GwtMaterialDesign
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +17,10 @@ package gwt.material.design.client.data.factory;
  * limitations under the License.
  * #L%
  */
+package gwt.material.design.client.data.factory;
 
 import gwt.material.design.client.data.AbstractDataView;
+import gwt.material.design.client.data.DataView;
 import gwt.material.design.client.data.HasDataCategory;
 import gwt.material.design.client.data.component.ComponentFactory;
 import gwt.material.design.client.data.component.RowComponent;
@@ -33,8 +33,8 @@ import gwt.material.design.client.data.component.RowComponent;
 public class RowComponentFactory<M> implements ComponentFactory<RowComponent<M>, M> {
 
     @Override
-    public RowComponent<M> generate(M model) {
-        return new RowComponent<>(model, getCategory(model));
+    public RowComponent<M> generate(DataView dataView, M model) {
+        return new RowComponent<>(model, dataView, getCategory(model));
     }
 
     public String getCategory(M model) {

@@ -329,7 +329,7 @@ function TableSubHeaders($table, $stickies) {
         } else {
           var width = $this.outerWidth();
           $this.removeClass("fixed").removeAttr("style");
-          $this.width(width);
+          //$this.width(width);
 
           // Try display the previous sticky
           $prevSticky.css({ "display": "" });
@@ -474,10 +474,10 @@ function TableSubHeaders($table, $stickies) {
       var $this = $(this),
           width = widths[index];
 
-      /*$this.css({
+      $this.css({
         "min-width": width,
         "max-width": width
-      });*/
+      });
     });
   };
 
@@ -514,18 +514,18 @@ function TableSubHeaders($table, $stickies) {
   };
 
   base.updateWidth = function($sticky, width) {
-    if(width) {
+    /*if(width) {
       $sticky.width(width);
-    }
+    }*/
 
     // Calculate new cell widths
     base.updateCellWidths($sticky);
   };
 
   base.updateWidths = function() {
-    base.$stickies.each(function() {
+    /*base.$stickies.each(function() {
       base.updateWidth($(this));
-    });
+    });*/
   };
 
   base.updateHeights = function() {
