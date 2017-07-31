@@ -22,6 +22,7 @@ package gwt.material.design.client.data;
 import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.shared.GwtEvent;
@@ -254,6 +255,9 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                         container.trigger(TableEvents.RENDERED, null);
                         pendingRenderEvent = false;
                     }
+
+                    // Fixes an issue with heights updating too early.
+                    subheaderLib.updateHeights();
                 };
                 if (componentWidget == null || componentWidget.isAttached()) {
                     handler.onAttachOrDetach(null);
@@ -1490,7 +1494,6 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 return true;
             }
         }
-
         return false;
     }
 
@@ -1935,6 +1938,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             });
             category.$this().off("closed");
             category.$this().on("closed", (e, categoryElem) -> {
+                category.fixBoxShadowIssue();
                 return container.trigger(TableEvents.CATEGORY_CLOSED, category.getName());
             });
         }
