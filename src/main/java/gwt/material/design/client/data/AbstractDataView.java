@@ -22,7 +22,6 @@ package gwt.material.design.client.data;
 import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.shared.GwtEvent;
@@ -207,31 +206,6 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             }
         }
 
-        // Assign left frozen column margin
-        if (leftFrozenColumns > 0) {
-            frozenMarginLeft = 0;
-            TableHeader lastFrozenHeader = headers.get(leftFrozenColumns + getColumnOffset());
-            lastFrozenHeader.$this().prevAll().each((param1, el) -> frozenMarginLeft += $(el).outerWidth());
-            innerScroll.addClass("inner-shadow");
-            innerScroll.css("margin-left", frozenMarginLeft + "px");
-        }
-
-        // Assign right frozen column margin
-        if(rightFrozenColumns > 0) {
-            frozenMarginRight = 0;
-            int firstRightIndex = 0;
-            for(Column column : columns) {
-                if(column.isFrozenRight()) {
-                    break;
-                }
-                firstRightIndex++;
-            }
-            TableHeader firstFrozenHeader = headers.get(firstRightIndex + getColumnOffset());
-            firstFrozenHeader.$this().nextAll().each((param1, el) -> frozenMarginRight += $(el).outerWidth());
-            innerScroll.addClass("inner-shadow");
-            innerScroll.css("margin-right", frozenMarginRight + "px");
-        }
-
         if(!components.isEmpty()) {
             // Remove the last attach handler
             if(attachHandler != null) {
@@ -258,6 +232,30 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
                     // Fixes an issue with heights updating too early.
                     subheaderLib.updateHeights();
+
+                    // Assign left frozen column margin
+                    if (leftFrozenColumns > 0) {
+                        frozenMarginLeft = 0;
+                        TableHeader lastFrozenHeader = headers.get(leftFrozenColumns + getColumnOffset());
+                        lastFrozenHeader.$this().prevAll().each((param1, el) -> frozenMarginLeft += $(el).outerWidth());
+                        innerScroll.css("margin-left", frozenMarginLeft + "px");
+                    }
+
+                    // Assign right frozen column margin
+                    if(rightFrozenColumns > 0) {
+                        frozenMarginRight = 0;
+                        int firstRightIndex = 0;
+                        for(Column column : columns) {
+                            if(column.isFrozenRight()) {
+                                break;
+                            }
+                            firstRightIndex++;
+                        }
+                        TableHeader firstFrozenHeader = headers.get(firstRightIndex + getColumnOffset());
+                        firstFrozenHeader.$this().nextAll().each((param1, el) -> frozenMarginRight += $(el).outerWidth());
+                        innerScroll.addClass("inner-shadow");
+                        innerScroll.css("margin-right", frozenMarginRight + "px");
+                    }
                 };
                 if (componentWidget == null || componentWidget.isAttached()) {
                     handler.onAttachOrDetach(null);
@@ -581,7 +579,6 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             });
 
             // XScroll Setup
-            //TODO: Append the frozen column(s) width/margin.
             $table.on("resize." + id, e -> {
                 xScrollPanel.setWidth((innerScroll.asElement().getScrollWidth() + frozenMarginLeft) + "px");
                 return true;
@@ -590,7 +587,13 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             // Setup inner scroll x scroll binding
             JQueryElement $xScrollPanel = $(xScrollPanel);
             $xScrollPanel.on("scroll." + id, e -> {
-                innerScroll.prop("scrollLeft", $xScrollPanel.scrollLeft());
+                int scrollLeft = $xScrollPanel.scrollLeft();
+                innerScroll.prop("scrollLeft", scrollLeft);
+                if(scrollLeft < 1) {
+                    innerScroll.removeClass("inner-shadow");
+                } else {
+                    innerScroll.addClass("inner-shadow");
+                }
                 return true;
             });
 
