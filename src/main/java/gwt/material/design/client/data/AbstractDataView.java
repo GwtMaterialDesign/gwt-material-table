@@ -153,7 +153,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         //this.componentFactories = new ArrayList<>();
 
         setRenderer(new BaseRenderer<>());
-        onLoaded();
+        onConstructed();
     }
 
     /**
@@ -161,7 +161,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
      * Note that this is not when the data view is attached,
      * see {@link #setup(TableScaffolding)}.
      */
-    protected void onLoaded() {
+    protected void onConstructed() {
         // Do nothing by default
     }
 
@@ -452,6 +452,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     @Override
     public void setRenderer(Renderer<T> renderer) {
+        if(this.renderer != null) {
+            // Copy existing render properties.
+            renderer.copy(this.renderer);
+        }
         this.renderer = renderer;
     }
 

@@ -296,7 +296,7 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
     /**
      * Set the style properties map.
      */
-    public void setStyleProperties(Map<StyleName, String> styleProps) {
+    public final void setStyleProperties(Map<StyleName, String> styleProps) {
         this.styleProps = styleProps;
     }
 
