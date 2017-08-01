@@ -21,6 +21,8 @@ package gwt.material.design.client.data;
 
 import com.google.gwt.cell.client.Cell.Context;
 import gwt.material.design.client.base.MaterialWidget;
+import gwt.material.design.client.constants.IconSize;
+import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.data.component.Component;
 import gwt.material.design.client.data.component.RowComponent;
@@ -61,4 +63,18 @@ public interface Renderer<T> {
     void calculateRowHeight(RowComponent<T> row);
 
     int getCalculatedRowHeight();
+
+    void copy(Renderer<T> renderer);
+
+    IconType getSortAscIcon();
+
+    void setSortAscIcon(IconType sortAscIcon);
+
+    IconType getSortDescIcon();
+
+    void setSortDescIcon(IconType sortDescIcon);
+
+    IconSize getSortIconSize();
+
+    void setSortIconSize(IconSize sortIconSize);
 }

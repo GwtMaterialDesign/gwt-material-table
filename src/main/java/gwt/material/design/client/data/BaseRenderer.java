@@ -68,7 +68,16 @@ public class BaseRenderer<T> implements Renderer<T> {
 
     private IconType sortAscIcon = IconType.ARROW_UPWARD;
     private IconType sortDescIcon = IconType.ARROW_DOWNWARD;
-    private IconSize sortIconSize = IconSize.TINY;
+    protected IconSize sortIconSize = IconSize.TINY;
+
+    @Override
+    public void copy(Renderer<T> renderer) {
+        expectedRowHeight = renderer.getExpectedRowHeight();
+        calculatedRowHeight = renderer.getCalculatedRowHeight();
+        sortAscIcon = renderer.getSortAscIcon();
+        sortDescIcon = renderer.getSortDescIcon();
+        sortIconSize = renderer.getSortIconSize();
+    }
 
     @Override
     public TableRow drawRow(DataView<T> dataView, RowComponent<T> rowComponent, Object valueKey,
@@ -377,5 +386,35 @@ public class BaseRenderer<T> implements Renderer<T> {
     @Override
     public int getCalculatedRowHeight() {
         return calculatedRowHeight;
+    }
+
+    @Override
+    public IconType getSortAscIcon() {
+        return sortAscIcon;
+    }
+
+    @Override
+    public void setSortAscIcon(IconType sortAscIcon) {
+        this.sortAscIcon = sortAscIcon;
+    }
+
+    @Override
+    public IconType getSortDescIcon() {
+        return sortDescIcon;
+    }
+
+    @Override
+    public void setSortDescIcon(IconType sortDescIcon) {
+        this.sortDescIcon = sortDescIcon;
+    }
+
+    @Override
+    public IconSize getSortIconSize() {
+        return sortIconSize;
+    }
+
+    @Override
+    public void setSortIconSize(IconSize sortIconSize) {
+        this.sortIconSize = sortIconSize;
     }
 }

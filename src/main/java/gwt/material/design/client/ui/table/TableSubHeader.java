@@ -172,7 +172,7 @@ public class TableSubHeader extends TableRow {
     public void fixBoxShadowIssue() {
         if(!redrawFix) {
             JQueryExtension.$(getElement()).forceRedraw();
-            redrawFix = true;
+            //redrawFix = true;
         }
     }
 

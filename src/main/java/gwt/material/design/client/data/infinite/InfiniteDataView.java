@@ -142,7 +142,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
     }
 
     @Override
-    protected void onLoaded() {
+    protected void onConstructed() {
         setRenderer(new InfiniteRenderer<>());
     }
 
