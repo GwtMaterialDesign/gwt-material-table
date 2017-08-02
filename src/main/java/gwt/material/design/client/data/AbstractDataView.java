@@ -218,18 +218,6 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 Component<?> component = components.get(components.size() - 1);
                 Widget componentWidget = component.getWidget();
                 AttachEvent.Handler handler = event -> {
-                    rendering = false;
-
-                    if(attachHandler != null) {
-                        attachHandler.removeHandler();
-                    }
-                    container.trigger(TableEvents.COMPONENTS_RENDERED, null);
-
-                    if(pendingRenderEvent) {
-                        container.trigger(TableEvents.RENDERED, null);
-                        pendingRenderEvent = false;
-                    }
-
                     // Fixes an issue with heights updating too early.
                     subheaderLib.updateHeights();
 
@@ -255,6 +243,19 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                         firstFrozenHeader.$this().nextAll().each((param1, el) -> frozenMarginRight += $(el).outerWidth());
                         innerScroll.addClass("inner-shadow");
                         innerScroll.css("margin-right", frozenMarginRight + "px");
+                    }
+
+                    rendering = false;
+
+                    if(attachHandler != null) {
+                        attachHandler.removeHandler();
+                    }
+
+                    container.trigger(TableEvents.COMPONENTS_RENDERED, null);
+
+                    if(pendingRenderEvent) {
+                        container.trigger(TableEvents.RENDERED, null);
+                        pendingRenderEvent = false;
                     }
                 };
                 if (componentWidget == null || componentWidget.isAttached()) {
