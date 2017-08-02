@@ -145,6 +145,24 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected final List<TableHeader> headers = new ArrayList<>();
     protected HandlerRegistration attachHandler;
 
+    private static final String expansionHtml = "<tr class='expansion'>" +
+     "<td class='expansion' colspan='100%'>" +
+        "<div>" +
+            "<section class='overlay'>" +
+                "<div class='progress' style='height:4px;top:-1px;'>" +
+                    "<div class='indeterminate'></div>" +
+                "</div>" +
+            "</section>" +
+            "<div class='content'><br/><br/><br/></div>" +
+        "</div>" +
+     "</td></tr>";
+
+    public static final String maskHtml = "<div class='mask'>" +
+        //"<!--i style='left:50%;top:20%;z-index:9999;position:absolute;color:white' class='fa fa-3x fa-spinner fa-spin'></i-->" +
+    "</div>";
+
+    public static final String transitionCss = "transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd";
+
     public AbstractDataView() {
         this("DataView");
     }
@@ -741,19 +759,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                     JQueryElement[] expansion = new JQueryElement[]{tr.next().find("td.expansion div")};
 
                     if (expansion[0].length() < 1) {
-                        expansion[0] = $("<tr class='expansion'>" +
-                            "<td class='expansion' colspan='100%'>" +
-                                "<div>" +
-                                    "<section class='overlay'>" +
-                                        "<div class='progress' style='height:4px;top:-1px;'>" +
-                                            "<div class='indeterminate'></div>" +
-                                        "</div>" +
-                                    "</section>" +
-                                    "<div class='content'><br/><br/><br/></div>" +
-                                "</div>" +
-                            "</td></tr>");
-
-                        expansion[0].insertAfter(tr);
+                        expansion[0] = $(expansionHtml).insertAfter(tr);
                         expansion[0] = expansion[0].find("td.expansion div");
                     }
 
@@ -761,7 +767,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                     final JQueryElement row = tr.next();
                     final T model = getModelByRowElement(tr.asElement());
 
-                    expansion[0].one("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd",
+                    expansion[0].one(transitionCss,
                         (e1, param1) -> {
                             if (!recalculated[0]) {
                                 // Recalculate subheaders
@@ -1886,9 +1892,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         if (!this.loadMask && loadMask) {
             if(isUseLoadOverlay()) {
                 if (maskElement == null) {
-                    maskElement = $("<div style='position:absolute;width:100%;height:100%;top:0;opacity:0.2;background-color:black;z-index:9999;'>" +
-                        "<!--i style='left:50%;top:20%;z-index:9999;position:absolute;color:white' class='fa fa-3x fa-spinner fa-spin'></i-->" +
-                        "</div>");
+                    maskElement = $(maskHtml);
                 }
                 $table.prepend(maskElement);
             }
