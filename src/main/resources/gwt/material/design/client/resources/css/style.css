@@ -205,6 +205,16 @@ table.table tbody tr.selected {
     background-color: #F5F5F5;
 }
 
+table.table .mask {
+    position:absolute;
+    width:100%;
+    height:100%;
+    top:0;
+    opacity:0.2;
+    background-color:black;
+    z-index:9999;
+}
+
 /* Menu Dropdown */
 div.tool-panel ul.dropdown-content li {
     padding-left: 8px;
