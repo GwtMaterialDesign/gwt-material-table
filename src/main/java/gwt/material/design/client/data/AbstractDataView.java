@@ -51,6 +51,7 @@ import gwt.material.design.client.js.JsTableSubHeaders;
 import gwt.material.design.client.js.StickyTableOptions;
 import gwt.material.design.client.ui.MaterialCheckBox;
 import gwt.material.design.client.ui.MaterialProgress;
+import gwt.material.design.client.ui.Selectors;
 import gwt.material.design.client.ui.table.*;
 import gwt.material.design.client.ui.table.cell.Column;
 import gwt.material.design.client.ui.table.events.RowExpansion;
@@ -149,7 +150,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         //"<!--i style='left:50%;top:20%;z-index:9999;position:absolute;color:white' class='fa fa-3x fa-spinner fa-spin'></i-->" +
     "</div>";
 
-    public static final String transitionCss = "transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd";
+    public static final String transitionEvents = "transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd";
 
     public AbstractDataView() {
         this("DataView");
@@ -695,7 +696,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                     final JQueryElement row = tr.next();
                     final T model = getModelByRowElement(tr.asElement());
 
-                    expansion[0].one(transitionCss,
+                    expansion[0].one(transitionEvents,
                         (e1, param1) -> {
                             if (!recalculated[0]) {
                                 // Recalculate subheaders
@@ -1384,21 +1385,18 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     @Override
     public boolean hasDeselectedRows(boolean visibleOnly) {
-        return $table.find("tr:not([disabled]):not(.disabled) td#col0 input:not(:checked)"
-            + (visibleOnly ? ":visible" : "")).length() > 0;
+        return $table.find(Selectors.rowInputNotCheckedSelector + (visibleOnly ? ":visible" : "")).length() > 0;
     }
 
     @Override
     public boolean hasSelectedRows(boolean visibleOnly) {
-        return $table.find("tr:not([disabled]):not(.disabled) td#col0 input:checked"
-            + (visibleOnly ? ":visible" : "")).length() > 0;
+        return $table.find(Selectors.rowInputCheckedSelector + (visibleOnly ? ":visible" : "")).length() > 0;
     }
 
     @Override
     public List<T> getSelectedRowModels(boolean visibleOnly) {
         final List<T> models = new ArrayList<>();
-        $table.find("tr:not([disabled]):not(.disabled) td#col0 input:checked"
-                + (visibleOnly ? ":visible" : "")).each((i, e) -> {
+        $table.find(Selectors.rowInputCheckedSelector + (visibleOnly ? ":visible" : "")).each((i, e) -> {
             T model = getModelByRowElement($(e).parent().parent().asElement());
             if(model != null) {
                 models.add(model);
