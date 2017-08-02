@@ -240,29 +240,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                     // Fixes an issue with heights updating too early.
                     subheaderLib.updateHeights();
 
-                    // Assign left frozen column margin
-                    if (leftFrozenColumns > 0) {
-                        frozenMarginLeft = 0;
-                        TableHeader lastFrozenHeader = headers.get(leftFrozenColumns + getColumnOffset());
-                        lastFrozenHeader.$this().prevAll().each((param1, el) -> frozenMarginLeft += $(el).outerWidth());
-                        innerScroll.css("margin-left", frozenMarginLeft + "px");
-                    }
-
-                    // Assign right frozen column margin
-                    if(rightFrozenColumns > 0) {
-                        frozenMarginRight = 0;
-                        int firstRightIndex = 0;
-                        for(Column column : columns) {
-                            if(column.getFrozenProperties().isRight()) {
-                                break;
-                            }
-                            firstRightIndex++;
-                        }
-                        TableHeader firstFrozenHeader = headers.get(firstRightIndex + getColumnOffset());
-                        firstFrozenHeader.$this().nextAll().each((param1, el) -> frozenMarginRight += $(el).outerWidth());
-                        innerScroll.addClass("inner-shadow");
-                        innerScroll.css("margin-right", frozenMarginRight + "px");
-                    }
+                    maybeApplyFrozenMargins();
 
                     rendering = false;
 
@@ -2224,6 +2202,32 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         if(isUseStickyHeader() && (leftFrozenColumns > 0 || rightFrozenColumns > 0)) {
             logger.warning("Sticky header is not supported with frozen columns, this will be disabled automatically.");
             setUseStickyHeader(false);
+        }
+    }
+
+    public void maybeApplyFrozenMargins() {
+        // Assign left frozen column margin
+        if (leftFrozenColumns > 0) {
+            frozenMarginLeft = 0;
+            TableHeader lastFrozenHeader = headers.get(leftFrozenColumns + getColumnOffset());
+            lastFrozenHeader.$this().prevAll().each((param1, el) -> frozenMarginLeft += $(el).outerWidth());
+            innerScroll.css("margin-left", frozenMarginLeft + "px");
+        }
+
+        // Assign right frozen column margin
+        if(rightFrozenColumns > 0) {
+            frozenMarginRight = 0;
+            int firstRightIndex = 0;
+            for(Column column : columns) {
+                if(column.getFrozenProperties().isRight()) {
+                    break;
+                }
+                firstRightIndex++;
+            }
+            TableHeader firstFrozenHeader = headers.get(firstRightIndex + getColumnOffset());
+            firstFrozenHeader.$this().nextAll().each((param1, el) -> frozenMarginRight += $(el).outerWidth());
+            innerScroll.addClass("inner-shadow");
+            innerScroll.css("margin-right", frozenMarginRight + "px");
         }
     }
 
