@@ -44,6 +44,10 @@ public class SortContext<T> {
         return sortColumn;
     }
 
+    public void setSortDir(SortDir sortDir) {
+        this.sortDir = sortDir;
+    }
+
     public SortDir getSortDir() {
         return sortDir;
     }

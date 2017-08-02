@@ -155,6 +155,8 @@ public class BaseRenderer<T> implements Renderer<T> {
             TableSubHeader subHeader = category.getWidget();
             if(subHeader == null) {
                 subHeader = category.render();
+                assert subHeader != null : "rendered category TableSubHeader cannot be null.";
+                subHeader.setHeight(category.getHeight());
             }
             return subHeader;
         }

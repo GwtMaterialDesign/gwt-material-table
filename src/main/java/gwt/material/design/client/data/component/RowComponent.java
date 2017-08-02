@@ -19,6 +19,7 @@
  */
 package gwt.material.design.client.data.component;
 
+import com.google.gwt.user.client.ui.HasEnabled;
 import gwt.material.design.client.data.DataView;
 import gwt.material.design.jquery.client.api.JQuery;
 import gwt.material.design.jquery.client.api.JQueryElement;
@@ -30,7 +31,7 @@ import java.util.List;
 /**
  * @author Ben Dol
  */
-public class RowComponent<T> extends Component<TableRow> {
+public class RowComponent<T> extends Component<TableRow> implements HasEnabled {
     private T data;
     private int index;
     private final String categoryName;
@@ -96,6 +97,16 @@ public class RowComponent<T> extends Component<TableRow> {
 
     public boolean hasRightFrozen() {
         return getRightFrozenColumns() > 0;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return getWidget().isEnabled();
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        getWidget().setEnabled(enabled);
     }
 
     @Override

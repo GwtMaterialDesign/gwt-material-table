@@ -356,6 +356,11 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
     void disableCategory(String categoryName);
 
     /**
+     * Enable a data view category.
+     */
+    void enableCategory(String categoryName);
+
+    /**
      * Open an existing Category.
      */
     void openCategory(String categoryName);
@@ -379,6 +384,36 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
      * Get the data views current sort context, or null if no sort context is applied.
      */
     SortContext<T> getSortContext();
+
+    /**
+     * Sort a column matching the given index (the index excludes the selection box row).
+     *
+     * @param columnIndex valid index to the user added {@link Column}s.
+     */
+    void sort(int columnIndex);
+
+    /**
+     * Sort a column matching the given index (the index excludes the selection box row).
+     *
+     * @param columnIndex valid index to the user added {@link Column}s.
+     * @param dir the sort direction or null for auto reversing.
+     */
+    void sort(int columnIndex, SortDir dir);
+
+    /**
+     * Sort a column.
+     *
+     * @param column matching column that was added via {@link ##addColumn(Column)}.
+     */
+    void sort(Column<T, ?> column);
+
+    /**
+     * Sort a column.
+     *
+     * @param column matching column that was added via {@link ##addColumn(Column)}.
+     * @param dir the sort direction or null for auto reversing.
+     */
+    void sort(Column<T, ?> column, SortDir dir);
 
     /**
      * Is redrawing the data view.

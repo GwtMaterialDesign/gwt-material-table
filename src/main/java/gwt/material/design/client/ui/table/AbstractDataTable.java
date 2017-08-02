@@ -38,6 +38,7 @@ import com.google.gwt.view.client.Range;
 import com.google.gwt.view.client.RangeChangeEvent.Handler;
 import com.google.gwt.view.client.RowCountChangeEvent;
 import gwt.material.design.client.base.constants.TableCssName;
+import gwt.material.design.client.data.SortDir;
 import gwt.material.design.client.data.component.ComponentFactory;
 import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.jquery.client.api.Functions;
@@ -619,6 +620,11 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
+    public void enableCategory(String categoryName) {
+        dataView.enableCategory(categoryName);
+    }
+
+    @Override
     public void openCategory(String categoryName) {
         dataView.openCategory(categoryName);
     }
@@ -671,6 +677,26 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     @Override
     public SortContext<T> getSortContext() {
         return dataView.getSortContext();
+    }
+
+    @Override
+    public void sort(int columnIndex) {
+        dataView.sort(columnIndex);
+    }
+
+    @Override
+    public void sort(int columnIndex, SortDir dir) {
+        dataView.sort(columnIndex, dir);
+    }
+
+    @Override
+    public void sort(Column<T, ?> column) {
+        dataView.sort(column);
+    }
+
+    @Override
+    public void sort(Column<T, ?> column, SortDir dir) {
+        dataView.sort(column, dir);
     }
 
     @Override
