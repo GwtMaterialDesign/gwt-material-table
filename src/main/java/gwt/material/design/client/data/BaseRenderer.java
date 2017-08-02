@@ -337,23 +337,25 @@ public class BaseRenderer<T> implements Renderer<T> {
                     if(column != null) {
                         // Apply the style properties
                         FrozenProperties frozenProps = column.getFrozenProperties();
-                        Style styleTd = td.getElement().getStyle();
-                        frozenProps.forEach((s, v) -> styleTd.setProperty(s.styleName(), v));
+                        if(frozenProps != null) {
+                            Style styleTd = td.getElement().getStyle();
+                            frozenProps.forEach((s, v) -> styleTd.setProperty(s.styleName(), v));
 
-                        Style styleHeader = header.getElement().getStyle();
-                        frozenProps.getHeaderStyleProperties().forEach((s, v) -> styleHeader.setProperty(s.styleName(), v));
-
-                        if((frozenProps.isLeft()) || side.equals(FrozenSide.LEFT)) {
-                            // Left freeze
-                            td.setLeft(left);
-                            header.setLeft(left);
-                        } else if((frozenProps.isRight()) || side.equals(FrozenSide.RIGHT)) {
-                            // Right freeze
-                            td.setRight(right);
-                            td.$this().css("left", "auto");
-                            header.setRight(right);
-                            header.$this().css("left", "auto");
+                            Style styleHeader = header.getElement().getStyle();
+                            frozenProps.getHeaderStyleProperties().forEach((s, v) -> styleHeader.setProperty(s.styleName(), v));
                         }
+                    }
+
+                    if((column != null && column.getFrozenProperties().isLeft()) || side.equals(FrozenSide.LEFT)) {
+                        // Left freeze
+                        td.setLeft(left);
+                        header.setLeft(left);
+                    } else if((column != null && column.getFrozenProperties().isRight()) || side.equals(FrozenSide.RIGHT)) {
+                        // Right freeze
+                        td.setRight(right);
+                        td.$this().css("left", "auto");
+                        header.setRight(right);
+                        header.$this().css("left", "auto");
                     }
                 });
             }, true);
