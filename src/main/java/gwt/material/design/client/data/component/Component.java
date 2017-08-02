@@ -19,7 +19,6 @@
  */
 package gwt.material.design.client.data.component;
 
-
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.List;

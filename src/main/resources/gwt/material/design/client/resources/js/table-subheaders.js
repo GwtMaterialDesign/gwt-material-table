@@ -531,8 +531,18 @@ function TableSubHeaders($table, $stickies) {
   base.updateHeights = function() {
     base.$stickies.each(function() {
       var $this = $(this);
-      $this.parent().height($this.outerHeight());
+      var height = $this.attr("data-height");
+      if(typeof height === typeof undefined) {
+        height = $this.outerHeight();
+      }
+      $this.parent().height(height);
     });
+  };
+
+  base.updateHeight = function(el, height) {
+    if($.contains(base.$stickies, $(el))) {
+      $(el).parent().height(height);
+    }
   };
 
   base.setMarginTop = function(marginTop) {

@@ -19,16 +19,15 @@
  */
 package gwt.material.design.client.ui.table;
 
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.data.component.CategoryComponent;
-import gwt.material.design.client.jquery.JQueryExtension;
 import gwt.material.design.client.js.Js;
 import gwt.material.design.client.ui.MaterialIcon;
 import gwt.material.design.client.ui.html.Text;
+import gwt.material.design.jquery.client.api.JQueryElement;
 
 import java.util.NoSuchElementException;
 
@@ -45,9 +44,6 @@ public class TableSubHeader extends TableRow {
 
     private IconType openIcon = IconType.ADD;
     private IconType closeIcon = IconType.REMOVE;
-
-    // This is required for a strange box-shadow bug.
-    private boolean redrawFix;
 
     public TableSubHeader(TableSubHeader clone) {
         this(clone.getDataCategory());
@@ -75,20 +71,6 @@ public class TableSubHeader extends TableRow {
 
         setName(category.getName());
         setId(category.getName());
-    }
-
-    @Override
-    protected void onLoad() {
-        super.onLoad();
-
-        redrawFix = false;
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-
-        redrawFix = false;
     }
 
     public void add(TableHeader tableHeader) {
@@ -166,13 +148,18 @@ public class TableSubHeader extends TableRow {
         return !Js.isUndefinedOrNull(pos) ? pos : -1;
     }
 
-    /**
-     * Fix for a strange box shadow issue.
-     */
-    public void fixBoxShadowIssue() {
-        if(!redrawFix) {
-            JQueryExtension.$(getElement()).forceRedraw();
-            //redrawFix = true;
+    @Override
+    public void setHeight(String height) {
+        if(height != null) {
+            super.setHeight(height);
+            setDataAttribute("data-height", height);
+
+            if (isAttached()) {
+                JQueryElement el = $this().parent();
+                if(el != null && ((String)el.prop("tagName")).equalsIgnoreCase("div")){
+                    el.height(height);
+                }
+            }
         }
     }
 
