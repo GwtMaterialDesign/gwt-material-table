@@ -25,10 +25,44 @@ import gwt.material.design.client.base.constants.StyleName;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Frozen column properties.<br/><br/>
+ *
+ * The row cells that are made frozen will no longer follow the rules of the tables row.
+ * This means that all the cells positioning of content needs to be manually set up.<br><br>
+ *
+ * Like so:
+ * <pre>{@code table.addColumn(new TextColumn<Person>() {
+        @Override
+        public FrozenProperties frozenProperties() {
+            return new FrozenProperties("200px", "60px")
+                .setStyleProperty(StyleName.PADDING_LEFT, "20px")
+                .setStyleProperty(StyleName.PADDING_TOP, "10px")
+                .setHeaderStyleProperty(StyleName.PADDING_TOP, "21px");
+        }
+        @Override
+        public String getValue(Person object) {
+            return object.getName();
+        }
+    }, "Name");
+ * }</pre>
+ *
+ * Columns must be aligned with each other without any unfrozen columns in between.<br><br>
+ *
+ * TODO: Support right frozen columns.
+ */
 public class FrozenProperties extends HashMap<StyleName, String> {
 
+    private FrozenSide side = FrozenSide.NONE;
     private Map<StyleName, String> headerStyleProps = new HashMap<>();
 
+    /**
+     * The frozen column width and header cell height must be defined.
+     * The row cells that are made frozen will no longer follow the rules of the tables row.
+     *
+     * @param width static width of the column.
+     * @param headerHeight static height of the header cell.
+     */
     public FrozenProperties(String width, String headerHeight) {
         setStyleProperty(StyleName.WIDTH, width);
         setHeaderStyleProperty(StyleName.WIDTH, width);
@@ -79,5 +113,22 @@ public class FrozenProperties extends HashMap<StyleName, String> {
      */
     public String getHeaderStyleProperty(StyleName styleName) {
         return headerStyleProps.get(styleName);
+    }
+
+    public FrozenSide getSide() {
+        return side;
+    }
+
+    /** Internal use only. */
+    public final void _setSide(FrozenSide frozenLeft) {
+        this.side = frozenLeft;
+    }
+
+    public final boolean isLeft() {
+        return side.equals(FrozenSide.LEFT);
+    }
+
+    public final boolean isRight() {
+        return side.equals(FrozenSide.RIGHT);
     }
 }

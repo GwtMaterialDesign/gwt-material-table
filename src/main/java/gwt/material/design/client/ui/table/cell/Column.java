@@ -72,8 +72,6 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
 
     private Comparator<? super RowComponent<T>> sortComparator;
 
-    private FrozenSide frozenSide = FrozenSide.NONE;
-
     /**
      * Construct a new Column with a given {@link Cell}.
      * 
@@ -319,26 +317,32 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
         return frozenProps;
     }
 
-    public FrozenSide getFrozenSide() {
-        return frozenSide;
-    }
-
     public final boolean isFrozenColumn() {
         return frozenProps != null;
     }
 
-    public final boolean isFrozenLeft() {
-        return frozenSide.equals(FrozenSide.LEFT);
-    }
-
-    public final boolean isFrozenRight() {
-        return frozenSide.equals(FrozenSide.RIGHT);
-    }
-
-    public final void setFrozenSide(FrozenSide frozenLeft) {
-        this.frozenSide = frozenLeft;
-    }
-
+    /**
+     * The row cells that are made frozen will no longer follow the rules of the tables row.
+     * This means that all the cells positioning of content needs to be manually set up.<br><br>
+     *
+     * Like so:
+     * <pre>{@code table.addColumn(new TextColumn<Person>() {
+        @Override
+        public FrozenProperties frozenProperties() {
+            return new FrozenProperties("200px", "60px")
+                .setStyleProperty(StyleName.PADDING_LEFT, "20px")
+                .setStyleProperty(StyleName.PADDING_TOP, "10px")
+                .setHeaderStyleProperty(StyleName.PADDING_TOP, "21px");
+        }
+        @Override
+        public String getValue(Person object) {
+            return object.getName();
+        }
+        }, "Name");
+     * }</pre>
+     *
+     * Columns must be aligned with each other without any unfrozen columns in between.
+     */
     public FrozenProperties frozenProperties() { return null; }
 
     /**

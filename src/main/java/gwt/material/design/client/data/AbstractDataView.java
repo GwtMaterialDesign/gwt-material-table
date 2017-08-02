@@ -253,7 +253,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                         frozenMarginRight = 0;
                         int firstRightIndex = 0;
                         for(Column column : columns) {
-                            if(column.isFrozenRight()) {
+                            if(column.getFrozenProperties().isRight()) {
                                 break;
                             }
                             firstRightIndex++;
@@ -2211,10 +2211,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             if(column.isFrozenColumn()) {
                 if(left) {
                     leftFrozenColumns++;
-                    column.setFrozenSide(FrozenSide.LEFT);
+                    column.getFrozenProperties()._setSide(FrozenSide.LEFT);
                 } else {
                     rightFrozenColumns++;
-                    column.setFrozenSide(FrozenSide.RIGHT);
+                    column.getFrozenProperties()._setSide(FrozenSide.RIGHT);
                 }
             } else {
                 left = false;
