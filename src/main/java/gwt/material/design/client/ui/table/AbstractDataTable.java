@@ -131,7 +131,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     private boolean cellIsEditing;
     private boolean destroyOnUnload;
 
-    private HandlerRegistration attachHandler;
+    private LoadedCallback loadedCallback;
 
     public AbstractDataTable() {
         this(new StandardDataView<>());
@@ -168,6 +168,13 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
                 setup = true;
                 setup(scaffolding);
 
+                // TODO: make this callback obsolete by
+                // creating all the scaffolding and widget children up front.
+                // That way we don't have any NullPointerExceptions before the
+                // table is "setup".
+                if(loadedCallback != null) {
+                    loadedCallback.onLoaded();
+                }
             } catch (Exception ex) {
                 logger.log(Level.SEVERE,
                     "Could not setup AbstractDataTable due to previous errors.", ex);
@@ -345,13 +352,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
      */
     @Deprecated
     public void setLoadedCallback(LoadedCallback callback) {
-        if(attachHandler == null) {
-            attachHandler = addAttachHandler(event -> {
-                if (event.isAttached()) {
-                    callback.onLoaded();
-                }
-            });
-        }
+        this.loadedCallback = callback;
     }
 
     public boolean isDestroyOnUnload() {
