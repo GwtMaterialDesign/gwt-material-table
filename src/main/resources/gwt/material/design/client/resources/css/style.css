@@ -12,6 +12,17 @@ table {
     font-family: "Roboto", sans-serif;
 }
 
+section.table-container ::-webkit-scrollbar {
+    -webkit-overflow-scrolling: auto;
+    -webkit-appearance: none;
+    width: 8px;
+}
+section.table-container ::-webkit-scrollbar-thumb {
+    /*border-radius: 4px;*/
+    background-color: rgba(0,0,0,.3);
+    -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+}
+
 th {
     text-transform: uppercase;
     padding: 12px 5px 4px 20px !important;
