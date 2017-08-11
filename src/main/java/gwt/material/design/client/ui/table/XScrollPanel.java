@@ -19,6 +19,9 @@
  */
 package gwt.material.design.client.ui.table;
 
+import com.google.gwt.event.logical.shared.AttachEvent;
+import com.google.gwt.user.client.ui.Panel;
+import gwt.material.design.client.base.helper.EventHelper;
 import gwt.material.design.client.jquery.JQueryExtension;
 import gwt.material.design.client.ui.html.Div;
 
@@ -26,14 +29,25 @@ public class XScrollPanel extends Div {
 
     private Div scrollBar = new Div();
 
-    public XScrollPanel() {
+    public XScrollPanel(Panel container) {
         super("x-scroll");
 
         add(scrollBar);
 
-        int barSize = JQueryExtension.scrollBarWidth();
-        super.setStyle("width: calc(100% - " + barSize + "px)");
-        setHeight((barSize + 1) + "px");
+        AttachEvent.Handler handler = event -> {
+            int barSize = JQueryExtension.scrollBarWidth(container.getElement());
+            if (barSize < 1) {
+                barSize = 8;
+            }
+            super.setStyle("width: calc(100% - " + barSize + "px)");
+            setHeight((barSize + 1) + "px");
+        };
+
+        if(!container.isAttached()) {
+            EventHelper.onAttachOnce(container, handler);
+        } else {
+            handler.onAttachOrDetach(null);
+        }
     }
 
     @Override
