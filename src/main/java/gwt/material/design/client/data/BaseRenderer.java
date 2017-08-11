@@ -21,6 +21,7 @@ package gwt.material.design.client.data;
 
 import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.Display;
@@ -46,6 +47,8 @@ import gwt.material.design.client.ui.table.cell.Column;
 import gwt.material.design.client.ui.table.cell.FrozenProperties;
 import gwt.material.design.client.ui.table.cell.FrozenSide;
 import gwt.material.design.client.ui.table.cell.WidgetColumn;
+import gwt.material.design.jquery.client.api.JQuery;
+import gwt.material.design.jquery.client.api.JQueryElement;
 
 import java.util.List;
 import java.util.Map;
@@ -298,15 +301,22 @@ public class BaseRenderer<T> implements Renderer<T> {
 
             td.addAttachHandler(event -> {
                 Scheduler.get().scheduleDeferred(() -> {
-                    int left = header.$this().prevAll().outerWidth();
-                    int right = header.$this().nextAll().outerWidth();
+                    int left = 0;
+                    for(Element el : header.$this().prevAll().get()) {
+                        left += JQuery.$(el).outerWidth();
+                    }
+
+                    int right = 0;
+                    for(Element el : header.$this().nextAll().get()) {
+                        right += JQuery.$(el).outerWidth();
+                    }
 
                     double width = header.$this().width();
-                    double height = rowComponent.getWidget().$this().outerHeight();
+                    double height = rowComponent.getWidget().$this().outerHeight() + 1;
 
                     String paddingTop = td.$this().css("padding-top");
                     String paddingBottom = td.$this().css("padding-bottom");
-                    String paddingLeft= td.$this().css("padding-left");
+                    String paddingLeft = td.$this().css("padding-left");
                     String paddingRight = td.$this().css("padding-right");
 
                     String borderBottom = rowComponent.getWidget().$this().css("border-bottom");

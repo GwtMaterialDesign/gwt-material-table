@@ -213,10 +213,6 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         redraw = false;
         prepareRows();
 
-        // Recheck the row height to ensure
-        // the calculated row height is accurate.
-        getCalculatedRowHeight();
-
         // Reset category indexes and row counts
         if(isUseCategories()) {
             for (CategoryComponent category : categories) {
@@ -237,6 +233,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 Component<?> component = components.get(components.size() - 1);
                 Widget componentWidget = component.getWidget();
                 AttachEvent.Handler handler = event -> {
+                    // Recheck the row height to ensure
+                    // the calculated row height is accurate.
+                    getCalculatedRowHeight();
+
                     // Fixes an issue with heights updating too early.
                     subheaderLib.updateHeights();
 
