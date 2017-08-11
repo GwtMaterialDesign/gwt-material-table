@@ -2212,6 +2212,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             TableHeader lastFrozenHeader = headers.get(leftFrozenColumns + getColumnOffset());
             lastFrozenHeader.$this().prevAll().each((param1, el) -> frozenMarginLeft += $(el).outerWidth());
             innerScroll.css("margin-left", frozenMarginLeft + "px");
+            innerScroll.addClass("frozen");
         }
 
         // Assign right frozen column margin
@@ -2226,7 +2227,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             }
             TableHeader firstFrozenHeader = headers.get(firstRightIndex + getColumnOffset());
             firstFrozenHeader.$this().nextAll().each((param1, el) -> frozenMarginRight += $(el).outerWidth());
-            innerScroll.addClass("inner-shadow");
+            innerScroll.addClass("frozen");
             innerScroll.css("margin-right", frozenMarginRight + "px");
         }
     }

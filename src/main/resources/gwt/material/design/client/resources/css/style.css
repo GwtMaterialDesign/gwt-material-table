@@ -485,7 +485,7 @@ table.table tbody tr.expansion td > div p {
         /*width: 480px;*/ /* --- Overall Table Width --- */
     }
 
-    div.inner-scroll:not(.inner-shadow) table.table thead tr {
+    div.inner-scroll:not(.frozen) table.table thead tr {
         height: auto;
     }
 

@@ -46,6 +46,7 @@ import gwt.material.design.client.ui.table.TableSubHeader;
 import gwt.material.design.client.ui.table.cell.Column;
 import gwt.material.design.client.ui.table.cell.FrozenProperties;
 import gwt.material.design.client.ui.table.cell.FrozenSide;
+import gwt.material.design.client.ui.table.cell.TextColumn;
 import gwt.material.design.client.ui.table.cell.WidgetColumn;
 import gwt.material.design.jquery.client.api.JQuery;
 import gwt.material.design.jquery.client.api.JQueryElement;
@@ -102,7 +103,18 @@ public class BaseRenderer<T> implements Renderer<T> {
             if(!dataView.getSelectionType().equals(SelectionType.NONE)) {
                 TableData selection = drawSelectionCell();
                 if(rowComponent.hasLeftFrozen()) {
-                    drawColumnFreeze(selection, rowComponent, headers.get(0), null, FrozenSide.LEFT);
+                    drawColumnFreeze(selection, rowComponent, headers.get(0), new TextColumn<T>() {
+                        @Override
+                        public FrozenProperties frozenProperties() {
+                            return new FrozenProperties("42px", "60px")
+                                .setStyleProperty(StyleName.PADDING_TOP, "15px")
+                                .setStyleProperty(StyleName.PADDING_LEFT, "12px");
+                        }
+                        @Override
+                        public String getValue(T object) {
+                            return null; // not needed for emulated
+                        }
+                    }, FrozenSide.LEFT);
                 }
                 row.add(selection);
             }
@@ -312,7 +324,7 @@ public class BaseRenderer<T> implements Renderer<T> {
                     }
 
                     double width = header.$this().width();
-                    double height = rowComponent.getWidget().$this().outerHeight() + 1;
+                    double height = rowComponent.getWidget().$this().outerHeight();
 
                     String paddingTop = td.$this().css("padding-top");
                     String paddingBottom = td.$this().css("padding-bottom");

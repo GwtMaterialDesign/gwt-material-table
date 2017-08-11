@@ -21,6 +21,7 @@ package gwt.material.design.client.ui.table.cell;
 
 import com.google.gwt.dom.client.Style;
 import gwt.material.design.client.base.constants.StyleName;
+import gwt.material.design.client.data.DataView;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +31,9 @@ import java.util.Map;
  *
  * The row cells that are made frozen will no longer follow the rules of the tables row.
  * This means that all the cells positioning of content needs to be manually set up.<br><br>
+ * <br><br>
+ * Note that the frozen columns does not support {@link DataView#setUseStickyHeader(boolean)},
+ * this will automatically be disabled if frozen columns are detected.
  *
  * Like so:
  * <pre>{@code table.addColumn(new TextColumn<Person>() {
