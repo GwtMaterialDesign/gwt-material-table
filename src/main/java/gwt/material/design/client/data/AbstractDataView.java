@@ -238,7 +238,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                     getCalculatedRowHeight();
 
                     // Fixes an issue with heights updating too early.
-                    subheaderLib.updateHeights();
+                    // Also ensure the cell widths are updated.
+                    subheaderLib.recalculate(true);
 
                     maybeApplyFrozenMargins();
 
