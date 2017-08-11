@@ -42,7 +42,7 @@ public abstract class AbstractTableScaffolding implements TableScaffolding {
         infoPanel = createInfoPanel();
         toolPanel = createToolPanel();
         table = createTable();
-        xScrollPanel = createXScrollPanel();
+        xScrollPanel = createXScrollPanel(tableBody);
     }
 
     abstract protected Panel createTableBody();
@@ -73,7 +73,7 @@ public abstract class AbstractTableScaffolding implements TableScaffolding {
         return toolPanel;
     }
 
-    abstract protected XScrollPanel createXScrollPanel();
+    abstract protected XScrollPanel createXScrollPanel(Panel container);
 
     @Override
     public XScrollPanel getXScrollPanel() {

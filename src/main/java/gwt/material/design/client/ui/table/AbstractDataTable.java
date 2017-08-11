@@ -117,8 +117,8 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         }
 
         @Override
-        protected XScrollPanel createXScrollPanel() {
-            return new XScrollPanel();
+        protected XScrollPanel createXScrollPanel(Panel container) {
+            return new XScrollPanel(container);
         }
     }
 
