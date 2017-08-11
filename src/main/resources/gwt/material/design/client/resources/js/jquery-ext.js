@@ -137,7 +137,10 @@
     return this.hasVerticalScrollBar() || this.hasHorizontalScrollBar();
   };
 
-  $.scrollBarWidth = function() {
+  $.scrollBarWidth = function(container) {
+    if(container === null || typeof container === "undefined") {
+        container = document.body;
+    }
     var inner = document.createElement("p");
     inner.style.width = "100%";
     inner.style.height = "200px";
@@ -151,15 +154,15 @@
     outer.style.height = "150px";
     outer.style.overflow = "hidden";
     outer.appendChild(inner);
-  
-    document.body.appendChild(outer);
+
+    container.appendChild(outer);
     var w1 = inner.offsetWidth;
     outer.style.overflow = "scroll";
     var w2 = inner.offsetWidth;
     if (w1 === w2) w2 = outer.clientWidth;
-  
-    document.body.removeChild(outer);
-  
+
+    container.removeChild(outer);
+
     return (w1 - w2);
   };
 

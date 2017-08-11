@@ -37,6 +37,7 @@ package gwt.material.design.client.jquery;
 import com.google.gwt.dom.client.Element;
 import gwt.material.design.jquery.client.api.JQueryElement;
 import jsinterop.annotations.JsMethod;
+import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsType;
 
@@ -54,6 +55,15 @@ public class JQueryExtension {
     @JsMethod(namespace = JsPackage.GLOBAL)
     public static native JQueryExtElement $(Element element);
 
+    /**
+     * Get the scroll bar width within a given container.
+     * @param container the container you would like to test the scrollbar in.
+     */
     @JsMethod(namespace = "$")
-    public static native int scrollBarWidth();
+    public static native int scrollBarWidth(Element container);
+
+    @JsOverlay
+    public static int scrollBarWidth() {
+        return scrollBarWidth(null);
+    }
 }
