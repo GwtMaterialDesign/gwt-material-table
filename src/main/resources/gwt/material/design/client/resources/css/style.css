@@ -225,7 +225,7 @@ table.table tbody tr.subheader td:first-child {
     padding-left: 18px !important;
 }
 
-table.table tbody tr.selected {
+table.table tbody tr.selected, table.table tbody tr.selected td {
     background-color: #F5F5F5;
 }
 
