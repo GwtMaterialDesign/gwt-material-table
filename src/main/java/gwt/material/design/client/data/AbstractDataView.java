@@ -218,6 +218,14 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 Component<?> component = components.get(components.size() - 1);
                 Widget componentWidget = component.getWidget();
                 AttachEvent.Handler handler = event -> {
+                    // Recheck the row height to ensure
+                    // the calculated row height is accurate.
+                    getCalculatedRowHeight();
+
+                    // Fixes an issue with heights updating too early.
+                    // Also ensure the cell widths are updated.
+                    subheaderLib.recalculate(true);
+
                     rendering = false;
 
                     if(attachHandler != null) {
