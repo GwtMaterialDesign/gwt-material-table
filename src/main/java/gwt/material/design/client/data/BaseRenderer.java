@@ -312,74 +312,72 @@ public class BaseRenderer<T> implements Renderer<T> {
             });
 
             td.addAttachHandler(event -> {
-                Scheduler.get().scheduleDeferred(() -> {
-                    int left = 0;
-                    for(Element el : header.$this().prevAll().get()) {
-                        left += JQuery.$(el).outerWidth();
+                int left = 0;
+                for(Element el : header.$this().prevAll().get()) {
+                    left += JQuery.$(el).outerWidth();
+                }
+
+                int right = 0;
+                for(Element el : header.$this().nextAll().get()) {
+                    right += JQuery.$(el).outerWidth();
+                }
+
+                double width = header.$this().width();
+                double height = rowComponent.getWidget().$this().outerHeight();
+
+                String paddingTop = td.$this().css("padding-top");
+                String paddingBottom = td.$this().css("padding-bottom");
+                String paddingLeft = td.$this().css("padding-left");
+                String paddingRight = td.$this().css("padding-right");
+
+                String borderBottom = rowComponent.getWidget().$this().css("border-bottom");
+
+                td.addStyleName(TableCssName.FROZEN_COL);
+                header.addStyleName(TableCssName.FROZEN_COL);
+
+                td.$this().width(width + "px");
+                header.$this().width(width + "px");
+                td.$this().height(height + "px");
+                header.$this().height(height + "px");
+
+                td.$this().css("border-bottom", borderBottom);
+                header.$this().css("border-bottom", borderBottom);
+
+                td.$this().css("padding-top", paddingTop);
+                header.$this().css("padding-top", paddingTop);
+
+                td.$this().css("padding-bottom", paddingBottom);
+                header.$this().css("padding-bottom", paddingBottom);
+
+                td.$this().css("padding-left", paddingLeft);
+                header.$this().css("padding-left", paddingLeft);
+
+                td.$this().css("padding-right", paddingRight);
+                header.$this().css("padding-right", paddingRight);
+
+                if(column != null) {
+                    // Apply the style properties
+                    FrozenProperties frozenProps = column.getFrozenProperties();
+                    if(frozenProps != null) {
+                        Style styleTd = td.getElement().getStyle();
+                        frozenProps.forEach((s, v) -> styleTd.setProperty(s.styleName(), v));
+
+                        Style styleHeader = header.getElement().getStyle();
+                        frozenProps.getHeaderStyleProperties().forEach((s, v) -> styleHeader.setProperty(s.styleName(), v));
                     }
+                }
 
-                    int right = 0;
-                    for(Element el : header.$this().nextAll().get()) {
-                        right += JQuery.$(el).outerWidth();
-                    }
-
-                    double width = header.$this().width();
-                    double height = rowComponent.getWidget().$this().outerHeight();
-
-                    String paddingTop = td.$this().css("padding-top");
-                    String paddingBottom = td.$this().css("padding-bottom");
-                    String paddingLeft = td.$this().css("padding-left");
-                    String paddingRight = td.$this().css("padding-right");
-
-                    String borderBottom = rowComponent.getWidget().$this().css("border-bottom");
-
-                    td.addStyleName(TableCssName.FROZEN_COL);
-                    header.addStyleName(TableCssName.FROZEN_COL);
-
-                    td.$this().width(width + "px");
-                    header.$this().width(width + "px");
-                    td.$this().height(height + "px");
-                    header.$this().height(height + "px");
-
-                    td.$this().css("border-bottom", borderBottom);
-                    header.$this().css("border-bottom", borderBottom);
-
-                    td.$this().css("padding-top", paddingTop);
-                    header.$this().css("padding-top", paddingTop);
-
-                    td.$this().css("padding-bottom", paddingBottom);
-                    header.$this().css("padding-bottom", paddingBottom);
-
-                    td.$this().css("padding-left", paddingLeft);
-                    header.$this().css("padding-left", paddingLeft);
-
-                    td.$this().css("padding-right", paddingRight);
-                    header.$this().css("padding-right", paddingRight);
-
-                    if(column != null) {
-                        // Apply the style properties
-                        FrozenProperties frozenProps = column.getFrozenProperties();
-                        if(frozenProps != null) {
-                            Style styleTd = td.getElement().getStyle();
-                            frozenProps.forEach((s, v) -> styleTd.setProperty(s.styleName(), v));
-
-                            Style styleHeader = header.getElement().getStyle();
-                            frozenProps.getHeaderStyleProperties().forEach((s, v) -> styleHeader.setProperty(s.styleName(), v));
-                        }
-                    }
-
-                    if((column != null && column.getFrozenProperties().isLeft()) || side.equals(FrozenSide.LEFT)) {
-                        // Left freeze
-                        td.setLeft(left);
-                        header.setLeft(left);
-                    } else if((column != null && column.getFrozenProperties().isRight()) || side.equals(FrozenSide.RIGHT)) {
-                        // Right freeze
-                        td.setRight(right);
-                        td.$this().css("left", "auto");
-                        header.setRight(right);
-                        header.$this().css("left", "auto");
-                    }
-                });
+                if((column != null && column.getFrozenProperties().isLeft()) || side.equals(FrozenSide.LEFT)) {
+                    // Left freeze
+                    td.setLeft(left);
+                    header.setLeft(left);
+                } else if((column != null && column.getFrozenProperties().isRight()) || side.equals(FrozenSide.RIGHT)) {
+                    // Right freeze
+                    td.setRight(right);
+                    td.$this().css("left", "auto");
+                    header.setRight(right);
+                    header.$this().css("left", "auto");
+                }
             }, true);
         }
     }
