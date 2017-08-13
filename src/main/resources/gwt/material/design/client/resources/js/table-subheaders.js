@@ -64,7 +64,7 @@ function TableSubHeaders($table, $stickies) {
     base.options = $.extend({}, defaults, opts);
 
     // Calculate scrollbar width
-    base.scrollBarWidth = $.scrollBarWidth();
+    base.scrollBarWidth = $.scrollBarWidth(base.$tableBody.get(0));
 
     base.bind();
     base.detect();

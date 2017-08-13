@@ -86,10 +86,11 @@ public class BaseRenderer<T> implements Renderer<T> {
         if(row == null) {
             // Create a new row element
             row = new TableRow();
-            row.getElement().getStyle().setDisplay(Display.NONE);
-            row.getElement().getStyle().setProperty("height", getExpectedRowHeight() + "px");
-            row.getElement().getStyle().setProperty("maxHeight", getExpectedRowHeight() + "px");
-            row.getElement().getStyle().setProperty("minHeight", getExpectedRowHeight() + "px");
+            Style style = row.getElement().getStyle();
+            style.setDisplay(Display.NONE);
+            style.setProperty("height", getExpectedRowHeight() + "px");
+            style.setProperty("maxHeight", getExpectedRowHeight() + "px");
+            style.setProperty("minHeight", getExpectedRowHeight() + "px");
             row.setStyleName(TableCssName.DATA_ROW);
             rowComponent.setWidget(row);
 
