@@ -179,6 +179,9 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
                 logger.log(Level.SEVERE,
                     "Could not setup AbstractDataTable due to previous errors.", ex);
             }
+        // We should recalculate when we load again.
+        } else if(isUseCategories()) {
+            getSubheaderLib().recalculate(true);
         }
     }
 
