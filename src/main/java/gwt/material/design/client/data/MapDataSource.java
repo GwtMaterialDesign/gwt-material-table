@@ -26,17 +26,28 @@ public class MapDataSource<T> implements DataSource<T>, HasDataView<T> {
     @Override
     public void load(LoadConfig<T> loadConfig, LoadCallback<T> callback) {
         try {
-            List<T> flatMap = new ArrayList<>();
-            if(dataView.isUseCategories()) {
-                for (CategoryComponent category : loadConfig.getOpenCategories()) {
-                    flatMap.addAll(dataMap.get(category.getName()));
+            List<T> flatData = new ArrayList<>();
+            List<CategoryComponent> categories = loadConfig.getOpenCategories();
+            if(dataView.isUseCategories() && categories != null) {
+                for (CategoryComponent category : categories) {
+                    flatData.addAll(dataMap.get(category.getName()));
                 }
             } else {
-                flatMap.addAll(dataMap.get(AbstractDataView.ORPHAN_PATTERN));
+                flatData.addAll(dataMap.get(AbstractDataView.ORPHAN_PATTERN));
             }
 
-            callback.onSuccess(new LoadResult<>(flatMap, loadConfig.getOffset(), flatMap.size(), cacheData()));
-        } catch (IndexOutOfBoundsException ex) {
+            List<T> data = new ArrayList<>();
+            int offset = loadConfig.getOffset();
+            for(int i = offset; i < (offset + loadConfig.getLimit()); i++) {
+                try {
+                    data.add(flatData.get(i));
+                } catch (IndexOutOfBoundsException e) {
+                    // ignored.
+                }
+            }
+            callback.onSuccess(new LoadResult<>(data, loadConfig.getOffset(), flatData.size(), cacheData()));
+        }
+        catch (IndexOutOfBoundsException ex) {
             // Silently ignore index out of bounds exceptions
             logger.log(Level.FINE, "ListDataSource threw index out of bounds.", ex);
             callback.onFailure(ex);
