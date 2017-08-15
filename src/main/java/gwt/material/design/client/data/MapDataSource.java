@@ -6,6 +6,7 @@ import gwt.material.design.client.data.loader.LoadConfig;
 import gwt.material.design.client.data.loader.LoadResult;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +43,7 @@ public class MapDataSource<T> implements DataSource<T>, HasDataView<T> {
         }
     }
 
-    public void add(List<T> list) {
+    public void add(Collection<T> list) {
         for(T item : list) {
             String category = null;
             if(dataView.isUseCategories()) {
