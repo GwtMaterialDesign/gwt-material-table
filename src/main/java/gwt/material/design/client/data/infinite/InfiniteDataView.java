@@ -317,27 +317,6 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
     }
 
     @Override
-    public void setDataSource(final DataSource<T> dataSource) {
-        if(!dataSource.useRemoteSort()) {
-            logger.warning("It is recommended that an InfiniteDataView only use a remote sorting " +
-                "DataSource, this will be set for you.");
-
-            super.setDataSource(new DataSource<T>() {
-                @Override
-                public void load(LoadConfig<T> loadConfig, LoadCallback<T> callback) {
-                    dataSource.load(loadConfig, callback);
-                }
-                @Override
-                public boolean useRemoteSort() {
-                    return true;
-                }
-            });
-        } else {
-            super.setDataSource(dataSource);
-        }
-    }
-
-    @Override
     public void addCategory(CategoryComponent category) {
         super.addCategory(category);
         // Update the view size to accommodate the new category
@@ -401,7 +380,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
             loaderCache.clear();
             loaderCache = null;
         } else {
-            Scheduler.get().scheduleFinally(() -> display.setLoadMask(true));
+            display.setLoadMask(true);
 
             dataSource.load(new LoadConfig<>(loaderIndex, loaderSize, getSortContext(), getOpenCategories()),
                     new LoadCallback<T>() {
@@ -505,7 +484,9 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
         super.setRowHeight(rowHeight);
 
         // Update the view row size.
-        refreshView();
+        if(isSetup()) {
+            refreshView();
+        }
     }
 
     public int getLoaderDelay() {

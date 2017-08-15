@@ -21,6 +21,8 @@ package gwt.material.design.client.ui.table;
 
 import gwt.material.design.client.data.DataSource;
 import gwt.material.design.client.data.infinite.InfiniteDataView;
+import gwt.material.design.client.data.loader.LoadCallback;
+import gwt.material.design.client.data.loader.LoadConfig;
 
 /**
  * "Infinite" Material data table extending {@link MaterialDataTable}.
@@ -33,6 +35,14 @@ import gwt.material.design.client.data.infinite.InfiniteDataView;
 public class MaterialInfiniteDataTable<T> extends MaterialDataTable<T> {
 
     public MaterialInfiniteDataTable() {
+        super(new InfiniteDataView<>(100, new DataSource<T>() {
+            @Override
+            public void load(LoadConfig<T> loadConfig, LoadCallback<T> callback) {}
+            @Override
+            public boolean useRemoteSort() {
+                return false;
+            }
+        }));
     }
 
     public MaterialInfiniteDataTable(String name, int totalRows, int viewSize, DataSource<T> dataSource) {

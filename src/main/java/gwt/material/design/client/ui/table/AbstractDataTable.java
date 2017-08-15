@@ -674,6 +674,11 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
+    public RowComponentFactory<T> getRowFactory() {
+        return dataView.getRowFactory();
+    }
+
+    @Override
     public void setCategoryFactory(ComponentFactory<? extends CategoryComponent, String> categoryFactory) {
         dataView.setCategoryFactory(categoryFactory);
     }

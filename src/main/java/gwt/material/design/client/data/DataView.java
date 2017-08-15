@@ -431,6 +431,11 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
     void setRowFactory(RowComponentFactory<T> rowFactory);
 
     /**
+     * Get the views row factory.
+     */
+    RowComponentFactory<T> getRowFactory();
+
+    /**
      * Set your own custom {@link CategoryComponentFactory} to generate your categories.
      */
     void setCategoryFactory(ComponentFactory<? extends CategoryComponent, String> categoryFactory);
