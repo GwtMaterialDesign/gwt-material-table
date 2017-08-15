@@ -121,8 +121,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected Range range = new Range(0, 0);
     protected int totalRows = 20;
     protected int longPressDuration = 500;
-    protected int leftFrozenColumns;
-    protected int rightFrozenColumns;
+    protected int leftFrozenColumns = -1;
+    protected int rightFrozenColumns = -1;
 
     private int rowCount;
     private int lastSelected;
@@ -2181,28 +2181,30 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     public void calculateFrozenColumns() {
-        // Count the left and right frozen columns
-        leftFrozenColumns = 0;
-        rightFrozenColumns = 0;
+        if(leftFrozenColumns == -1) {
+            // Count the left and right frozen columns
+            leftFrozenColumns = 0;
+            rightFrozenColumns = 0;
 
-        boolean left = true;
-        for(Column<T, ?> column : columns) {
-            if(column.isFrozenColumn()) {
-                if(left) {
-                    leftFrozenColumns++;
-                    column.getFrozenProperties()._setSide(FrozenSide.LEFT);
+            boolean left = true;
+            for (Column<T, ?> column : columns) {
+                if (column.isFrozenColumn()) {
+                    if (left) {
+                        leftFrozenColumns++;
+                        column.getFrozenProperties()._setSide(FrozenSide.LEFT);
+                    } else {
+                        rightFrozenColumns++;
+                        column.getFrozenProperties()._setSide(FrozenSide.RIGHT);
+                    }
                 } else {
-                    rightFrozenColumns++;
-                    column.getFrozenProperties()._setSide(FrozenSide.RIGHT);
+                    left = false;
                 }
-            } else {
-                left = false;
             }
-        }
 
-        if(isUseStickyHeader() && (leftFrozenColumns > 0 || rightFrozenColumns > 0)) {
-            logger.warning("Sticky header is not supported with frozen columns, this will be disabled automatically.");
-            setUseStickyHeader(false);
+            if (isUseStickyHeader() && (leftFrozenColumns > 0 || rightFrozenColumns > 0)) {
+                logger.warning("Sticky header is not supported with frozen columns, this will be disabled automatically.");
+                setUseStickyHeader(false);
+            }
         }
     }
 
