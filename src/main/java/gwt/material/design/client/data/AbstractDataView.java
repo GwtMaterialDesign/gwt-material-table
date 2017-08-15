@@ -134,6 +134,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected final List<TableHeader> headers = new ArrayList<>();
     protected HandlerRegistration attachHandler;
 
+    public static final String ORPHAN_PATTERN = "<@orphans@>";
+
     private static final String expansionHtml = "<tr class='expansion'>" +
      "<td class='expansion' colspan='100%'>" +
         "<div>" +
@@ -485,6 +487,9 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     @Override
     public void setDataSource(DataSource<T> dataSource) {
+        if(dataSource instanceof HasDataView) {
+            ((HasDataView<T>) dataSource).setDataView(this);
+        }
         this.dataSource = dataSource;
     }
 
@@ -1066,7 +1071,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             }
 
             if(!orphanRows.isEmpty()) {
-                splitMap.put("<@orphans@>", orphanRows);
+                splitMap.put(ORPHAN_PATTERN, orphanRows);
             }
 
             rows.clearComponents();
@@ -1809,6 +1814,11 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     @Override
     public void setRowFactory(RowComponentFactory<T> rowFactory) {
         this.rowFactory = rowFactory;
+    }
+
+    @Override
+    public RowComponentFactory<T> getRowFactory() {
+        return rowFactory;
     }
 
     @Override
