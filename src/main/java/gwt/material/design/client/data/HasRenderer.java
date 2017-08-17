@@ -2,7 +2,7 @@
  * #%L
  * GwtMaterial
  * %%
- * Copyright (C) 2015 - 2016 GwtMaterialDesign
+ * Copyright (C) 2015 - 2017 GwtMaterialDesign
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,13 @@
  * limitations under the License.
  * #L%
  */
-package gwt.material.design.client.ui.table;
+package gwt.material.design.client.data;
 
-import com.google.gwt.event.logical.shared.AttachEvent;
+public interface HasRenderer<T> {
 
-/**
- * Fired when the {@link AbstractDataTable} has been setup & attached.
- *
- * @deprecated Use {@link MaterialDataTable#addSet(AttachEvent.Handler)}.
- */
-@Deprecated
-public interface LoadedCallback {
-    void onLoaded();
+    /**
+     * Set your own custom renderer.
+     * See {@link BaseRenderer} for the standard rendering.
+     */
+    void setRenderer(Renderer<T> renderer);
 }

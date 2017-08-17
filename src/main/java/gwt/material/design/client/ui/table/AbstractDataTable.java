@@ -28,41 +28,37 @@ import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.dom.client.TableRowElement;
-import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.view.client.ProvidesKey;
 import com.google.gwt.view.client.Range;
-import com.google.gwt.view.client.RangeChangeEvent.Handler;
-import com.google.gwt.view.client.RowCountChangeEvent;
 import gwt.material.design.client.base.constants.TableCssName;
+import gwt.material.design.client.data.DataSource;
+import gwt.material.design.client.data.Renderer;
+import gwt.material.design.client.data.SelectionType;
 import gwt.material.design.client.data.SortDir;
+import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.data.component.ComponentFactory;
 import gwt.material.design.client.data.component.RowComponent;
+import gwt.material.design.client.data.events.SetupEvent;
+import gwt.material.design.client.data.events.SetupHandler;
+import gwt.material.design.client.data.factory.RowComponentFactory;
+import gwt.material.design.client.events.DefaultHandlerRegistry;
+import gwt.material.design.client.events.HandlerRegistry;
 import gwt.material.design.jquery.client.api.Functions;
 import gwt.material.design.jquery.client.api.Functions.EventFunc1;
 import gwt.material.design.jquery.client.api.Functions.EventFunc2;
 import gwt.material.design.jquery.client.api.Functions.EventFunc3;
 import gwt.material.design.jquery.client.api.JQueryElement;
 import gwt.material.design.jquery.client.api.MouseEvent;
-import gwt.material.design.jscore.client.api.core.Element;
 import gwt.material.design.client.base.MaterialWidget;
-import gwt.material.design.client.data.component.CategoryComponent;
-import gwt.material.design.client.data.DataSource;
 import gwt.material.design.client.data.DataView;
-import gwt.material.design.client.data.Renderer;
 import gwt.material.design.client.data.StandardDataView;
-import gwt.material.design.client.data.SelectionType;
 import gwt.material.design.client.data.SortContext;
-import gwt.material.design.client.data.component.Component;
-import gwt.material.design.client.data.component.Components;
-import gwt.material.design.client.data.factory.RowComponentFactory;
-import gwt.material.design.client.js.JsTableSubHeaders;
-import gwt.material.design.client.ui.MaterialProgress;
 import gwt.material.design.client.ui.table.cell.Column;
 import gwt.material.design.client.ui.table.events.RowExpansion;
+import gwt.material.design.jscore.client.api.core.Element;
 
 import java.util.List;
 import java.util.Set;
@@ -76,7 +72,8 @@ import java.util.logging.Logger;
  *
  * @author Ben Dol
  */
-public abstract class AbstractDataTable<T> extends MaterialWidget implements DataView<T>, TableEventHandlers<T> {
+public abstract class AbstractDataTable<T> extends MaterialWidget implements DataDisplay<T>,
+        HandlerRegistry {
 
     private static final Logger logger = Logger.getLogger(AbstractDataTable.class.getName());
 
@@ -122,23 +119,23 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         }
     }
 
-    protected DataView<T> dataView;
+    protected DataView<T> view;
     protected TableScaffolding scaffolding;
+    protected HandlerRegistry handlerRegistry;
 
-    private boolean setup;
     private boolean focused;
     private boolean refreshing;
     private boolean cellIsEditing;
     private boolean destroyOnUnload;
 
-    private LoadedCallback loadedCallback;
+    private HandlerRegistration setupHandler;
 
     public AbstractDataTable() {
         this(new StandardDataView<>());
     }
 
-    public AbstractDataTable(DataView<T> dataView) {
-        this(dataView, new DefaultTableScaffolding());
+    public AbstractDataTable(DataView<T> view) {
+        this(view, new DefaultTableScaffolding());
     }
 
     public AbstractDataTable(TableScaffolding scaffolding) {
@@ -146,42 +143,38 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         this.scaffolding = scaffolding;
     }
 
-    public AbstractDataTable(DataView<T> dataView, TableScaffolding scaffolding) {
+    public AbstractDataTable(DataView<T> view, TableScaffolding scaffolding) {
         super(DOM.createElement("section"));
-        this.dataView = dataView;
+        this.view = view;
         this.scaffolding = scaffolding;
 
-        dataView.setDisplay(this);
+        view.setDisplay(this);
         setStyleName("table-container");
+
+        handlerRegistry = new DefaultHandlerRegistry(this);
+
+        // Build the table scaffolding
+        scaffolding.build();
+        scaffolding.apply(this);
+
+        // Apply the DOM build.
+        build();
     }
 
     @Override
     protected void onLoad() {
         super.onLoad();
 
-        if(!setup) {
-            // Build the table scaffolding
-            scaffolding.build();
-            scaffolding.apply(this);
-
+        if(!view.isSetup()) {
             try {
-                setup = true;
-                setup(scaffolding);
-
-                // TODO: make this callback obsolete by
-                // creating all the scaffolding and widget children up front.
-                // That way we don't have any NullPointerExceptions before the
-                // table is "setup".
-                if(loadedCallback != null) {
-                    loadedCallback.onLoaded();
-                }
+                view.setup(scaffolding);
             } catch (Exception ex) {
                 logger.log(Level.SEVERE,
-                    "Could not setup AbstractDataTable due to previous errors.", ex);
+                        "Could not setup AbstractDataTable due to previous errors.", ex);
             }
-        // We should recalculate when we load again.
-        } else if(isUseCategories()) {
-            getSubheaderLib().recalculate(true);
+            // We should recalculate when we load again.
+        } else if(view.isUseCategories()) {
+            view.getSubheaderLib().recalculate(true);
         }
     }
 
@@ -189,46 +182,376 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     protected void onUnload() {
         super.onUnload();
 
+        clearHandlers();
+
         if(destroyOnUnload) {
-            destroy();
-            setup = false;
+            view.destroy();
         }
     }
 
     @Override
-    public void setup(TableScaffolding scaffolding) throws Exception {
-        dataView.setup(scaffolding);
+    public final DataView<T> getView() {
+        return view;
     }
 
     @Override
-    public void destroy() {
-        dataView.destroy();
-        removeAllHandlers();
+    public final Range getVisibleRange() {
+        return view.getVisibleRange();
     }
 
     @Override
-    public Panel getContainer() {
-        return this;
+    public final void setVisibleRange(int start, int length) {
+        view.setVisibleRange(start, length);
     }
 
     @Override
-    public String getViewId() {
-        return dataView.getViewId();
+    public final void setVisibleRange(Range range) {
+        view.setVisibleRange(range);
     }
 
     @Override
-    public void setDisplay(DataView<T> display) {
-        // Nothing by default
+    public final int getRowCount() {
+        return view.getRowCount();
     }
 
     @Override
-    public void setHeight(String height) {
-        dataView.setHeight(height);
+    public final void setRowData(int start, List<? extends T> values) {
+        view.setRowData(start, values);
     }
 
     @Override
-    public String getHeight() {
-        return dataView.getHeight();
+    public final void setCategoryFactory(ComponentFactory<? extends CategoryComponent, String> categoryFactory) {
+        view.setCategoryFactory(categoryFactory);
+    }
+
+    @Override
+    public final CategoryComponent getCategory(String categoryName) {
+        return view.getCategory(categoryName);
+    }
+
+    @Override
+    public final List<CategoryComponent> getCategories() {
+        return view.getCategories();
+    }
+
+    @Override
+    public final List<CategoryComponent> getOpenCategories() {
+        return view.getOpenCategories();
+    }
+
+    @Override
+    public final boolean isCategoryEmpty(CategoryComponent category) {
+        return view.isCategoryEmpty(category);
+    }
+
+    @Override
+    public final void addCategory(String category) {
+        view.addCategory(category);
+    }
+
+    @Override
+    public final void addCategory(CategoryComponent category) {
+        view.addCategory(category);
+    }
+
+    @Override
+    public final boolean hasCategory(String categoryName) {
+        return view.hasCategory(categoryName);
+    }
+
+    @Override
+    public final void disableCategory(String categoryName) {
+        view.disableCategory(categoryName);
+    }
+
+    @Override
+    public final void enableCategory(String categoryName) {
+        view.enableCategory(categoryName);
+    }
+
+    @Override
+    public final void openCategory(String categoryName) {
+        view.openCategory(categoryName);
+    }
+
+    @Override
+    public final void openCategory(CategoryComponent category) {
+        view.openCategory(category);
+    }
+
+    @Override
+    public final void closeCategory(String categoryName) {
+        view.closeCategory(categoryName);
+    }
+
+    @Override
+    public final void closeCategory(CategoryComponent category) {
+        view.closeCategory(category);
+    }
+
+    @Override
+    public final void clearRowsAndCategories(boolean clearData) {
+        view.clearRowsAndCategories(clearData);
+    }
+
+    @Override
+    public final void clearCategories() {
+        view.clearCategories();
+    }
+
+    @Override
+    public final void addColumn(Column<T, ?> column) {
+        view.addColumn(column);
+    }
+
+    @Override
+    public final void addColumn(Column<T, ?> column, String header) {
+        view.addColumn(column, header);
+    }
+
+    @Override
+    public final void insertColumn(int beforeIndex, Column<T, ?> col, String header) {
+        view.insertColumn(beforeIndex, col, header);
+    }
+
+    @Override
+    public final void removeColumn(int colIndex) {
+        view.removeColumn(colIndex);
+    }
+
+    @Override
+    public final void removeColumns() {
+        view.removeColumns();
+    }
+
+    @Override
+    public final List<Column<T, ?>> getColumns() {
+        return view.getColumns();
+    }
+
+    @Override
+    public final int getColumnOffset() {
+        return view.getColumnOffset();
+    }
+
+    @Override
+    public final void sort(int columnIndex) {
+        view.sort(columnIndex);
+    }
+
+    @Override
+    public final void sort(int columnIndex, SortDir dir) {
+        view.sort(columnIndex, dir);
+    }
+
+    @Override
+    public final void sort(Column<T, ?> column) {
+        view.sort(column);
+    }
+
+    @Override
+    public final void sort(Column<T, ?> column, SortDir dir) {
+        view.sort(column, dir);
+    }
+
+    @Override
+    public final int getLeftFrozenColumns() {
+        return view.getLeftFrozenColumns();
+    }
+
+    @Override
+    public final int getRightFrozenColumns() {
+        return view.getRightFrozenColumns();
+    }
+
+    @Override
+    public final void setDataSource(DataSource<T> dataSource) {
+        view.setDataSource(dataSource);
+    }
+
+    @Override
+    public final DataSource<T> getDataSource() {
+        return view.getDataSource();
+    }
+
+    @Override
+    public void loaded(int startIndex, List<T> data) {
+        view.loaded(startIndex, data);
+    }
+
+    @Override
+    public final void setRenderer(Renderer<T> renderer) {
+        view.setRenderer(renderer);
+    }
+
+    @Override
+    public final int getTotalRows() {
+        return view.getTotalRows();
+    }
+
+    @Override
+    public final void setTotalRows(int totalRows) {
+        view.setTotalRows(totalRows);
+    }
+
+    @Override
+    public final int getRowHeight() {
+        return view.getRowHeight();
+    }
+
+    @Override
+    public final void setRowHeight(int rowHeight) {
+        view.setRowHeight(rowHeight);
+    }
+
+    @Override
+    public final void updateRow(T model) {
+        view.updateRow(model);
+    }
+
+    @Override
+    public final RowComponent<T> getRow(T model) {
+        return view.getRow(model);
+    }
+
+    @Override
+    public final RowComponent<T> getRow(int index) {
+        return view.getRow(index);
+    }
+
+    @Override
+    public final RowComponent<T> getRowByModel(T model) {
+        return view.getRowByModel(model);
+    }
+
+    @Override
+    public final void clearRows(boolean clearData) {
+        view.clearRows(clearData);
+    }
+
+    @Override
+    public final void setRowFactory(RowComponentFactory<T> rowFactory) {
+        view.setRowFactory(rowFactory);
+    }
+
+    @Override
+    public RowComponentFactory<T> getRowFactory() {
+        return view.getRowFactory();
+    }
+
+    @Override
+    public final void setSelectionType(SelectionType selectionType) {
+        view.setSelectionType(selectionType);
+    }
+
+    @Override
+    public final SelectionType getSelectionType() {
+        return view.getSelectionType();
+    }
+
+    @Override
+    public final void selectAllRows(boolean select) {
+        view.selectAllRows(select);
+    }
+
+    @Override
+    public final void selectAllRows(boolean select, boolean fireEvent) {
+        view.selectAllRows(select, fireEvent);
+    }
+
+    @Override
+    public final void toggleRowSelect(com.google.gwt.dom.client.Element row) {
+        view.toggleRowSelect(row);
+    }
+
+    @Override
+    public final void toggleRowSelect(com.google.gwt.dom.client.Element row, boolean fireEvent) {
+        view.toggleRowSelect(row, fireEvent);
+    }
+
+    @Override
+    public final void selectRow(com.google.gwt.dom.client.Element row, boolean fireEvent) {
+        view.selectRow(row, fireEvent);
+    }
+
+    @Override
+    public final void deselectRow(com.google.gwt.dom.client.Element row, boolean fireEvent) {
+        view.deselectRow(row, fireEvent);
+    }
+
+    @Override
+    public final boolean hasDeselectedRows(boolean visibleOnly) {
+        return view.hasDeselectedRows(visibleOnly);
+    }
+
+    @Override
+    public final boolean hasSelectedRows(boolean visibleOnly) {
+        return view.hasSelectedRows(visibleOnly);
+    }
+
+    @Override
+    public final List<T> getSelectedRowModels(boolean visibleOnly) {
+        return view.getSelectedRowModels(visibleOnly);
+    }
+
+    @Override
+    public final boolean isUseStickyHeader() {
+        return view.isUseStickyHeader();
+    }
+
+    @Override
+    public final void setUseStickyHeader(boolean stickyHeader) {
+        view.setUseStickyHeader(stickyHeader);
+    }
+
+    @Override
+    public final boolean isUseCategories() {
+        return view.isUseCategories();
+    }
+
+    @Override
+    public final void setUseCategories(boolean useCategories) {
+        view.setUseCategories(useCategories);
+    }
+
+    @Override
+    public final boolean isUseLoadOverlay() {
+        return view.isUseLoadOverlay();
+    }
+
+    @Override
+    public final void setUseLoadOverlay(boolean useLoadOverlay) {
+        view.setUseLoadOverlay(useLoadOverlay);
+    }
+
+    @Override
+    public final boolean isUseRowExpansion() {
+        return view.isUseRowExpansion();
+    }
+
+    @Override
+    public final void setUseRowExpansion(boolean useRowExpansion) {
+        view.setUseRowExpansion(useRowExpansion);
+    }
+
+    @Override
+    public final int getLongPressDuration() {
+        return view.getLongPressDuration();
+    }
+
+    @Override
+    public final void setLongPressDuration(int longPressDuration) {
+        view.setLongPressDuration(longPressDuration);
+    }
+
+    @Override
+    public final String getHeight() {
+        return view.getHeight();
+    }
+
+    @Override
+    public final void setHeight(String height) {
+        view.setHeight(height);
     }
 
     @Override
@@ -265,7 +588,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
             // A key event indicates that we already have focus.
             focused = true;
         } else if (BrowserEvents.MOUSEDOWN.equals(eventType)
-            && CellBasedWidgetImpl.get().isFocusable(com.google.gwt.dom.client.Element.as(target))) {
+                && CellBasedWidgetImpl.get().isFocusable(com.google.gwt.dom.client.Element.as(target))) {
             // If a natively focusable element was just clicked, then we must have
             // focus.
             focused = true;
@@ -287,7 +610,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
      * @return the row value index
      */
     public final int getRowValueIndex(TableRowElement row) {
-        return row.getSectionRowIndex() + getVisibleRange().getStart();
+        return row.getSectionRowIndex() + getView().getVisibleRange().getStart();
     }
 
     /**
@@ -346,16 +669,31 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     /**
      * Get the tables scaffolding elements.
      */
+    @Override
     public TableScaffolding getScaffolding() {
         return scaffolding;
     }
 
     /**
-     * @deprecated Use {@link #addAttachHandler(AttachEvent.Handler)}
+     * @deprecated use {@link #addSetupHandler(SetupHandler)}
      */
     @Deprecated
     public void setLoadedCallback(LoadedCallback callback) {
-        this.loadedCallback = callback;
+        if(setupHandler != null) {
+            setupHandler.removeHandler();
+            setupHandler = null;
+        }
+        setupHandler = addSetupHandler(event -> {
+            callback.onLoaded();
+        });
+    }
+
+    /**
+     * Event fired when the tables view calls {@link DataView#setup(TableScaffolding)}.
+     * @return Handler registration to remove the event handler.
+     */
+    public HandlerRegistration addSetupHandler(SetupHandler handler) {
+        return addHandler(handler, SetupEvent.TYPE);
     }
 
     public boolean isDestroyOnUnload() {
@@ -366,458 +704,26 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         this.destroyOnUnload = destroyOnUnload;
     }
 
-    // Data View Methods
+    // JQuery Event Handler
 
     @Override
-    public void render(Components<Component<?>> components) {
-        dataView.render(components);
+    public HandlerRegistration registerHandler(HandlerRegistration registration) {
+        return handlerRegistry.registerHandler(registration);
     }
 
     @Override
-    public void loaded(int startIndex, List<T> data) {
-        dataView.loaded(startIndex, data);
+    public void clearHandlers() {
+        handlerRegistry.clearHandlers();
     }
 
     @Override
-    public void refreshView() {
-        dataView.refreshView();
-    }
-
-    @Override
-    public void clearRows(boolean clearData) {
-        dataView.clearRows(clearData);
-    }
-
-    @Override
-    public void clearRowsAndCategories(boolean clearData) {
-        dataView.clearRowsAndCategories(clearData);
-    }
-
-    @Override
-    public void clearCategories() {
-        dataView.clearCategories();
-    }
-
-    @Override
-    public List<Column<T, ?>> getColumns() {
-        return dataView.getColumns();
-    }
-
-    @Override
-    public HandlerRegistration addRangeChangeHandler(Handler handler) {
-        return dataView.addRangeChangeHandler(handler);
-    }
-
-    @Override
-    public HandlerRegistration addRowCountChangeHandler(RowCountChangeEvent.Handler handler) {
-        return dataView.addRowCountChangeHandler(handler);
-    }
-
-    @Override
-    public int getRowCount() {
-        return dataView.getRowCount();
-    }
-
-    @Override
-    public Range getVisibleRange() {
-        return dataView.getVisibleRange();
-    }
-
-    @Override
-    public boolean isRowCountExact() {
-        return dataView.isRowCountExact();
-    }
-
-    @Override
-    public void setRowCount(int count) {
-        dataView.setRowCount(count);
-    }
-
-    @Override
-    public void setRowCount(int count, boolean isExact) {
-        dataView.setRowCount(count, isExact);
-    }
-
-    @Override
-    public void setVisibleRange(int start, int length) {
-        dataView.setVisibleRange(start, length);
-    }
-
-    @Override
-    public void setVisibleRange(Range range) {
-        dataView.setVisibleRange(range);
-    }
-
-    @Override
-    public boolean isHeaderVisible(int colIndex) {
-        return dataView.isHeaderVisible(colIndex);
-    }
-
-    @Override
-    public void addColumn(Column<T, ?> column) {
-        addColumn(column, "");
-    }
-
-    @Override
-    public void addColumn(Column<T, ?> column, String header) {
-        insertColumn(getColumns().size(), column, header);
-    }
-
-    @Override
-    public void insertColumn(int beforeIndex, Column<T, ?> col, String header) {
-        dataView.insertColumn(beforeIndex, col, header);
-    }
-
-    @Override
-    public void removeColumn(int colIndex) {
-        dataView.removeColumn(colIndex);
-    }
-
-    @Override
-    public int getColumnOffset() {
-        return dataView.getColumnOffset();
-    }
-
-    @Override
-    public void setSelectionType(SelectionType selectionType) {
-        dataView.setSelectionType(selectionType);
-    }
-
-    @Override
-    public SelectionType getSelectionType() {
-        return dataView.getSelectionType();
-    }
-
-    @Override
-    public void setUseStickyHeader(boolean stickyHeader) {
-        dataView.setUseStickyHeader(stickyHeader);
-    }
-
-    @Override
-    public boolean isUseStickyHeader() {
-        return dataView.isUseStickyHeader();
-    }
-
-    @Override
-    public JsTableSubHeaders getSubheaderLib() {
-        return dataView.getSubheaderLib();
-    }
-
-    @Override
-    public void selectAllRows(boolean select) {
-        dataView.selectAllRows(select);
-    }
-
-    @Override
-    public void selectAllRows(boolean select, boolean fireEvent) {
-        dataView.selectAllRows(select, fireEvent);
-    }
-
-    @Override
-    public void toggleRowSelect(com.google.gwt.dom.client.Element row) {
-        dataView.toggleRowSelect(row);
-    }
-
-    @Override
-    public void toggleRowSelect(com.google.gwt.dom.client.Element row, boolean fireEvent) {
-        dataView.toggleRowSelect(row, fireEvent);
-    }
-
-    @Override
-    public void selectRow(com.google.gwt.dom.client.Element row, boolean fireEvent) {
-        dataView.selectRow(row, fireEvent);
-    }
-
-    @Override
-    public void deselectRow(com.google.gwt.dom.client.Element row, boolean fireEvent) {
-        dataView.deselectRow(row, fireEvent);
-    }
-
-    @Override
-    public boolean hasDeselectedRows(boolean visibleOnly) {
-        return dataView.hasDeselectedRows(visibleOnly);
-    }
-
-    @Override
-    public boolean hasSelectedRows(boolean visibleOnly) {
-        return dataView.hasSelectedRows(visibleOnly);
-    }
-
-    @Override
-    public List<T> getSelectedRowModels(boolean visibleOnly) {
-        return dataView.getSelectedRowModels(visibleOnly);
-    }
-
-    @Override
-    public void setRowData(int start, List<? extends T> values) {
-        dataView.setRowData(start, values);
-    }
-
-    @Override
-    public int getVisibleItemCount() {
-        return dataView.getVisibleItemCount();
-    }
-
-    @Override
-    public int getRowHeight() {
-        return dataView.getRowHeight();
-    }
-
-    @Override
-    public void setRowHeight(int rowHeight) {
-        dataView.setRowHeight(rowHeight);
-    }
-
-    @Override
-    public void setDataSource(DataSource<T> dataSource) {
-        dataView.setDataSource(dataSource);
-    }
-
-    @Override
-    public DataSource<T> getDataSource() {
-        return dataView.getDataSource();
-    }
-
-    @Override
-    public void setRenderer(Renderer<T> renderer) {
-        dataView.setRenderer(renderer);
-    }
-
-    @Override
-    public void updateRow(T model) {
-        dataView.updateRow(model);
-    }
-
-    @Override
-    public RowComponent<T> getRow(T model) {
-        return dataView.getRow(model);
-    }
-
-    @Override
-    public RowComponent<T> getRow(int index) {
-        return dataView.getRow(index);
-    }
-
-    @Override
-    public RowComponent<T> getRowByModel(T model) {
-        return dataView.getRowByModel(model);
-    }
-
-    @Override
-    public void addCategory(String category) {
-        dataView.addCategory(category);
-    }
-
-    @Override
-    public void addCategory(CategoryComponent category) {
-        dataView.addCategory(category);
-    }
-
-    @Override
-    public boolean hasCategory(String categoryName) {
-        return dataView.hasCategory(categoryName);
-    }
-
-    @Override
-    public void disableCategory(String categoryName) {
-        dataView.disableCategory(categoryName);
-    }
-
-    @Override
-    public void enableCategory(String categoryName) {
-        dataView.enableCategory(categoryName);
-    }
-
-    @Override
-    public void openCategory(String categoryName) {
-        dataView.openCategory(categoryName);
-    }
-
-    @Override
-    public void openCategory(CategoryComponent category) {
-        dataView.openCategory(category);
-    }
-
-    @Override
-    public void closeCategory(String categoryName) {
-        dataView.closeCategory(categoryName);
-    }
-
-    @Override
-    public void closeCategory(CategoryComponent category) {
-        dataView.closeCategory(category);
-    }
-
-    @Override
-    public CategoryComponent getCategory(String categoryName) {
-        return dataView.getCategory(categoryName);
-    }
-
-    @Override
-    public List<CategoryComponent> getCategories() {
-        return dataView.getCategories();
-    }
-
-    @Override
-    public List<CategoryComponent> getOpenCategories() {
-        return dataView.getOpenCategories();
-    }
-
-    @Override
-    public boolean isCategoryEmpty(CategoryComponent category) {
-        return dataView.isCategoryEmpty(category);
-    }
-
-    @Override
-    public void setRowFactory(RowComponentFactory<T> rowFactory) {
-        dataView.setRowFactory(rowFactory);
-    }
-
-    @Override
-    public RowComponentFactory<T> getRowFactory() {
-        return dataView.getRowFactory();
-    }
-
-    @Override
-    public void setCategoryFactory(ComponentFactory<? extends CategoryComponent, String> categoryFactory) {
-        dataView.setCategoryFactory(categoryFactory);
-    }
-
-    @Override
-    public SortContext<T> getSortContext() {
-        return dataView.getSortContext();
-    }
-
-    @Override
-    public void sort(int columnIndex) {
-        dataView.sort(columnIndex);
-    }
-
-    @Override
-    public void sort(int columnIndex, SortDir dir) {
-        dataView.sort(columnIndex, dir);
-    }
-
-    @Override
-    public void sort(Column<T, ?> column) {
-        dataView.sort(column);
-    }
-
-    @Override
-    public void sort(Column<T, ?> column, SortDir dir) {
-        dataView.sort(column, dir);
-    }
-
-    @Override
-    public ProvidesKey<T> getKeyProvider() {
-        return dataView.getKeyProvider();
-    }
-
-    @Override
-    public boolean isRedraw() {
-        return dataView.isRedraw();
-    }
-
-    @Override
-    public void setRedraw(boolean redraw) {
-        dataView.setRedraw(redraw);
-    }
-
-    @Override
-    public void setLoadMask(boolean loadMask) {
-        dataView.setLoadMask(loadMask);
-    }
-
-    @Override
-    public boolean isLoadMask() {
-        return dataView.isLoadMask();
-    }
-
-    @Override
-    public MaterialProgress getProgressWidget() {
-        return dataView.getProgressWidget();
-    }
-
-    @Override
-    public int getTotalRows() {
-        return dataView.getTotalRows();
-    }
-
-    @Override
-    public void setTotalRows(int totalRows) {
-        dataView.setTotalRows(totalRows);
-    }
-
-    @Override
-    public boolean isSetup() {
-        return dataView.isSetup();
-    }
-
-    @Override
-    public boolean isUseCategories() {
-        return dataView.isUseCategories();
-    }
-
-    @Override
-    public void setUseCategories(boolean useCategories) {
-        dataView.setUseCategories(useCategories);
-    }
-
-    @Override
-    public boolean isUseLoadOverlay() {
-        return dataView.isUseLoadOverlay();
-    }
-
-    @Override
-    public void setUseLoadOverlay(boolean useLoadOverlay) {
-        dataView.setUseLoadOverlay(useLoadOverlay);
-    }
-
-    @Override
-    public boolean isUseRowExpansion() {
-        return dataView.isUseRowExpansion();
-    }
-
-    @Override
-    public void setUseRowExpansion(boolean useRowExpansion) {
-        dataView.setUseRowExpansion(useRowExpansion);
-    }
-
-    @Override
-    public int getLongPressDuration() {
-        return dataView.getLongPressDuration();
-    }
-
-    @Override
-    public void setLongPressDuration(int longPressDuration) {
-        dataView.setLongPressDuration(longPressDuration);
-    }
-
-    @Override
-    public List<TableHeader> getHeaders() {
-        return dataView.getHeaders();
-    }
-
-    @Override
-    public int getLeftFrozenColumns() {
-        return dataView.getLeftFrozenColumns();
-    }
-
-    @Override
-    public int getRightFrozenColumns() {
-        return dataView.getRightFrozenColumns();
-    }
-
-    // Event Handler Methods
-
-    @Override
-    public void removeAllHandlers() {
-        $this().off("." + getViewId());
+    public void removeJQueryHandlers() {
+        $this().off("." + view.getId());
     }
 
     @Override
     public void addSelectAllHandler(EventFunc3<List<T>, List<JQueryElement>, Boolean> handler) {
-        $this().on(TableEvents.SELECT_ALL + "." + getViewId(), handler);
+        $this().on(TableEvents.SELECT_ALL + "." + view.getId(), handler);
     }
 
     @Override
@@ -832,7 +738,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     @Override
     public void addRowSelectHandler(EventFunc3<T, Element, Boolean> handler) {
-        $this().on(TableEvents.ROW_SELECT + "." + getViewId(), handler);
+        $this().on(TableEvents.ROW_SELECT + "." + view.getId(), handler);
     }
 
     @Override
@@ -847,7 +753,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     @Override
     public void addStretchHandler(EventFunc1<Boolean> handler) {
-        $this().on(TableEvents.STRETCH + "." + getViewId(), handler);
+        $this().on(TableEvents.STRETCH + "." + view.getId(), handler);
     }
 
     @Override
@@ -862,7 +768,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     @Override
     public void addRowExpandHandler(EventFunc1<RowExpansion> handler) {
-        $this().on(TableEvents.ROW_EXPAND + "." + getViewId(), handler);
+        $this().on(TableEvents.ROW_EXPAND + "." + view.getId(), handler);
     }
 
     @Override
@@ -877,7 +783,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     @Override
     public void addRowExpandedHandler(EventFunc1<RowExpansion> handler) {
-        $this().on(TableEvents.ROW_EXPANDED + "." + getViewId(), handler);
+        $this().on(TableEvents.ROW_EXPANDED + "." + view.getId(), handler);
     }
 
     @Override
@@ -892,7 +798,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     @Override
     public void addRowCollapseHandler(EventFunc1<RowExpansion> handler) {
-        $this().on(TableEvents.ROW_COLLAPSE + "." + getViewId(), handler);
+        $this().on(TableEvents.ROW_COLLAPSE + "." + view.getId(), handler);
     }
 
     @Override
@@ -907,7 +813,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     @Override
     public void addRowCollapsedHandler(EventFunc1<RowExpansion> handler) {
-        $this().on(TableEvents.ROW_COLLAPSED + "." + getViewId(), handler);
+        $this().on(TableEvents.ROW_COLLAPSED + "." + view.getId(), handler);
     }
 
     @Override
@@ -922,7 +828,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     @Override
     public void addRowCountChangeHandler(EventFunc2<Integer, Boolean> handler) {
-        $this().on(TableEvents.ROW_COUNT_CHANGE + "." + getViewId(), handler);
+        $this().on(TableEvents.ROW_COUNT_CHANGE + "." + view.getId(), handler);
     }
 
     @Override
@@ -937,7 +843,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     @Override
     public void addRowContextMenuHandler(EventFunc3<MouseEvent, T, Element> handler) {
-        $this().on(TableEvents.ROW_CONTEXTMENU + "." + getViewId(), handler);
+        $this().on(TableEvents.ROW_CONTEXTMENU + "." + view.getId(), handler);
     }
 
     @Override
@@ -952,7 +858,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     @Override
     public void addRowDoubleClickHandler(EventFunc3<MouseEvent, T, Element> handler) {
-        $this().on(TableEvents.ROW_DOUBLECLICK + "." + getViewId(), handler);
+        $this().on(TableEvents.ROW_DOUBLECLICK + "." + view.getId(), handler);
     }
 
     @Override
@@ -967,7 +873,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     @Override
     public void addRowLongPressHandler(EventFunc3<MouseEvent, T, Element> handler) {
-        $this().on(TableEvents.ROW_LONGPRESS + "." + getViewId(), handler);
+        $this().on(TableEvents.ROW_LONGPRESS + "." + view.getId(), handler);
     }
 
     @Override
@@ -982,7 +888,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     @Override
     public void addRowShortPressHandler(EventFunc3<MouseEvent, T, Element> handler) {
-        $this().on(TableEvents.ROW_SHORTPRESS + "." + getViewId(), handler);
+        $this().on(TableEvents.ROW_SHORTPRESS + "." + view.getId(), handler);
     }
 
     @Override
@@ -997,7 +903,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     @Override
     public void addSortColumnHandler(EventFunc2<SortContext, Integer> handler) {
-        $this().on(TableEvents.SORT_COLUMN + "." + getViewId(), handler);
+        $this().on(TableEvents.SORT_COLUMN + "." + view.getId(), handler);
     }
 
     @Override
@@ -1012,7 +918,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     @Override
     public void addCategoryOpenedHandler(EventFunc1<String> handler) {
-        $this().on(TableEvents.CATEGORY_OPENED + "." + getViewId(), handler);
+        $this().on(TableEvents.CATEGORY_OPENED + "." + view.getId(), handler);
     }
 
     @Override
@@ -1027,7 +933,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     @Override
     public void addCategoryClosedHandler(EventFunc1<String> handler) {
-        $this().on(TableEvents.CATEGORY_CLOSED + "." + getViewId(), handler);
+        $this().on(TableEvents.CATEGORY_CLOSED + "." + view.getId(), handler);
     }
 
     @Override
@@ -1042,7 +948,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     @Override
     public void addComponentsRenderedHandler(Functions.EventFunc handler) {
-        $this().on(TableEvents.COMPONENTS_RENDERED + "." + getViewId(), handler);
+        $this().on(TableEvents.COMPONENTS_RENDERED + "." + view.getId(), handler);
     }
 
     @Override
@@ -1057,7 +963,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     @Override
     public void addRenderedHandler(Functions.EventFunc handler) {
-        $this().on(TableEvents.RENDERED + "." + getViewId(), handler);
+        $this().on(TableEvents.RENDERED + "." + view.getId(), handler);
     }
 
     @Override
