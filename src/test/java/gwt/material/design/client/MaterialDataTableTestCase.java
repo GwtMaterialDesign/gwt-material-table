@@ -1,3 +1,22 @@
+/*
+ * #%L
+ * GwtMaterial
+ * %%
+ * Copyright (C) 2015 - 2017 GwtMaterialDesign
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package gwt.material.design.client;
 
 import com.google.gwt.core.client.GWT;
@@ -21,6 +40,7 @@ import gwt.material.design.client.ui.table.cell.WidgetColumn;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static gwt.material.design.jquery.client.api.JQuery.$;
 
@@ -45,37 +65,36 @@ public class MaterialDataTableTestCase extends GWTTestCase {
     protected void gwtSetUp() throws Exception {
         super.gwtSetUp();
 
-        WithJQueryResources jQueryResources = GWT.create(WithJQueryResources.class);
-        // Test JQuery
-        MaterialDesign.injectJs(jQueryResources.jQuery());
-        assertTrue(MaterialDesign.isjQueryLoaded());
-        // Test Materialize
-        MaterialDesign.injectJs(MaterialResources.INSTANCE.materializeJs());
-        assertTrue(MaterialDesign.isMaterializeLoaded());
-        // Inject Resources
-        MaterialDesign.injectJs(MaterialTableBundle.INSTANCE.jQueryExt());
-        MaterialDesign.injectJs(MaterialTableBundle.INSTANCE.stickyth());
-        MaterialDesign.injectJs(MaterialTableBundle.INSTANCE.tableSubHeaders());
-        MaterialDesign.injectJs(MaterialTableBundle.INSTANCE.greedyScroll());
-        MaterialDesign.injectJs(MaterialTableBundle.INSTANCE.mutate());
-        MaterialDesign.injectJs(MaterialTableBundle.INSTANCE.mutateEvents());
-        // gwt-material-jquery Test
-        assertNotNull($("body"));
+        if(!MaterialDesign.isjQueryLoaded()) {
+            WithJQueryResources jQueryResources = GWT.create(WithJQueryResources.class);
+            // Test JQuery
+            MaterialDesign.injectJs(jQueryResources.jQuery());
+            assertTrue(MaterialDesign.isjQueryLoaded());
+            // Test Materialize
+            MaterialDesign.injectJs(MaterialResources.INSTANCE.materializeJs());
+            assertTrue(MaterialDesign.isMaterializeLoaded());
+            // Inject Resources
+            MaterialDesign.injectJs(MaterialTableBundle.INSTANCE.jQueryExt());
+            MaterialDesign.injectJs(MaterialTableBundle.INSTANCE.stickyth());
+            MaterialDesign.injectJs(MaterialTableBundle.INSTANCE.tableSubHeaders());
+            MaterialDesign.injectJs(MaterialTableBundle.INSTANCE.greedyScroll());
+            MaterialDesign.injectJs(MaterialTableBundle.INSTANCE.mutateEvents());
+            MaterialDesign.injectJs(MaterialTableBundle.INSTANCE.mutate());
+            // gwt-material-jquery Test
+            assertNotNull($("body"));
+        }
     }
 
     protected MaterialDataTable<Person> attachTableWithConstructor() throws Exception {
         // given
-        MaterialDataTable<Person> table = new MaterialDataTable<>();
-        table.setRowFactory(new PersonRowFactory());
-        table.setCategoryFactory(new CustomCategoryFactory());
-        table.setRenderer(new CustomRenderer<>());
+        MaterialDataTable<Person> table = createTable();
 
         // when
         try {
             addSampleColumns(table);
-            table.setRowData(0, people);
+            table.getView().setRowData(0, people);
 
-            // then
+        // then
         } catch (final AssertionError ae) {
             throw ae;
         } catch (final Throwable t) {
@@ -88,10 +107,7 @@ public class MaterialDataTableTestCase extends GWTTestCase {
 
     protected MaterialDataTable<Person> attachTableWithOnLoad() throws Exception {
         // given
-        MaterialDataTable<Person> table = new MaterialDataTable<>();
-        table.setRowFactory(new PersonRowFactory());
-        table.setCategoryFactory(new CustomCategoryFactory());
-        table.setRenderer(new CustomRenderer<>());
+        MaterialDataTable<Person> table = createTable();
 
         table.addAttachHandler(event -> {
             // when
@@ -99,7 +115,7 @@ public class MaterialDataTableTestCase extends GWTTestCase {
                 addSampleColumns(table);
                 table.setRowData(0, people);
 
-                // then
+            // then
             } catch (final AssertionError ae) {
                 throw ae;
             } catch (final Throwable t) {
@@ -108,6 +124,14 @@ public class MaterialDataTableTestCase extends GWTTestCase {
         });
 
         RootPanel.get().add(table);
+        return table;
+    }
+
+    protected MaterialDataTable<Person> createTable() {
+        MaterialDataTable<Person> table = new MaterialDataTable<>();
+        table.getView().setRowFactory(new PersonRowFactory());
+        table.getView().setCategoryFactory(new CustomCategoryFactory());
+        table.getView().setRenderer(new CustomRenderer<>());
         return table;
     }
 
