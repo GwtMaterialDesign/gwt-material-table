@@ -24,6 +24,7 @@ import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.ValueUpdater;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.TableCellElement;
@@ -41,6 +42,7 @@ import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.data.SortDir;
 import gwt.material.design.client.data.component.ComponentFactory;
 import gwt.material.design.client.data.component.RowComponent;
+import gwt.material.design.client.js.SmartScrollBlock;
 import gwt.material.design.jquery.client.api.Functions;
 import gwt.material.design.jquery.client.api.Functions.EventFunc1;
 import gwt.material.design.jquery.client.api.Functions.EventFunc2;
@@ -177,6 +179,10 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         // We should recalculate when we load again.
         } else if(isUseCategories()) {
             getSubheaderLib().recalculate(true);
+
+            Scheduler.get().scheduleDeferred(() -> {
+                getSubheaderLib().alignment(null);
+            });
         }
     }
 
