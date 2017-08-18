@@ -842,13 +842,14 @@ public abstract class AbstractDataView<T> implements DataView<T> {
      * Ensure that the cached data is consistent with the data size.
      */
     private void updateCachedData() {
-        int rangeStart = range.getStart();
-        int expectedLastIndex = Math.max(0, Math.min(range.getLength(), getRowCount() - rangeStart));
-        int lastIndex = getVisibleItemCount() - 1;
-        while (lastIndex >= expectedLastIndex) {
-            rows.remove(lastIndex);
-            lastIndex--;
-        }
+//        int rangeStart = range.getStart();
+//        int expectedLastIndex = Math.max(0, Math.min(range.getLength(), getRowCount() - rangeStart));
+//        int lastIndex = getVisibleItemCount() - 1;
+//        while (lastIndex >= expectedLastIndex) {
+//            rows.remove(lastIndex);
+//            lastIndex--;
+//        }
+        rows.clear();
     }
 
     @Override
