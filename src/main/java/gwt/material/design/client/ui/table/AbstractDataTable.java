@@ -24,6 +24,7 @@ import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.ValueUpdater;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.TableCellElement;
@@ -172,9 +173,13 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
                 logger.log(Level.SEVERE,
                         "Could not setup AbstractDataTable due to previous errors.", ex);
             }
-            // We should recalculate when we load again.
-        } else if(view.isUseCategories()) {
-            view.getSubheaderLib().recalculate(true);
+        // We should recalculate when we load again.
+        } else if(isUseCategories()) {
+            getView().getSubheaderLib().recalculate(true);
+
+            Scheduler.get().scheduleDeferred(() -> {
+                getView().getSubheaderLib().alignment(null);
+            });
         }
     }
 

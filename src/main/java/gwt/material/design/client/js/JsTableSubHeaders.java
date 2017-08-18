@@ -62,6 +62,8 @@ public class JsTableSubHeaders {
 
     @JsMethod public native void recalculate(boolean fireEvents);
 
+    @JsMethod public native void alignment(SmartScrollBlock scroll);
+
     @JsMethod public native void updateWidths();
 
     @JsMethod public native void updateHeights();

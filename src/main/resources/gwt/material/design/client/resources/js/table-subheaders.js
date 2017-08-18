@@ -128,7 +128,7 @@ function TableSubHeaders($table, $stickies) {
 
     base.$window.smartScroll(base.name, $.throttle(scrollThrottle, function(e, scroll) {
       if(base.debug.enabled) base.debug.smartScroll.window++;
-      base.alignment(e, scroll);
+      base.alignment(scroll);
     }));
     base.$window.on("resize." + base.name, $.debounce(resizeThrottle, function() {
       if(base.debug.enabled) base.debug.resize.window++;
@@ -163,7 +163,7 @@ function TableSubHeaders($table, $stickies) {
       return $(this).hasScrollBar();
     }).smartScroll(base.name, $.throttle(scrollThrottle, function(e, scroll) {
       if(base.debug.enabled) base.debug.smartScroll.outer++;
-      base.alignment(e, scroll);
+      base.alignment(scroll);
     }));
   };
 
@@ -404,7 +404,7 @@ function TableSubHeaders($table, $stickies) {
   };
 
   // Applies the alignment of all the outer scroll positions.
-  base.alignment = function(e, scroll) {
+  base.alignment = function(scroll) {
     var offset = $table.offset(),
         clipWidth = $table.innerWidth(),
         fullWidth = base.$tableBody.outerWidth(),
