@@ -72,7 +72,9 @@ public class Components<T extends Component<?>> extends ArrayList<T> {
     public void clearWidgets() {
         // clear dom rows
         for(T component : this) {
-            component.clearWidget();
+            if(component != null) {
+                component.clearWidget();
+            }
         }
     }
 
