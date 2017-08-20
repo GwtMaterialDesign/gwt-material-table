@@ -2,7 +2,7 @@
  * #%L
  * GwtMaterial
  * %%
- * Copyright (C) 2015 - 2016 GwtMaterialDesign
+ * Copyright (C) 2015 - 2017 GwtMaterialDesign
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,11 @@
  * limitations under the License.
  * #L%
  */
-package gwt.material.design.client.ui.table;
+package gwt.material.design.client.data.events;
 
-import gwt.material.design.client.data.events.SetupHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 
-/**
- * Fired when the {@link AbstractDataTable} has been setup & attached.
- *
- * @deprecated Use {@link MaterialDataTable#addSetupHandler(SetupHandler)}.
- */
-@Deprecated
-public interface LoadedCallback {
-    void onLoaded();
+public interface HasDestroyHandler extends DestroyHandler {
+
+    HandlerRegistration addDestroyHandler(DestroyHandler handler);
 }

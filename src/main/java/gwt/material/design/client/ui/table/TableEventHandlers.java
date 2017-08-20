@@ -26,8 +26,8 @@ import gwt.material.design.jquery.client.api.Functions.EventFunc2;
 import gwt.material.design.jquery.client.api.Functions.EventFunc3;
 import gwt.material.design.jquery.client.api.JQueryElement;
 import gwt.material.design.jquery.client.api.MouseEvent;
-import gwt.material.design.jscore.client.api.core.Element;
 import gwt.material.design.client.data.SortContext;
+import gwt.material.design.jscore.client.api.core.Element;
 
 import java.util.List;
 
@@ -39,7 +39,7 @@ public interface TableEventHandlers<T> {
     /**
      * Remove all registered handlers.
      */
-    void removeAllHandlers();
+    void removeJQueryHandlers();
 
     /**
      * Add a handler that is triggered when select all rows is executed.
@@ -296,7 +296,7 @@ public interface TableEventHandlers<T> {
 
     /**
      * Add a handler that triggers when all the row data has rendered after calling
-     * {@link AbstractDataTable#setRowData(int, List)}.<br>
+     * {@link gwt.material.design.client.data.AbstractDataView#setRowData(int, List)}.<br>
      * This will only fire once per call even if the data is re-rendered in the cases of sorting, etc.
      */
     void addRenderedHandler(Functions.EventFunc handler);
