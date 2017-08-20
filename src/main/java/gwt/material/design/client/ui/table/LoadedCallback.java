@@ -19,12 +19,12 @@
  */
 package gwt.material.design.client.ui.table;
 
-import com.google.gwt.event.logical.shared.AttachEvent;
+import gwt.material.design.client.data.events.SetupHandler;
 
 /**
  * Fired when the {@link AbstractDataTable} has been setup & attached.
  *
- * @deprecated Use {@link MaterialDataTable#addSet(AttachEvent.Handler)}.
+ * @deprecated Use {@link MaterialDataTable#addSetupHandler(SetupHandler)}.
  */
 @Deprecated
 public interface LoadedCallback {
