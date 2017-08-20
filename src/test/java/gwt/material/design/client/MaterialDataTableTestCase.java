@@ -23,7 +23,9 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.junit.client.GWTTestCase;
 import com.google.gwt.user.client.ui.RootPanel;
+import gwt.material.design.client.base.constants.StyleName;
 import gwt.material.design.client.constants.Color;
+import gwt.material.design.client.constants.HideOn;
 import gwt.material.design.client.constants.TextAlign;
 import gwt.material.design.client.factory.CustomCategoryFactory;
 import gwt.material.design.client.factory.PersonRowFactory;
@@ -38,7 +40,9 @@ import gwt.material.design.client.ui.table.cell.TextColumn;
 import gwt.material.design.client.ui.table.cell.WidgetColumn;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -135,6 +139,33 @@ public class MaterialDataTableTestCase extends GWTTestCase {
 
     protected void addSampleColumns(MaterialDataTable<Person> table) {
         table.addColumn(new TextColumn<Person>() {
+            @Override
+            public TextAlign textAlign() {
+                return TextAlign.CENTER;
+            }
+
+            @Override
+            public boolean numeric() {
+                return true;
+            }
+
+            @Override
+            public String width() {
+                return "200px";
+            }
+
+            @Override
+            public HideOn hideOn() {
+                return HideOn.HIDE_ON_MED;
+            }
+
+            @Override
+            public Map<StyleName, String> styleProperties() {
+                Map<StyleName, String> styleProps = new HashMap<>();
+                styleProps.put(StyleName.COLOR, "white");
+                return styleProps;
+            }
+
             @Override
             public String getValue(Person object) {
                 return object.getFirstName();

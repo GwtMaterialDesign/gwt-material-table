@@ -110,7 +110,7 @@ public class BaseRenderer<T> implements Renderer<T> {
             for(int c = 0; c < colSize; c++) {
                 int colIndex = c + colOffset;
                 Context context = new Context(rowComponent.getIndex(), colIndex, valueKey);
-                TableData column = drawColumn(row, context, data, columns.get(c), colIndex, dataView.isHeaderVisible(colIndex));
+                drawColumn(row, context, data, columns.get(c), colIndex, dataView.isHeaderVisible(colIndex));
             }
             rowComponent.setRedraw(false);
         }
