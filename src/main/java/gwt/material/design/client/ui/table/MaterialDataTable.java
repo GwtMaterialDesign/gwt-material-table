@@ -20,9 +20,16 @@
 package gwt.material.design.client.ui.table;
 
 import com.gargoylesoftware.htmlunit.attachment.AttachmentHandler;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.user.client.ui.Panel;
 import gwt.material.design.client.base.constants.TableCssName;
+import gwt.material.design.client.data.events.InsertColumnEvent;
+import gwt.material.design.client.data.events.InsertColumnHandler;
+import gwt.material.design.client.data.events.RemoveColumnEvent;
+import gwt.material.design.client.data.events.RemoveColumnHandler;
+import gwt.material.design.client.data.events.SetupEvent;
+import gwt.material.design.client.data.events.SetupHandler;
 import gwt.material.design.jquery.client.api.JQueryElement;
 import gwt.material.design.client.constants.Alignment;
 import gwt.material.design.client.constants.HideOn;
@@ -38,6 +45,8 @@ import gwt.material.design.client.ui.html.ListItem;
 import gwt.material.design.client.ui.html.Span;
 import gwt.material.design.client.ui.table.cell.Column;
 
+import java.util.logging.Logger;
+
 import static gwt.material.design.jquery.client.api.JQuery.$;
 
 /**
@@ -49,7 +58,7 @@ import static gwt.material.design.jquery.client.api.JQuery.$;
  * @see <a href="http://gwtmaterialdesign.github.io/gwt-material-demo/#datatable">Material Data Table</a>
  * @see <a href="https://material.io/guidelines/components/data-tables.html">Material Design Specification</a>
  */
-public class MaterialDataTable<T> extends AbstractDataTable<T> {
+public class MaterialDataTable<T> extends AbstractDataTable<T> implements InsertColumnHandler<T>, RemoveColumnHandler {
 
     private JQueryElement stretchContainer;
 
@@ -76,41 +85,64 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> {
     }
 
     @Override
-    public void setup(TableScaffolding scaffolding) throws Exception {
-        super.setup(scaffolding);
+    protected void onLoad() {
+        super.onLoad();
 
-        Panel tableBody = scaffolding.getTableBody();
+        // Register data view events, these are removed onUnload.
+        registerHandler(addHandler(this, InsertColumnEvent.TYPE));
+        registerHandler(addHandler(this, RemoveColumnEvent.TYPE));
+
+        // Attempt to rebuild encase the widgets have been unloaded.
+        // In some use cases (like GWTP) the child widgets aren't unloaded.
+        // So we make sure we check the state of each Widget.
+        build();
+    }
+
+    @Override
+    protected void build() {
+        super.build();
+
         Panel infoPanel = scaffolding.getInfoPanel();
         Panel toolPanel = scaffolding.getToolPanel();
 
-        // table icon
-        tableIcon = new MaterialIcon(IconType.VIEW_LIST);
-        infoPanel.add(tableIcon);
+        if(tableIcon == null || !tableIcon.isAttached()) {
+            // table icon
+            tableIcon = new MaterialIcon(IconType.VIEW_LIST);
+            infoPanel.add(tableIcon);
+        }
 
-        // table title
-        tableTitle = new Span("Table Title");
-        tableTitle.addStyleName(TableCssName.TITLE);
-        infoPanel.add(tableTitle);
+        if(tableTitle == null || !tableTitle.isAttached()) {
+            // table title
+            tableTitle = new Span("Table Title");
+            tableTitle.addStyleName(TableCssName.TITLE);
+            infoPanel.add(tableTitle);
+        }
 
-        // stretch icon
-        stretchIcon = new MaterialIcon(IconType.FULLSCREEN);
-        stretchIcon.setWaves(WavesType.LIGHT);
-        stretchIcon.setCircle(true);
-        stretchIcon.setId("stretch");
-        $(stretchIcon).css("cursor", "pointer");
-        toolPanel.add(stretchIcon);
+        if(stretchIcon == null || !stretchIcon.isAttached()) {
+            // stretch icon
+            stretchIcon = new MaterialIcon(IconType.FULLSCREEN);
+            stretchIcon.setWaves(WavesType.LIGHT);
+            stretchIcon.setCircle(true);
+            stretchIcon.setId("stretch");
+            stretchIcon.getElement().getStyle().setCursor(Style.Cursor.POINTER);
+            toolPanel.add(stretchIcon);
+        }
 
-        // menu icon
-        columnMenuIcon = new MaterialIcon(IconType.MORE_VERT);
-        columnMenuIcon.setHideOn(HideOn.HIDE_ON_SMALL_DOWN);
-        columnMenuIcon.setWaves(WavesType.LIGHT);
-        columnMenuIcon.setCircle(true);
-        columnMenuIcon.setId("columnToggle");
-        $(columnMenuIcon).css("cursor", "pointer");
-        toolPanel.add(columnMenuIcon);
+        if(columnMenuIcon == null || !columnMenuIcon.isAttached()) {
+            // menu icon
+            columnMenuIcon = new MaterialIcon(IconType.MORE_VERT);
+            columnMenuIcon.setHideOn(HideOn.HIDE_ON_SMALL_DOWN);
+            columnMenuIcon.setWaves(WavesType.LIGHT);
+            columnMenuIcon.setCircle(true);
+            columnMenuIcon.setId("columnToggle");
+            columnMenuIcon.getElement().getStyle().setCursor(Style.Cursor.POINTER);
+            toolPanel.add(columnMenuIcon);
+        }
 
-        // stretch container
-        stretchContainer = $("body");
+        if(stretchContainer == null) {
+            // stretch container
+            stretchContainer = $("body");
+        }
 
         setupToolPanel();
         setupMenu();
@@ -118,7 +150,7 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> {
 
     protected void setupToolPanel() {
         // Stretch click handler
-        $(scaffolding.getToolPanel()).find("i#stretch").on("click", e -> {
+        $(scaffolding.getToolPanel()).find("i#stretch").off("click").on("click", e -> {
             stretch();
 
             e.preventDefault();
@@ -152,7 +184,7 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> {
         $menu.find("li label").on("tap click", e -> {
             JQueryElement $this = $(e.getCurrentTarget());
 
-            String forBox = ((String) $this.attr("for")).replace(getViewId() + "-", "");
+            String forBox = ((String) $this.attr("for")).replace(getView().getId() + "-", "");
             if(Js.isTrue(forBox)) {
                 JQueryElement thd = $("th#" + forBox + ",td#" + forBox, this);
                 boolean checked = $this.prev().is(":checked");
@@ -170,7 +202,7 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> {
                 scaffolding.getTable().getJsElement().stickyTableHeaders("updateWidth");
 
                 // Recalculate the subheader
-                getSubheaderLib().recalculate(true);
+                getView().getSubheaderLib().recalculate(true);
             }
             return true;
         });
@@ -184,19 +216,21 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> {
     }
 
     @Override
-    public void insertColumn(int beforeIndex, Column<T, ?> col, String header) {
-        super.insertColumn(beforeIndex, col, header);
+    public void onInsertColumn(InsertColumnEvent<T> event) {
+        int beforeIndex = event.getBeforeIndex();
+        Column<T, ?> column = event.getColumn();
+        String header = event.getHeader();
 
-        AttachEvent.Handler hander = event -> {
-            int index = beforeIndex + getColumnOffset();
-            String ref = getViewId() + "-col" + index;
+        AttachEvent.Handler hander = e -> {
+            int index = beforeIndex + getView().getColumnOffset();
+            String ref = getView().getId() + "-col" + index;
 
             MaterialCheckBox toggleBox = new MaterialCheckBox(new ListItem().getElement());
             JQueryElement input = $(toggleBox).find("input");
             input.attr("id", ref);
 
             JQueryElement label = $(toggleBox).find("label");
-            label.text(col.getName());
+            label.text(column.getName());
             label.attr("for", ref);
 
             toggleBox.setValue(true);
@@ -211,7 +245,7 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> {
             reindexToggles();
         };
 
-        if(isSetup()) {
+        if(getView().isSetup()) {
             hander.onAttachOrDetach(null);
         } else {
             addAttachHandler(hander, true);
@@ -219,18 +253,16 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> {
     }
 
     @Override
-    public void removeColumn(int colIndex) {
-        super.removeColumn(colIndex);
-
-        int index = colIndex + getColumnOffset();
-        $(menu).find("li").get(index).removeFromParent();
+    public void onRemoveColumn(RemoveColumnEvent event) {
+        int index = event.getIndex() + getView().getColumnOffset();
+        $(menu).find("li input#col" + index).parent().remove();
         reindexToggles();
     }
 
     private void reindexToggles() {
-        int colOffset = getColumnOffset();
+        int colOffset = getView().getColumnOffset();
         $("li", menu).each((index, e) -> {
-            String ref = getViewId() + "-col" + ((Double)index + colOffset);
+            String ref = getView().getId() + "-col" + ((Double)index + colOffset);
 
             JQueryElement input = $(e).find("input");
             input.attr("id", ref);
@@ -256,7 +288,7 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> {
         tableJs.stickyTableHeaders("toggleHeaders");
 
         // Recalculate subheaders
-        getSubheaderLib().recalculate(true);
+        getView().getSubheaderLib().recalculate(true);
 
         if(fireEvent) {
             // Fire table stretch event

@@ -307,8 +307,8 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
     }
 
     @Override
-    public void refreshView() {
-        super.refreshView();
+    public void refresh() {
+        super.refresh();
         int rangeStart = range.getStart();
         setVisibleRange(rangeStart, dynamicView ? getVisibleRowCapacity() : viewSize);
         setViewSize(range.getLength());
@@ -380,7 +380,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
             loaderCache.clear();
             loaderCache = null;
         } else {
-            display.setLoadMask(true);
+            setLoadMask(true);
 
             dataSource.load(new LoadConfig<>(loaderIndex, loaderSize, getSortContext(), getOpenCategories()),
                     new LoadCallback<T>() {
@@ -485,7 +485,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
 
         // Update the view row size.
         if(isSetup()) {
-            refreshView();
+            refresh();
         }
     }
 

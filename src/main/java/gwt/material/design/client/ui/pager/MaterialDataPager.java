@@ -174,7 +174,8 @@ public class MaterialDataPager<T> extends MaterialDataPagerBase<T> implements Ha
         }
 
         int finalLimit = limit;
-        dataSource.load(new LoadConfig<>(offset, limit, table.getSortContext(), table.getOpenCategories()), new LoadCallback<T>() {
+        dataSource.load(new LoadConfig<>(offset, limit, table.getView().getSortContext(),
+                table.getView().getOpenCategories()), new LoadCallback<T>() {
             @Override
             public void onSuccess(LoadResult<T> loadResult) {
                 totalRows = loadResult.getTotalLength();

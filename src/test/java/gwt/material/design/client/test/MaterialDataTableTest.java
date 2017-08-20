@@ -2,7 +2,7 @@
  * #%L
  * GwtMaterial
  * %%
- * Copyright (C) 2015 - 2016 GwtMaterialDesign
+ * Copyright (C) 2015 - 2017 GwtMaterialDesign
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,13 @@
  * limitations under the License.
  * #L%
  */
-package gwt.material.design.client.base;
+package gwt.material.design.client.test;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.junit.client.GWTTestCase;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.Range;
-import gwt.material.design.client.MaterialDesign;
+import gwt.material.design.client.MaterialDataTableTestCase;
+import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.HideOn;
@@ -34,14 +32,15 @@ import gwt.material.design.client.constants.TextAlign;
 import gwt.material.design.client.data.ListDataSource;
 import gwt.material.design.client.data.SelectionType;
 import gwt.material.design.client.data.component.RowComponent;
-import gwt.material.design.client.factory.CustomCategoryFactory;
-import gwt.material.design.client.factory.PersonRowFactory;
+import gwt.material.design.client.data.events.DestroyEvent;
+import gwt.material.design.client.data.events.InsertColumnEvent;
+import gwt.material.design.client.data.events.RemoveColumnEvent;
 import gwt.material.design.client.model.Person;
-import gwt.material.design.client.renderer.CustomRenderer;
-import gwt.material.design.client.resources.MaterialResources;
-import gwt.material.design.client.resources.MaterialTableBundle;
-import gwt.material.design.client.resources.WithJQueryResources;
-import gwt.material.design.client.ui.*;
+import gwt.material.design.client.ui.MaterialBadge;
+import gwt.material.design.client.ui.MaterialCheckBox;
+import gwt.material.design.client.ui.MaterialDropDown;
+import gwt.material.design.client.ui.MaterialIcon;
+import gwt.material.design.client.ui.MaterialImage;
 import gwt.material.design.client.ui.pager.MaterialDataPager;
 import gwt.material.design.client.ui.table.MaterialDataTable;
 import gwt.material.design.client.ui.table.TableEvents;
@@ -53,56 +52,41 @@ import gwt.material.design.client.ui.table.cell.WidgetColumn;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import static gwt.material.design.jquery.client.api.JQuery.$;
 
-public class TableBaseTest extends GWTTestCase {
+public class MaterialDataTableTest extends MaterialDataTableTestCase {
 
-    @Override
-    public String getModuleName() {
-        return "gwt.material.design.GwtMaterialTable";
+    private static final Logger logger = Logger.getLogger(MaterialDataTableTest.class.getName());
+
+    public void testLoadingInConstructor() throws Exception {
+        // given / when / then
+        MaterialDataTable<Person> table = attachTableWithConstructor();
+
+        // Test the reattach
+        table.removeFromParent();
+        RootPanel.get().add(table);
     }
 
-    @Override
-    protected void gwtSetUp() throws Exception {
-        super.gwtSetUp();
-        setup();
+    public void testLoadingOnAttach() throws Exception {
+        // given / when / then
+        MaterialDataTable<Person> table = attachTableWithOnLoad();
+
+        // Test the reattach
+        table.removeFromParent();
+        RootPanel.get().add(table);
     }
 
-    public void setup() {
-        WithJQueryResources jQueryResources = GWT.create(WithJQueryResources.class);
-        // Test JQuery
-        MaterialDesign.injectJs(jQueryResources.jQuery());
-        assertTrue(MaterialDesign.isjQueryLoaded());
-        // Test Materialize
-        MaterialDesign.injectJs(MaterialResources.INSTANCE.materializeJs());
-        assertTrue(MaterialDesign.isMaterializeLoaded());
-        // Inject Resources
-        MaterialDesign.injectJs(MaterialTableBundle.INSTANCE.jQueryExt());
-        MaterialDesign.injectJs(MaterialTableBundle.INSTANCE.stickyth());
-        MaterialDesign.injectJs(MaterialTableBundle.INSTANCE.tableSubHeaders());
-        MaterialDesign.injectJs(MaterialTableBundle.INSTANCE.greedyScroll());
-        // gwt-material-jquery Test
-        assertNotNull($("body"));
-    }
+    public void testProperties() throws Exception {
+        // given
+        MaterialDataTable<Person> table = attachTableWithOnLoad();
 
-    public <T extends MaterialDataTable<Person>> void checkTable(T table) {
-        setup(table);
-        checkEventHandlers(table);
-        checkColumnsRows(table);
-        checkStructure(table);
-        checkStretch(table);
-        checkDynamicColumn(table);
-        checkPager(table);
-    }
-
-    public <T extends MaterialDataTable<Person>> void setup(T table) {
-        final String HEIGHT = "calc(100vh - 131px)";
-        table.setHeight(HEIGHT);
-        //table.setUseStickyHeader(true);
-        //assertTrue(table.isUseStickyHeader());
-        //table.setUseStickyHeader(false);
-        //assertFalse(table.isUseStickyHeader());
+        // when / then
+        table.setUseStickyHeader(true);
+        assertTrue(table.isUseStickyHeader());
+        table.setUseStickyHeader(false);
+        assertFalse(table.isUseStickyHeader());
         table.setUseCategories(true);
         assertTrue(table.isUseCategories());
         table.setUseCategories(false);
@@ -112,19 +96,107 @@ public class TableBaseTest extends GWTTestCase {
         table.setUseRowExpansion(false);
         assertFalse(table.isUseRowExpansion());
         table.setSelectionType(SelectionType.SINGLE);
-        assertEquals(table.getSelectionType(), SelectionType.SINGLE);
+        assertEquals(SelectionType.SINGLE, table.getSelectionType());
         table.setSelectionType(SelectionType.MULTIPLE);
-        assertEquals(table.getSelectionType(), SelectionType.MULTIPLE);
+        assertEquals(SelectionType.MULTIPLE, table.getSelectionType());
         table.setSelectionType(SelectionType.NONE);
-        assertEquals(table.getSelectionType(), SelectionType.NONE);
-        // Add the Table into the Root
-        RootPanel.get().add(table);
-        table.setRowFactory(new PersonRowFactory());
-        table.setCategoryFactory(new CustomCategoryFactory());
-        table.setRenderer(new CustomRenderer<>());
+        assertEquals(SelectionType.NONE, table.getSelectionType());
     }
 
-    public <T extends MaterialDataTable<Person>> void checkEventHandlers(T table) {
+    public void testStructure() throws Exception {
+        // given
+        MaterialDataTable<Person> table = attachTableWithOnLoad();
+
+        // Table Title
+        table.setTitle("table title");
+        assertEquals("table title", table.getTitle());
+        TableScaffolding scaffolding = table.getScaffolding();
+        MaterialIcon tableIcon = table.getTableIcon();
+        assertEquals(IconType.VIEW_LIST, tableIcon.getIconType());
+        assertTrue(scaffolding.getInfoPanel().getElement().hasClassName(TableCssName.INFO_PANEL));
+        assertTrue(scaffolding.getTable().getElement().hasClassName(TableCssName.TABLE));
+        assertTrue(scaffolding.getTableBody().getElement().hasClassName(TableCssName.TABLE_BODY));
+        assertTrue(scaffolding.getToolPanel().getElement().hasClassName(TableCssName.TOOL_PANEL));
+        // Stretch Icon
+        MaterialIcon stretchIcon = table.getStretchIcon();
+        assertEquals(IconType.FULLSCREEN, stretchIcon.getIconType());
+        assertEquals("stretch", stretchIcon.getId());
+        // Column Menu Icon
+        MaterialIcon columnMenuIcon = table.getColumnMenuIcon();
+        assertEquals(IconType.MORE_VERT, columnMenuIcon.getIconType());
+        assertEquals("columnToggle", columnMenuIcon.getId());
+        assertTrue(scaffolding.getTopPanel().getElement().hasClassName(TableCssName.TOP_PANEL));
+        // Dropdown Menu
+        MaterialDropDown dropDown = table.getMenu();
+        assertEquals(3, dropDown.getWidgetCount());
+        int index = 0;
+        for (Widget w : dropDown) {
+            assertTrue(w instanceof MaterialCheckBox);
+            MaterialCheckBox checkBox = (MaterialCheckBox) w;
+            assertEquals(checkBox.getText(), table.getColumns().get(index).getName());
+            index++;
+        }
+    }
+
+    public void testEvents() throws Exception {
+        // given
+        MaterialDataTable<Person> table = createTable();
+
+        // SetupEvent
+        final boolean[] isSetupFired = {false};
+        table.addSetupHandler(event -> {
+            isSetupFired[0] = true;
+        });
+
+        RootPanel.get().add(table);
+        assertTrue(isSetupFired[0]);
+
+        table.removeFromParent();
+        isSetupFired[0] = false;
+
+        // Attach again to ensure it doesn't fire
+        RootPanel.get().add(table);
+        assertFalse(isSetupFired[0]);
+
+        // InsertColumnEvent
+        final boolean[] isInsertedColumnFired = {false};
+        table.addHandler(event -> {
+            isInsertedColumnFired[0] = true;
+        }, InsertColumnEvent.TYPE);
+
+        table.addColumn(new TextColumn<Person>() {
+            @Override
+            public String getValue(Person object) {
+                return object.getLastName();
+            }
+        }, "Last Name");
+        assertTrue(isInsertedColumnFired[0]);
+
+        // RemoveColumnEvent
+        final boolean[] isRemoveColumnFired = {false};
+        table.addHandler(event -> {
+            isRemoveColumnFired[0] = true;
+        }, RemoveColumnEvent.TYPE);
+        table.removeColumn(0);
+        assertTrue(isRemoveColumnFired[0]);
+
+        // DestroyEvent
+        final boolean[] isDestroyFired = {false};
+        table.addHandler(event -> {
+            isDestroyFired[0] = true;
+        }, DestroyEvent.TYPE);
+
+        table.setDestroyOnUnload(true);
+        table.removeFromParent();
+        assertTrue(isDestroyFired[0]);
+    }
+
+    public void testJQueryEvents() throws Exception {
+        // given
+        MaterialDataTable<Person> table = attachTableWithOnLoad();
+
+        // when / then
+
         // Category Closed
         final boolean[] isCategoryClosedFired = {false};
         table.addCategoryClosedHandler((e, param1) -> {
@@ -228,10 +300,30 @@ public class TableBaseTest extends GWTTestCase {
             return true;
         });
         $(table).trigger(TableEvents.STRETCH, null);
-        assertTrue(isStretchFired[0]);
+        // Components Rendered
+        final boolean[] isCompRendered = {false};
+        table.addComponentsRenderedHandler(e -> {
+            isCompRendered[0] = true;
+            return true;
+        });
+        $(table).trigger(TableEvents.COMPONENTS_RENDERED, null);
+        assertTrue(isCompRendered[0]);
+        // Rendered
+        final boolean[] isRendered = {false};
+        table.addRenderedHandler(e -> {
+            isRendered[0] = true;
+            return true;
+        });
+        $(table).trigger(TableEvents.RENDERED, null);
+        assertTrue(isRendered[0]);
     }
 
-    public <T extends MaterialDataTable<Person>> void checkColumnsRows(T table) {
+    public void testColumnsRows() throws Exception {
+        // given
+        MaterialDataTable<Person> table = attachTableWithConstructor();
+        table.clearRows(true);
+        table.removeColumns();
+
         WidgetColumn<Person, MaterialImage> col1 = new WidgetColumn<Person, MaterialImage>() {
             @Override
             public MaterialImage getValue(Person object) {
@@ -247,7 +339,7 @@ public class TableBaseTest extends GWTTestCase {
             }
         };
         table.addColumn(col1);
-        assertEquals(table.getColumns().get(0), col1);
+        assertEquals(col1, table.getColumns().get(0));
 
         Column<Person, ?> col2 = new TextColumn<Person>() {
             @Override
@@ -261,8 +353,8 @@ public class TableBaseTest extends GWTTestCase {
             }
         };
         table.addColumn(col2, "First Name");
-        assertEquals(table.getColumns().get(1), col2);
-        assertEquals(col2.getName(), "First Name");
+        assertEquals(col2, table.getColumns().get(1));
+        assertEquals("First Name", col2.getName());
         assertTrue(col2.isSortable());
 
         Column<Person, ?> col3 = new TextColumn<Person>() {
@@ -277,8 +369,8 @@ public class TableBaseTest extends GWTTestCase {
             }
         };
         table.addColumn(col3, "Last Name");
-        assertEquals(table.getColumns().get(2), col3);
-        assertEquals(col3.getName(), "Last Name");
+        assertEquals(col3, table.getColumns().get(2));
+        assertEquals("Last Name", col3.getName());
         assertTrue(col2.isSortable());
 
         Column<Person, ?> col4 = new TextColumn<Person>() {
@@ -303,8 +395,8 @@ public class TableBaseTest extends GWTTestCase {
             }
         };
         table.addColumn(col4, "Phone");
-        assertEquals(table.getColumns().get(3), col4);
-        assertEquals(col4.getName(), "Phone");
+        assertEquals(col4, table.getColumns().get(3));
+        assertEquals("Phone", col4.getName());
         assertTrue(col4.isNumeric());
 
         for (int i = 0; i < 4; i++) {
@@ -321,8 +413,8 @@ public class TableBaseTest extends GWTTestCase {
                 }
             };
             table.addColumn(col, "Column " + index);
-            assertEquals(table.getColumns().get(3 + (i + 1)), col);
-            assertEquals(col.getName(), "Column " + index);
+            assertEquals(col, table.getColumns().get(3 + (i + 1)));
+            assertEquals("Column " + index, col.getName());
             assertTrue(col.isSortable());
         }
 
@@ -337,64 +429,33 @@ public class TableBaseTest extends GWTTestCase {
                 MaterialBadge badge = new MaterialBadge();
                 badge.setText("badge " + object.getId());
                 badge.setBackgroundColor(Color.BLUE);
-                badge.setLayoutPosition(Style.Position.RELATIVE);
                 return badge;
             }
         };
         table.addColumn(lastCol);
-        assertEquals(table.getColumns().get(8), lastCol);
+        assertEquals(lastCol, table.getColumns().get(8));
 
-        assertEquals(table.getColumns().size(), 9);
+        assertEquals(9, table.getColumns().size());
 
         table.setVisibleRange(0, 1000);
         Range range = table.getVisibleRange();
-        assertEquals(range.getStart(), 0);
-        assertEquals(range.getLength(), 1000);
+        assertEquals(0, range.getStart());
+        assertEquals(1000, range.getLength());
 
-        List<Person> people = getAllPerson();
         table.setRowData(0, people);
     }
 
-    public <T extends MaterialDataTable<Person>> void checkStructure(T table) {
-        final String TABLE_TITLE = "table title";
-        // Table Title
-        table.setTitle(TABLE_TITLE);
-        assertEquals(table.getTitle(), TABLE_TITLE);
-        TableScaffolding scaffolding = table.getScaffolding();
-        MaterialIcon tableIcon = table.getTableIcon();
-        assertEquals(tableIcon.getIconType(), IconType.VIEW_LIST);
-        assertTrue(scaffolding.getInfoPanel().getElement().hasClassName(TableCssName.INFO_PANEL));
-        assertTrue(scaffolding.getTable().getElement().hasClassName(TableCssName.TABLE));
-        assertTrue(scaffolding.getTableBody().getElement().hasClassName(TableCssName.TABLE_BODY));
-        assertTrue(scaffolding.getToolPanel().getElement().hasClassName(TableCssName.TOOL_PANEL));
-        // Stretch Icon
-        MaterialIcon stretchIcon = table.getStretchIcon();
-        assertEquals(stretchIcon.getIconType(), IconType.FULLSCREEN);
-        assertEquals(stretchIcon.getId(), "stretch");
-        // Column Menu Icon
-        MaterialIcon columnMenuIcon = table.getColumnMenuIcon();
-        assertEquals(columnMenuIcon.getIconType(), IconType.MORE_VERT);
-        assertEquals(columnMenuIcon.getId(), "columnToggle");
-        assertTrue(scaffolding.getTopPanel().getElement().hasClassName(TableCssName.TOP_PANEL));
-        // Dropdown Menu
-        MaterialDropDown dropDown = table.getMenu();
-        assertEquals(dropDown.getWidgetCount(), 9);
-        int index = 0;
-        for (Widget w : dropDown) {
-            assertTrue(w instanceof MaterialCheckBox);
-            MaterialCheckBox checkBox = (MaterialCheckBox) w;
-            assertEquals(table.getColumns().get(index).getName(), checkBox.getText());
-            index++;
-        }
-    }
+    public void testStretch() throws Exception {
+        // given
+        MaterialDataTable<Person> table = attachTableWithOnLoad();
 
-    public <T extends MaterialDataTable<Person>> void checkStretch(T table) {
+        // when / then
         table.stretch();
         assertTrue(table.getElement().hasClassName(TableCssName.STRETCH));
-        assertTrue(table.body().asElement().hasClassName(TableCssName.OVERFLOW_HIDDEN));
+        assertTrue(MaterialWidget.body().asElement().hasClassName(TableCssName.OVERFLOW_HIDDEN));
         table.stretch();
         assertFalse(table.getElement().hasClassName(TableCssName.STRETCH));
-        assertFalse(table.body().asElement().hasClassName(TableCssName.OVERFLOW_HIDDEN));
+        assertFalse(MaterialWidget.body().asElement().hasClassName(TableCssName.OVERFLOW_HIDDEN));
         // Return back to normal state
         table.stretch();
         // Stretch Event
@@ -407,12 +468,13 @@ public class TableBaseTest extends GWTTestCase {
         assertTrue(isStretchEventFired[0]);
     }
 
-    public <T extends MaterialDataTable<Person>> void checkDynamicColumn(T table) {
+    public void testDynamicColumn() throws Exception {
+        MaterialDataTable<Person> table = attachTableWithOnLoad();
+
         // Remove Column
-        final int COL_INDEX = 0;
-        table.removeColumn(COL_INDEX);
-        assertEquals(table.getColumns().size(), 8);
-        assertEquals(table.getColumnOffset(), COL_INDEX);
+        table.removeColumn(0);
+        assertEquals(2, table.getColumns().size());
+        assertEquals(0, table.getColumnOffset());
 
         // Insert Column
         Column<Person, ?> insertedCol = new TextColumn<Person>() {
@@ -427,20 +489,19 @@ public class TableBaseTest extends GWTTestCase {
             }
         };
         table.insertColumn(0, insertedCol, "insertedCol");
-        assertEquals(table.getColumns().get(0), insertedCol);
-        assertEquals(table.getColumns().size(), 9);
+        assertEquals(insertedCol, table.getColumns().get(0));
+        assertEquals(3, table.getColumns().size());
     }
 
-    public <T extends MaterialDataTable<Person>> void checkPager(T table) {
-        RootPanel.get().add(table);
+    public void testPager() throws Exception {
+        MaterialDataTable<Person> table = attachTableWithOnLoad();
 
         ListDataSource<Person> dataSource = new ListDataSource<>();
         List<Person> people = new ArrayList<>();
-        int rowIndex = 1;
-        for(int k = 1; k <= 5; k++){
-            // Generate 100 rows
-            for(int i = 1; i <= 3; i++, rowIndex++){
-                people.add(new Person(i, "http://joashpereira.com/templates/material_one_pager/img/avatar1.png", "Field " + rowIndex, "Field " + i,"Category " + k));
+        for(int k = 1; k <= 5; k++) {
+            // Generate 100 models
+            for(int i = 1; i <= 3; i++) {
+                people.add(new Person(i, "First Name", "Last Name ", "Field " + i,"Category " + k));
             }
         }
         dataSource.add(0, people);
@@ -452,25 +513,25 @@ public class TableBaseTest extends GWTTestCase {
         RootPanel.get().add(pager);
 
         // Expected by default : 5
-        assertEquals(pager.getLimit(), pager.getLimitOptions()[0]);
-        assertEquals(pager.getLimit(), 5);
+        assertEquals(pager.getLimitOptions()[0], pager.getLimit());
+        assertEquals(5, pager.getLimit());
         // Expected false (Excess) because 15 (totalRows) % 5 (limit) > 0 which returns false
         assertFalse(pager.isExcess());
 
         // Pager row limit per page is 10 and the total data is 15 so we assume that we have an excess of 5 rows.
         // Current Page : Expected 1
-        assertEquals(pager.getCurrentPage(), 1);
+        assertEquals(1, pager.getCurrentPage());
         // Total Rows : Expected 15
-        assertEquals(pager.getTotalRows(), 15);
+        assertEquals(15, pager.getTotalRows());
         // Set the limit to 10 to assume it will be excess
         pager.setLimit(10);
         // Limit : Expected 10
-        assertEquals(pager.getLimit(), 10);
+        assertEquals(10, pager.getLimit());
         // Excess : Expected true
         assertTrue(pager.isExcess());
 
         // Check Navigation
-        assertEquals(pager.getCurrentPage(), 1);
+        assertEquals(1, pager.getCurrentPage());
         // The isPrevious() will be false because the current is currently the first page.
         assertFalse(pager.isPrevious());
         pager.next();
@@ -478,20 +539,8 @@ public class TableBaseTest extends GWTTestCase {
         // Check the isNext() which will be expected to be false
         assertFalse(pager.isNext());
         assertTrue(pager.isLastPage());
-        assertEquals(pager.getCurrentPage(), 2);
+        assertEquals(2, pager.getCurrentPage());
         pager.previous();
-        assertEquals(pager.getCurrentPage(), 1);
-    }
-
-    protected List<Person> getAllPerson() {
-        int rowIndex = 0;
-        List<Person> people = new ArrayList<>();
-        for (int k = 1; k <= 3; k++) {
-            // Generate 100 rows
-            for (int i = 1; i <= 3; i++, rowIndex++) {
-                people.add(new Person(i, "http://joashpereira.com/templates/material_one_pager/img/avatar1.png", "Field " + rowIndex, "Field " + i, "No " + i, "Category " + k));
-            }
-        }
-        return people;
+        assertEquals(1, pager.getCurrentPage());
     }
 }
