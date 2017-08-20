@@ -30,9 +30,6 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ProvidesKey;
 import com.google.gwt.view.client.Range;
-import com.google.gwt.view.client.RangeChangeEvent;
-import com.google.gwt.view.client.RangeChangeEvent.Handler;
-import com.google.gwt.view.client.RowCountChangeEvent;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.data.component.CategoryComponent;
@@ -41,6 +38,11 @@ import gwt.material.design.client.data.component.Component;
 import gwt.material.design.client.data.component.ComponentFactory;
 import gwt.material.design.client.data.component.Components;
 import gwt.material.design.client.data.component.RowComponent;
+import gwt.material.design.client.data.events.DestroyEvent;
+import gwt.material.design.client.data.events.InsertColumnEvent;
+import gwt.material.design.client.data.events.RangeChangeEvent;
+import gwt.material.design.client.data.events.RemoveColumnEvent;
+import gwt.material.design.client.data.events.SetupEvent;
 import gwt.material.design.client.data.factory.CategoryComponentFactory;
 import gwt.material.design.client.data.factory.RowComponentFactory;
 import gwt.material.design.client.jquery.JQueryExtension;
@@ -84,7 +86,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     // Main
     protected final String id;
-    protected DataView<T> display;
+    protected DataDisplay display;
     protected DataSource<T> dataSource;
     protected Renderer<T> renderer;
     protected SortContext<T> sortContext;
@@ -124,12 +126,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected int leftFrozenColumns = -1;
     protected int rightFrozenColumns = -1;
 
-    private int rowCount;
     private int lastSelected;
     private boolean setup;
     private boolean loadMask;
     private boolean shiftDown;
-    private boolean isExact;
     private boolean useRowExpansion;
     private boolean useStickyHeader;
     private boolean useLoadOverlay;
@@ -475,7 +475,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
-    public void refreshView() {
+    public void refresh() {
         // Recheck the row height to ensure
         // the calculated row height is accurate.
         getCalculatedRowHeight();
@@ -572,14 +572,14 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
             // Setup the resize event handlers
             tableBody.on("resize." + id, e -> {
-                refreshView();
+                refresh();
                 return true;
             });
 
             // We will check the window resize just in case
             // it has updated the view size of the data view.
             $(window()).on("resize." + id, e -> {
-                refreshView();
+                refresh();
                 return true;
             });
 
@@ -632,6 +632,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                     sort(sortContext.getTableHeader(), column, columns.indexOf(column) + getColumnOffset(), false);
                 }
             }
+
+            SetupEvent.fire(this, scaffolding);
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "Problem setting up the DataView.", ex);
             throw ex;
@@ -647,11 +649,17 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         headers.clear();
         headerRow.clear();
 
-        rendering = false;
-
         container.off("." + id);
         tableBody.off("." + id);
         $(window()).off("." + id);
+
+        rendering = false;
+        setup = false;
+
+        // display control
+        display.removeJQueryHandlers();
+
+        DestroyEvent.fire(this);
     }
 
     /**
@@ -834,58 +842,24 @@ public abstract class AbstractDataView<T> implements DataView<T> {
      * Ensure that the cached data is consistent with the data size.
      */
     private void updateCachedData() {
-        int rangeStart = range.getStart();
-        int expectedLastIndex = Math.max(0, Math.min(range.getLength(), getRowCount() - rangeStart));
-        int lastIndex = getVisibleItemCount() - 1;
-        while (lastIndex >= expectedLastIndex) {
-            rows.remove(lastIndex);
-            lastIndex--;
-        }
+//        int rangeStart = range.getStart();
+//        int expectedLastIndex = Math.max(0, Math.min(range.getLength(), getRowCount() - rangeStart));
+//        int lastIndex = getVisibleItemCount() - 1;
+//        while (lastIndex >= expectedLastIndex) {
+//            rows.remove(lastIndex);
+//            lastIndex--;
+//        }
+        rows.clear();
+    }
+
+    @Override
+    public int getRowCount() {
+        return rows.size();
     }
 
     @Override
     public Range getVisibleRange() {
         return range;
-    }
-
-    @Override
-    public HandlerRegistration addRangeChangeHandler(Handler handler) {
-        return table.addHandler(handler, RangeChangeEvent.getType());
-    }
-
-    @Override
-    public HandlerRegistration addRowCountChangeHandler(RowCountChangeEvent.Handler handler) {
-        return table.addHandler(handler, RowCountChangeEvent.getType());
-    }
-
-    @Override
-    public boolean isRowCountExact() {
-        return isExact;
-    }
-
-    @Override
-    public int getRowCount() {
-        return isExact ? rows.size() : rowCount;
-    }
-
-    @Override
-    public void setRowCount(int count) {
-        rowCount = count;
-    }
-
-    @Override
-    public void setRowCount(int count, boolean isExact) {
-        if (count == getRowCount() && isExact == isRowCountExact()) {
-            return;
-        }
-        setRowCount(count);
-        this.isExact = isExact;
-
-        // Update the cached data.
-        updateCachedData();
-
-        // Fire the row count change event
-        container.trigger(TableEvents.ROW_COUNT_CHANGE, new Object[]{count, isExact});
     }
 
     @Override
@@ -954,7 +928,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
         // Update the pager and data source if the range changed
         if (pageStartChanged || pageSizeChanged || forceRangeChangeEvent) {
-            RangeChangeEvent.fire(display, getVisibleRange());
+            RangeChangeEvent.fire(this, getVisibleRange());
         }
     }
 
@@ -995,6 +969,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         if(setup) {
             renderColumn(column);
         }
+
+        InsertColumnEvent.fire(this, beforeIndex, column, header);
     }
 
     protected void updateSortContext(TableHeader th, Column<T, ?> column) {
@@ -1137,16 +1113,40 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     @Override
     public void removeColumn(int colIndex) {
+        removeColumn(colIndex, true);
+    }
+
+    public void removeColumn(int colIndex, boolean hardRemove) {
         int index = colIndex + getColumnOffset();
         headerRow.remove(index);
 
         for(RowComponent<T> row : getRows()) {
             row.getWidget().remove(index);
         }
-        columns.remove(colIndex);
 
         reindexColumns();
         refreshStickyHeaders();
+
+        if(hardRemove) {
+            columns.remove(colIndex);
+
+            RemoveColumnEvent.fire(this, colIndex);
+        }
+    }
+
+    @Override
+    public void removeColumns() {
+        if(!columns.isEmpty()) {
+            int size = columns.size() - 1;
+            for (int i = 0; i < size; i++) {
+                removeColumn(i, false);
+            }
+            columns.clear();
+
+            for (int i = 0; i < size; i++) {
+                RemoveColumnEvent.fire(this, i);
+            }
+        }
     }
 
     @Override
@@ -1953,28 +1953,28 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     @Override
     public void loaded(int startIndex, List<T> data) {
         setRowData(startIndex, data);
-        display.setLoadMask(false);
+        setLoadMask(false);
     }
 
     @Override
-    public Panel getContainer() {
-        return display.getContainer();
+    public Widget getContainer() {
+        return display.asWidget();
     }
 
     @Override
-    public String getViewId() {
+    public String getId() {
         return id;
     }
 
     @Override
-    public void setDisplay(DataView<T> display) {
+    public void setDisplay(DataDisplay display) {
         assert display != null : "Display cannot be null";
         this.display = display;
     }
 
     @Override
     public final void fireEvent(GwtEvent<?> event) {
-        table.fireEvent(event);
+        getContainer().fireEvent(event);
     }
 
     protected TableSubHeader bindCategoryEvents(TableSubHeader category) {

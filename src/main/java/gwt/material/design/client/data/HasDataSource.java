@@ -2,7 +2,7 @@
  * #%L
  * GwtMaterial
  * %%
- * Copyright (C) 2015 - 2016 GwtMaterialDesign
+ * Copyright (C) 2015 - 2017 GwtMaterialDesign
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,24 @@
  * limitations under the License.
  * #L%
  */
-package gwt.material.design.client.ui.table;
+package gwt.material.design.client.data;
 
-import gwt.material.design.client.data.events.SetupHandler;
+import java.util.List;
 
-/**
- * Fired when the {@link AbstractDataTable} has been setup & attached.
- *
- * @deprecated Use {@link MaterialDataTable#addSetupHandler(SetupHandler)}.
- */
-@Deprecated
-public interface LoadedCallback {
-    void onLoaded();
+public interface HasDataSource<T> {
+
+    /**
+     * Set a {@link DataSource} for data loading.
+     */
+    void setDataSource(DataSource<T> dataSource);
+
+    /**
+     * Get the configured data source.
+     */
+    DataSource<T> getDataSource();
+
+    /**
+     * Data views loader has loaded data for use.
+     */
+    void loaded(int startIndex, List<T> data);
 }

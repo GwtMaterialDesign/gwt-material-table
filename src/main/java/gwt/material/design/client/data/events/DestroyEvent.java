@@ -17,11 +17,26 @@
  * limitations under the License.
  * #L%
  */
-package gwt.material.design.client.data;
+package gwt.material.design.client.data.events;
 
-public interface HasDataView<T> {
+import com.google.gwt.event.shared.GwtEvent;
+import com.google.gwt.event.shared.HasHandlers;
 
-    void setDataView(DataView<T> dataView);
+public class DestroyEvent extends GwtEvent<DestroyHandler> {
 
-    DataView<T> getDataView();
+    public static final Type<DestroyHandler> TYPE = new Type<>();
+
+    public static void fire(HasHandlers source) {
+        source.fireEvent(new DestroyEvent());
+    }
+    
+    @Override
+    public Type<DestroyHandler> getAssociatedType() {
+        return TYPE;
+    }
+
+    @Override
+    protected void dispatch(DestroyHandler handler) {
+        handler.onDestroy(this);
+    }
 }

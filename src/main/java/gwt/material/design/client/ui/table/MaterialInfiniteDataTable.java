@@ -59,7 +59,7 @@ public class MaterialInfiniteDataTable<T> extends MaterialDataTable<T> {
     }
 
     public int getIndexOffset() {
-        return ((InfiniteDataView<T>)dataView).getIndexOffset();
+        return ((InfiniteDataView<T>) view).getIndexOffset();
     }
 
     /**
@@ -67,6 +67,6 @@ public class MaterialInfiniteDataTable<T> extends MaterialDataTable<T> {
      * This can be useful in removing and loading delays. Defaults to 10.
      */
     public void setIndexOffset(int indexOffset) {
-        ((InfiniteDataView<T>)dataView).setIndexOffset(indexOffset);
+        ((InfiniteDataView<T>) view).setIndexOffset(indexOffset);
     }
 }
