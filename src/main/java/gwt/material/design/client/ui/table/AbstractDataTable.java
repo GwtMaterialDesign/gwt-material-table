@@ -396,6 +396,11 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
+    public List<RowComponent<T>> getRows() {
+        return view.getRows();
+    }
+
+    @Override
     public final RowComponent<T> getRow(T model) {
         return view.getRow(model);
     }

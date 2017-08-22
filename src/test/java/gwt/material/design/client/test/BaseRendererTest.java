@@ -2,8 +2,6 @@ package gwt.material.design.client.test;
 
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.MaterialDataTableTestCase;
 import gwt.material.design.client.base.constants.StyleName;
 import gwt.material.design.client.base.constants.TableCssName;

@@ -88,13 +88,19 @@ public class MaterialDataTableTestCase extends GWTTestCase {
     }
 
     protected MaterialDataTable<Person> attachTableWithConstructor() throws Exception {
+        return attachTableWithConstructor(true);
+    }
+
+    protected MaterialDataTable<Person> attachTableWithConstructor(boolean includeData) throws Exception {
         // given
         MaterialDataTable<Person> table = createTable();
 
         // when
         try {
             addSampleColumns(table);
-            table.getView().setRowData(0, people);
+            if(includeData) {
+                table.setRowData(0, people);
+            }
 
         // then
         } catch (final AssertionError ae) {
@@ -108,6 +114,10 @@ public class MaterialDataTableTestCase extends GWTTestCase {
     }
 
     protected MaterialDataTable<Person> attachTableWithOnLoad() throws Exception {
+        return attachTableWithOnLoad(true);
+    }
+
+    protected MaterialDataTable<Person> attachTableWithOnLoad(boolean includeData) throws Exception {
         // given
         MaterialDataTable<Person> table = createTable();
 
@@ -115,7 +125,9 @@ public class MaterialDataTableTestCase extends GWTTestCase {
             // when
             try {
                 addSampleColumns(table);
-                table.setRowData(0, people);
+                if(includeData) {
+                    table.setRowData(0, people);
+                }
 
             // then
             } catch (final AssertionError ae) {
@@ -143,29 +155,28 @@ public class MaterialDataTableTestCase extends GWTTestCase {
             public TextAlign textAlign() {
                 return TextAlign.CENTER;
             }
-
             @Override
             public boolean numeric() {
                 return true;
             }
-
             @Override
             public String width() {
                 return "200px";
             }
-
             @Override
             public HideOn hideOn() {
                 return HideOn.HIDE_ON_MED;
             }
-
+            @Override
+            public boolean autoSort() {
+                return true;
+            }
             @Override
             public Map<StyleName, String> styleProperties() {
                 Map<StyleName, String> styleProps = new HashMap<>();
                 styleProps.put(StyleName.COLOR, "white");
                 return styleProps;
             }
-
             @Override
             public String getValue(Person object) {
                 return object.getFirstName();

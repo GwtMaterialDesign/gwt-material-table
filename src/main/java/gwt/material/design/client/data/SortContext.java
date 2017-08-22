@@ -64,7 +64,7 @@ public class SortContext<T> {
         this.tableHeader = tableHeader;
     }
 
-    protected TableHeader getTableHeader() {
+    public TableHeader getTableHeader() {
         return tableHeader;
     }
 
