@@ -87,6 +87,12 @@ public class MapDataSource<T> implements DataSource<T>, HasDataView<T> {
         }
     }
 
+    public void clear() {
+        if (dataMap != null) {
+            dataMap.clear();
+        }
+    }
+
     public boolean cacheData() {
         return true;
     }
