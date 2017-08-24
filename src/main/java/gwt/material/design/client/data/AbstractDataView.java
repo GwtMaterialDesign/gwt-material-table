@@ -26,7 +26,6 @@ import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ProvidesKey;
 import com.google.gwt.view.client.Range;
@@ -283,8 +282,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         // Make sure we are setup, if we aren't then store the rows
         // the rows will be attached upon setup.
         if(!setup) {
-            this.pendingRows.clear();
-            this.pendingRows.addAll(rows);
+            pendingRows.clear();
+            pendingRows.addAll(rows);
             return false; // early exit, not setup yet.
         }
         rendering = true;
@@ -450,7 +449,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         }
     }
 
-    protected void renderColumn(Column<T, ?> column) {
+    public void renderColumn(Column<T, ?> column) {
         int index = columns.indexOf(column) + getColumnOffset();
 
         TableHeader th = renderer.drawColumnHeader(column, column.getName(), index);
@@ -496,6 +495,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             renderer.copy(this.renderer);
         }
         this.renderer = renderer;
+    }
+
+    public Renderer<T> getRenderer() {
+        return renderer;
     }
 
     @Override
@@ -613,30 +616,34 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
             setup = true;
 
-            // We are setup, lets check the render tasks
-            if(height != null) {
-                setHeight(height);
-            }
-
-            setSelectionType(selectionType);
-
-            renderColumns();
-
-            if(!pendingRows.isEmpty()) {
-                renderRows(pendingRows);
-                pendingRows.clearComponents();
-
-                if(maybeApplyAutoSortColumn()) {
-                    // We have an auto sort column, sort the pending rows.
-                    Column<T, ?> column = sortContext.getSortColumn();
-                    sort(sortContext.getTableHeader(), column, columns.indexOf(column) + getColumnOffset(), false);
-                }
-            }
+            onSetup(scaffolding);
 
             SetupEvent.fire(this, scaffolding);
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "Problem setting up the DataView.", ex);
             throw ex;
+        }
+    }
+
+    protected void onSetup(TableScaffolding scaffolding) {
+        // We are setup, lets check the render tasks
+        if(height != null) {
+            setHeight(height);
+        }
+
+        setSelectionType(selectionType);
+
+        renderColumns();
+
+        if(!pendingRows.isEmpty()) {
+            renderRows(pendingRows);
+            pendingRows.clearComponents();
+
+            if(maybeApplyAutoSortColumn()) {
+                // We have an auto sort column, sort the pending rows.
+                Column<T, ?> column = sortContext.getSortColumn();
+                sort(sortContext.getTableHeader(), column, columns.indexOf(column) + getColumnOffset(), false);
+            }
         }
     }
 
@@ -1120,7 +1127,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         int index = colIndex + getColumnOffset();
         headerRow.remove(index);
 
-        for(RowComponent<T> row : getRows()) {
+        for(RowComponent<T> row : rows) {
             row.getWidget().remove(index);
         }
 
@@ -1200,7 +1207,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 }
 
                 // Rebuild the columns
-                for (RowComponent<T> row : getRows()) {
+                for (RowComponent<T> row : rows) {
                     row.getWidget().insert(renderer.drawSelectionCell(), 0);
                 }
                 reindexColumns();
@@ -1256,7 +1263,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected void reindexColumns() {
         int colMod = getColumnOffset();
 
-        for(RowComponent<T> row : getRows()) {
+        for(RowComponent<T> row : rows) {
             TableRow tableRow = row.getWidget();
             for(int i = colMod; i < tableRow.getWidgetCount(); i++) {
                 TableData td = tableRow.getColumn(i);
@@ -1277,6 +1284,11 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     @Override
     public boolean isSetup() {
         return setup;
+    }
+
+    @Override
+    public boolean isRendering() {
+        return rendering;
     }
 
     @Override
@@ -1527,8 +1539,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 if(setup) {
                     int index = columns.indexOf(autoSortColumn) + getColumnOffset();
                     updateSortContext(headers.get(index), autoSortColumn);
+                    return true;
                 }
-                return true;
             }
         }
         return false;
@@ -1547,6 +1559,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             }
         }
         return autoSortColumn;
+    }
+
+    public ComponentFactory<? extends CategoryComponent, String> getCategoryFactory() {
+        return categoryFactory;
     }
 
     protected RowComponent<T> buildRowComponent(T data) {
@@ -1917,6 +1933,11 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     @Override
     public void setUseCategories(boolean useCategories) {
+        if(this.useCategories && !useCategories) {
+            subheaderLib.unload();
+            categories.clear();
+            setRedrawCategories(true);
+        }
         this.useCategories = useCategories;
     }
 
@@ -2014,8 +2035,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         }
     }
 
-    protected List<RowComponent<T>> getRows() {
-        return rows;
+    public List<RowComponent<T>> getRows() {
+        return Collections.unmodifiableList(rows);
     }
 
     protected List<T> getData() {

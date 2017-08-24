@@ -78,12 +78,14 @@ public class Component<E extends Widget> {
     }
 
     public void addAll(List<Component<?>> children) {
-        if(this.children == null) {
-            this.children = new Components<>();
-        }
+        if(children != null) {
+            if (this.children == null) {
+                this.children = new Components<>();
+            }
 
-        for(Component<?> child : children) {
-            add(child);
+            for (Component<?> child : children) {
+                add(child);
+            }
         }
     }
 

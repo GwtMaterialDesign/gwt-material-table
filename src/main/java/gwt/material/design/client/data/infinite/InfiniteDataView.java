@@ -147,9 +147,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
     }
 
     @Override
-    public void setup(TableScaffolding scaffolding) throws Exception {
-        super.setup(scaffolding);
-
+    protected void onSetup(TableScaffolding scaffolding) {
         dynamicView = viewSize == DYNAMIC_VIEW;
         if(dynamicView) {
             setVisibleRange(0, getVisibleRowCapacity());
@@ -214,6 +212,8 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
 
         // Setup the scroll event handlers
         JQueryExtension.$(tableBody).scrollY(id, (e, scroll) ->  onVerticalScroll());
+
+        super.onSetup(scaffolding);
     }
 
     @Override

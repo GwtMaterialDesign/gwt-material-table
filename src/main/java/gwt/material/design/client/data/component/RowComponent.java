@@ -39,6 +39,7 @@ public class RowComponent<T> extends Component<TableRow> implements HasEnabled {
 
     public RowComponent(RowComponent<T> clone) {
         super(clone.getWidget(), clone.isRedraw());
+        addAll(clone.getChildren());
         data = clone.data;
         index = clone.index;
         categoryName = clone.categoryName;

@@ -22,6 +22,7 @@ package gwt.material.design.client.data;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.shared.HasHandlers;
 import com.google.gwt.view.client.Range;
+import gwt.material.design.client.data.component.Components;
 import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.client.data.factory.RowComponentFactory;
 
@@ -100,6 +101,11 @@ public interface HasRows<T> extends HasHandlers {
      * @param model a model with a valid <code>equals</code> method.
      */
     void updateRow(T model);
+
+    /**
+     * Get all data views {@link RowComponent}'s.
+     */
+    List<RowComponent<T>> getRows();
 
     /**
      * Get a row by its representing model.

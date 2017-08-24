@@ -95,6 +95,11 @@ public interface DataView<T> extends HasRows<T>, HasColumns<T>, HasDataSource<T>
     boolean isSetup();
 
     /**
+     * Is the data view rendering.
+     */
+    boolean isRendering();
+
+    /**
      * Get the visible item count of the data view.
      */
     int getVisibleItemCount();
