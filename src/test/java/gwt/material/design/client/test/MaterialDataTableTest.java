@@ -267,7 +267,9 @@ public class MaterialDataTableTest extends MaterialDataTableTestCase {
             isRowSelectFired[0] = true;
             return true;
         });
-        $(table).trigger(TableEvents.ROW_SELECT, null);
+        $(table).trigger(TableEvents.ROW_SELECT, new Object[] {
+            table.getRow(0), table.getRow(0).getWidget().getElement(), true
+        });
         assertTrue(isRowSelectFired[0]);
         // Row Short Press
         final boolean[] isRowShortPressFired = {false};
@@ -283,7 +285,9 @@ public class MaterialDataTableTest extends MaterialDataTableTestCase {
             isSelectAllFired[0] = true;
             return true;
         });
-        $(table).trigger(TableEvents.SELECT_ALL, null);
+        $(table).trigger(TableEvents.SELECT_ALL, new Object[] {
+            table.getRows(), new ArrayList<>(), true
+        });
         assertTrue(isSelectAllFired[0]);
         // Sort Column
         final boolean[] isSortColumnFired = {false};

@@ -2,6 +2,7 @@ package gwt.material.design.client.test;
 
 import com.google.gwt.user.client.ui.RootPanel;
 import gwt.material.design.client.MaterialDataTableTestCase;
+import gwt.material.design.client.SortHelper;
 import gwt.material.design.client.data.AbstractDataView;
 import gwt.material.design.client.data.BaseRenderer;
 import gwt.material.design.client.data.DataView;
@@ -149,12 +150,17 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
         // given
         MaterialDataTable<Person> table = attachTableWithConstructor();
         DataView<Person> dataView = table.getView();
+        Components<RowComponent<Person>> beforeRows = new Components<>(dataView.getRows(), RowComponent::new);
 
         // when
-        table.sort(1);
+        table.sort(1, SortDir.ASC);
+        Components<RowComponent<Person>> afterRows = new Components<>(dataView.getRows(), RowComponent::new);
 
         // then
-
+        SortContext<Person> sortContext = dataView.getSortContext();
+        assertEquals(SortDir.ASC, sortContext.getSortDir());
+        assertNotSame(beforeRows, afterRows);
+        assertTrue(SortHelper.isReversed(beforeRows, afterRows));
     }
 
     public void testAutoSortColumn() throws Exception {

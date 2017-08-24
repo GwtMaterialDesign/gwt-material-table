@@ -572,30 +572,34 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
             setup = true;
 
-            // We are setup, lets check the render tasks
-            if(height != null) {
-                setHeight(height);
-            }
-
-            setSelectionType(selectionType);
-
-            renderColumns();
-
-            if(!pendingRows.isEmpty()) {
-                renderRows(pendingRows);
-                pendingRows.clearComponents();
-
-                if(maybeApplyAutoSortColumn()) {
-                    // We have an auto sort column, sort the pending rows.
-                    Column<T, ?> column = sortContext.getSortColumn();
-                    sort(sortContext.getTableHeader(), column, columns.indexOf(column) + getColumnOffset(), false);
-                }
-            }
+            onSetup(scaffolding);
 
             SetupEvent.fire(this, scaffolding);
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "Problem setting up the DataView.", ex);
             throw ex;
+        }
+    }
+
+    protected void onSetup(TableScaffolding scaffolding) {
+        // We are setup, lets check the render tasks
+        if(height != null) {
+            setHeight(height);
+        }
+
+        setSelectionType(selectionType);
+
+        renderColumns();
+
+        if(!pendingRows.isEmpty()) {
+            renderRows(pendingRows);
+            pendingRows.clearComponents();
+
+            if(maybeApplyAutoSortColumn()) {
+                // We have an auto sort column, sort the pending rows.
+                Column<T, ?> column = sortContext.getSortColumn();
+                sort(sortContext.getTableHeader(), column, columns.indexOf(column) + getColumnOffset(), false);
+            }
         }
     }
 
