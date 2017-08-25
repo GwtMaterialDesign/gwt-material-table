@@ -214,39 +214,38 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             // When the last component has been rendered we
             // will set the rendering flag to false.
             // This can be improved later.
-            Scheduler.get().scheduleDeferred(() -> {
-                Component<?> component = components.get(components.size() - 1);
-                Widget componentWidget = component.getWidget();
-                AttachEvent.Handler handler = event -> {
-                    // Recheck the row height to ensure
-                    // the calculated row height is accurate.
-                    getCalculatedRowHeight();
+            Component<?> component = components.get(components.size() - 1);
+            Widget componentWidget = component.getWidget();
+            AttachEvent.Handler handler = event -> {
+                // Recheck the row height to ensure
+                // the calculated row height is accurate.
+                getCalculatedRowHeight();
 
-                    // Fixes an issue with heights updating too early.
-                    // Also ensure the cell widths are updated.
-                    subheaderLib.recalculate(true);
+                // Fixes an issue with heights updating too early.
+                // Also ensure the cell widths are updated.
+                subheaderLib.recalculate(true);
 
-                    rendering = false;
+                // Fixes an issue with heights updating too early.
+                subheaderLib.updateHeights();
 
-                    if(attachHandler != null) {
-                        attachHandler.removeHandler();
-                    }
-                    container.trigger(TableEvents.COMPONENTS_RENDERED, null);
+                rendering = false;
 
-                    if(pendingRenderEvent) {
-                        container.trigger(TableEvents.RENDERED, null);
-                        pendingRenderEvent = false;
-                    }
-
-                    // Fixes an issue with heights updating too early.
-                    subheaderLib.updateHeights();
-                };
-                if (componentWidget == null || componentWidget.isAttached()) {
-                    handler.onAttachOrDetach(null);
-                } else {
-                    attachHandler = componentWidget.addAttachHandler(handler);
+                if(attachHandler != null) {
+                    attachHandler.removeHandler();
                 }
-            });
+
+                if(pendingRenderEvent) {
+                    container.trigger(TableEvents.RENDERED, null);
+                    pendingRenderEvent = false;
+                }
+
+                container.trigger(TableEvents.COMPONENTS_RENDERED, null);
+            };
+            if (componentWidget == null || componentWidget.isAttached()) {
+                handler.onAttachOrDetach(null);
+            } else {
+                attachHandler = componentWidget.addAttachHandler(handler);
+            }
         } else {
             rendering = false;
         }
@@ -445,7 +444,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         if (th != null) {
             if (column.isSortable()) {
                 th.$this().on("click", e -> {
-                    sort(th, column, index);
+                    sort(rows, th, column, index);
                     return true;
                 });
                 th.addStyleName(TableCssName.SORTABLE);
@@ -598,13 +597,18 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         }
 
         if(!pendingRows.isEmpty()) {
-            renderRows(pendingRows);
-            pendingRows.clearComponents();
-
+            Components<RowComponent<T>> sortedRows = null;
             if(maybeApplyAutoSortColumn()) {
                 // We have an auto sort column, sort the pending rows.
                 Column<T, ?> column = sortContext.getSortColumn();
-                sort(sortContext.getTableHeader(), column, columns.indexOf(column) + getColumnOffset(), false);
+                sortedRows = sort(pendingRows, sortContext.getTableHeader(), column, columns.indexOf(column) + getColumnOffset(), false);
+            }
+
+            if(sortedRows == null) {
+                renderRows(pendingRows);
+                pendingRows.clearComponents();
+            } else {
+                renderRows(sortedRows);
             }
         }
     }
@@ -954,13 +958,12 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             if(sortColumn != column) {
                 sortContext.setSortColumn(column);
                 sortContext.setTableHeader(th);
-            } else if(dir == null) {
+            } else if(dir == null && sortContext.isSorted()) {
                 sortContext.reverse();
             }
-
-            if(dir != null) {
-                sortContext.setSortDir(dir);
-            }
+        }
+        if(dir != null) {
+            sortContext.setSortDir(dir);
         }
     }
 
@@ -984,38 +987,45 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         if(column != null) {
             int index = columns.indexOf(column) + getColumnOffset();
             TableHeader th = headers.get(index);
-            sort(th, column, index, dir);
+            sort(rows, th, column, index, dir);
         } else {
             throw new RuntimeException("Cannot sort on a null column.");
         }
     }
 
-    protected void sort(TableHeader th, Column<T, ?> column, int index) {
-        sort(th, column, index, dataSource == null || !dataSource.useRemoteSort());
+    protected Components<RowComponent<T>> sort(Components<RowComponent<T>> rows, TableHeader th, Column<T, ?> column,
+                                               int index) {
+        return sort(rows, th, column, index, dataSource == null || !dataSource.useRemoteSort());
     }
 
-    protected void sort(TableHeader th, Column<T, ?> column, int index, SortDir dir) {
-        sort(th, column, index, dir, dataSource == null || !dataSource.useRemoteSort());
+    protected Components<RowComponent<T>> sort(Components<RowComponent<T>> rows, TableHeader th, Column<T, ?> column,
+                                               int index, SortDir dir) {
+        return sort(rows, th, column, index, dir, dataSource == null || !dataSource.useRemoteSort());
     }
 
-    protected void sort(TableHeader th, Column<T, ?> column, int index, boolean renderRows) {
-        sort(th, column, index, null, renderRows);
+    protected Components<RowComponent<T>> sort(Components<RowComponent<T>> rows, TableHeader th, Column<T, ?> column,
+                                               int index, boolean renderRows) {
+        return sort(rows, th, column, index, null, renderRows);
     }
 
-    protected void sort(TableHeader th, Column<T, ?> column, int index, SortDir dir, boolean renderRows) {
-        SortContext<T> oldSortContext = this.sortContext;
+    protected Components<RowComponent<T>> sort(Components<RowComponent<T>> rows, TableHeader th, Column<T, ?> column,
+                                               int index, SortDir dir, boolean renderRows) {
+        SortContext<T> oldSortContext = new SortContext<>(this.sortContext);
         updateSortContext(th, column, dir);
 
-        Components<RowComponent<T>> rows = new Components<>(this.rows, RowComponent::new);
-        if(doSort(sortContext, rows)) {
+        Components<RowComponent<T>> clonedRows = new Components<>(rows, RowComponent::new);
+        if(doSort(sortContext, clonedRows)) {
             th.addStyleName(TableCssName.SELECTED);
 
             // Draw and apply the sort icon.
             renderer.drawSortIcon(th, sortContext);
 
+            // No longer a fresh sort
+            sortContext.setSorted(true);
+
             if (renderRows) {
                 // Render the new sort order.
-                renderRows(rows);
+                renderRows(clonedRows);
             }
 
             container.trigger(TableEvents.SORT_COLUMN, new Object[]{sortContext, index});
@@ -1023,6 +1033,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             // revert the sort context
             sortContext = oldSortContext;
         }
+
+        return clonedRows;
     }
 
     /**
@@ -1077,7 +1089,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 rows.sort(new DataSort<>(new Comparator<RowComponent<T>>() {
                     @Override
                     public int compare(RowComponent<T> o1, RowComponent<T> o2) {
-                        return Integer.compare(o1.getIndex(), o2.getIndex());
+                        return o1.getData().toString().compareToIgnoreCase(o2.getData().toString());
                     }
                 }, sortContext.getSortDir()));
             } else {
@@ -1486,14 +1498,14 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
         pendingRenderEvent = true;
 
-        // Render the new rows normally
-        renderRows(rows);
-
         if(maybeApplyAutoSortColumn()) {
             // We have an auto sort column, sort the new rows.
             Column<T, ?> column = sortContext.getSortColumn();
-            sort(sortContext.getTableHeader(), column, columns.indexOf(column) + getColumnOffset());
+            rows = sort(rows, sortContext.getTableHeader(), column, columns.indexOf(column) + getColumnOffset(), false);
         }
+
+        // Render the new rows normally
+        renderRows(rows);
     }
 
     /**
@@ -1910,7 +1922,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     @Override
     public void setUseCategories(boolean useCategories) {
         if(this.useCategories && !useCategories) {
-            subheaderLib.unload();
+            //subheaderLib.unload();
             categories.clear();
             setRedrawCategories(true);
         }

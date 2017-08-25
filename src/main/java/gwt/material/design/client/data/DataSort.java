@@ -26,35 +26,11 @@ import java.util.Comparator;
  */
 public class DataSort<M> implements Comparator<M> {
     private SortDir direction;
-    private ValueProvider<? super M, ?> property;
     private final Comparator<? super M> comparator;
 
     public DataSort(Comparator<? super M> itemComparator, SortDir direction) {
         this.comparator = itemComparator;
         this.direction = direction;
-    }
-
-    public <V> DataSort(final ValueProvider<? super M, V> property, final Comparator<? super V> itemComparator, SortDir direction) {
-        this.property = property;
-        this.direction = direction;
-        this.comparator = (o1, o2) -> itemComparator.compare(property.getValue(o1), property.getValue(o2));
-    }
-
-    public <V extends Comparable<V>> DataSort(final ValueProvider<? super M, V> property, SortDir direction) {
-        this.property = property;
-        this.direction = direction;
-        this.comparator = (o1, o2) -> {
-            V v1 = property.getValue(o1);
-            V v2 = property.getValue(o2);
-
-            if ((v1 == null & v2 != null) || (v1 != null && v2 == null)) {
-                return v1 == null ? -1 : 1;
-            }
-            if (v1 == null & v2 == null) {
-                return 0;
-            }
-            return v1.compareTo(v2);
-        };
     }
 
     @Override
@@ -68,14 +44,6 @@ public class DataSort<M> implements Comparator<M> {
      */
     public SortDir getDirection() {
         return direction;
-    }
-
-    public String getPath() {
-        return property != null ? property.getPath() : "";
-    }
-
-    public ValueProvider<? super M, ?> getProperty() {
-        return property;
     }
 
     /**

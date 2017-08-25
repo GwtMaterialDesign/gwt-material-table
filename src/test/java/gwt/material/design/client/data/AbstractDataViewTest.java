@@ -74,11 +74,15 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
         table.setRowData(0, people);
 
+        table.addRenderedHandler(e -> {
+            assertFalse(dataView.isRendering());
+            return true;
+        });
+
         // when
         RootPanel.get().add(table);
 
         // then
-        assertFalse(dataView.isRendering());
         checkRowComponents(table, people.size());
     }
 
@@ -111,7 +115,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
         Components<Component<?>> components = generateRowComponents(dataView);
 
         table.addComponentsRenderedHandler(event -> {
-            checkRowComponents(table, people.size());
+            checkNonIndexRowComponents(table, people.size());
             return true;
         });
 
@@ -133,7 +137,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
             assertFalse(dataView.isRendering());
             assertEquals(0, dataView.getRowCount());
             assertEquals(0, dataView.getVisibleItemCount());
-            assertEquals(2, table.getScaffolding().getTableBody().getElement().getChildCount());
+            assertEquals(2, dataView.tbody.getWidgetCount());
             return true;
         });
 
@@ -149,11 +153,11 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
         MaterialDataTable<Person> table = attachTableWithConstructor(false);
         DataView<Person> dataView = table.getView();
 
-        table.addComponentsRenderedHandler(event -> {
+        table.addRenderedHandler(event -> {
             checkRowComponents(table, people.size());
 
-            table.removeComponentsRenderedHandlers();
-            table.addComponentsRenderedHandler(event1 -> {
+            table.removeRenderedHandlers();
+            table.addRenderedHandler(event1 -> {
                 checkRowComponents(table, 9);
                 return true;
             });
@@ -167,7 +171,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
         // then
         assertFalse(dataView.isRedraw());
-        assertTrue(dataView.isRendering());
+        assertFalse(dataView.isRendering());
     }
 
     public void testRenderColumn() throws Exception {
@@ -257,6 +261,25 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
         MaterialDataTable<Person> table = attachTableWithConstructor();
         AbstractDataView<Person> dataView = (AbstractDataView<Person>) table.getView();
 
+        Column<Person, ?> column = dataView.getColumns().get(1);
+        TableHeader th = dataView.getHeaders().get(1);
+
+        // when
+        dataView.updateSortContext(th, column);
+
+        // then
+        SortContext<Person> sortContext = dataView.getSortContext();
+        assertNotNull(sortContext);
+        assertEquals(column, sortContext.getSortColumn());
+        assertEquals(th, sortContext.getTableHeader());
+        assertEquals(SortDir.ASC, sortContext.getSortDir());
+    }
+
+    public void testUpdateSortContextOnAutoSortColumn() throws Exception {
+        // given
+        MaterialDataTable<Person> table = attachTableWithConstructor();
+        AbstractDataView<Person> dataView = (AbstractDataView<Person>) table.getView();
+
         Column<Person, ?> column = dataView.getColumns().get(0);
         TableHeader th = dataView.getHeaders().get(0);
 
@@ -268,7 +291,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
         assertNotNull(sortContext);
         assertEquals(column, sortContext.getSortColumn());
         assertEquals(th, sortContext.getTableHeader());
-        assertEquals(SortDir.ASC, sortContext.getSortDir());
+        assertEquals(SortDir.DESC, sortContext.getSortDir());
     }
 
     public void testUpdateSortContextWithDir() throws Exception {
@@ -309,18 +332,18 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
         sorted[0] = false;
         assertEquals(SortDir.DESC, sortContext.getSortDir());
 
-        Components<RowComponent<Person>> ascRows = new Components<>(dataView.getRows(), RowComponent::new);
+        Components<RowComponent<Person>> descRows = new Components<>(dataView.getRows(), RowComponent::new);
 
         table.sort(1, SortDir.ASC);
         sortContext = dataView.getSortContext();
         assertTrue(sorted[0]);
         assertEquals(SortDir.ASC, sortContext.getSortDir());
 
-        Components<RowComponent<Person>> descRows = new Components<>(dataView.getRows(), RowComponent::new);
+        Components<RowComponent<Person>> ascRows = new Components<>(dataView.getRows(), RowComponent::new);
 
         // then
-        assertTrue(SortHelper.isNotSame(beforeRows, ascRows));
-        assertTrue(SortHelper.isNotSame(ascRows, descRows));
+        assertTrue(SortHelper.isNotSame(beforeRows, descRows));
+        assertTrue(SortHelper.isNotSame(descRows, ascRows));
     }
 
     public void testSortColumnByColumn() throws Exception {
@@ -344,41 +367,62 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
         sorted[0] = false;
         assertEquals(SortDir.DESC, sortContext.getSortDir());
 
-        Components<RowComponent<Person>> ascRows = new Components<>(dataView.getRows(), RowComponent::new);
+        Components<RowComponent<Person>> descRows = new Components<>(dataView.getRows(), RowComponent::new);
 
         table.sort(column, SortDir.ASC);
         sortContext = dataView.getSortContext();
         assertTrue(sorted[0]);
         assertEquals(SortDir.ASC, sortContext.getSortDir());
 
-        Components<RowComponent<Person>> descRows = new Components<>(dataView.getRows(), RowComponent::new);
+        Components<RowComponent<Person>> ascRows = new Components<>(dataView.getRows(), RowComponent::new);
 
         // then
-        assertTrue(SortHelper.isNotSame(beforeRows, ascRows));
-        assertTrue(SortHelper.isNotSame(ascRows, descRows));
+        assertTrue(SortHelper.isNotSame(beforeRows, descRows));
+        assertTrue(SortHelper.isNotSame(descRows, ascRows));
     }
 
-    public void testAutoSortColumn() throws Exception {
+    public void testAutoSortColumnBeforeAttached() throws Exception {
         // given
         MaterialDataTable<Person> table = createTable();
         DataView<Person> dataView = table.getView();
-        RootPanel.get().add(table);
-
-        table.addComponentsRenderedHandler(event -> {
-            // First column is autoSort'ing
-            TableHeader th = dataView.getHeaders().get(0);
-            SortContext<Person> sortContext = dataView.getSortContext();
-            assertEquals(SortDir.DESC, sortContext.getSortDir());
-            assertEquals(th, sortContext.getTableHeader());
-            return true;
-        });
+        addSampleColumns(table);
 
         // when
         table.setRowData(0, people);
 
+        table.addRenderedHandler(event -> {
+            // First column is autoSort'ing
+            checkColumnSort(dataView, 0);
+            return true;
+        });
+
         // then
+        RootPanel.get().add(table);
+
         assertFalse(dataView.isRedraw());
-        assertTrue(dataView.isRendering());
+        assertFalse(dataView.isRendering());
+    }
+
+    public void testAutoSortColumnAfterAttached() throws Exception {
+        // given
+        MaterialDataTable<Person> table = createTable();
+        DataView<Person> dataView = table.getView();
+        addSampleColumns(table);
+
+        // when
+        RootPanel.get().add(table);
+
+        // then
+        table.addRenderedHandler(event -> {
+            // First column is autoSort'ing
+            checkColumnSort(dataView, 0);
+            return true;
+        });
+
+        table.setRowData(0, people);
+
+        assertFalse(dataView.isRedraw());
+        assertFalse(dataView.isRendering());
     }
 
     public void testSetRendererBeforeAttached() {
@@ -852,22 +896,37 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
     public Components<Component<?>> generateCategoryComponents(AbstractDataView<Person> dataView) {
         Components<Component<?>> components = new Components<>();
         for(Person person : people) {
-            components.add(dataView.getCategoryFactory().generate(dataView, person.getDataCategory()));
+            CategoryComponent category = dataView.getCategoryFactory().generate(dataView, person.getDataCategory());
+            if(!components.contains(category)) {
+                components.add(category);
+            }
         }
         return components;
     }
 
     public void checkRowComponents(MaterialDataTable<Person> table, int size) {
-        DataView<Person> dataView = table.getView();
+        AbstractDataView<Person> dataView = (AbstractDataView<Person>)table.getView();
         assertFalse(dataView.isRendering());
         assertEquals(size, dataView.getRowCount());
         assertEquals(size, dataView.getVisibleItemCount());
-        assertEquals(size, table.getScaffolding().getTableBody().getElement().getChildCount());
+        assertEquals(size, dataView.tbody.getWidgetCount());
         int index = 0;
         for(RowComponent<Person> rowComponent : dataView.getRows()) {
             assertTrue(rowComponent.getWidget().isVisible());
             assertEquals(index, rowComponent.getIndex());
             index++;
+        }
+    }
+
+    public void checkNonIndexRowComponents(MaterialDataTable<Person> table, int size) {
+        AbstractDataView<Person> dataView = (AbstractDataView<Person>)table.getView();
+        assertFalse(dataView.isRendering());
+        assertEquals(size, dataView.getRowCount());
+        assertEquals(size, dataView.getVisibleItemCount());
+        assertEquals(size, dataView.tbody.getWidgetCount());
+
+        for(RowComponent<Person> rowComponent : dataView.getRows()) {
+            assertTrue(rowComponent.getWidget().isVisible());
         }
     }
 
@@ -882,6 +941,14 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
                 throw new AssertionError("Issue testing selection column.", ex);
             }
         }
+    }
+
+    public void checkColumnSort(DataView<Person> dataView, int index) {
+        TableHeader th = dataView.getHeaders().get(index);
+        SortContext<Person> sortContext = dataView.getSortContext();
+        assertNotNull(sortContext);
+        assertEquals(SortDir.ASC, sortContext.getSortDir());
+        assertEquals(th, sortContext.getTableHeader());
     }
 
     public Map<Column<Person, ?>, Integer> getColumnIndexes(List<Column<Person, ?>> columns) {

@@ -52,7 +52,9 @@ public class MapDataSource<T> implements DataSource<T>, HasDataView<T> {
                     flatData.addAll(dataMap.get(category.getName()));
                 }
             } else {
-                flatData.addAll(dataMap.get(AbstractDataView.ORPHAN_PATTERN));
+                for(Map.Entry<String, List<T>> entry : dataMap.entrySet()) {
+                    flatData.addAll(entry.getValue());
+                }
             }
 
             List<T> data = new ArrayList<>();
