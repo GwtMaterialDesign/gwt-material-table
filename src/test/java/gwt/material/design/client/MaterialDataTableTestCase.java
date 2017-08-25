@@ -27,10 +27,11 @@ import gwt.material.design.client.base.constants.StyleName;
 import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.HideOn;
 import gwt.material.design.client.constants.TextAlign;
+import gwt.material.design.client.data.component.Components;
+import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.client.factory.CustomCategoryFactory;
 import gwt.material.design.client.factory.PersonRowFactory;
 import gwt.material.design.client.model.Person;
-import gwt.material.design.client.renderer.CustomRenderer;
 import gwt.material.design.client.resources.MaterialResources;
 import gwt.material.design.client.resources.MaterialTableBundle;
 import gwt.material.design.client.resources.WithJQueryResources;
@@ -38,15 +39,19 @@ import gwt.material.design.client.ui.MaterialBadge;
 import gwt.material.design.client.ui.table.MaterialDataTable;
 import gwt.material.design.client.ui.table.cell.TextColumn;
 import gwt.material.design.client.ui.table.cell.WidgetColumn;
+import gwt.material.design.jquery.client.api.JQueryElement;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import static gwt.material.design.jquery.client.api.JQuery.$;
 
 public class MaterialDataTableTestCase extends GWTTestCase {
+
+    private static final Logger logger = Logger.getLogger(MaterialDataTableTestCase.class.getName());
 
     protected static final List<Person> people = new ArrayList<>();
     static {
@@ -143,7 +148,6 @@ public class MaterialDataTableTestCase extends GWTTestCase {
         MaterialDataTable<Person> table = new MaterialDataTable<>();
         table.getView().setRowFactory(new PersonRowFactory());
         table.getView().setCategoryFactory(new CustomCategoryFactory());
-        table.getView().setRenderer(new CustomRenderer<>());
         return table;
     }
 
@@ -202,5 +206,18 @@ public class MaterialDataTableTestCase extends GWTTestCase {
                 return badge;
             }
         });
+    }
+
+    public static void assertValidJQueryElement(JQueryElement element) {
+        assertNotNull(element);
+        assertTrue(element.get().length > 0);
+    }
+
+    public static <T> void printRows(Components<RowComponent<T>> rowComponents) {
+        String msg = "[";
+        for(RowComponent<T> row : rowComponents) {
+            msg += row.getData().toString() + ", ";
+        }
+        logger.severe(msg + "]");
     }
 }

@@ -371,7 +371,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 row = renderer.drawRow(this, rowComponent, getValueKey(data), columns, redraw);
 
                 if(row != null) {
-                    if(category != null){
+                    if(category != null) {
                         if(categories.size() > 1) {
                             int categoryIndex = 0/*category.getCurrentIndex()*/;
                             //if(categoryIndex == -1) {
@@ -591,6 +591,12 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
         renderColumns();
 
+        for(CategoryComponent category : categories) {
+            if(!category.isRendered()) {
+                renderCategory(category);
+            }
+        }
+
         if(!pendingRows.isEmpty()) {
             renderRows(pendingRows);
             pendingRows.clearComponents();
@@ -769,7 +775,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected void setupStickyHeader() {
         if($table != null && display != null) {
             $table.stickyTableHeaders(StickyTableOptions.create(
-                    $(".table-body", getContainer())));
+                $(".table-body", getContainer())));
         }
     }
 
@@ -851,7 +857,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         final boolean pageStartChanged = (pageStart != start);
         if (pageStartChanged) {
             // Trim the data if we aren't clearing it.
-            if (!clearData) {
+            /*if (!clearData) {
                 if (start > pageStart) {
                     int increase = start - pageStart;
                     if (getVisibleItemCount() > increase) {
@@ -869,7 +875,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                         }
                     }
                 }
-            }
+            }*/
 
             // Update the range start
             this.range = new Range(start, this.range.getLength());
@@ -1067,6 +1073,13 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         } else {
             if (comparator != null) {
                 rows.sort(new DataSort<>(comparator, sortContext.getSortDir()));
+            } else if(sortContext != null) {
+                rows.sort(new DataSort<>(new Comparator<RowComponent<T>>() {
+                    @Override
+                    public int compare(RowComponent<T> o1, RowComponent<T> o2) {
+                        return Integer.compare(o1.getIndex(), o2.getIndex());
+                    }
+                }, sortContext.getSortDir()));
             } else {
                 return false;
             }
@@ -1191,7 +1204,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 JQueryElement input = $("input", th);
 
                 boolean marked = Js.isTrue(input.prop("checked")) ||
-                        Js.isTrue(input.prop("indeterminate"));
+                                 Js.isTrue(input.prop("indeterminate"));
 
                 selectAllRows(!marked || hasDeselectedRows(true));
                 return false;
@@ -1206,12 +1219,14 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         tableBody.off("keydown");
         tableBody.keydown(e -> {
             shiftDown = e.isShiftKey();
+            logger.severe("keydown: " + shiftDown);
             return true;
         });
 
         tableBody.off("keyup");
         tableBody.keyup(e -> {
             shiftDown = e.isShiftKey();
+            logger.severe("keyup: " + shiftDown);
             return true;
         });
     }
@@ -1619,13 +1634,19 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             categories.add(category);
 
             if(setup && isUseCategories()) {
-                // Render the category component
-                renderComponent(category);
+                renderCategory(category);
+            }
+        }
+    }
 
-                if(subheaderLib != null) {
-                    subheaderLib.detect();
-                    subheaderLib.recalculate(true);
-                }
+    protected void renderCategory(CategoryComponent category) {
+        if(category != null) {
+            // Render the category component
+            renderComponent(category);
+
+            if (subheaderLib != null) {
+                subheaderLib.detect();
+                subheaderLib.recalculate(true);
             }
         }
     }
@@ -2164,5 +2185,9 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     @Override
     public String getHeight() {
         return height;
+    }
+
+    public boolean isShiftDown() {
+        return shiftDown;
     }
 }

@@ -1,4 +1,4 @@
-package gwt.material.design.client.test;
+package gwt.material.design.client.data;
 
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.dom.client.Style;
@@ -8,9 +8,6 @@ import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.constants.WavesType;
-import gwt.material.design.client.data.AbstractDataView;
-import gwt.material.design.client.data.BaseRenderer;
-import gwt.material.design.client.data.SelectionType;
 import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.client.model.Person;
