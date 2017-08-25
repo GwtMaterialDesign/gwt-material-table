@@ -19,6 +19,7 @@
  */
 package gwt.material.design.client.ui.table;
 
+import com.google.gwt.dom.client.Element;
 import gwt.material.design.client.ui.table.events.RowExpansion;
 import gwt.material.design.jquery.client.api.Functions;
 import gwt.material.design.jquery.client.api.Functions.EventFunc1;
@@ -27,7 +28,6 @@ import gwt.material.design.jquery.client.api.Functions.EventFunc3;
 import gwt.material.design.jquery.client.api.JQueryElement;
 import gwt.material.design.jquery.client.api.MouseEvent;
 import gwt.material.design.client.data.SortContext;
-import gwt.material.design.jscore.client.api.core.Element;
 
 import java.util.List;
 

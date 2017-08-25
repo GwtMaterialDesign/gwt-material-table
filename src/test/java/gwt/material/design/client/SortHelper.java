@@ -11,19 +11,6 @@ public class SortHelper {
     private static final Logger logger = Logger.getLogger(SortHelper.class.getName());
 
     public static boolean isReversed(List<RowComponent<Person>> targetList, List<RowComponent<Person>> checkList) {
-        logger.severe(targetList.toString());
-        String msg = "[";
-        for(RowComponent<Person> row : targetList) {
-            msg = msg + row.getData().getId() + ", ";
-        }
-        logger.severe(msg + "]");
-
-        msg = "[";
-        for(RowComponent<Person> row : checkList) {
-            msg = msg + row.getData().getId() + ", ";
-        }
-        logger.severe(msg + "]");
-
         if(checkList.size() != targetList.size()) {
             return false;
         }
@@ -36,5 +23,21 @@ public class SortHelper {
             }
         }
         return true;
+    }
+
+    public static boolean isNotSame(List<RowComponent<Person>> targetList, List<RowComponent<Person>> checkList) {
+        if(checkList.size() != targetList.size()) {
+            return false;
+        }
+        int same = 0;
+        for(int i = 0; i < targetList.size(); i++) {
+            Person target = targetList.get(i).getData();
+            Person check = checkList.get(i).getData();
+
+            if(target.getId() == check.getId()) {
+                same++;
+            }
+        }
+        return same != checkList.size();
     }
 }

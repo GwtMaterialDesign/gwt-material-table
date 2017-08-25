@@ -78,9 +78,10 @@ public class BaseRenderer<T> implements Renderer<T> {
     public void copy(Renderer<T> renderer) {
         expectedRowHeight = renderer.getExpectedRowHeight();
         calculatedRowHeight = renderer.getCalculatedRowHeight();
-        sortAscIcon = renderer.getSortAscIcon();
+        // Right now we only copy the height data
+        /*sortAscIcon = renderer.getSortAscIcon();
         sortDescIcon = renderer.getSortDescIcon();
-        sortIconSize = renderer.getSortIconSize();
+        sortIconSize = renderer.getSortIconSize();*/
     }
 
     @Override

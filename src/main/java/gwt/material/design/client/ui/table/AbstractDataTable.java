@@ -24,15 +24,14 @@ import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.ValueUpdater;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.BrowserEvents;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.dom.client.TableRowElement;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.view.client.Range;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.data.DataSource;
@@ -42,6 +41,12 @@ import gwt.material.design.client.data.SortDir;
 import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.data.component.ComponentFactory;
 import gwt.material.design.client.data.component.RowComponent;
+import gwt.material.design.client.data.events.DestroyEvent;
+import gwt.material.design.client.data.events.DestroyHandler;
+import gwt.material.design.client.data.events.InsertColumnEvent;
+import gwt.material.design.client.data.events.InsertColumnHandler;
+import gwt.material.design.client.data.events.RemoveColumnEvent;
+import gwt.material.design.client.data.events.RemoveColumnHandler;
 import gwt.material.design.client.data.events.SetupEvent;
 import gwt.material.design.client.data.events.SetupHandler;
 import gwt.material.design.client.data.factory.RowComponentFactory;
@@ -59,7 +64,6 @@ import gwt.material.design.client.data.StandardDataView;
 import gwt.material.design.client.data.SortContext;
 import gwt.material.design.client.ui.table.cell.Column;
 import gwt.material.design.client.ui.table.events.RowExpansion;
-import gwt.material.design.jscore.client.api.core.Element;
 
 import java.util.List;
 import java.util.Set;
@@ -700,6 +704,30 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
      */
     public HandlerRegistration addSetupHandler(SetupHandler handler) {
         return addHandler(handler, SetupEvent.TYPE);
+    }
+
+    /**
+     * Event fired when the tables view calls {@link DataView#destroy()}.
+     * @return Handler registration to remove the event handler.
+     */
+    public HandlerRegistration addDestroyHandler(DestroyHandler handler) {
+        return addHandler(handler, DestroyEvent.TYPE);
+    }
+
+    /**
+     * Event fired when the tables view calls {@link DataView#insertColumn(int, Column, String)}.
+     * @return Handler registration to remove the event handler.
+     */
+    public HandlerRegistration addInsertColumnHandler(InsertColumnHandler<T> handler) {
+        return addHandler(handler, InsertColumnEvent.TYPE);
+    }
+
+    /**
+     * Event fired when the tables view calls {@link DataView#removeColumn(int)}.
+     * @return Handler registration to remove the event handler.
+     */
+    public HandlerRegistration addRemoveColumnHandler(RemoveColumnHandler handler) {
+        return addHandler(handler, RemoveColumnEvent.TYPE);
     }
 
     public boolean isDestroyOnUnload() {
