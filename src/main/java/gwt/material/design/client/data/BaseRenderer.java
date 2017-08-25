@@ -131,7 +131,12 @@ public class BaseRenderer<T> implements Renderer<T> {
             for(int c = 0; c < colSize; c++) {
                 int colIndex = c + colOffset;
                 Context context = new Context(rowComponent.getIndex(), colIndex, valueKey);
-                drawColumn(row, context, data, columns.get(c), colIndex, dataView.isHeaderVisible(colIndex));
+                Column<T, ?> column = columns.get(c);
+                TableData td = drawColumn(row, context, data, column, colIndex, dataView.isHeaderVisible(colIndex));
+                FrozenProperties frozenProps = column.getFrozenProperties();
+                if(frozenProps != null) {
+                    drawColumnFreeze(td, rowComponent, headers.get(colIndex), column, frozenProps.getSide());
+                }
             }
             rowComponent.setRedraw(false);
         }
