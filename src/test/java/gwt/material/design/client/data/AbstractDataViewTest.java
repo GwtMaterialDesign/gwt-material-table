@@ -2,7 +2,7 @@ package gwt.material.design.client.data;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.RootPanel;
-import gwt.material.design.client.MaterialDataTableTestCase;
+import gwt.material.design.client.DataTableTestCase;
 import gwt.material.design.client.SortHelper;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.TableCssName;
@@ -31,13 +31,13 @@ import java.util.logging.Logger;
 
 import static gwt.material.design.jquery.client.api.JQuery.$;
 
-public class AbstractDataViewTest extends MaterialDataTableTestCase {
+public class AbstractDataViewTest<T extends MaterialDataTable<Person>> extends DataTableTestCase<T> {
 
-    private static final Logger logger = Logger.getLogger(AbstractDataView.class.getName());
+    private static final Logger logger = Logger.getLogger(AbstractDataViewTest.class.getName());
 
     public void testSetup() throws Exception {
         // given
-        MaterialDataTable<Person> table = createTable();
+        T table = createTable();
         AbstractDataView<Person> dataView = (AbstractDataView<Person>) table.getView();
 
         table.setSelectionType(SelectionType.SINGLE);
@@ -69,7 +69,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testSetupPendingRows() throws Exception {
         // given
-        MaterialDataTable<Person> table = createTable();
+        T table = createTable();
         AbstractDataView<Person> dataView = (AbstractDataView<Person>) table.getView();
 
         table.setRowData(0, people);
@@ -88,7 +88,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testDestroy() throws Exception {
         // given
-        MaterialDataTable<Person> table = attachTableWithConstructor(false);
+        T table = attachTableWithConstructor(false);
         AbstractDataView<Person> dataView = (AbstractDataView<Person>) table.getView();
 
         boolean[] destroyed = {false};
@@ -110,7 +110,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testRenderRowComponents() throws Exception {
         // given
-        MaterialDataTable<Person> table = attachTableWithConstructor(false);
+        T table = attachTableWithConstructor(false);
         DataView<Person> dataView = table.getView();
         Components<Component<?>> components = generateRowComponents(dataView);
 
@@ -128,7 +128,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testRenderCategoryComponents() throws Exception {
         // given
-        MaterialDataTable<Person> table = attachTableWithConstructor(false);
+        T table = attachTableWithConstructor(false);
         table.setUseCategories(true);
         AbstractDataView<Person> dataView = (AbstractDataView<Person>)table.getView();
         Components<Component<?>> components = generateCategoryComponents(dataView);
@@ -150,7 +150,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testSetRowData() throws Exception {
         // given
-        MaterialDataTable<Person> table = attachTableWithConstructor(false);
+        T table = attachTableWithConstructor(false);
         DataView<Person> dataView = table.getView();
 
         table.addRenderedHandler(event -> {
@@ -176,7 +176,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testRenderColumn() throws Exception {
         // given
-        MaterialDataTable<Person> table = createTable();
+        T table = createTable();
         table.setSelectionType(SelectionType.NONE);
         AbstractDataView<Person> dataView = (AbstractDataView<Person>)table.getView();
         RootPanel.get().add(table);
@@ -199,7 +199,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testRenderColumnWithRows() throws Exception {
         // given
-        MaterialDataTable<Person> table = createTable();
+        T table = createTable();
         table.setSelectionType(SelectionType.NONE);
         AbstractDataView<Person> dataView = (AbstractDataView<Person>)table.getView();
         RootPanel.get().add(table);
@@ -232,7 +232,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testRemoveColumnByIndex() throws Exception {
         // given
-        MaterialDataTable<Person> table = attachTableWithConstructor();
+        T table = attachTableWithConstructor();
         DataView<Person> dataView = table.getView();
 
         Column<Person, ?> column = dataView.getColumns().get(0);
@@ -246,7 +246,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testRemoveAllColumns() throws Exception {
         // given
-        MaterialDataTable<Person> table = attachTableWithConstructor();
+        T table = attachTableWithConstructor();
         DataView<Person> dataView = table.getView();
 
         // when
@@ -258,7 +258,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testUpdateSortContext() throws Exception {
         // given
-        MaterialDataTable<Person> table = attachTableWithConstructor();
+        T table = attachTableWithConstructor();
         AbstractDataView<Person> dataView = (AbstractDataView<Person>) table.getView();
 
         Column<Person, ?> column = dataView.getColumns().get(1);
@@ -277,7 +277,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testUpdateSortContextOnAutoSortColumn() throws Exception {
         // given
-        MaterialDataTable<Person> table = attachTableWithConstructor();
+        T table = attachTableWithConstructor();
         AbstractDataView<Person> dataView = (AbstractDataView<Person>) table.getView();
 
         Column<Person, ?> column = dataView.getColumns().get(0);
@@ -296,7 +296,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testUpdateSortContextWithDir() throws Exception {
         // given
-        MaterialDataTable<Person> table = attachTableWithConstructor();
+        T table = attachTableWithConstructor();
         AbstractDataView<Person> dataView = (AbstractDataView<Person>) table.getView();
 
         Column<Person, ?> column = dataView.getColumns().get(0);
@@ -315,7 +315,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testSortColumnByIndex() throws Exception {
         // given
-        MaterialDataTable<Person> table = attachTableWithConstructor();
+        T table = attachTableWithConstructor();
         DataView<Person> dataView = table.getView();
         Components<RowComponent<Person>> beforeRows = new Components<>(dataView.getRows(), RowComponent::new);
 
@@ -348,7 +348,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testSortColumnByColumn() throws Exception {
         // given
-        MaterialDataTable<Person> table = attachTableWithConstructor();
+        T table = attachTableWithConstructor();
         DataView<Person> dataView = table.getView();
         Components<RowComponent<Person>> beforeRows = new Components<>(dataView.getRows(), RowComponent::new);
 
@@ -383,7 +383,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testAutoSortColumnBeforeAttached() throws Exception {
         // given
-        MaterialDataTable<Person> table = createTable();
+        T table = createTable();
         DataView<Person> dataView = table.getView();
         addSampleColumns(table);
 
@@ -405,7 +405,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testAutoSortColumnAfterAttached() throws Exception {
         // given
-        MaterialDataTable<Person> table = createTable();
+        T table = createTable();
         DataView<Person> dataView = table.getView();
         addSampleColumns(table);
 
@@ -427,7 +427,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testSetRendererBeforeAttached() {
         // given
-        MaterialDataTable<Person> table = createTable();
+        T table = createTable();
         AbstractDataView<Person> dataView = (AbstractDataView<Person>)table.getView();
         BaseRenderer<Person> renderer = new BaseRenderer<>();
 
@@ -441,7 +441,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testSetRendererAfterAttached() throws Exception {
         // given
-        MaterialDataTable<Person> table = attachTableWithConstructor();
+        T table = attachTableWithConstructor();
         AbstractDataView<Person> dataView = (AbstractDataView<Person>)table.getView();
         BaseRenderer<Person> renderer = new BaseRenderer<>();
 
@@ -454,7 +454,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testSetRendererCopyProperties() throws Exception {
         // given
-        MaterialDataTable<Person> table = attachTableWithConstructor();
+        T table = attachTableWithConstructor();
         AbstractDataView<Person> dataView = (AbstractDataView<Person>)table.getView();
 
         Renderer<Person> oldRenderer = dataView.getRenderer();
@@ -479,7 +479,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testColumnOffset() throws Exception {
         // given
-        MaterialDataTable<Person> table = attachTableWithConstructor();
+        T table = attachTableWithConstructor();
         table.setSelectionType(SelectionType.SINGLE);
         AbstractDataView<Person> dataView = (AbstractDataView<Person>)table.getView();
 
@@ -490,7 +490,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testSetSelectionTypeSingleAfterAttached() throws Exception {
         // given
-        MaterialDataTable<Person> table = attachTableWithConstructor();
+        T table = attachTableWithConstructor();
         AbstractDataView<Person> dataView = (AbstractDataView<Person>)table.getView();
 
         // when
@@ -506,7 +506,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testSetSelectionTypeMultipleAfterAttached() throws Exception {
         // given
-        MaterialDataTable<Person> table = attachTableWithConstructor();
+        T table = attachTableWithConstructor();
         AbstractDataView<Person> dataView = (AbstractDataView<Person>)table.getView();
 
         // when
@@ -522,7 +522,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testSetSelectionTypeNoneAfterAttached() throws Exception {
         // given
-        MaterialDataTable<Person> table = createTable();
+        T table = createTable();
         table.setSelectionType(SelectionType.SINGLE);
         AbstractDataView<Person> dataView = (AbstractDataView<Person>)table.getView();
 
@@ -560,7 +560,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testCustomRenderer() throws Exception {
         // given
-        MaterialDataTable<Person> table = createTable();
+        T table = createTable();
         table.setRenderer(new CustomRenderer<>());
         AbstractDataView<Person> dataView = (AbstractDataView<Person>)table.getView();
 
@@ -582,7 +582,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testShiftDetection() throws Exception {
         // given
-        MaterialDataTable<Person> table = attachTableWithConstructor();
+        T table = attachTableWithConstructor();
         AbstractDataView<Person> dataView = (AbstractDataView<Person>)table.getView();
 
         // when
@@ -608,7 +608,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testSelectAllRows() throws Exception {
         // given
-        MaterialDataTable<Person> table = attachTableWithConstructor();
+        T table = attachTableWithConstructor();
         table.setSelectionType(SelectionType.MULTIPLE);
         AbstractDataView<Person> dataView = (AbstractDataView<Person>)table.getView();
 
@@ -640,7 +640,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testDeselectAllRows() throws Exception {
         // given
-        MaterialDataTable<Person> table = attachTableWithConstructor();
+        T table = attachTableWithConstructor();
         table.setSelectionType(SelectionType.MULTIPLE);
         AbstractDataView<Person> dataView = (AbstractDataView<Person>)table.getView();
 
@@ -676,7 +676,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testSelectRow() throws Exception {
         // given
-        MaterialDataTable<Person> table = attachTableWithConstructor();
+        T table = attachTableWithConstructor();
         table.setSelectionType(SelectionType.SINGLE);
         AbstractDataView<Person> dataView = (AbstractDataView<Person>)table.getView();
 
@@ -705,7 +705,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testDeselectRow() throws Exception {
         // given
-        MaterialDataTable<Person> table = attachTableWithConstructor();
+        T table = attachTableWithConstructor();
         AbstractDataView<Person> dataView = (AbstractDataView<Person>)table.getView();
 
         RowComponent<Person> rowComponent = table.getRow(3);
@@ -736,7 +736,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testHasSelectedRows() throws Exception {
         // given
-        MaterialDataTable<Person> table = attachTableWithConstructor();
+        T table = attachTableWithConstructor();
         table.setSelectionType(SelectionType.SINGLE);
         AbstractDataView<Person> dataView = (AbstractDataView<Person>)table.getView();
 
@@ -756,7 +756,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testHasDeselectedRows() throws Exception {
         // given
-        MaterialDataTable<Person> table = attachTableWithConstructor();
+        T table = attachTableWithConstructor();
         table.setSelectionType(SelectionType.SINGLE);
         AbstractDataView<Person> dataView = (AbstractDataView<Person>)table.getView();
 
@@ -776,7 +776,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testAddCategory() throws Exception {
         // given
-        MaterialDataTable<Person> table = createTable();
+        T table = createTable();
         table.setUseCategories(true);
         AbstractDataView<Person> dataView = (AbstractDataView<Person>)table.getView();
         addSampleColumns(table);
@@ -799,7 +799,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testAddCategoryBeforeAttached() throws Exception {
         // given
-        MaterialDataTable<Person> table = createTable();
+        T table = createTable();
         table.setUseCategories(true);
         AbstractDataView<Person> dataView = (AbstractDataView<Person>)table.getView();
         addSampleColumns(table);
@@ -821,7 +821,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testDisableCategory() throws Exception {
         // given
-        MaterialDataTable<Person> table = createTable();
+        T table = createTable();
         table.setUseCategories(true);
         AbstractDataView<Person> dataView = (AbstractDataView<Person>)table.getView();
         addSampleColumns(table);
@@ -841,7 +841,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testEnableCategory() throws Exception {
         // given
-        MaterialDataTable<Person> table = createTable();
+        T table = createTable();
         table.setUseCategories(true);
         AbstractDataView<Person> dataView = (AbstractDataView<Person>)table.getView();
         addSampleColumns(table);
@@ -863,7 +863,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
 
     public void testUpdateRow() throws Exception {
         // given
-        MaterialDataTable<Person> table = attachTableWithConstructor();
+        T table = attachTableWithConstructor();
         AbstractDataView<Person> dataView = (AbstractDataView<Person>)table.getView();
 
         dataView.setRowData(0, people);
@@ -904,7 +904,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
         return components;
     }
 
-    public void checkRowComponents(MaterialDataTable<Person> table, int size) {
+    public void checkRowComponents(T table, int size) {
         AbstractDataView<Person> dataView = (AbstractDataView<Person>)table.getView();
         assertFalse(dataView.isRendering());
         assertEquals(size, dataView.getRowCount());
@@ -918,7 +918,7 @@ public class AbstractDataViewTest extends MaterialDataTableTestCase {
         }
     }
 
-    public void checkNonIndexRowComponents(MaterialDataTable<Person> table, int size) {
+    public void checkNonIndexRowComponents(T table, int size) {
         AbstractDataView<Person> dataView = (AbstractDataView<Person>)table.getView();
         assertFalse(dataView.isRendering());
         assertEquals(size, dataView.getRowCount());

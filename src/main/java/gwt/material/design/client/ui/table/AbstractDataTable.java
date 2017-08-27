@@ -170,7 +170,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
                 view.setup(scaffolding);
             } catch (Exception ex) {
                 logger.log(Level.SEVERE,
-                        "Could not setup AbstractDataTable due to previous errors.", ex);
+                    "Could not setup AbstractDataTable due to previous errors.", ex);
             }
             // We should recalculate when we load again.
         } else if(view.isUseCategories()) {

@@ -1231,14 +1231,12 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         tableBody.off("keydown");
         tableBody.keydown(e -> {
             shiftDown = e.isShiftKey();
-            logger.severe("keydown: " + shiftDown);
             return true;
         });
 
         tableBody.off("keyup");
         tableBody.keyup(e -> {
             shiftDown = e.isShiftKey();
-            logger.severe("keyup: " + shiftDown);
             return true;
         });
     }

@@ -2,7 +2,7 @@ package gwt.material.design.client.data;
 
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.dom.client.Style;
-import gwt.material.design.client.MaterialDataTableTestCase;
+import gwt.material.design.client.DataTableTestCase;
 import gwt.material.design.client.base.constants.StyleName;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.constants.Color;
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-public class BaseRendererTest extends MaterialDataTableTestCase {
+public class BaseRendererTest extends DataTableTestCase<MaterialDataTable<Person>> {
 
     private static final Logger logger = Logger.getLogger(BaseRendererTest.class.getName());
 

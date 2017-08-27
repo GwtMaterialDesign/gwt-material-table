@@ -22,7 +22,7 @@ package gwt.material.design.client.ui.table;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.Range;
-import gwt.material.design.client.MaterialDataTableTestCase;
+import gwt.material.design.client.DataTableTestCase;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.constants.Color;
@@ -53,13 +53,13 @@ import java.util.logging.Logger;
 
 import static gwt.material.design.jquery.client.api.JQuery.$;
 
-public class MaterialDataTableTest extends MaterialDataTableTestCase {
+public class MaterialDataTableTest<T extends MaterialDataTable<Person>> extends DataTableTestCase<T> {
 
     private static final Logger logger = Logger.getLogger(MaterialDataTableTest.class.getName());
 
     public void testLoadingInConstructor() throws Exception {
         // given / when / then
-        MaterialDataTable<Person> table = attachTableWithConstructor();
+        T table = attachTableWithConstructor();
 
         // Test the reattach
         table.removeFromParent();
@@ -68,7 +68,7 @@ public class MaterialDataTableTest extends MaterialDataTableTestCase {
 
     public void testLoadingOnAttach() throws Exception {
         // given / when / then
-        MaterialDataTable<Person> table = attachTableWithOnLoad();
+        T table = attachTableWithOnLoad();
 
         // Test the reattach
         table.removeFromParent();
@@ -77,7 +77,7 @@ public class MaterialDataTableTest extends MaterialDataTableTestCase {
 
     public void testProperties() throws Exception {
         // given
-        MaterialDataTable<Person> table = attachTableWithOnLoad();
+        T table = attachTableWithOnLoad();
 
         // when / then
         table.setUseStickyHeader(true);
@@ -102,7 +102,7 @@ public class MaterialDataTableTest extends MaterialDataTableTestCase {
 
     public void testStructure() throws Exception {
         // given
-        MaterialDataTable<Person> table = attachTableWithOnLoad();
+        T table = attachTableWithOnLoad();
 
         // Table Title
         table.setTitle("table title");
@@ -137,7 +137,7 @@ public class MaterialDataTableTest extends MaterialDataTableTestCase {
 
     public void testEvents() throws Exception {
         // given
-        MaterialDataTable<Person> table = createTable();
+        T table = createTable();
 
         // SetupEvent
         final boolean[] isSetupFired = {false};
@@ -190,7 +190,7 @@ public class MaterialDataTableTest extends MaterialDataTableTestCase {
 
     public void testJQueryEvents() throws Exception {
         // given
-        MaterialDataTable<Person> table = attachTableWithOnLoad();
+        T table = attachTableWithOnLoad();
 
         // when / then
 
@@ -321,7 +321,7 @@ public class MaterialDataTableTest extends MaterialDataTableTestCase {
 
     public void testColumnsRows() throws Exception {
         // given
-        MaterialDataTable<Person> table = attachTableWithConstructor();
+        T table = attachTableWithConstructor();
         table.clearRows(true);
         table.removeColumns();
 
@@ -448,16 +448,18 @@ public class MaterialDataTableTest extends MaterialDataTableTestCase {
 
     public void testStretch() throws Exception {
         // given
-        MaterialDataTable<Person> table = attachTableWithOnLoad();
+        T table = attachTableWithOnLoad();
 
         // when / then
         table.stretch();
         assertTrue(table.getElement().hasClassName(TableCssName.STRETCH));
         assertTrue(MaterialWidget.body().asElement().hasClassName(TableCssName.OVERFLOW_HIDDEN));
+
         table.stretch();
         assertFalse(table.getElement().hasClassName(TableCssName.STRETCH));
         assertFalse(MaterialWidget.body().asElement().hasClassName(TableCssName.OVERFLOW_HIDDEN));
         // Return back to normal state
+
         table.stretch();
         // Stretch Event
         boolean[] isStretchEventFired = {false};
@@ -470,7 +472,7 @@ public class MaterialDataTableTest extends MaterialDataTableTestCase {
     }
 
     public void testDynamicColumn() throws Exception {
-        MaterialDataTable<Person> table = attachTableWithOnLoad();
+        T table = attachTableWithOnLoad();
 
         // Remove Column
         table.removeColumn(0);
@@ -495,7 +497,7 @@ public class MaterialDataTableTest extends MaterialDataTableTestCase {
     }
 
     public void testPager() throws Exception {
-        MaterialDataTable<Person> table = attachTableWithOnLoad();
+        T table = attachTableWithOnLoad();
 
         ListDataSource<Person> dataSource = new ListDataSource<>();
         List<Person> people = new ArrayList<>();
