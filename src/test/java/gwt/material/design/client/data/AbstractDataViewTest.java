@@ -131,7 +131,6 @@ public class AbstractDataViewTest<T extends MaterialDataTable<Person>> extends D
         T table = attachTableWithConstructor(false);
         table.setUseCategories(true);
         AbstractDataView<Person> dataView = (AbstractDataView<Person>)table.getView();
-        Components<Component<?>> components = generateCategoryComponents(dataView);
 
         table.addComponentsRenderedHandler(event -> {
             assertFalse(dataView.isRendering());
@@ -142,7 +141,9 @@ public class AbstractDataViewTest<T extends MaterialDataTable<Person>> extends D
         });
 
         // when
-        dataView.render(components);
+        for(CategoryComponent component : generateCategoryComponents(dataView)) {
+            dataView.addCategory(component);
+        }
 
         // then
         assertFalse(dataView.isRedraw());
@@ -893,8 +894,8 @@ public class AbstractDataViewTest<T extends MaterialDataTable<Person>> extends D
         return components;
     }
 
-    public Components<Component<?>> generateCategoryComponents(AbstractDataView<Person> dataView) {
-        Components<Component<?>> components = new Components<>();
+    public Components<CategoryComponent> generateCategoryComponents(AbstractDataView<Person> dataView) {
+        Components<CategoryComponent> components = new Components<>();
         for(Person person : people) {
             CategoryComponent category = dataView.getCategoryFactory().generate(dataView, person.getDataCategory());
             if(!components.contains(category)) {
@@ -909,7 +910,7 @@ public class AbstractDataViewTest<T extends MaterialDataTable<Person>> extends D
         assertFalse(dataView.isRendering());
         assertEquals(size, dataView.getRowCount());
         assertEquals(size, dataView.getVisibleItemCount());
-        assertEquals(size, dataView.tbody.getWidgetCount());
+        assertEquals(size, dataView.tbody.$this().find("tr").length());
         int index = 0;
         for(RowComponent<Person> rowComponent : dataView.getRows()) {
             assertTrue(rowComponent.getWidget().isVisible());
@@ -923,7 +924,7 @@ public class AbstractDataViewTest<T extends MaterialDataTable<Person>> extends D
         assertFalse(dataView.isRendering());
         assertEquals(size, dataView.getRowCount());
         assertEquals(size, dataView.getVisibleItemCount());
-        assertEquals(size, dataView.tbody.getWidgetCount());
+        assertEquals(size, dataView.tbody.$this().find("tr").length());
 
         for(RowComponent<Person> rowComponent : dataView.getRows()) {
             assertTrue(rowComponent.getWidget().isVisible());

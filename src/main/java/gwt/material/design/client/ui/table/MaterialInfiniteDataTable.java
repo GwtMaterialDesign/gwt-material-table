@@ -20,6 +20,7 @@
 package gwt.material.design.client.ui.table;
 
 import gwt.material.design.client.data.DataSource;
+import gwt.material.design.client.data.infinite.HasLoader;
 import gwt.material.design.client.data.infinite.InfiniteDataView;
 import gwt.material.design.client.data.loader.LoadCallback;
 import gwt.material.design.client.data.loader.LoadConfig;
@@ -32,7 +33,7 @@ import gwt.material.design.client.data.loader.LoadConfig;
  * @see <a href="http://gwtmaterialdesign.github.io/gwt-material-demo/#datatable">Material Data Table</a>
  * @see <a href="https://material.io/guidelines/components/data-tables.html">Material Design Specification</a>
  */
-public class MaterialInfiniteDataTable<T> extends MaterialDataTable<T> {
+public class MaterialInfiniteDataTable<T> extends MaterialDataTable<T> implements HasLoader {
 
     public MaterialInfiniteDataTable() {
         super(new InfiniteDataView<>(100, new DataSource<T>() {
@@ -58,15 +59,28 @@ public class MaterialInfiniteDataTable<T> extends MaterialDataTable<T> {
         super(new InfiniteDataView<>(totalRows, viewSize, dataSource), scaffolding);
     }
 
-    public int getIndexOffset() {
-        return ((InfiniteDataView<T>) view).getIndexOffset();
+    @Override
+    public int getLoaderDelay() {
+        return ((InfiniteDataView<T>) view).getLoaderDelay();
     }
 
-    /**
-     * The amount of data that will buffer your start index and view size.
-     * This can be useful in removing and loading delays. Defaults to 10.
-     */
-    public void setIndexOffset(int indexOffset) {
-        ((InfiniteDataView<T>) view).setIndexOffset(indexOffset);
+    @Override
+    public void setLoaderDelay(int loaderDelay) {
+        ((InfiniteDataView<T>) view).setLoaderDelay(loaderDelay);
+    }
+
+    @Override
+    public int getLoaderBuffer() {
+        return ((InfiniteDataView<T>) view).getLoaderBuffer();
+    }
+
+    @Override
+    public void setLoaderBuffer(int loaderBuffer) {
+        ((InfiniteDataView<T>) view).setLoaderBuffer(loaderBuffer);
+    }
+
+    @Override
+    public boolean isLoading() {
+        return ((InfiniteDataView<T>) view).isLoading();
     }
 }

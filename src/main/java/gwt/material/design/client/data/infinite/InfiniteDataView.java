@@ -45,6 +45,7 @@ import gwt.material.design.jquery.client.api.JQueryElement;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static gwt.material.design.jquery.client.api.JQuery.$;
@@ -61,7 +62,7 @@ import static gwt.material.design.jquery.client.api.JQuery.$;
  *
  * @author Ben Dol
  */
-public class InfiniteDataView<T> extends AbstractDataView<T> {
+public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoader {
 
     private static final Logger logger = Logger.getLogger(InfiniteDataView.class.getName());
 
@@ -82,7 +83,6 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
 
     // The current index of the view.
     protected int viewIndex;
-    protected int indexOffset = 10;
     protected int lastScrollTop = 0;
 
     // Lading new data flag
@@ -92,6 +92,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
     // Data loading task
     private InterruptibleTask loaderTask;
 
+    private int loaderBuffer = 10;
     private int loaderIndex;
     private int loaderSize;
 
@@ -104,7 +105,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
     private List<T> selectedModels = new ArrayList<>();
 
     // Cached models
-    private InfiniteDataCache<T> dataCache = new InfiniteDataCache<>();
+    protected InfiniteDataCache<T> dataCache = new InfiniteDataCache<>();
 
     public InfiniteDataView(int totalRows, DataSource<T> dataSource) {
         this(totalRows, DYNAMIC_VIEW, dataSource);
@@ -224,7 +225,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
         bufferTop.height(topHeight + (isUseCategories() ? (getPassedCategories().size() * catHeight) : 0));
 
         int categories = isUseCategories() ? getCategories().size() : 0;
-        int bottomHeight = ((totalRows - viewSize - indexOffset) * calcRowHeight) - (categories * catHeight) - topHeight;
+        int bottomHeight = ((totalRows - viewSize - loaderBuffer) * calcRowHeight) - (categories * catHeight) - topHeight;
         bufferBottom.height(bottomHeight);
 
         super.render(components);
@@ -350,9 +351,9 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
             // Avoid loading again before the last load
             return;
         }
-        logger.finest("requestData() offset: " + index + ", viewSize: " + viewSize);
-        loaderIndex = Math.max(0, index - indexOffset);
-        loaderSize = viewSize + indexOffset;
+        logger.fine("requestData() offset: " + index + ", viewSize: " + viewSize);
+        loaderIndex = Math.max(0, index - loaderBuffer);
+        loaderSize = viewSize + loaderBuffer;
         if (loaderTask == null) {
             loaderTask = new InterruptibleTask() {
                 @Override
@@ -390,7 +391,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
                 }
                 @Override
                 public void onFailure(Throwable caught) {
-                    GWT.log("Load failure", caught);
+                    logger.log(Level.SEVERE, "Load failure", caught);
                     //TODO: What we need to do on failure? Maybe clear table?
                 }
             });
@@ -489,14 +490,6 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
         }
     }
 
-    public int getLoaderDelay() {
-        return loaderDelay;
-    }
-
-    public void setLoaderDelay(int loaderDelay) {
-        this.loaderDelay = loaderDelay;
-    }
-
     @Override
     public List<T> getSelectedRowModels(boolean visibleOnly) {
         if(visibleOnly) {
@@ -506,15 +499,32 @@ public class InfiniteDataView<T> extends AbstractDataView<T> {
         }
     }
 
-    public int getIndexOffset() {
-        return indexOffset;
+    @Override
+    public int getLoaderDelay() {
+        return loaderDelay;
     }
 
-    /**
-     * The amount of data that will buffer your start index and view size.
-     * This can be useful in removing and loading delays. Defaults to 10.
-     */
-    public void setIndexOffset(int indexOffset) {
-        this.indexOffset = Math.max(1, indexOffset);
+    @Override
+    public void setLoaderDelay(int loaderDelay) {
+        this.loaderDelay = loaderDelay;
+    }
+
+    @Override
+    public int getLoaderBuffer() {
+        return loaderBuffer;
+    }
+
+    @Override
+    public void setLoaderBuffer(int loaderBuffer) {
+        this.loaderBuffer = Math.max(1, loaderBuffer);
+    }
+
+    @Override
+    public boolean isLoading() {
+        return loading;
+    }
+
+    public boolean isDynamicView() {
+        return dynamicView;
     }
 }

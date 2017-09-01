@@ -217,6 +217,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             Component<?> component = components.get(components.size() - 1);
             Widget componentWidget = component.getWidget();
             AttachEvent.Handler handler = event -> {
+                if(attachHandler != null) {
+                    attachHandler.removeHandler();
+                }
+
                 // Recheck the row height to ensure
                 // the calculated row height is accurate.
                 getCalculatedRowHeight();
@@ -230,16 +234,12 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
                 rendering = false;
 
-                if(attachHandler != null) {
-                    attachHandler.removeHandler();
-                }
+                container.trigger(TableEvents.COMPONENTS_RENDERED, null);
 
                 if(pendingRenderEvent) {
                     container.trigger(TableEvents.RENDERED, null);
                     pendingRenderEvent = false;
                 }
-
-                container.trigger(TableEvents.COMPONENTS_RENDERED, null);
             };
             if (componentWidget == null || componentWidget.isAttached()) {
                 handler.onAttachOrDetach(null);
@@ -615,8 +615,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     @Override
     public void destroy() {
-        rows.clearComponents();
-        categories.clearComponents();
+        rows.clear();
+        categories.clear();
 
         columns.clear();
         headers.clear();
@@ -626,6 +626,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         tableBody.off("." + id);
         $(window()).off("." + id);
 
+        $table.stickyTableHeaders("destroy");
+        subheaderLib.unload();
+
+        setRedraw(true);
         rendering = false;
         setup = false;
 
@@ -789,6 +793,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 $(".table-body", getContainer()), "tr.subheader");
 
             final JQueryElement header = $table.find("thead");
+            $(subheaderLib).off("before-recalculate");
             $(subheaderLib).on("before-recalculate", e -> {
                 boolean updateMargin = header.is(":visible") && isUseStickyHeader();
                 subheaderLib.setMarginTop(updateMargin ? header.outerHeight() : 0);
@@ -2060,7 +2065,14 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     public int getCategoryHeight() {
         if (isUseCategories() && categoryHeight == 0) {
-            categoryHeight = categories.get(0).getWidget().getOffsetHeight();
+            try {
+                CategoryComponent categoryComponent = categories.get(0);
+                if (categoryComponent != null && categoryComponent.isRendered()) {
+                    categoryHeight = categoryComponent.getWidget().getOffsetHeight();
+                }
+            } catch (IndexOutOfBoundsException ex) {
+                logger.log(Level.FINE, "Couldn't get the first category.", ex);
+            }
         }
         return categoryHeight;
     }

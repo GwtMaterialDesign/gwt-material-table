@@ -56,6 +56,8 @@ public class DataTableTestCase<T extends AbstractDataTable<Person>> extends GWTT
 
     private static final Logger logger = Logger.getLogger(DataTableTestCase.class.getName());
 
+    protected T table;
+
     protected static final List<Person> people = new ArrayList<>();
     static {
         people.add(new Person(1, "Bill", "Jones", "123456", "Male"));
@@ -152,7 +154,7 @@ public class DataTableTestCase<T extends AbstractDataTable<Person>> extends GWTT
     }
 
     protected T createTable() {
-        T table = constructTable();
+        table = constructTable();
         table.setVisibleRange(0, 100);
         table.getView().setRowFactory(new PersonRowFactory());
         table.getView().setCategoryFactory(new CustomCategoryFactory());

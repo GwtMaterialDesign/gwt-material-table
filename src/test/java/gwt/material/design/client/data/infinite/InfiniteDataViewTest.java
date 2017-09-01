@@ -1,11 +1,8 @@
-package gwt.material.design.client.data;
+package gwt.material.design.client.data.infinite;
 
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.user.client.ui.RootPanel;
-import gwt.material.design.client.data.component.Component;
-import gwt.material.design.client.data.component.Components;
-import gwt.material.design.client.data.component.RowComponent;
-import gwt.material.design.client.data.infinite.InfiniteDataView;
+import com.google.gwt.view.client.Range;
+import gwt.material.design.client.data.AbstractDataViewTest;
+import gwt.material.design.client.data.MapDataSource;
 import gwt.material.design.client.model.Person;
 import gwt.material.design.client.ui.table.MaterialInfiniteDataTable;
 
@@ -52,7 +49,22 @@ public class InfiniteDataViewTest extends AbstractDataViewTest<MaterialInfiniteD
     @Override
     protected MaterialInfiniteDataTable<Person> createTable() {
         MaterialInfiniteDataTable<Person> table = super.createTable();
+        table.setLoaderDelay(0); // for tests we wont async load.
         table.setUseCategories(false);
+        return table;
+    }
+
+    @Override
+    protected MaterialInfiniteDataTable<Person> attachTableWithConstructor(boolean includeData) throws Exception {
+        MaterialInfiniteDataTable<Person> table = super.attachTableWithConstructor(includeData);
+        table.getView().refresh();
+        return table;
+    }
+
+    @Override
+    protected MaterialInfiniteDataTable<Person> attachTableWithOnLoad(boolean includeData) throws Exception {
+        MaterialInfiniteDataTable<Person> table = super.attachTableWithOnLoad(includeData);
+        table.getView().refresh();
         return table;
     }
 
@@ -65,36 +77,35 @@ public class InfiniteDataViewTest extends AbstractDataViewTest<MaterialInfiniteD
         ((MapDataSource)table.getDataSource()).add(flatData);
     }
 
-    @Override
-    public void testSelectRow() throws Exception {
-        // given
-        MaterialInfiniteDataTable<Person> table = attachTableWithConstructor();
-        table.setSelectionType(SelectionType.SINGLE);
-        AbstractDataView<Person> dataView = (AbstractDataView<Person>)table.getView();
-
-        dataView.refresh();
-        logger.severe(table.getRows().toString());
-
-        RowComponent<Person> rowComponent = table.getRow(3);
-        Element element = rowComponent.getWidget().getElement();
-
-        boolean[] rowSelect = {false};
-        table.addRowSelectHandler((e, param1, param2, param3) -> {
-            rowSelect[0] = true;
-            assertEquals(rowComponent.getData(), param1);
-            assertEquals(element, param2);
-            assertTrue(param3);
-            return true;
-        });
-
-        // when
-        dataView.selectRow(element, true);
+    public void testConstructed() throws Exception {
+        // given / when
+        MaterialInfiniteDataTable<Person> table = createTable();
 
         // then
-        assertTrue(rowSelect[0]);
-        assertTrue(element.getClassName().contains("selected"));
-        Boolean checked = (Boolean) $("td#col0 input", element).prop("checked");
-        assertNotNull(checked);
-        assertTrue(checked);
+        assertTrue(((InfiniteDataView<Person>)table.getView()).getRenderer() instanceof InfiniteRenderer);
+    }
+
+    @Override
+    public void testSetup() throws Exception {
+        // given / when
+        super.testSetup();
+
+        InfiniteDataView<Person> dataView = (InfiniteDataView<Person>) table.getView();
+
+        // then
+        assertFalse(dataView.isDynamicView());
+        assertEquals(new Range(0, 100), dataView.getVisibleRange());
+        assertEquals(1, $(dataView.getContainer()).find(".bufferTop").length());
+        assertEquals(1, $(dataView.getContainer()).find(".bufferBottom").length());
+    }
+
+    @Override
+    public void testSortColumnByColumn() throws Exception {
+        // given / when
+        super.testSortColumnByColumn();
+        InfiniteDataView<Person> dataView = (InfiniteDataView<Person>) table.getView();
+
+        // then
+        assertTrue(dataView.dataCache.isEmpty());
     }
 }
