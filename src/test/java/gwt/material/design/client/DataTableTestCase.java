@@ -95,6 +95,17 @@ public class DataTableTestCase<T extends AbstractDataTable<Person>> extends GWTT
         }
     }
 
+    @Override
+    protected void gwtTearDown() throws Exception {
+        super.gwtTearDown();
+
+        if(table != null && table.isAttached()) {
+            table.removeFromParent();
+            table = null;
+        }
+        RootPanel.get().clear();
+    }
+
     protected T attachTableWithConstructor() throws Exception {
         return attachTableWithConstructor(true);
     }
