@@ -89,6 +89,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     //protected List<ComponentFactory<?, T>> componentFactories;
     protected JsTableSubHeaders subheaderLib;
     protected int categoryHeight = 0;
+    protected int lastScrollTop = 0;
     protected String height;
     protected boolean rendering;
     protected boolean redraw;
@@ -816,20 +817,6 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         return ((canOverflow ? (end > rangeStart && start < rangeEnd) : (start >= rangeStart && end <= rangeEnd)));
     }
 
-    /**
-     * Ensure that the cached data is consistent with the data size.
-     */
-    private void updateCachedData() {
-//        int rangeStart = range.getStart();
-//        int expectedLastIndex = Math.max(0, Math.min(range.getLength(), getRowCount() - rangeStart));
-//        int lastIndex = getVisibleItemCount() - 1;
-//        while (lastIndex >= expectedLastIndex) {
-//            rows.remove(lastIndex);
-//            lastIndex--;
-//        }
-        rows.clear();
-    }
-
     @Override
     public int getRowCount() {
         return rows.size();
@@ -847,10 +834,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     @Override
     public void setVisibleRange(Range range) {
-        setVisibleRange(range, false, true);
+        setVisibleRange(range, true);
     }
 
-    protected void setVisibleRange(Range range, boolean clearData, boolean forceRangeChangeEvent) {
+    protected void setVisibleRange(Range range, boolean forceRangeChangeEvent) {
         final int start = range.getStart();
         final int length = range.getLength();
         if (start < 0) {
@@ -865,27 +852,6 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         final int pageSize = this.range.getLength();
         final boolean pageStartChanged = (pageStart != start);
         if (pageStartChanged) {
-            // Trim the data if we aren't clearing it.
-            /*if (!clearData) {
-                if (start > pageStart) {
-                    int increase = start - pageStart;
-                    if (getVisibleItemCount() > increase) {
-                        // Remove the data we no longer need.
-                        for (int i = 0; i < increase; i++) {
-                            rows.remove(rows.size()-1);
-                        }
-                    }
-                } else {
-                    int decrease = pageStart - start;
-                    if ((getVisibleItemCount() > 0) && (decrease < pageSize)) {
-                        // Add null data
-                        for (int i = 0; i < decrease; i++) {
-                            rows.add(null);
-                        }
-                    }
-                }
-            }*/
-
             // Update the range start
             this.range = new Range(start, this.range.getLength());
         }
@@ -897,12 +863,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         }
 
         // Clear the rows
-        if (clearData) {
-            rows.clear();
-        }
-
-        // Trim the row values if needed
-        updateCachedData();
+        rows.clear();
 
         // Update the pager and data source if the range changed
         if (pageStartChanged || pageSizeChanged || forceRangeChangeEvent) {
