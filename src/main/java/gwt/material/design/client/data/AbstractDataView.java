@@ -1910,8 +1910,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     @Override
     public void setUseCategories(boolean useCategories) {
         if(this.useCategories && !useCategories) {
-            subheaderLib.unload();
-            categories.clear();
+            //subheaderLib.unload();
+            categories.clearWidgets();
             setRedrawCategories(true);
         }
         this.useCategories = useCategories;
