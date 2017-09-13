@@ -282,7 +282,7 @@
     base.getOuterScrollTop = function() {
       var scrollTop = 0;
 
-      base.$scrollableArea.parents(":not(body)").each(function() {
+      base.$scrollableArea.parents(":not(body,html)").each(function(e, el) {
         scrollTop += $(this).scrollTop();
       });
       return scrollTop;
