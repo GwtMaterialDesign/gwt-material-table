@@ -89,7 +89,6 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     //protected List<ComponentFactory<?, T>> componentFactories;
     protected JsTableSubHeaders subheaderLib;
     protected int categoryHeight = 0;
-    protected int lastScrollTop = 0;
     protected String height;
     protected boolean rendering;
     protected boolean redraw;
