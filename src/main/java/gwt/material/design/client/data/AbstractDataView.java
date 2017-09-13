@@ -1887,7 +1887,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     public void setUseCategories(boolean useCategories) {
         if(this.useCategories && !useCategories) {
             //subheaderLib.unload();
-            categories.clear();
+            categories.clearWidgets();
             setRedrawCategories(true);
         }
         this.useCategories = useCategories;
