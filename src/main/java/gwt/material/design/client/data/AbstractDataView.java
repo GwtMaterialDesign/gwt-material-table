@@ -583,7 +583,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             // We will check the window resize just in case
             // it has updated the view size of the data view.
             $(window()).on("resize." + id, e -> {
-                refresh();
+                // In the cases where the table is not currently attached.
+                if(getContainer().isAttached()) {
+                    refresh();
+                }
                 return true;
             });
 
