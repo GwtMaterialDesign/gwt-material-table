@@ -63,9 +63,6 @@ function TableSubHeaders($table, $stickies) {
   base.load = function (opts) {
     base.options = $.extend({}, defaults, opts);
 
-    // Calculate scrollbar width
-    base.scrollBarWidth = $.scrollBarWidth(base.$tableBody.get(0));
-
     base.bind();
     base.detect();
 
@@ -241,6 +238,9 @@ function TableSubHeaders($table, $stickies) {
     if(fireEvents) {
       $base.trigger("before-recalculate");
     }
+
+    // Calculate scrollbar width
+    base.scrollBarWidth = $.scrollBarWidth(base.$tableBody.get(0));
 
     // Detect any new outer scrolls
     base.detectOuterScrolls();
