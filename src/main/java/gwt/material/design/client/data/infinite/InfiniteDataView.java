@@ -19,7 +19,6 @@
  */
 package gwt.material.design.client.data.infinite;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.view.client.ProvidesKey;
@@ -29,8 +28,9 @@ import gwt.material.design.client.data.SortContext;
 import gwt.material.design.client.data.loader.LoadCallback;
 import gwt.material.design.client.data.loader.LoadConfig;
 import gwt.material.design.client.data.loader.LoadResult;
-import gwt.material.design.jquery.client.api.Event;
-import gwt.material.design.jquery.client.api.Functions.EventFunc3;
+import gwt.material.design.client.events.DefaultHandlerRegistry;
+import gwt.material.design.client.events.HandlerRegistry;
+import gwt.material.design.client.ui.table.DataDisplay;
 import gwt.material.design.client.base.InterruptibleTask;
 import gwt.material.design.client.data.AbstractDataView;
 import gwt.material.design.client.data.DataSource;
@@ -39,7 +39,6 @@ import gwt.material.design.client.data.component.Component;
 import gwt.material.design.client.data.component.Components;
 import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.client.jquery.JQueryExtension;
-import gwt.material.design.client.ui.table.TableEvents;
 import gwt.material.design.client.ui.table.TableScaffolding;
 import gwt.material.design.jquery.client.api.JQueryElement;
 
@@ -107,6 +106,9 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
     // Cached models
     protected InfiniteDataCache<T> dataCache = new InfiniteDataCache<>();
 
+    // Handler registry
+    private HandlerRegistry handlers;
+
     public InfiniteDataView(int totalRows, DataSource<T> dataSource) {
         this(totalRows, DYNAMIC_VIEW, dataSource);
     }
@@ -163,58 +165,57 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
         bufferBottom = $("<div class='bufferBottom'>");
         tableBody.append(bufferBottom);
 
-        container.off(TableEvents.CATEGORY_OPENED);
-        container.on(TableEvents.CATEGORY_OPENED, (e, category) -> {
+        handlers.clearHandlers();
+
+        handlers.registerHandler(display.addCategoryOpenedHandler(event -> {
             dataCache.clear();
             updateRows(viewIndex, true);
             forceScroll = true;
-            return true;
-        });
+        }));
 
-        container.off(TableEvents.CATEGORY_CLOSED);
-        container.on(TableEvents.CATEGORY_CLOSED, (e, category) -> {
+        handlers.registerHandler(display.addCategoryClosedHandler(event -> {
             dataCache.clear();
             updateRows(viewIndex, true);
             forceScroll = true;
-            return true;
-        });
+        }));
 
-        container.off(TableEvents.ROW_SELECT);
-        container.on(TableEvents.ROW_SELECT, new EventFunc3<T, Element, Boolean>() {
-            @Override
-            public Object call(Event e, T model, Element element, Boolean selected) {
-                if(selected) {
-                    if(!selectedModels.contains(model)) {
+        handlers.registerHandler(display.addRowSelectHandler(event -> {
+            if(event.isSelected()) {
+                if(!selectedModels.contains(event.getModel())) {
+                    selectedModels.add(event.getModel());
+                }
+            } else {
+                selectedModels.remove(event.getModel());
+            }
+        }));
+
+        handlers.registerHandler(display.addSelectAllHandler(event -> {
+            for(T model : event.getModels()) {
+                if (event.isSelected()) {
+                    if (!selectedModels.contains(model)) {
                         selectedModels.add(model);
                     }
                 } else {
                     selectedModels.remove(model);
                 }
-                return true;
             }
-        });
-
-        container.off(TableEvents.SELECT_ALL);
-        container.on(TableEvents.SELECT_ALL, new EventFunc3<List<T>, List<Element>, Boolean>() {
-            @Override
-            public Object call(Event e, List<T> models, List<Element> elements, Boolean selected) {
-                for(T model : models) {
-                    if (selected) {
-                        if (!selectedModels.contains(model)) {
-                            selectedModels.add(model);
-                        }
-                    } else {
-                        selectedModels.remove(model);
-                    }
-                }
-                return true;
-            }
-        });
+        }));
 
         // Setup the scroll event handlers
         JQueryExtension.$(tableBody).scrollY(id, (e, scroll) ->  onVerticalScroll());
 
         super.onSetup(scaffolding);
+    }
+
+    @Override
+    public void setDisplay(DataDisplay<T> display) {
+        super.setDisplay(display);
+
+        if(handlers != null) {
+            handlers.clearHandlers();
+        }
+        // Assign a new registry.
+        handlers = new DefaultHandlerRegistry(this.display, false);
     }
 
     @Override

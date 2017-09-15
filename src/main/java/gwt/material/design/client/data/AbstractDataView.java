@@ -37,10 +37,25 @@ import gwt.material.design.client.data.component.Component;
 import gwt.material.design.client.data.component.ComponentFactory;
 import gwt.material.design.client.data.component.Components;
 import gwt.material.design.client.data.component.RowComponent;
+import gwt.material.design.client.data.events.CategoryClosedEvent;
+import gwt.material.design.client.data.events.CategoryOpenedEvent;
+import gwt.material.design.client.data.events.ColumnSortEvent;
+import gwt.material.design.client.data.events.ComponentsRenderedEvent;
 import gwt.material.design.client.data.events.DestroyEvent;
 import gwt.material.design.client.data.events.InsertColumnEvent;
 import gwt.material.design.client.data.events.RangeChangeEvent;
 import gwt.material.design.client.data.events.RemoveColumnEvent;
+import gwt.material.design.client.data.events.RenderedEvent;
+import gwt.material.design.client.data.events.RowCollapsedEvent;
+import gwt.material.design.client.data.events.RowCollapsingEvent;
+import gwt.material.design.client.data.events.RowContextMenuEvent;
+import gwt.material.design.client.data.events.RowDoubleClickEvent;
+import gwt.material.design.client.data.events.RowExpandingEvent;
+import gwt.material.design.client.data.events.RowExpandedEvent;
+import gwt.material.design.client.data.events.RowLongPressEvent;
+import gwt.material.design.client.data.events.RowSelectEvent;
+import gwt.material.design.client.data.events.RowShortPressEvent;
+import gwt.material.design.client.data.events.SelectAllEvent;
 import gwt.material.design.client.data.events.SetupEvent;
 import gwt.material.design.client.data.factory.CategoryComponentFactory;
 import gwt.material.design.client.data.factory.RowComponentFactory;
@@ -54,8 +69,9 @@ import gwt.material.design.client.ui.MaterialProgress;
 import gwt.material.design.client.ui.Selectors;
 import gwt.material.design.client.ui.table.*;
 import gwt.material.design.client.ui.table.cell.Column;
-import gwt.material.design.client.ui.table.events.RowExpansion;
+import gwt.material.design.jquery.client.api.Event;
 import gwt.material.design.jquery.client.api.JQueryElement;
+import gwt.material.design.jquery.client.api.MouseEvent;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -78,7 +94,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     // Main
     protected final String id;
-    protected DataDisplay display;
+    protected DataDisplay<T> display;
     protected DataSource<T> dataSource;
     protected Renderer<T> renderer;
     protected SortContext<T> sortContext;
@@ -234,10 +250,14 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
                 rendering = false;
 
-                container.trigger(TableEvents.COMPONENTS_RENDERED, null);
+                if(attachHandler != null) {
+                    attachHandler.removeHandler();
+                }
+
+                ComponentsRenderedEvent.fire(this);
 
                 if(pendingRenderEvent) {
-                    container.trigger(TableEvents.RENDERED, null);
+                    RenderedEvent.fire(this);
                     pendingRenderEvent = false;
                 }
             };
@@ -633,9 +653,6 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         rendering = false;
         setup = false;
 
-        // display control
-        display.removeJQueryHandlers();
-
         DestroyEvent.fire(this);
     }
 
@@ -674,7 +691,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                     }
                 }
             } else {
-                toggleRowSelect(row);
+                toggleRowSelect(e, row);
             }
             return false;
         });
@@ -683,9 +700,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             Element row = $(e.getCurrentTarget()).asElement();
 
             // Fire row select event
-            container.trigger(TableEvents.ROW_CONTEXTMENU, new Object[] {
-                e, getModelByRowElement(row), row
-            });
+            RowContextMenuEvent.fire(this, (MouseEvent)e, getModelByRowElement(row), row);
             return false;
         });
 
@@ -693,9 +708,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             Element row = $(e.getCurrentTarget()).asElement();
 
             // Fire row select event
-            container.trigger(TableEvents.ROW_DOUBLECLICK, new Object[] {
-                e, getModelByRowElement(row), row
-            });
+            RowDoubleClickEvent.fire(this, e, getModelByRowElement(row), row);
             return false;
         });
 
@@ -703,17 +716,13 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             Element row = $(e.getCurrentTarget()).asElement();
 
             // Fire row select event
-            container.trigger(TableEvents.ROW_LONGPRESS, new Object[] {
-                e, getModelByRowElement(row), row
-            });
+            RowLongPressEvent.fire(this, e, getModelByRowElement(row), row);
             return true;
         }, e -> {
             Element row = $(e.getCurrentTarget()).asElement();
 
             // Fire row select event
-            container.trigger(TableEvents.ROW_SHORTPRESS, new Object[] {
-                e, getModelByRowElement(row), row
-            });
+            RowShortPressEvent.fire(this, e, getModelByRowElement(row), row);
             return true;
         }, longPressDuration);
 
@@ -737,6 +746,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                     final JQueryElement row = tr.next();
                     final T model = getModelByRowElement(tr.asElement());
 
+                    RowExpansion<T> rowExpansion = new RowExpansion<>(model, row);
+
                     expansion[0].one(transitionEvents,
                         (e1, param1) -> {
                             if (!recalculated[0]) {
@@ -750,10 +761,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
                                 if(expanding) {
                                     // Fire table expanded event
-                                    container.trigger(TableEvents.ROW_EXPANDED, new RowExpansion<>(model, row));
+                                    RowExpandedEvent.fire(this, rowExpansion);
                                 } else {
                                     // Fire table collapsed event
-                                    container.trigger(TableEvents.ROW_COLLAPSED, new RowExpansion<>(model, row));
+                                    RowCollapsedEvent.fire(this, rowExpansion);
                                 }
                             }
                             return true;
@@ -761,9 +772,9 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
                     if(expanding) {
                         // Fire table expand event
-                        container.trigger(TableEvents.ROW_EXPAND, new RowExpansion<>(model, row));
+                        RowExpandingEvent.fire(this, rowExpansion);
                     } else {
-                        container.trigger(TableEvents.ROW_COLLAPSE, new RowExpansion<>(model, row));
+                        RowCollapsingEvent.fire(this, rowExpansion);
                     }
 
                     Scheduler.get().scheduleDeferred(() -> {
@@ -993,7 +1004,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 renderRows(clonedRows);
             }
 
-            container.trigger(TableEvents.SORT_COLUMN, new Object[]{sortContext, index});
+            ColumnSortEvent.fire(this, sortContext, index);
         } else {
             // revert the sort context
             sortContext = oldSortContext;
@@ -1307,19 +1318,28 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
         if(fireEvent) {
             // Fire select all event
-            container.trigger(TableEvents.SELECT_ALL, new Object[]{
-                getModelsByRowElements(rows), rows, select
-            });
+            SelectAllEvent.fire(this, getModelsByRowElements(rows), rows, select);
         }
     }
 
-    @Override
-    public void toggleRowSelect(Element row) {
-        toggleRowSelect(row, true);
+    /**
+     * Select a row by given element.
+     *
+     * @param event sourced even (can be null)
+     * @param row element of the row selection
+     */
+    public void toggleRowSelect(Event event, Element row) {
+        toggleRowSelect(event, row, true);
     }
 
-    @Override
-    public void toggleRowSelect(Element row, boolean fireEvent) {
+    /**
+     * Select a row by given element.
+     *
+     * @param event sourced even (can be null)
+     * @param row element of the row selection
+     * @param fireEvent fire the row select event.
+     */
+    public void toggleRowSelect(Event event, Element row, boolean fireEvent) {
         JQueryElement $row = $(row);
         if(!$row.hasClass("disabled") && !$row.is("[disabled]")) {
             boolean selected = Js.isTrue($row.hasClass("selected"));
@@ -1342,9 +1362,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
             if(fireEvent) {
                 // Fire row select event
-                container.trigger(TableEvents.ROW_SELECT, new Object[] {
-                    getModelByRowElement(row), row, !selected
-                });
+                RowSelectEvent.fire(this, event, getModelByRowElement(row), row, !selected);
             }
         }
     }
@@ -1369,9 +1387,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
             if(fireEvent) {
                 // Fire row select event
-                container.trigger(TableEvents.ROW_SELECT, new Object[] {
-                    getModelByRowElement(row), row, true
-                });
+                RowSelectEvent.fire(this, null, getModelByRowElement(row), row, true);
             }
         }
     }
@@ -1390,9 +1406,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
             if(fireEvent) {
                 // Fire row select event
-                container.trigger(TableEvents.ROW_SELECT, new Object[] {
-                    getModelByRowElement(row), row, false
-                });
+                RowSelectEvent.fire(this, null, getModelByRowElement(row), row, false);
             }
         }
     }
@@ -1939,7 +1953,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
-    public void setDisplay(DataDisplay display) {
+    public void setDisplay(DataDisplay<T> display) {
         assert display != null : "Display cannot be null";
         this.display = display;
     }
@@ -1954,11 +1968,13 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             // Attach the category events
             category.$this().off("opened");
             category.$this().on("opened", (e, categoryElem) -> {
-                return container.trigger(TableEvents.CATEGORY_OPENED, category.getName());
+                CategoryOpenedEvent.fire(this, category.getName());
+                return true;
             });
             category.$this().off("closed");
             category.$this().on("closed", (e, categoryElem) -> {
-                return container.trigger(TableEvents.CATEGORY_CLOSED, category.getName());
+                CategoryClosedEvent.fire(this, category.getName());
+                return true;
             });
         }
         return category;

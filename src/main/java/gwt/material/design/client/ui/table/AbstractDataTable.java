@@ -41,29 +41,51 @@ import gwt.material.design.client.data.SortDir;
 import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.data.component.ComponentFactory;
 import gwt.material.design.client.data.component.RowComponent;
+import gwt.material.design.client.data.events.CategoryClosedEvent;
+import gwt.material.design.client.data.events.CategoryClosedHandler;
+import gwt.material.design.client.data.events.CategoryOpenedEvent;
+import gwt.material.design.client.data.events.CategoryOpenedHandler;
+import gwt.material.design.client.data.events.ColumnSortEvent;
+import gwt.material.design.client.data.events.ColumnSortHandler;
+import gwt.material.design.client.data.events.ComponentsRenderedEvent;
+import gwt.material.design.client.data.events.ComponentsRenderedHandler;
 import gwt.material.design.client.data.events.DestroyEvent;
 import gwt.material.design.client.data.events.DestroyHandler;
 import gwt.material.design.client.data.events.InsertColumnEvent;
 import gwt.material.design.client.data.events.InsertColumnHandler;
 import gwt.material.design.client.data.events.RemoveColumnEvent;
 import gwt.material.design.client.data.events.RemoveColumnHandler;
+import gwt.material.design.client.data.events.RenderedEvent;
+import gwt.material.design.client.data.events.RenderedHandler;
+import gwt.material.design.client.data.events.RowCollapsedEvent;
+import gwt.material.design.client.data.events.RowCollapsedHandler;
+import gwt.material.design.client.data.events.RowCollapsingEvent;
+import gwt.material.design.client.data.events.RowCollapsingHandler;
+import gwt.material.design.client.data.events.RowContextMenuEvent;
+import gwt.material.design.client.data.events.RowContextMenuHandler;
+import gwt.material.design.client.data.events.RowDoubleClickEvent;
+import gwt.material.design.client.data.events.RowDoubleClickHandler;
+import gwt.material.design.client.data.events.RowExpandedEvent;
+import gwt.material.design.client.data.events.RowExpandedHandler;
+import gwt.material.design.client.data.events.RowExpandingEvent;
+import gwt.material.design.client.data.events.RowExpandingHandler;
+import gwt.material.design.client.data.events.RowLongPressEvent;
+import gwt.material.design.client.data.events.RowLongPressHandler;
+import gwt.material.design.client.data.events.RowSelectEvent;
+import gwt.material.design.client.data.events.RowSelectHandler;
+import gwt.material.design.client.data.events.RowShortPressEvent;
+import gwt.material.design.client.data.events.RowShortPressHandler;
+import gwt.material.design.client.data.events.SelectAllEvent;
+import gwt.material.design.client.data.events.SelectAllHandler;
 import gwt.material.design.client.data.events.SetupEvent;
 import gwt.material.design.client.data.events.SetupHandler;
 import gwt.material.design.client.data.factory.RowComponentFactory;
 import gwt.material.design.client.events.DefaultHandlerRegistry;
 import gwt.material.design.client.events.HandlerRegistry;
-import gwt.material.design.jquery.client.api.Functions;
-import gwt.material.design.jquery.client.api.Functions.EventFunc1;
-import gwt.material.design.jquery.client.api.Functions.EventFunc2;
-import gwt.material.design.jquery.client.api.Functions.EventFunc3;
-import gwt.material.design.jquery.client.api.JQueryElement;
-import gwt.material.design.jquery.client.api.MouseEvent;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.data.DataView;
 import gwt.material.design.client.data.StandardDataView;
-import gwt.material.design.client.data.SortContext;
 import gwt.material.design.client.ui.table.cell.Column;
-import gwt.material.design.client.ui.table.events.RowExpansion;
 
 import java.util.List;
 import java.util.Set;
@@ -77,8 +99,7 @@ import java.util.logging.Logger;
  *
  * @author Ben Dol
  */
-public abstract class AbstractDataTable<T> extends MaterialWidget implements DataDisplay<T>,
-        HandlerRegistry {
+public abstract class AbstractDataTable<T> extends MaterialWidget implements DataDisplay<T> {
 
     private static final Logger logger = Logger.getLogger(AbstractDataTable.class.getName());
 
@@ -455,22 +476,12 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
-    public final void toggleRowSelect(com.google.gwt.dom.client.Element row) {
-        view.toggleRowSelect(row);
-    }
-
-    @Override
-    public final void toggleRowSelect(com.google.gwt.dom.client.Element row, boolean fireEvent) {
-        view.toggleRowSelect(row, fireEvent);
-    }
-
-    @Override
-    public final void selectRow(com.google.gwt.dom.client.Element row, boolean fireEvent) {
+    public final void selectRow(Element row, boolean fireEvent) {
         view.selectRow(row, fireEvent);
     }
 
     @Override
-    public final void deselectRow(com.google.gwt.dom.client.Element row, boolean fireEvent) {
+    public final void deselectRow(Element row, boolean fireEvent) {
         view.deselectRow(row, fireEvent);
     }
 
@@ -561,11 +572,11 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         // Verify that the target is still a child of this widget. IE fires focus
         // events even after the element has been removed from the DOM.
         EventTarget eventTarget = event.getEventTarget();
-        if (!com.google.gwt.dom.client.Element.is(eventTarget)) {
+        if (!Element.is(eventTarget)) {
             return;
         }
-        com.google.gwt.dom.client.Element target = com.google.gwt.dom.client.Element.as(eventTarget);
-        if (!getElement().isOrHasChild(com.google.gwt.dom.client.Element.as(eventTarget))) {
+        Element target = Element.as(eventTarget);
+        if (!getElement().isOrHasChild(Element.as(eventTarget))) {
             return;
         }
         super.onBrowserEvent(event);
@@ -583,7 +594,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
             // A key event indicates that we already have focus.
             focused = true;
         } else if (BrowserEvents.MOUSEDOWN.equals(eventType)
-                && CellBasedWidgetImpl.get().isFocusable(com.google.gwt.dom.client.Element.as(target))) {
+                && CellBasedWidgetImpl.get().isFocusable(Element.as(target))) {
             // If a natively focusable element was just clicked, then we must have
             // focus.
             focused = true;
@@ -611,7 +622,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     /**
      * Fire an event to the Cell within the specified {@link TableCellElement}.
      */
-    private <C> void fireEventToCell(Event event, String eventType, com.google.gwt.dom.client.Element parentElem,
+    private <C> void fireEventToCell(Event event, String eventType, Element parentElem,
                                      final T rowValue, Context context, HasCell<T, C> column) {
         // Check if the cell consumes the event.
         Cell<C> cell = column.getCell();
@@ -723,7 +734,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         this.destroyOnUnload = destroyOnUnload;
     }
 
-    // JQuery Event Handler
+    // Event Handlers
 
     @Override
     public HandlerRegistration registerHandler(HandlerRegistration registration) {
@@ -736,262 +747,77 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
-    public void removeJQueryHandlers() {
-        $this().off("." + view.getId());
+    public HandlerRegistration addSelectAllHandler(SelectAllHandler<T> handler) {
+        return addHandler(handler, SelectAllEvent.TYPE);
     }
 
     @Override
-    public void addSelectAllHandler(EventFunc3<List<T>, List<JQueryElement>, Boolean> handler) {
-        $this().on(TableEvents.SELECT_ALL + "." + view.getId(), handler);
+    public HandlerRegistration addRowSelectHandler(RowSelectHandler<T> handler) {
+        return addHandler(handler, RowSelectEvent.TYPE);
     }
 
     @Override
-    public void removeSelectAllHandler(EventFunc3<List<T>, List<JQueryElement>, Boolean> handler) {
-        $this().off(TableEvents.SELECT_ALL, handler);
+    public HandlerRegistration addRowExpandingHandler(RowExpandingHandler<T> handler) {
+        return addHandler(handler, RowExpandingEvent.TYPE);
     }
 
     @Override
-    public void removeSelectAllHandlers() {
-        $this().off(TableEvents.SELECT_ALL);
+    public HandlerRegistration addRowExpandedHandler(RowExpandedHandler<T> handler) {
+        return addHandler(handler, RowExpandedEvent.TYPE);
     }
 
     @Override
-    public void addRowSelectHandler(EventFunc3<T, Element, Boolean> handler) {
-        $this().on(TableEvents.ROW_SELECT + "." + view.getId(), handler);
+    public HandlerRegistration addRowCollapseHandler(RowCollapsingHandler<T> handler) {
+        return addHandler(handler, RowCollapsingEvent.TYPE);
     }
 
     @Override
-    public void removeRowSelectHandler(EventFunc3<T, Element, Boolean> handler) {
-        $this().off(TableEvents.ROW_SELECT, handler);
+    public HandlerRegistration addRowCollapsedHandler(RowCollapsedHandler<T> handler) {
+        return addHandler(handler, RowCollapsedEvent.TYPE);
     }
 
     @Override
-    public void removeRowSelectHandlers() {
-        $this().off(TableEvents.ROW_SELECT);
+    public HandlerRegistration addRowContextMenuHandler(RowContextMenuHandler<T> handler) {
+        return addHandler(handler, RowContextMenuEvent.TYPE);
     }
 
     @Override
-    public void addStretchHandler(EventFunc1<Boolean> handler) {
-        $this().on(TableEvents.STRETCH + "." + view.getId(), handler);
+    public HandlerRegistration addRowDoubleClickHandler(RowDoubleClickHandler<T> handler) {
+        return addHandler(handler, RowDoubleClickEvent.TYPE);
     }
 
     @Override
-    public void removeStretchHandler(EventFunc1<Boolean> handler) {
-        $this().off(TableEvents.STRETCH, handler);
+    public HandlerRegistration addRowLongPressHandler(RowLongPressHandler<T> handler) {
+        return addHandler(handler, RowLongPressEvent.TYPE);
     }
 
     @Override
-    public void removeStretchHandlers() {
-        $this().off(TableEvents.STRETCH);
+    public HandlerRegistration addRowShortPressHandler(RowShortPressHandler<T> handler) {
+        return addHandler(handler, RowShortPressEvent.TYPE);
     }
 
     @Override
-    public void addRowExpandHandler(EventFunc1<RowExpansion> handler) {
-        $this().on(TableEvents.ROW_EXPAND + "." + view.getId(), handler);
+    public HandlerRegistration addColumnSortHandler(ColumnSortHandler<T> handler) {
+        return addHandler(handler, ColumnSortEvent.TYPE);
     }
 
     @Override
-    public void removeRowExpandHandler(EventFunc1<RowExpansion> handler) {
-        $this().off(TableEvents.ROW_EXPAND, handler);
+    public HandlerRegistration addCategoryOpenedHandler(CategoryOpenedHandler handler) {
+        return addHandler(handler, CategoryOpenedEvent.TYPE);
     }
 
     @Override
-    public void removeRowExpandHandlers() {
-        $this().off(TableEvents.ROW_EXPAND);
+    public HandlerRegistration addCategoryClosedHandler(CategoryClosedHandler handler) {
+        return addHandler(handler, CategoryClosedEvent.TYPE);
     }
 
     @Override
-    public void addRowExpandedHandler(EventFunc1<RowExpansion> handler) {
-        $this().on(TableEvents.ROW_EXPANDED + "." + view.getId(), handler);
+    public HandlerRegistration addComponentsRenderedHandler(ComponentsRenderedHandler handler) {
+        return addHandler(handler, ComponentsRenderedEvent.TYPE);
     }
 
     @Override
-    public void removeRowExpandedHandler(EventFunc1<RowExpansion> handler) {
-        $this().off(TableEvents.ROW_EXPANDED, handler);
-    }
-
-    @Override
-    public void removeRowExpandedHandlers() {
-        $this().off(TableEvents.ROW_EXPANDED);
-    }
-
-    @Override
-    public void addRowCollapseHandler(EventFunc1<RowExpansion> handler) {
-        $this().on(TableEvents.ROW_COLLAPSE + "." + view.getId(), handler);
-    }
-
-    @Override
-    public void removeRowCollapseHandler(EventFunc1<RowExpansion> handler) {
-        $this().off(TableEvents.ROW_COLLAPSE, handler);
-    }
-
-    @Override
-    public void removeRowCollapseHandlers() {
-        $this().off(TableEvents.ROW_COLLAPSE);
-    }
-
-    @Override
-    public void addRowCollapsedHandler(EventFunc1<RowExpansion> handler) {
-        $this().on(TableEvents.ROW_COLLAPSED + "." + view.getId(), handler);
-    }
-
-    @Override
-    public void removeRowCollapsedHandler(EventFunc1<RowExpansion> handler) {
-        $this().off(TableEvents.ROW_COLLAPSED, handler);
-    }
-
-    @Override
-    public void removeRowCollapsedHandlers() {
-        $this().off(TableEvents.ROW_COLLAPSED);
-    }
-
-    @Override
-    public void addRowCountChangeHandler(EventFunc2<Integer, Boolean> handler) {
-        $this().on(TableEvents.ROW_COUNT_CHANGE + "." + view.getId(), handler);
-    }
-
-    @Override
-    public void removeRowCountChangeHandler(EventFunc2<Integer, Boolean> handler) {
-        $this().off(TableEvents.ROW_COUNT_CHANGE, handler);
-    }
-
-    @Override
-    public void removeRowCountChangeHandlers() {
-        $this().off(TableEvents.ROW_COUNT_CHANGE);
-    }
-
-    @Override
-    public void addRowContextMenuHandler(EventFunc3<MouseEvent, T, Element> handler) {
-        $this().on(TableEvents.ROW_CONTEXTMENU + "." + view.getId(), handler);
-    }
-
-    @Override
-    public void removeRowContextMenuHandler(EventFunc3<MouseEvent, T, Element> handler) {
-        $this().off(TableEvents.ROW_CONTEXTMENU, handler);
-    }
-
-    @Override
-    public void removeRowContextMenuHandlers() {
-        $this().off(TableEvents.ROW_CONTEXTMENU);
-    }
-
-    @Override
-    public void addRowDoubleClickHandler(EventFunc3<MouseEvent, T, Element> handler) {
-        $this().on(TableEvents.ROW_DOUBLECLICK + "." + view.getId(), handler);
-    }
-
-    @Override
-    public void removeRowDoubleClickHandler(EventFunc3<MouseEvent, T, Element> handler) {
-        $this().off(TableEvents.ROW_DOUBLECLICK, handler);
-    }
-
-    @Override
-    public void removeRowDoubleClickHandlers() {
-        $this().off(TableEvents.ROW_DOUBLECLICK);
-    }
-
-    @Override
-    public void addRowLongPressHandler(EventFunc3<MouseEvent, T, Element> handler) {
-        $this().on(TableEvents.ROW_LONGPRESS + "." + view.getId(), handler);
-    }
-
-    @Override
-    public void removeRowLongPressHandler(EventFunc3<MouseEvent, T, Element> handler) {
-        $this().off(TableEvents.ROW_LONGPRESS, handler);
-    }
-
-    @Override
-    public void removeRowLongPressHandlers() {
-        $this().off(TableEvents.ROW_LONGPRESS);
-    }
-
-    @Override
-    public void addRowShortPressHandler(EventFunc3<MouseEvent, T, Element> handler) {
-        $this().on(TableEvents.ROW_SHORTPRESS + "." + view.getId(), handler);
-    }
-
-    @Override
-    public void removeRowShortPressHandler(EventFunc3<MouseEvent, T, Element> handler) {
-        $this().off(TableEvents.ROW_SHORTPRESS, handler);
-    }
-
-    @Override
-    public void removeRowShortPressHandlers() {
-        $this().off(TableEvents.ROW_SHORTPRESS);
-    }
-
-    @Override
-    public void addSortColumnHandler(EventFunc2<SortContext, Integer> handler) {
-        $this().on(TableEvents.SORT_COLUMN + "." + view.getId(), handler);
-    }
-
-    @Override
-    public void removeSortColumnHandler(EventFunc2<SortContext, Integer> handler) {
-        $this().off(TableEvents.SORT_COLUMN, handler);
-    }
-
-    @Override
-    public void removeSortColumnHandlers() {
-        $this().off(TableEvents.SORT_COLUMN);
-    }
-
-    @Override
-    public void addCategoryOpenedHandler(EventFunc1<String> handler) {
-        $this().on(TableEvents.CATEGORY_OPENED + "." + view.getId(), handler);
-    }
-
-    @Override
-    public void removeCategoryOpenedHandler(EventFunc1<String> handler) {
-        $this().off(TableEvents.CATEGORY_OPENED, handler);
-    }
-
-    @Override
-    public void removeCategoryOpenedHandlers() {
-        $this().off(TableEvents.CATEGORY_OPENED);
-    }
-
-    @Override
-    public void addCategoryClosedHandler(EventFunc1<String> handler) {
-        $this().on(TableEvents.CATEGORY_CLOSED + "." + view.getId(), handler);
-    }
-
-    @Override
-    public void removeCategoryClosedHandler(EventFunc1<String> handler) {
-        $this().off(TableEvents.CATEGORY_CLOSED, handler);
-    }
-
-    @Override
-    public void removeCategoryClosedHandlers() {
-        $this().off(TableEvents.CATEGORY_CLOSED);
-    }
-
-    @Override
-    public void addComponentsRenderedHandler(Functions.EventFunc handler) {
-        $this().on(TableEvents.COMPONENTS_RENDERED + "." + view.getId(), handler);
-    }
-
-    @Override
-    public void removeComponentsRenderedHandler(Functions.EventFunc handler) {
-        $this().off(TableEvents.COMPONENTS_RENDERED, handler);
-    }
-
-    @Override
-    public void removeComponentsRenderedHandlers() {
-        $this().off(TableEvents.COMPONENTS_RENDERED);
-    }
-
-    @Override
-    public void addRenderedHandler(Functions.EventFunc handler) {
-        $this().on(TableEvents.RENDERED + "." + view.getId(), handler);
-    }
-
-    @Override
-    public void removeRenderedHandler(Functions.EventFunc handler) {
-        $this().off(TableEvents.RENDERED, handler);
-    }
-
-    @Override
-    public void removeRenderedHandlers() {
-        $this().off(TableEvents.RENDERED);
+    public HandlerRegistration addRenderedHandler(RenderedHandler handler) {
+        return addHandler(handler, RenderedEvent.TYPE);
     }
 }

@@ -19,17 +19,17 @@
  */
 package gwt.material.design.client.ui.table;
 
-import com.gargoylesoftware.htmlunit.attachment.AttachmentHandler;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.logical.shared.AttachEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Panel;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.data.events.InsertColumnEvent;
 import gwt.material.design.client.data.events.InsertColumnHandler;
 import gwt.material.design.client.data.events.RemoveColumnEvent;
 import gwt.material.design.client.data.events.RemoveColumnHandler;
-import gwt.material.design.client.data.events.SetupEvent;
-import gwt.material.design.client.data.events.SetupHandler;
+import gwt.material.design.client.ui.table.events.StretchEvent;
+import gwt.material.design.client.ui.table.events.StretchHandler;
 import gwt.material.design.jquery.client.api.JQueryElement;
 import gwt.material.design.client.constants.Alignment;
 import gwt.material.design.client.constants.HideOn;
@@ -44,8 +44,6 @@ import gwt.material.design.client.ui.MaterialIcon;
 import gwt.material.design.client.ui.html.ListItem;
 import gwt.material.design.client.ui.html.Span;
 import gwt.material.design.client.ui.table.cell.Column;
-
-import java.util.logging.Logger;
 
 import static gwt.material.design.jquery.client.api.JQuery.$;
 
@@ -221,7 +219,7 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
         Column<T, ?> column = event.getColumn();
         String header = event.getHeader();
 
-        AttachEvent.Handler hander = e -> {
+        AttachEvent.Handler handler = e -> {
             int index = beforeIndex + getView().getColumnOffset();
             String ref = getView().getId() + "-col" + index;
 
@@ -246,9 +244,9 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
         };
 
         if(getView().isSetup()) {
-            hander.onAttachOrDetach(null);
+            handler.onAttachOrDetach(null);
         } else {
-            addAttachHandler(hander, true);
+            addAttachHandler(handler, true);
         }
     }
 
@@ -292,7 +290,7 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
 
         if(fireEvent) {
             // Fire table stretch event
-            $this().trigger(TableEvents.STRETCH, new Object[]{$this().hasClass(TableCssName.STRETCH)});
+            StretchEvent.fire(this, $this().hasClass(TableCssName.STRETCH));
         }
     }
 
@@ -314,5 +312,12 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
 
     public Span getTableTitle() {
         return tableTitle;
+    }
+
+    /**
+     * Add a handler that is triggered when the table is stretched.
+     */
+    public HandlerRegistration addStretchHandler(StretchHandler handler) {
+        return addHandler(handler, StretchEvent.TYPE);
     }
 }

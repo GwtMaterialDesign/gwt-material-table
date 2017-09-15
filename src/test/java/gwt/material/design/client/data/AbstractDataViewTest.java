@@ -20,6 +20,7 @@
 package gwt.material.design.client.data;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.RootPanel;
 import gwt.material.design.client.DataTableTestCase;
 import gwt.material.design.client.SortHelper;
@@ -95,7 +96,6 @@ public class AbstractDataViewTest<T extends MaterialDataTable<Person>> extends D
 
         table.addRenderedHandler(e -> {
             assertFalse(dataView.isRendering());
-            return true;
         });
 
         // when
@@ -135,7 +135,6 @@ public class AbstractDataViewTest<T extends MaterialDataTable<Person>> extends D
 
         table.addComponentsRenderedHandler(event -> {
             checkNonIndexRowComponents(table, people.size());
-            return true;
         });
 
         // when
@@ -156,7 +155,6 @@ public class AbstractDataViewTest<T extends MaterialDataTable<Person>> extends D
             assertEquals(0, dataView.getRowCount());
             assertEquals(0, dataView.getVisibleItemCount());
             assertEquals(2, dataView.tbody.getWidgetCount());
-            return true;
         });
 
         // when
@@ -173,17 +171,19 @@ public class AbstractDataViewTest<T extends MaterialDataTable<Person>> extends D
         T table = attachTableWithConstructor(false);
         DataView<Person> dataView = table.getView();
 
-        table.addRenderedHandler(event -> {
-            checkRowComponents(table, people.size());
+        HandlerRegistration[] registration = {null};
+        registration[0] = table.addRenderedHandler(event -> {
+            if(registration[0] != null) {
+                checkRowComponents(table, people.size());
+                registration[0].removeHandler();
+                registration[0] = null;
 
-            table.removeRenderedHandlers();
-            table.addRenderedHandler(event1 -> {
-                checkRowComponents(table, 9);
-                return true;
-            });
+                table.addRenderedHandler(event1 -> {
+                    checkRowComponents(table, 9);
+                });
 
-            table.setRowData(3, people);
-            return true;
+                table.setRowData(3, people);
+            }
         });
 
         // when
@@ -340,9 +340,8 @@ public class AbstractDataViewTest<T extends MaterialDataTable<Person>> extends D
         Components<RowComponent<Person>> beforeRows = new Components<>(dataView.getRows(), RowComponent::new);
 
         boolean[] sorted = {false};
-        table.addSortColumnHandler((event, sortContext, integer) -> {
+        table.addColumnSortHandler(event -> {
             sorted[0] = true;
-            return true;
         });
 
         // when
@@ -373,9 +372,8 @@ public class AbstractDataViewTest<T extends MaterialDataTable<Person>> extends D
         Components<RowComponent<Person>> beforeRows = new Components<>(dataView.getRows(), RowComponent::new);
 
         boolean[] sorted = {false};
-        table.addSortColumnHandler((event, sortContext, integer) -> {
+        table.addColumnSortHandler(event -> {
             sorted[0] = true;
-            return true;
         });
 
         Column<Person, ?> column = table.getColumns().get(0);
@@ -413,7 +411,6 @@ public class AbstractDataViewTest<T extends MaterialDataTable<Person>> extends D
         table.addRenderedHandler(event -> {
             // First column is autoSort'ing
             checkColumnSort(dataView, 0);
-            return true;
         });
 
         // then
@@ -436,7 +433,6 @@ public class AbstractDataViewTest<T extends MaterialDataTable<Person>> extends D
         table.addRenderedHandler(event -> {
             // First column is autoSort'ing
             checkColumnSort(dataView, 0);
-            return true;
         });
 
         table.setRowData(0, people);
@@ -635,12 +631,11 @@ public class AbstractDataViewTest<T extends MaterialDataTable<Person>> extends D
         int rowCount = table.getRowCount();
 
         boolean[] selectAll = {false};
-        table.addSelectAllHandler((e, param1, param2, param3) -> {
+        table.addSelectAllHandler(event -> {
             selectAll[0] = true;
-            assertEquals(rowCount, param1.size());
-            assertEquals(rowCount, param2.size());
-            assertTrue(param3);
-            return true;
+            assertEquals(rowCount, event.getModels().size());
+            assertEquals(rowCount, event.getRows().size());
+            assertTrue(event.isSelected());
         });
 
         // when
@@ -668,12 +663,11 @@ public class AbstractDataViewTest<T extends MaterialDataTable<Person>> extends D
         int rowCount = table.getRowCount();
 
         boolean[] deselectAll = {false};
-        table.addSelectAllHandler((e, param1, param2, param3) -> {
+        table.addSelectAllHandler(event -> {
             deselectAll[0] = true;
-            assertEquals(rowCount, param1.size());
-            assertEquals(rowCount, param2.size());
-            assertFalse(param3);
-            return true;
+            assertEquals(rowCount, event.getModels().size());
+            assertEquals(rowCount, event.getRows().size());
+            assertFalse(event.isSelected());
         });
 
         // when
@@ -704,12 +698,11 @@ public class AbstractDataViewTest<T extends MaterialDataTable<Person>> extends D
         Element element = rowComponent.getWidget().getElement();
 
         boolean[] rowSelect = {false};
-        table.addRowSelectHandler((e, param1, param2, param3) -> {
+        table.addRowSelectHandler(event -> {
             rowSelect[0] = true;
-            assertEquals(rowComponent.getData(), param1);
-            assertEquals(element, param2);
-            assertTrue(param3);
-            return true;
+            assertEquals(rowComponent.getData(), event.getModel());
+            assertEquals(element, event.getRow());
+            assertTrue(event.isSelected());
         });
 
         // when
@@ -734,12 +727,11 @@ public class AbstractDataViewTest<T extends MaterialDataTable<Person>> extends D
         dataView.selectRow(element, false);
 
         boolean[] rowDeselect = {false};
-        table.addRowSelectHandler((e, param1, param2, param3) -> {
+        table.addRowSelectHandler(event -> {
             rowDeselect[0] = true;
-            assertEquals(rowComponent.getData(), param1);
-            assertEquals(element, param2);
-            assertFalse(param3);
-            return true;
+            assertEquals(rowComponent.getData(), event.getModel());
+            assertEquals(element, event.getRow());
+            assertFalse(event.isSelected());
         });
 
         // when
