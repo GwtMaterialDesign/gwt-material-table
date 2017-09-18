@@ -72,7 +72,7 @@ public interface DataView<T> extends HasRows<T>, HasColumns<T>, HasDataSource<T>
     /**
      * Set the data views display view.
      */
-    void setDisplay(DataDisplay display);
+    void setDisplay(DataDisplay<T> display);
 
     /**
      * Check if a header with the given index is visible.

@@ -17,14 +17,10 @@
  * limitations under the License.
  * #L%
  */
-package gwt.material.design.client.ui.table;
+package gwt.material.design.client.data.events;
 
-import gwt.material.design.client.model.Person;
+import com.google.gwt.event.shared.EventHandler;
 
-public class MaterialInfiniteDataTableTest extends MaterialDataTableTest<MaterialInfiniteDataTable<Person>> {
-
-    @Override
-    protected MaterialInfiniteDataTable<Person> constructTable() {
-        return new MaterialInfiniteDataTable<>();
-    }
+public interface RowExpandedHandler<T> extends EventHandler {
+    void onRowExpanded(RowExpandedEvent<T> event);
 }

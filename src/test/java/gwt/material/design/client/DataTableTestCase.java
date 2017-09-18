@@ -36,10 +36,12 @@ import gwt.material.design.client.resources.MaterialResources;
 import gwt.material.design.client.resources.MaterialTableBundle;
 import gwt.material.design.client.resources.WithJQueryResources;
 import gwt.material.design.client.ui.MaterialBadge;
+import gwt.material.design.client.ui.table.AbstractDataTable;
 import gwt.material.design.client.ui.table.MaterialDataTable;
 import gwt.material.design.client.ui.table.cell.TextColumn;
 import gwt.material.design.client.ui.table.cell.WidgetColumn;
 import gwt.material.design.jquery.client.api.JQueryElement;
+import org.junit.Ignore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,9 +51,12 @@ import java.util.logging.Logger;
 
 import static gwt.material.design.jquery.client.api.JQuery.$;
 
-public class MaterialDataTableTestCase extends GWTTestCase {
+@Ignore
+public class DataTableTestCase<T extends AbstractDataTable<Person>> extends GWTTestCase {
 
-    private static final Logger logger = Logger.getLogger(MaterialDataTableTestCase.class.getName());
+    private static final Logger logger = Logger.getLogger(DataTableTestCase.class.getName());
+
+    protected T table;
 
     protected static final List<Person> people = new ArrayList<>();
     static {
@@ -92,19 +97,30 @@ public class MaterialDataTableTestCase extends GWTTestCase {
         }
     }
 
-    protected MaterialDataTable<Person> attachTableWithConstructor() throws Exception {
+    @Override
+    protected void gwtTearDown() throws Exception {
+        super.gwtTearDown();
+
+        if(table != null && table.isAttached()) {
+            table.removeFromParent();
+            table = null;
+        }
+        RootPanel.get().clear();
+    }
+
+    protected T attachTableWithConstructor() throws Exception {
         return attachTableWithConstructor(true);
     }
 
-    protected MaterialDataTable<Person> attachTableWithConstructor(boolean includeData) throws Exception {
+    protected T attachTableWithConstructor(boolean includeData) throws Exception {
         // given
-        MaterialDataTable<Person> table = createTable();
+        T table = createTable();
 
         // when
         try {
             addSampleColumns(table);
             if(includeData) {
-                table.setRowData(0, people);
+                addSampleRows(table);
             }
 
         // then
@@ -118,20 +134,20 @@ public class MaterialDataTableTestCase extends GWTTestCase {
         return table;
     }
 
-    protected MaterialDataTable<Person> attachTableWithOnLoad() throws Exception {
+    protected T attachTableWithOnLoad() throws Exception {
         return attachTableWithOnLoad(true);
     }
 
-    protected MaterialDataTable<Person> attachTableWithOnLoad(boolean includeData) throws Exception {
+    protected T attachTableWithOnLoad(boolean includeData) throws Exception {
         // given
-        MaterialDataTable<Person> table = createTable();
+        T table = createTable();
 
         table.addAttachHandler(event -> {
             // when
             try {
                 addSampleColumns(table);
                 if(includeData) {
-                    table.setRowData(0, people);
+                    addSampleRows(table);
                 }
 
             // then
@@ -146,14 +162,23 @@ public class MaterialDataTableTestCase extends GWTTestCase {
         return table;
     }
 
-    protected MaterialDataTable<Person> createTable() {
-        MaterialDataTable<Person> table = new MaterialDataTable<>();
+    protected T constructTable() {
+        return (T) new MaterialDataTable<Person>();
+    }
+
+    protected T createTable() {
+        table = constructTable();
+        table.setVisibleRange(0, 100);
         table.getView().setRowFactory(new PersonRowFactory());
         table.getView().setCategoryFactory(new CustomCategoryFactory());
         return table;
     }
 
-    protected void addSampleColumns(MaterialDataTable<Person> table) {
+    protected void addSampleRows(T table) {
+        table.setRowData(0, people);
+    }
+
+    protected void addSampleColumns(T table) {
         table.addColumn(new TextColumn<Person>() {
             @Override
             public TextAlign textAlign() {

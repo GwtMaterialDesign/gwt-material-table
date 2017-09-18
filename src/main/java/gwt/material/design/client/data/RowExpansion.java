@@ -17,14 +17,35 @@
  * limitations under the License.
  * #L%
  */
-package gwt.material.design.client.ui.table;
+package gwt.material.design.client.data;
 
-import gwt.material.design.client.model.Person;
+import gwt.material.design.jquery.client.api.JQueryElement;
 
-public class MaterialInfiniteDataTableTest extends MaterialDataTableTest<MaterialInfiniteDataTable<Person>> {
+/**
+ * Row expansion block.
+ *
+ * @author Ben Dol
+ */
+public class RowExpansion<T> {
+    final T model;
+    final JQueryElement row;
+    final JQueryElement overlay;
 
-    @Override
-    protected MaterialInfiniteDataTable<Person> constructTable() {
-        return new MaterialInfiniteDataTable<>();
+    public RowExpansion(T model, JQueryElement row) {
+        this.model = model;
+        this.row = row;
+        this.overlay = row.find("section.overlay");
+    }
+
+    public T getModel() {
+        return model;
+    }
+
+    public JQueryElement getRow() {
+        return row;
+    }
+
+    public JQueryElement getOverlay() {
+        return overlay;
     }
 }

@@ -38,10 +38,25 @@ import gwt.material.design.client.data.component.Component;
 import gwt.material.design.client.data.component.ComponentFactory;
 import gwt.material.design.client.data.component.Components;
 import gwt.material.design.client.data.component.RowComponent;
+import gwt.material.design.client.data.events.CategoryClosedEvent;
+import gwt.material.design.client.data.events.CategoryOpenedEvent;
+import gwt.material.design.client.data.events.ColumnSortEvent;
+import gwt.material.design.client.data.events.ComponentsRenderedEvent;
 import gwt.material.design.client.data.events.DestroyEvent;
 import gwt.material.design.client.data.events.InsertColumnEvent;
 import gwt.material.design.client.data.events.RangeChangeEvent;
 import gwt.material.design.client.data.events.RemoveColumnEvent;
+import gwt.material.design.client.data.events.RenderedEvent;
+import gwt.material.design.client.data.events.RowCollapsedEvent;
+import gwt.material.design.client.data.events.RowCollapsingEvent;
+import gwt.material.design.client.data.events.RowContextMenuEvent;
+import gwt.material.design.client.data.events.RowDoubleClickEvent;
+import gwt.material.design.client.data.events.RowExpandingEvent;
+import gwt.material.design.client.data.events.RowExpandedEvent;
+import gwt.material.design.client.data.events.RowLongPressEvent;
+import gwt.material.design.client.data.events.RowSelectEvent;
+import gwt.material.design.client.data.events.RowShortPressEvent;
+import gwt.material.design.client.data.events.SelectAllEvent;
 import gwt.material.design.client.data.events.SetupEvent;
 import gwt.material.design.client.data.factory.CategoryComponentFactory;
 import gwt.material.design.client.data.factory.RowComponentFactory;
@@ -57,8 +72,9 @@ import gwt.material.design.client.ui.Selectors;
 import gwt.material.design.client.ui.table.*;
 import gwt.material.design.client.ui.table.cell.Column;
 import gwt.material.design.client.ui.table.cell.FrozenSide;
-import gwt.material.design.client.ui.table.events.RowExpansion;
+import gwt.material.design.jquery.client.api.Event;
 import gwt.material.design.jquery.client.api.JQueryElement;
+import gwt.material.design.jquery.client.api.MouseEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -86,7 +102,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     // Main
     protected final String id;
-    protected DataDisplay display;
+    protected DataDisplay<T> display;
     protected DataSource<T> dataSource;
     protected Renderer<T> renderer;
     protected SortContext<T> sortContext;
@@ -231,39 +247,44 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             // When the last component has been rendered we
             // will set the rendering flag to false.
             // This can be improved later.
-            Scheduler.get().scheduleDeferred(() -> {
-                Component<?> component = components.get(components.size() - 1);
-                Widget componentWidget = component.getWidget();
-                AttachEvent.Handler handler = event -> {
-                    // Recheck the row height to ensure
-                    // the calculated row height is accurate.
-                    getCalculatedRowHeight();
-
-                    // Fixes an issue with heights updating too early.
-                    // Also ensure the cell widths are updated.
-                    subheaderLib.recalculate(true);
-
-                    maybeApplyFrozenMargins();
-
-                    rendering = false;
-
-                    if(attachHandler != null) {
-                        attachHandler.removeHandler();
-                    }
-
-                    container.trigger(TableEvents.COMPONENTS_RENDERED, null);
-
-                    if(pendingRenderEvent) {
-                        container.trigger(TableEvents.RENDERED, null);
-                        pendingRenderEvent = false;
-                    }
-                };
-                if (componentWidget == null || componentWidget.isAttached()) {
-                    handler.onAttachOrDetach(null);
-                } else {
-                    attachHandler = componentWidget.addAttachHandler(handler);
+            Component<?> component = components.get(components.size() - 1);
+            Widget componentWidget = component.getWidget();
+            AttachEvent.Handler handler = event -> {
+                if(attachHandler != null) {
+                    attachHandler.removeHandler();
                 }
-            });
+
+                // Recheck the row height to ensure
+                // the calculated row height is accurate.
+                getCalculatedRowHeight();
+
+                // Fixes an issue with heights updating too early.
+                // Also ensure the cell widths are updated.
+                subheaderLib.recalculate(true);
+
+                // Fixes an issue with heights updating too early.
+                subheaderLib.updateHeights();
+
+                maybeApplyFrozenMargins();
+
+                rendering = false;
+
+                if(attachHandler != null) {
+                    attachHandler.removeHandler();
+                }
+
+                ComponentsRenderedEvent.fire(this);
+
+                if(pendingRenderEvent) {
+                    RenderedEvent.fire(this);
+                    pendingRenderEvent = false;
+                }
+            };
+            if (componentWidget == null || componentWidget.isAttached()) {
+                handler.onAttachOrDetach(null);
+            } else {
+                attachHandler = componentWidget.addAttachHandler(handler);
+            }
         } else {
             rendering = false;
         }
@@ -457,7 +478,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         if (th != null) {
             if (column.isSortable()) {
                 th.$this().on("click", e -> {
-                    sort(th, column, index);
+                    sort(rows, th, column, index);
                     return true;
                 });
                 th.addStyleName(TableCssName.SORTABLE);
@@ -646,21 +667,26 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         }
 
         if(!pendingRows.isEmpty()) {
-            renderRows(pendingRows);
-            pendingRows.clearComponents();
-
+            Components<RowComponent<T>> sortedRows = null;
             if(maybeApplyAutoSortColumn()) {
                 // We have an auto sort column, sort the pending rows.
                 Column<T, ?> column = sortContext.getSortColumn();
-                sort(sortContext.getTableHeader(), column, columns.indexOf(column) + getColumnOffset(), false);
+                sortedRows = sort(pendingRows, sortContext.getTableHeader(), column, columns.indexOf(column) + getColumnOffset(), false);
+            }
+
+            if(sortedRows == null) {
+                renderRows(pendingRows);
+                pendingRows.clearComponents();
+            } else {
+                renderRows(sortedRows);
             }
         }
     }
 
     @Override
     public void destroy() {
-        rows.clearComponents();
-        categories.clearComponents();
+        rows.clear();
+        categories.clear();
 
         columns.clear();
         headers.clear();
@@ -670,11 +696,12 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         tableBody.off("." + id);
         $(window()).off("." + id);
 
+        $table.stickyTableHeaders("destroy");
+        subheaderLib.unload();
+
+        setRedraw(true);
         rendering = false;
         setup = false;
-
-        // display control
-        display.removeJQueryHandlers();
 
         DestroyEvent.fire(this);
     }
@@ -714,7 +741,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                     }
                 }
             } else {
-                toggleRowSelect(row);
+                toggleRowSelect(e, row);
             }
             return false;
         });
@@ -723,9 +750,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             Element row = $(e.getCurrentTarget()).asElement();
 
             // Fire row select event
-            container.trigger(TableEvents.ROW_CONTEXTMENU, new Object[] {
-                e, getModelByRowElement(row), row
-            });
+            RowContextMenuEvent.fire(this, (MouseEvent)e, getModelByRowElement(row), row);
             return false;
         });
 
@@ -733,9 +758,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             Element row = $(e.getCurrentTarget()).asElement();
 
             // Fire row select event
-            container.trigger(TableEvents.ROW_DOUBLECLICK, new Object[] {
-                e, getModelByRowElement(row), row
-            });
+            RowDoubleClickEvent.fire(this, e, getModelByRowElement(row), row);
             return false;
         });
 
@@ -743,17 +766,13 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             Element row = $(e.getCurrentTarget()).asElement();
 
             // Fire row select event
-            container.trigger(TableEvents.ROW_LONGPRESS, new Object[] {
-                e, getModelByRowElement(row), row
-            });
+            RowLongPressEvent.fire(this, e, getModelByRowElement(row), row);
             return true;
         }, e -> {
             Element row = $(e.getCurrentTarget()).asElement();
 
             // Fire row select event
-            container.trigger(TableEvents.ROW_SHORTPRESS, new Object[] {
-                e, getModelByRowElement(row), row
-            });
+            RowShortPressEvent.fire(this, e, getModelByRowElement(row), row);
             return true;
         }, longPressDuration);
 
@@ -777,6 +796,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                     final JQueryElement row = tr.next();
                     final T model = getModelByRowElement(tr.asElement());
 
+                    RowExpansion<T> rowExpansion = new RowExpansion<>(model, row);
+
                     expansion[0].one(transitionEvents,
                         (e1, param1) -> {
                             if (!recalculated[0]) {
@@ -790,10 +811,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
                                 if(expanding) {
                                     // Fire table expanded event
-                                    container.trigger(TableEvents.ROW_EXPANDED, new RowExpansion<>(model, row));
+                                    RowExpandedEvent.fire(this, rowExpansion);
                                 } else {
                                     // Fire table collapsed event
-                                    container.trigger(TableEvents.ROW_COLLAPSED, new RowExpansion<>(model, row));
+                                    RowCollapsedEvent.fire(this, rowExpansion);
                                 }
                             }
                             return true;
@@ -801,9 +822,9 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
                     if(expanding) {
                         // Fire table expand event
-                        container.trigger(TableEvents.ROW_EXPAND, new RowExpansion<>(model, row));
+                        RowExpandingEvent.fire(this, rowExpansion);
                     } else {
-                        container.trigger(TableEvents.ROW_COLLAPSE, new RowExpansion<>(model, row));
+                        RowCollapsingEvent.fire(this, rowExpansion);
                     }
 
                     Scheduler.get().scheduleDeferred(() -> {
@@ -833,6 +854,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 $(".table-body", getContainer()), "tr.subheader");
 
             final JQueryElement header = $table.find("thead");
+            $(subheaderLib).off("before-recalculate");
             $(subheaderLib).on("before-recalculate", e -> {
                 boolean updateMargin = header.is(":visible") && isUseStickyHeader();
                 subheaderLib.setMarginTop(updateMargin ? header.outerHeight() : 0);
@@ -855,20 +877,6 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         return ((canOverflow ? (end > rangeStart && start < rangeEnd) : (start >= rangeStart && end <= rangeEnd)));
     }
 
-    /**
-     * Ensure that the cached data is consistent with the data size.
-     */
-    private void updateCachedData() {
-//        int rangeStart = range.getStart();
-//        int expectedLastIndex = Math.max(0, Math.min(range.getLength(), getRowCount() - rangeStart));
-//        int lastIndex = getVisibleItemCount() - 1;
-//        while (lastIndex >= expectedLastIndex) {
-//            rows.remove(lastIndex);
-//            lastIndex--;
-//        }
-        rows.clear();
-    }
-
     @Override
     public int getRowCount() {
         return rows.size();
@@ -886,10 +894,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     @Override
     public void setVisibleRange(Range range) {
-        setVisibleRange(range, false, true);
+        setVisibleRange(range, true);
     }
 
-    protected void setVisibleRange(Range range, boolean clearData, boolean forceRangeChangeEvent) {
+    protected void setVisibleRange(Range range, boolean forceRangeChangeEvent) {
         final int start = range.getStart();
         final int length = range.getLength();
         if (start < 0) {
@@ -904,27 +912,6 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         final int pageSize = this.range.getLength();
         final boolean pageStartChanged = (pageStart != start);
         if (pageStartChanged) {
-            // Trim the data if we aren't clearing it.
-            /*if (!clearData) {
-                if (start > pageStart) {
-                    int increase = start - pageStart;
-                    if (getVisibleItemCount() > increase) {
-                        // Remove the data we no longer need.
-                        for (int i = 0; i < increase; i++) {
-                            rows.remove(rows.size()-1);
-                        }
-                    }
-                } else {
-                    int decrease = pageStart - start;
-                    if ((getVisibleItemCount() > 0) && (decrease < pageSize)) {
-                        // Add null data
-                        for (int i = 0; i < decrease; i++) {
-                            rows.add(null);
-                        }
-                    }
-                }
-            }*/
-
             // Update the range start
             this.range = new Range(start, this.range.getLength());
         }
@@ -936,12 +923,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         }
 
         // Clear the rows
-        if (clearData) {
-            rows.clear();
-        }
-
-        // Trim the row values if needed
-        updateCachedData();
+        rows.clear();
 
         // Update the pager and data source if the range changed
         if (pageStartChanged || pageSizeChanged || forceRangeChangeEvent) {
@@ -1002,13 +984,12 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             if(sortColumn != column) {
                 sortContext.setSortColumn(column);
                 sortContext.setTableHeader(th);
-            } else if(dir == null) {
+            } else if(dir == null && sortContext.isSorted()) {
                 sortContext.reverse();
             }
-
-            if(dir != null) {
-                sortContext.setSortDir(dir);
-            }
+        }
+        if(dir != null) {
+            sortContext.setSortDir(dir);
         }
     }
 
@@ -1032,45 +1013,54 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         if(column != null) {
             int index = columns.indexOf(column) + getColumnOffset();
             TableHeader th = headers.get(index);
-            sort(th, column, index, dir);
+            sort(rows, th, column, index, dir);
         } else {
             throw new RuntimeException("Cannot sort on a null column.");
         }
     }
 
-    protected void sort(TableHeader th, Column<T, ?> column, int index) {
-        sort(th, column, index, dataSource == null || !dataSource.useRemoteSort());
+    protected Components<RowComponent<T>> sort(Components<RowComponent<T>> rows, TableHeader th, Column<T, ?> column,
+                                               int index) {
+        return sort(rows, th, column, index, dataSource == null || !dataSource.useRemoteSort());
     }
 
-    protected void sort(TableHeader th, Column<T, ?> column, int index, SortDir dir) {
-        sort(th, column, index, dir, dataSource == null || !dataSource.useRemoteSort());
+    protected Components<RowComponent<T>> sort(Components<RowComponent<T>> rows, TableHeader th, Column<T, ?> column,
+                                               int index, SortDir dir) {
+        return sort(rows, th, column, index, dir, dataSource == null || !dataSource.useRemoteSort());
     }
 
-    protected void sort(TableHeader th, Column<T, ?> column, int index, boolean renderRows) {
-        sort(th, column, index, null, renderRows);
+    protected Components<RowComponent<T>> sort(Components<RowComponent<T>> rows, TableHeader th, Column<T, ?> column,
+                                               int index, boolean renderRows) {
+        return sort(rows, th, column, index, null, renderRows);
     }
 
-    protected void sort(TableHeader th, Column<T, ?> column, int index, SortDir dir, boolean renderRows) {
-        SortContext<T> oldSortContext = this.sortContext;
+    protected Components<RowComponent<T>> sort(Components<RowComponent<T>> rows, TableHeader th, Column<T, ?> column,
+                                               int index, SortDir dir, boolean renderRows) {
+        SortContext<T> oldSortContext = new SortContext<>(this.sortContext);
         updateSortContext(th, column, dir);
 
-        Components<RowComponent<T>> rows = new Components<>(this.rows, RowComponent::new);
-        if(doSort(sortContext, rows)) {
+        Components<RowComponent<T>> clonedRows = new Components<>(rows, RowComponent::new);
+        if(doSort(sortContext, clonedRows)) {
             th.addStyleName(TableCssName.SELECTED);
 
             // Draw and apply the sort icon.
             renderer.drawSortIcon(th, sortContext);
 
+            // No longer a fresh sort
+            sortContext.setSorted(true);
+
             if (renderRows) {
                 // Render the new sort order.
-                renderRows(rows);
+                renderRows(clonedRows);
             }
 
-            container.trigger(TableEvents.SORT_COLUMN, new Object[]{sortContext, index});
+            ColumnSortEvent.fire(this, sortContext, index);
         } else {
             // revert the sort context
             sortContext = oldSortContext;
         }
+
+        return clonedRows;
     }
 
     /**
@@ -1125,7 +1115,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 rows.sort(new DataSort<>(new Comparator<RowComponent<T>>() {
                     @Override
                     public int compare(RowComponent<T> o1, RowComponent<T> o2) {
-                        return Integer.compare(o1.getIndex(), o2.getIndex());
+                        return o1.getData().toString().compareToIgnoreCase(o2.getData().toString());
                     }
                 }, sortContext.getSortDir()));
             } else {
@@ -1267,14 +1257,12 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         tableBody.off("keydown");
         tableBody.keydown(e -> {
             shiftDown = e.isShiftKey();
-            logger.severe("keydown: " + shiftDown);
             return true;
         });
 
         tableBody.off("keyup");
         tableBody.keyup(e -> {
             shiftDown = e.isShiftKey();
-            logger.severe("keyup: " + shiftDown);
             return true;
         });
     }
@@ -1380,19 +1368,28 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
         if(fireEvent) {
             // Fire select all event
-            container.trigger(TableEvents.SELECT_ALL, new Object[]{
-                getModelsByRowElements(rows), rows, select
-            });
+            SelectAllEvent.fire(this, getModelsByRowElements(rows), rows, select);
         }
     }
 
-    @Override
-    public void toggleRowSelect(Element row) {
-        toggleRowSelect(row, true);
+    /**
+     * Select a row by given element.
+     *
+     * @param event sourced even (can be null)
+     * @param row element of the row selection
+     */
+    public void toggleRowSelect(Event event, Element row) {
+        toggleRowSelect(event, row, true);
     }
 
-    @Override
-    public void toggleRowSelect(Element row, boolean fireEvent) {
+    /**
+     * Select a row by given element.
+     *
+     * @param event sourced even (can be null)
+     * @param row element of the row selection
+     * @param fireEvent fire the row select event.
+     */
+    public void toggleRowSelect(Event event, Element row, boolean fireEvent) {
         JQueryElement $row = $(row);
         if(!$row.hasClass("disabled") && !$row.is("[disabled]")) {
             boolean selected = Js.isTrue($row.hasClass("selected"));
@@ -1415,9 +1412,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
             if(fireEvent) {
                 // Fire row select event
-                container.trigger(TableEvents.ROW_SELECT, new Object[] {
-                    getModelByRowElement(row), row, !selected
-                });
+                RowSelectEvent.fire(this, event, getModelByRowElement(row), row, !selected);
             }
         }
     }
@@ -1442,9 +1437,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
             if(fireEvent) {
                 // Fire row select event
-                container.trigger(TableEvents.ROW_SELECT, new Object[] {
-                    getModelByRowElement(row), row, true
-                });
+                RowSelectEvent.fire(this, null, getModelByRowElement(row), row, true);
             }
         }
     }
@@ -1463,9 +1456,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
             if(fireEvent) {
                 // Fire row select event
-                container.trigger(TableEvents.ROW_SELECT, new Object[] {
-                    getModelByRowElement(row), row, false
-                });
+                RowSelectEvent.fire(this, null, getModelByRowElement(row), row, false);
             }
         }
     }
@@ -1534,14 +1525,14 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
         pendingRenderEvent = true;
 
-        // Render the new rows normally
-        renderRows(rows);
-
         if(maybeApplyAutoSortColumn()) {
             // We have an auto sort column, sort the new rows.
             Column<T, ?> column = sortContext.getSortColumn();
-            sort(sortContext.getTableHeader(), column, columns.indexOf(column) + getColumnOffset());
+            rows = sort(rows, sortContext.getTableHeader(), column, columns.indexOf(column) + getColumnOffset(), false);
         }
+
+        // Render the new rows normally
+        renderRows(rows);
     }
 
     /**
@@ -2013,7 +2004,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
-    public void setDisplay(DataDisplay display) {
+    public void setDisplay(DataDisplay<T> display) {
         assert display != null : "Display cannot be null";
         this.display = display;
     }
@@ -2028,11 +2019,13 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             // Attach the category events
             category.$this().off("opened");
             category.$this().on("opened", (e, categoryElem) -> {
-                return container.trigger(TableEvents.CATEGORY_OPENED, category.getName());
+                CategoryOpenedEvent.fire(this, category.getName());
+                return true;
             });
             category.$this().off("closed");
             category.$this().on("closed", (e, categoryElem) -> {
-                return container.trigger(TableEvents.CATEGORY_CLOSED, category.getName());
+                CategoryClosedEvent.fire(this, category.getName());
+                return true;
             });
         }
         return category;
@@ -2099,7 +2092,14 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     public int getCategoryHeight() {
         if (isUseCategories() && categoryHeight == 0) {
-            categoryHeight = categories.get(0).getWidget().getOffsetHeight();
+            try {
+                CategoryComponent categoryComponent = categories.get(0);
+                if (categoryComponent != null && categoryComponent.isRendered()) {
+                    categoryHeight = categoryComponent.getWidget().getOffsetHeight();
+                }
+            } catch (IndexOutOfBoundsException ex) {
+                logger.log(Level.FINE, "Couldn't get the first category.", ex);
+            }
         }
         return categoryHeight;
     }

@@ -22,7 +22,7 @@ package gwt.material.design.client.ui.table;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.Range;
-import gwt.material.design.client.MaterialDataTableTestCase;
+import gwt.material.design.client.DataTableTestCase;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.constants.Color;
@@ -32,9 +32,22 @@ import gwt.material.design.client.constants.TextAlign;
 import gwt.material.design.client.data.ListDataSource;
 import gwt.material.design.client.data.SelectionType;
 import gwt.material.design.client.data.component.RowComponent;
+import gwt.material.design.client.data.events.CategoryClosedEvent;
+import gwt.material.design.client.data.events.CategoryOpenedEvent;
+import gwt.material.design.client.data.events.ColumnSortEvent;
+import gwt.material.design.client.data.events.ComponentsRenderedEvent;
 import gwt.material.design.client.data.events.DestroyEvent;
 import gwt.material.design.client.data.events.InsertColumnEvent;
 import gwt.material.design.client.data.events.RemoveColumnEvent;
+import gwt.material.design.client.data.events.RenderedEvent;
+import gwt.material.design.client.data.events.RowContextMenuEvent;
+import gwt.material.design.client.data.events.RowDoubleClickEvent;
+import gwt.material.design.client.data.events.RowExpandedEvent;
+import gwt.material.design.client.data.events.RowExpandingEvent;
+import gwt.material.design.client.data.events.RowLongPressEvent;
+import gwt.material.design.client.data.events.RowSelectEvent;
+import gwt.material.design.client.data.events.RowShortPressEvent;
+import gwt.material.design.client.data.events.SelectAllEvent;
 import gwt.material.design.client.model.Person;
 import gwt.material.design.client.ui.MaterialBadge;
 import gwt.material.design.client.ui.MaterialCheckBox;
@@ -45,6 +58,7 @@ import gwt.material.design.client.ui.pager.MaterialDataPager;
 import gwt.material.design.client.ui.table.cell.Column;
 import gwt.material.design.client.ui.table.cell.TextColumn;
 import gwt.material.design.client.ui.table.cell.WidgetColumn;
+import gwt.material.design.client.ui.table.events.StretchEvent;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -53,13 +67,13 @@ import java.util.logging.Logger;
 
 import static gwt.material.design.jquery.client.api.JQuery.$;
 
-public class MaterialDataTableTest extends MaterialDataTableTestCase {
+public class MaterialDataTableTest<T extends MaterialDataTable<Person>> extends DataTableTestCase<T> {
 
     private static final Logger logger = Logger.getLogger(MaterialDataTableTest.class.getName());
 
     public void testLoadingInConstructor() throws Exception {
         // given / when / then
-        MaterialDataTable<Person> table = attachTableWithConstructor();
+        T table = attachTableWithConstructor();
 
         // Test the reattach
         table.removeFromParent();
@@ -68,7 +82,7 @@ public class MaterialDataTableTest extends MaterialDataTableTestCase {
 
     public void testLoadingOnAttach() throws Exception {
         // given / when / then
-        MaterialDataTable<Person> table = attachTableWithOnLoad();
+        T table = attachTableWithOnLoad();
 
         // Test the reattach
         table.removeFromParent();
@@ -77,7 +91,7 @@ public class MaterialDataTableTest extends MaterialDataTableTestCase {
 
     public void testProperties() throws Exception {
         // given
-        MaterialDataTable<Person> table = attachTableWithOnLoad();
+        T table = attachTableWithOnLoad();
 
         // when / then
         table.setUseStickyHeader(true);
@@ -102,7 +116,7 @@ public class MaterialDataTableTest extends MaterialDataTableTestCase {
 
     public void testStructure() throws Exception {
         // given
-        MaterialDataTable<Person> table = attachTableWithOnLoad();
+        T table = attachTableWithOnLoad();
 
         // Table Title
         table.setTitle("table title");
@@ -137,7 +151,7 @@ public class MaterialDataTableTest extends MaterialDataTableTestCase {
 
     public void testEvents() throws Exception {
         // given
-        MaterialDataTable<Person> table = createTable();
+        T table = createTable();
 
         // SetupEvent
         final boolean[] isSetupFired = {false};
@@ -186,142 +200,123 @@ public class MaterialDataTableTest extends MaterialDataTableTestCase {
         table.setDestroyOnUnload(true);
         table.removeFromParent();
         assertTrue(isDestroyFired[0]);
-    }
-
-    public void testJQueryEvents() throws Exception {
-        // given
-        MaterialDataTable<Person> table = attachTableWithOnLoad();
-
-        // when / then
 
         // Category Closed
         final boolean[] isCategoryClosedFired = {false};
-        table.addCategoryClosedHandler((e, param1) -> {
+        table.addCategoryClosedHandler(event -> {
             isCategoryClosedFired[0] = true;
-            return true;
         });
-        $(table).trigger(TableEvents.CATEGORY_CLOSED, null);
+        table.fireEvent(new CategoryClosedEvent(null));
         assertTrue(isCategoryClosedFired[0]);
+
         // Category Opened
         final boolean[] isCategoryOpenedFired = {false};
-        table.addCategoryOpenedHandler((e, param1) -> {
+        table.addCategoryOpenedHandler(event -> {
             isCategoryOpenedFired[0] = true;
-            return true;
         });
-        $(table).trigger(TableEvents.CATEGORY_OPENED, null);
+        table.fireEvent(new CategoryOpenedEvent(null));
         assertTrue(isCategoryOpenedFired[0]);
+
         // Row Context Menu
         final boolean[] isRowContextMenuFired = {false};
-        table.addRowContextMenuHandler((e, param1, param2, param3) -> {
+        table.addRowContextMenuHandler(event -> {
             isRowContextMenuFired[0] = true;
-            return true;
         });
-        $(table).trigger(TableEvents.ROW_CONTEXTMENU, null);
+        table.fireEvent(new RowContextMenuEvent<>(null, null, null));
         assertTrue(isRowContextMenuFired[0]);
-        // Row Count Change
-        final boolean[] isRowCountChangeFired = {false};
-        table.addRowCountChangeHandler((e, param1, param2) -> {
-            isRowCountChangeFired[0] = true;
-            return true;
-        });
-        $(table).trigger(TableEvents.ROW_COUNT_CHANGE, null);
-        assertTrue(isRowCountChangeFired[0]);
+
         // Row Double Click
         final boolean[] isRowDoubleClickFired = {false};
-        table.addRowDoubleClickHandler((e, param1, param2, param3) -> {
+        table.addRowDoubleClickHandler(event -> {
             isRowDoubleClickFired[0] = true;
-            return true;
         });
-        $(table).trigger(TableEvents.ROW_DOUBLECLICK, null);
+        table.fireEvent(new RowDoubleClickEvent<>(null, null, null));
         assertTrue(isRowDoubleClickFired[0]);
+
         // Row Expand
         final boolean[] isRowExpandFired = {false};
-        table.addRowExpandHandler((e, param1) -> {
+        table.addRowExpandingHandler(event -> {
             isRowExpandFired[0] = true;
-            return true;
         });
-        $(table).trigger(TableEvents.ROW_EXPAND, null);
+        table.fireEvent(new RowExpandingEvent<>(null));
         assertTrue(isRowExpandFired[0]);
+
         // Row Expanded
         final boolean[] isRowExpandedFired = {false};
-        table.addRowExpandedHandler((e, param1) -> {
+        table.addRowExpandedHandler(event -> {
             isRowExpandedFired[0] = true;
-            return true;
         });
-        $(table).trigger(TableEvents.ROW_EXPANDED, null);
+        table.fireEvent(new RowExpandedEvent<>(null));
         assertTrue(isRowExpandedFired[0]);
+
         // Row Long Press
         final boolean[] isRowLongPressFired = {false};
-        table.addRowLongPressHandler((e, param1, param2, param3) -> {
+        table.addRowLongPressHandler(event -> {
             isRowLongPressFired[0] = true;
-            return true;
         });
-        $(table).trigger(TableEvents.ROW_LONGPRESS, null);
+        table.fireEvent(new RowLongPressEvent<>(null, null, null));
         assertTrue(isRowLongPressFired[0]);
+
         // Row Select
         final boolean[] isRowSelectFired = {false};
-        table.addRowSelectHandler((e, param1, param2, param3) -> {
+        table.addRowSelectHandler(event -> {
             isRowSelectFired[0] = true;
-            return true;
         });
-        $(table).trigger(TableEvents.ROW_SELECT, new Object[] {
-            table.getRow(0), table.getRow(0).getWidget().getElement(), true
-        });
+        table.fireEvent(new RowSelectEvent<>(null, null, null, true));
         assertTrue(isRowSelectFired[0]);
+
         // Row Short Press
         final boolean[] isRowShortPressFired = {false};
-        table.addRowShortPressHandler((e, param1, param2, param3) -> {
+        table.addRowShortPressHandler(event -> {
             isRowShortPressFired[0] = true;
-            return true;
         });
-        $(table).trigger(TableEvents.ROW_SHORTPRESS, null);
+        table.fireEvent(new RowShortPressEvent<>(null, null, null));
         assertTrue(isRowShortPressFired[0]);
+
         // Select All
         final boolean[] isSelectAllFired = {false};
-        table.addSelectAllHandler((e, param1, param2, param3) -> {
+        table.addSelectAllHandler(event -> {
             isSelectAllFired[0] = true;
-            return true;
         });
-        $(table).trigger(TableEvents.SELECT_ALL, new Object[] {
-            table.getRows(), new ArrayList<>(), true
-        });
+        table.fireEvent(new SelectAllEvent<>(new ArrayList<>(), new ArrayList<>(), true));
         assertTrue(isSelectAllFired[0]);
+
         // Sort Column
         final boolean[] isSortColumnFired = {false};
-        table.addSortColumnHandler((e, param1, param2) -> {
+        table.addColumnSortHandler(event -> {
             isSortColumnFired[0] = true;
-            return true;
         });
-        $(table).trigger(TableEvents.SORT_COLUMN, null);
+        table.fireEvent(new ColumnSortEvent<>(null, 0));
         assertTrue(isSortColumnFired[0]);
+
         // Stretch
         final boolean[] isStretchFired = {false};
-        table.addStretchHandler((e, param1) -> {
+        table.addStretchHandler(event -> {
             isStretchFired[0] = true;
-            return true;
         });
-        $(table).trigger(TableEvents.STRETCH, null);
+        table.fireEvent(new StretchEvent(true));
+        assertTrue(isStretchFired[0]);
+
         // Components Rendered
         final boolean[] isCompRendered = {false};
         table.addComponentsRenderedHandler(e -> {
             isCompRendered[0] = true;
-            return true;
         });
-        $(table).trigger(TableEvents.COMPONENTS_RENDERED, null);
+        table.fireEvent(new ComponentsRenderedEvent());
         assertTrue(isCompRendered[0]);
+
         // Rendered
         final boolean[] isRendered = {false};
         table.addRenderedHandler(e -> {
             isRendered[0] = true;
-            return true;
         });
-        $(table).trigger(TableEvents.RENDERED, null);
+        table.fireEvent(new RenderedEvent());
         assertTrue(isRendered[0]);
     }
 
     public void testColumnsRows() throws Exception {
         // given
-        MaterialDataTable<Person> table = attachTableWithConstructor();
+        T table = attachTableWithConstructor();
         table.clearRows(true);
         table.removeColumns();
 
@@ -448,29 +443,30 @@ public class MaterialDataTableTest extends MaterialDataTableTestCase {
 
     public void testStretch() throws Exception {
         // given
-        MaterialDataTable<Person> table = attachTableWithOnLoad();
+        T table = attachTableWithOnLoad();
 
         // when / then
         table.stretch();
         assertTrue(table.getElement().hasClassName(TableCssName.STRETCH));
         assertTrue(MaterialWidget.body().asElement().hasClassName(TableCssName.OVERFLOW_HIDDEN));
+
         table.stretch();
         assertFalse(table.getElement().hasClassName(TableCssName.STRETCH));
         assertFalse(MaterialWidget.body().asElement().hasClassName(TableCssName.OVERFLOW_HIDDEN));
         // Return back to normal state
+
         table.stretch();
         // Stretch Event
         boolean[] isStretchEventFired = {false};
-        table.addStretchHandler((e, param1) -> {
+        table.addStretchHandler(event -> {
             isStretchEventFired[0] = true;
-            return true;
         });
         table.stretch(true);
         assertTrue(isStretchEventFired[0]);
     }
 
     public void testDynamicColumn() throws Exception {
-        MaterialDataTable<Person> table = attachTableWithOnLoad();
+        T table = attachTableWithOnLoad();
 
         // Remove Column
         table.removeColumn(0);
@@ -495,7 +491,7 @@ public class MaterialDataTableTest extends MaterialDataTableTestCase {
     }
 
     public void testPager() throws Exception {
-        MaterialDataTable<Person> table = attachTableWithOnLoad();
+        T table = attachTableWithOnLoad();
 
         ListDataSource<Person> dataSource = new ListDataSource<>();
         List<Person> people = new ArrayList<>();

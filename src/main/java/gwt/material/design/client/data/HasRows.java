@@ -25,6 +25,7 @@ import com.google.gwt.view.client.Range;
 import gwt.material.design.client.data.component.Components;
 import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.client.data.factory.RowComponentFactory;
+import gwt.material.design.jquery.client.api.Event;
 
 import java.util.List;
 
@@ -166,21 +167,6 @@ public interface HasRows<T> extends HasHandlers {
      * @param fireEvent fire the '{@value gwt.material.design.client.ui.table.TableEvents#SELECT_ALL}' event.
      */
     void selectAllRows(boolean select, boolean fireEvent);
-
-    /**
-     * Select a row by given element.
-     *
-     * @param row element of the row selection
-     */
-    void toggleRowSelect(Element row);
-
-    /**
-     * Select a row by given element.
-     *
-     * @param row element of the row selection
-     * @param fireEvent fire the '{@value gwt.material.design.client.ui.table.TableEvents#ROW_SELECT}' event.
-     */
-    void toggleRowSelect(Element row, boolean fireEvent);
 
     /**
      * Select a given row.

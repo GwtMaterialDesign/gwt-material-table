@@ -68,4 +68,14 @@ public class LoadConfig<T> {
     public List<CategoryComponent> getOpenCategories() {
         return openCategories;
     }
+
+    @Override
+    public String toString() {
+        return "LoadConfig{" +
+                "offset=" + offset +
+                ", limit=" + limit +
+                ", sortContext=" + sortContext +
+                ", openCategories=" + openCategories +
+                '}';
+    }
 }

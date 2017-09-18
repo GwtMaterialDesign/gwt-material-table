@@ -31,6 +31,16 @@ public class SortContext<T> {
     private TableHeader tableHeader;
     protected Column<T, ?> sortColumn;
     protected SortDir sortDir = SortDir.ASC;
+    protected boolean sorted;
+
+    protected SortContext(SortContext<T> sortContext) {
+        if(sortContext != null) {
+            tableHeader = sortContext.tableHeader;
+            sortColumn = sortContext.sortColumn;
+            sortDir = sortContext.sortDir;
+            sorted = sortContext.sorted;
+        }
+    }
 
     protected SortContext(Column<T, ?> sortColumn, TableHeader tableHeader) {
         this.sortColumn = sortColumn;
@@ -55,6 +65,12 @@ public class SortContext<T> {
     protected void setSortColumn(Column<T, ?> sortColumn) {
         reset();
         this.sortColumn = sortColumn;
+
+        if(sortColumn != null && !sortColumn.isDefaultSortAscending()) {
+            sortDir = SortDir.DESC;
+        } else {
+            sortDir = SortDir.ASC;
+        }
     }
 
     protected void setTableHeader(TableHeader tableHeader) {
@@ -77,5 +93,13 @@ public class SortContext<T> {
         tableHeader.removeStyleName(TableCssName.SELECTED);
         sortDir = SortDir.ASC;
         sortColumn = null;
+    }
+
+    public boolean isSorted() {
+        return sorted;
+    }
+
+    public void setSorted(boolean sorted) {
+        this.sorted = sorted;
     }
 }

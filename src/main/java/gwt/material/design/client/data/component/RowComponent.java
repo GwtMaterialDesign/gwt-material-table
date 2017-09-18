@@ -135,4 +135,13 @@ public class RowComponent<T> extends Component<TableRow> implements HasEnabled {
         }
         return data;
     }
+
+    @Override
+    public String toString() {
+        return "RowComponent{" +
+                "data=" + data +
+                ", index=" + index +
+                ", categoryName='" + categoryName + '\'' +
+                '}';
+    }
 }

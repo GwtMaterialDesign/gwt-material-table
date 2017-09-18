@@ -17,14 +17,24 @@
  * limitations under the License.
  * #L%
  */
-package gwt.material.design.client.ui.table;
+package gwt.material.design.client.data.infinite;
 
-import gwt.material.design.client.model.Person;
+public interface HasLoader {
 
-public class MaterialInfiniteDataTableTest extends MaterialDataTableTest<MaterialInfiniteDataTable<Person>> {
+    int getLoaderDelay();
 
-    @Override
-    protected MaterialInfiniteDataTable<Person> constructTable() {
-        return new MaterialInfiniteDataTable<>();
-    }
+    void setLoaderDelay(int loaderDelay);
+
+    int getLoaderBuffer();
+
+    /**
+     * The amount of data that will buffer your start index and view size.
+     * This can be useful in removing loading delays. Defaults to 10.
+     */
+    void setLoaderBuffer(int loaderBuffer);
+
+    /**
+     * Is the loader loading.
+     */
+    boolean isLoading();
 }

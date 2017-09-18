@@ -27,13 +27,15 @@ import gwt.material.design.client.data.HasDataSource;
 import gwt.material.design.client.data.HasRenderer;
 import gwt.material.design.client.data.HasRows;
 import gwt.material.design.client.data.ViewSettings;
+import gwt.material.design.client.data.EventHandlers;
+import gwt.material.design.client.events.HandlerRegistry;
 
 /**
  * Data display interface defining the {@link com.google.gwt.user.client.ui.Widget}
  * aspects of the DataTable.
  */
-public interface DataDisplay<T> extends IsWidget, TableEventHandlers<T>, HasRows<T>, HasColumns<T>,
-        HasDataSource<T>, HasRenderer<T>, HasCategories, ViewSettings {
+public interface DataDisplay<T> extends IsWidget, EventHandlers<T>, HasRows<T>, HasColumns<T>,
+        HasDataSource<T>, HasRenderer<T>, HasCategories, ViewSettings, HandlerRegistry {
 
     /**
      * Get the displays {@link DataView}.
