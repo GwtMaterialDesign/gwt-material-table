@@ -696,7 +696,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             } else {
                 toggleRowSelect(e, row);
             }
-            return false;
+            return true;
         });
 
         rows.on("contextmenu." + id, (e, o) -> {

@@ -37,7 +37,7 @@ import java.util.logging.Logger;
  */
 public class MapDataSource<T> implements DataSource<T>, HasDataView<T> {
 
-    private Logger logger = Logger.getLogger(ListDataSource.class.getName());
+    private final static Logger logger = Logger.getLogger(ListDataSource.class.getName());
 
     private Map<String, List<T>> dataMap = new HashMap<>();
     private DataView<T> dataView;
