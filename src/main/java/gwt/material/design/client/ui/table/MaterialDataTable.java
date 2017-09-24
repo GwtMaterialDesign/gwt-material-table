@@ -28,6 +28,7 @@ import gwt.material.design.client.data.events.InsertColumnEvent;
 import gwt.material.design.client.data.events.InsertColumnHandler;
 import gwt.material.design.client.data.events.RemoveColumnEvent;
 import gwt.material.design.client.data.events.RemoveColumnHandler;
+import gwt.material.design.client.data.events.SetupHandler;
 import gwt.material.design.client.ui.table.events.StretchEvent;
 import gwt.material.design.client.ui.table.events.StretchHandler;
 import gwt.material.design.jquery.client.api.JQueryElement;
@@ -68,27 +69,27 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
     private MaterialDropDown menu;
 
     public MaterialDataTable() {
+        loadInternalEvents();
     }
 
     public MaterialDataTable(DataView<T> dataView) {
         super(dataView);
+        loadInternalEvents();
     }
 
     public MaterialDataTable(TableScaffolding scaffolding) {
         super(scaffolding);
+        loadInternalEvents();
     }
 
     public MaterialDataTable(DataView<T> dataView, TableScaffolding scaffolding) {
         super(dataView, scaffolding);
+        loadInternalEvents();
     }
 
     @Override
     protected void onLoad() {
         super.onLoad();
-
-        // Register data view events, these are removed onUnload.
-        registerHandler(addHandler(this, InsertColumnEvent.TYPE));
-        registerHandler(addHandler(this, RemoveColumnEvent.TYPE));
 
         // Attempt to rebuild encase the widgets have been unloaded.
         // In some use cases (like GWTP) the child widgets aren't unloaded.
@@ -219,7 +220,7 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
         Column<T, ?> column = event.getColumn();
         String header = event.getHeader();
 
-        AttachEvent.Handler handler = e -> {
+        SetupHandler handler = e -> {
             int index = beforeIndex + getView().getColumnOffset();
             String ref = getView().getId() + "-col" + index;
 
@@ -244,17 +245,25 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
         };
 
         if(getView().isSetup()) {
-            handler.onAttachOrDetach(null);
+            handler.onSetup(null);
         } else {
-            addAttachHandler(handler, true);
+            addSetupHandler(handler);
         }
     }
 
     @Override
     public void onRemoveColumn(RemoveColumnEvent event) {
-        int index = event.getIndex() + getView().getColumnOffset();
-        $(menu).find("li input#col" + index).parent().remove();
-        reindexToggles();
+        SetupHandler handler = e -> {
+            int index = event.getIndex() + getView().getColumnOffset();
+            $(menu).find("li input#col" + index).parent().remove();
+            reindexToggles();
+        };
+
+        if(getView().isSetup()) {
+            handler.onSetup(null);
+        } else {
+            addSetupHandler(handler);
+        }
     }
 
     private void reindexToggles() {
@@ -319,5 +328,14 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
      */
     public HandlerRegistration addStretchHandler(StretchHandler handler) {
         return addHandler(handler, StretchEvent.TYPE);
+    }
+
+    /**
+     * Load events
+     */
+    protected void loadInternalEvents() {
+        // Register data view events, these are removed onUnload.
+        addInsertColumnHandler(this);
+        addRemoveColumnHandler(this);
     }
 }
