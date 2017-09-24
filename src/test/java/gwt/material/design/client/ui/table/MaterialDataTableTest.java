@@ -540,4 +540,12 @@ public class MaterialDataTableTest<T extends MaterialDataTable<Person>> extends 
         pager.previous();
         assertEquals(1, pager.getCurrentPage());
     }
+
+    public void testMenu() throws Exception {
+        // given / when
+        T table = attachTableWithOnLoad();
+
+        // then
+        assertTrue(table.getMenu().getWidgetCount() > 0);
+    }
 }
