@@ -196,6 +196,9 @@ public class BaseRenderer<T> implements Renderer<T> {
         checkBox.setId("col0");
         checkBox.addStyleName(TableCssName.SELECTION);
         new MaterialCheckBox(checkBox.getElement());
+        checkBox.addClickHandler(event -> {
+            event.getNativeEvent().preventDefault();
+        });
         return checkBox;
     }
 
