@@ -44,6 +44,7 @@ public class MaterialDataPager<T> extends MaterialDataPagerBase<T> implements Ha
     private int currentPage = 1;
     private int totalRows = 0;
     private int[] limitOptions = new int[]{5, 10, 20};
+    private int pages;
 
     public MaterialDataPager(MaterialDataTable<T> table, DataSource<T> dataSource) {
         super();
@@ -201,10 +202,18 @@ public class MaterialDataPager<T> extends MaterialDataPagerBase<T> implements Ha
         actionLabel.setText((offset + 1) + "-" + lastRow + " of " + totalRows);
 
         // Build the currentPage number listbox
-        listPages.clear();
-        int pages = (isExcess()) ? (totalRows / limit) + 1 : totalRows / limit;
-        for (int i = 1; i <= pages; i++) {
-            listPages.addItem(i);
+        int newPages = (isExcess()) ? (totalRows / limit) + 1 : totalRows / limit;
+        if (newPages != pages)
+        {
+            numPagePanel.remove(listPages);
+            numPagePanel.remove(pageLabel);
+            pages = newPages;
+            listPages.clear();
+            for (int i = 1; i <= pages; i++) {
+                listPages.addItem(i);
+            }
+            numPagePanel.add(listPages);
+            numPagePanel.add(pageLabel);
         }
         listPages.setSelectedIndex(currentPage - 1);
 
