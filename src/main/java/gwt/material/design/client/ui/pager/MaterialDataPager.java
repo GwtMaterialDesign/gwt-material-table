@@ -20,6 +20,7 @@
 package gwt.material.design.client.ui.pager;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.shared.HandlerRegistration;
 import gwt.material.design.client.data.DataSource;
 import gwt.material.design.client.data.SortContext;
 import gwt.material.design.client.data.component.CategoryComponent;
@@ -44,6 +45,8 @@ public class MaterialDataPager<T> extends MaterialDataPagerBase<T> implements Ha
     private int currentPage = 1;
     private int totalRows = 0;
     private int[] limitOptions = new int[]{5, 10, 20};
+    private HandlerRegistration nextRegistration;
+    private HandlerRegistration prevRegistration;
 
     public MaterialDataPager(MaterialDataTable<T> table, DataSource<T> dataSource) {
         super();
@@ -66,8 +69,12 @@ public class MaterialDataPager<T> extends MaterialDataPagerBase<T> implements Ha
 
         limit = limitOptions[0];
         firstPage();
-        iconNext.addClickHandler(event -> next());
-        iconPrev.addClickHandler(event -> previous());
+        if (prevRegistration != null)
+            prevRegistration.removeHandler();
+        if (nextRegistration != null)
+            nextRegistration.removeHandler();
+        prevRegistration = iconNext.addClickHandler(event -> next());
+        nextRegistration = iconPrev.addClickHandler(event -> previous());
 
         listPages.addValueChangeHandler(event -> gotoPage(event.getValue()));
 
