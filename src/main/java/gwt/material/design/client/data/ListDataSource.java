@@ -1,10 +1,8 @@
-package gwt.material.design.client.data;
-
 /*
  * #%L
  * GwtMaterial
  * %%
- * Copyright (C) 2015 - 2016 GwtMaterialDesign
+ * Copyright (C) 2015 - 2017 GwtMaterialDesign
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +17,7 @@ package gwt.material.design.client.data;
  * limitations under the License.
  * #L%
  */
+package gwt.material.design.client.data;
 
 import gwt.material.design.client.data.loader.LoadCallback;
 import gwt.material.design.client.data.loader.LoadConfig;
@@ -49,26 +48,12 @@ public class ListDataSource<T> implements DataSource<T> {
     @Override
     public void load(LoadConfig<T> loadConfig, LoadCallback<T> callback) {
         try {
-            final List<T> subList = data.subList(loadConfig.getOffset(),
-                    (loadConfig.getOffset() + loadConfig.getLimit()));
-            callback.onSuccess(new LoadResult<T>() {
-                @Override
-                public List<T> getData() {
-                    return subList;
-                }
-                @Override
-                public int getOffset() {
-                    return loadConfig.getOffset();
-                }
-                @Override
-                public int getTotalLength() {
-                    return data.size();
-                }
-                @Override
-                public boolean isCacheData() {
-                    return cacheData();
-                }
-            });
+            int size = loadConfig.getOffset() + loadConfig.getLimit();
+            if(size > data.size()){
+                size = data.size();
+            }
+            final List<T> subList = size == 0 ? new ArrayList<>() : data.subList(loadConfig.getOffset(), size);
+            callback.onSuccess(new LoadResult<>(subList, loadConfig.getOffset(), data.size(), cacheData()));
         } catch (IndexOutOfBoundsException ex) {
             // Silently ignore index out of bounds exceptions
             logger.log(Level.FINE, "ListDataSource threw index out of bounds.", ex);

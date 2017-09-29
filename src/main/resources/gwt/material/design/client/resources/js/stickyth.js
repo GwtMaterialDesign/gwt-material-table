@@ -191,7 +191,7 @@
 
     base.setPositionValues = function () {
       var winScrollTop = base.$window.scrollTop(),
-        winScrollLeft = base.$window.scrollLeft();
+          winScrollLeft = base.$window.scrollLeft();
       if (!base.isSticky /*|| winScrollTop < 0 || winScrollTop + base.$window.height() > base.$document.height()*/
           || winScrollLeft < 0 || winScrollLeft + base.$window.width() > base.$document.width()) {
         return;
@@ -207,7 +207,7 @@
       base.$originalHeader.css({
         'top': base.topOffset - (base.isWindowScrolling ? 0 : winScrollTop),
         'left': base.leftOffset - (base.isWindowScrolling ? 0 : winScrollLeft),
-        "clip": "rect(0px, " + (base.$scrollableArea.outerWidth() + scrollLeft - base.scrollBarWidth) + "px, " + (height + 50) + "px, " + leftClip + "px)"
+        "clip": "rect("+topClip+"px, " + (base.$scrollableArea.outerWidth() + scrollLeft - base.scrollBarWidth) + "px, " + (height + 50) + "px, " + leftClip + "px)"
       });
     };
 

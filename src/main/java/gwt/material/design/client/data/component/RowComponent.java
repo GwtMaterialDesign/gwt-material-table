@@ -1,10 +1,8 @@
-package gwt.material.design.client.data.component;
-
 /*
  * #%L
  * GwtMaterial
  * %%
- * Copyright (C) 2015 - 2016 GwtMaterialDesign
+ * Copyright (C) 2015 - 2017 GwtMaterialDesign
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +17,9 @@ package gwt.material.design.client.data.component;
  * limitations under the License.
  * #L%
  */
+package gwt.material.design.client.data.component;
 
-
+import gwt.material.design.client.data.DataView;
 import gwt.material.design.jquery.client.api.JQuery;
 import gwt.material.design.jquery.client.api.JQueryElement;
 import gwt.material.design.client.ui.table.TableRow;
@@ -34,17 +33,21 @@ import java.util.List;
 public class RowComponent<T> extends Component<TableRow> {
     private T data;
     private int index;
-    private String category;
+    private final String categoryName;
+    private final DataView dataView;
 
     public RowComponent(RowComponent<T> clone) {
-        super(clone.getElement(), clone.isRedraw());
+        super(clone.getWidget(), clone.isRedraw());
         data = clone.data;
-        category = clone.category;
+        index = clone.index;
+        categoryName = clone.categoryName;
+        dataView = clone.dataView;
     }
 
-    public RowComponent(T data, String category) {
+    public RowComponent(T data, DataView dataView, String categoryName) {
         this.data = data;
-        this.category = category;
+        this.dataView = dataView;
+        this.categoryName = categoryName;
     }
 
     public T getData() {
@@ -63,21 +66,29 @@ public class RowComponent<T> extends Component<TableRow> {
         this.index = index;
     }
 
-    public String getDataCategory() {
-        return category;
+    public DataView getDataView() {
+        return dataView;
+    }
+
+    public CategoryComponent getCategory() {
+        return dataView.getCategory(categoryName);
+    }
+
+    public String getCategoryName() {
+        return categoryName;
     }
 
     @Override
-    protected void clearElement() {
-        TableRow row = getElement();
+    protected void clearWidget() {
+        TableRow row = getWidget();
         if(row != null) {
             clearRowExpansion();
         }
-        super.clearElement();
+        super.clearWidget();
     }
 
     public void clearRowExpansion() {
-        JQueryElement next = JQuery.$(getElement()).next();
+        JQueryElement next = JQuery.$(getWidget()).next();
         if(next.is("tr.expansion")) {
             next.remove();
         }

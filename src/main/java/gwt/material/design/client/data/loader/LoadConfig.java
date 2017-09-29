@@ -24,28 +24,48 @@ import gwt.material.design.client.data.component.CategoryComponent;
 
 import java.util.List;
 
-public interface LoadConfig<T> {
+public class LoadConfig<T> {
+
+    private final int offset;
+    private final int limit;
+    private final SortContext<T> sortContext;
+    private final List<CategoryComponent> openCategories;
+
+    public LoadConfig(int offset, int limit, SortContext<T> sortContext, List<CategoryComponent> openCategories) {
+        this.offset = offset;
+        this.limit = limit;
+        this.sortContext = sortContext;
+        this.openCategories = openCategories;
+    }
 
     /**
      * Get load offset.
      */
-    int getOffset();
+    public int getOffset() {
+        return offset;
+    }
 
     /**
      * Get load limit. Set to "0" for no limit.
      */
-    int getLimit();
+    public int getLimit() {
+        return limit;
+    }
 
     /**
      * Get sorters to use when loading. Usually used for remote data sources.
      * Return null if no sort context exists.
      */
-    SortContext<T> getSortContext();
+    public SortContext<T> getSortContext() {
+        return sortContext;
+    }
 
     /**
      * Get categories to load.
      * Return null if no categories exists.
      * FIXME: CategoryComponent belongs to table package, need to make similar class in data package
      */
-    List<CategoryComponent> getOpenCategories();
+    public List<CategoryComponent> getOpenCategories() {
+        return openCategories;
+    }
 }

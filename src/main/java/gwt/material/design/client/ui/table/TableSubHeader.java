@@ -1,10 +1,8 @@
-package gwt.material.design.client.ui.table;
-
 /*
  * #%L
  * GwtMaterial
  * %%
- * Copyright (C) 2015 - 2016 GwtMaterialDesign
+ * Copyright (C) 2015 - 2017 GwtMaterialDesign
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +17,9 @@ package gwt.material.design.client.ui.table;
  * limitations under the License.
  * #L%
  */
-
+package gwt.material.design.client.ui.table;
 
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.WidgetCollection;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.constants.IconType;
@@ -31,8 +28,7 @@ import gwt.material.design.client.js.Js;
 import gwt.material.design.client.ui.MaterialIcon;
 import gwt.material.design.client.ui.html.Text;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * @author Ben Dol
@@ -72,8 +68,8 @@ public class TableSubHeader extends TableRow {
         nameTh.add(nameLbl);
         add(nameTh);
 
-        setName(category.getCategory());
-        setId(category.getCategory());
+        setName(category.getName());
+        setId(category.getName());
     }
 
     public void add(TableHeader tableHeader) {
@@ -138,6 +134,10 @@ public class TableSubHeader extends TableRow {
         return iconTh;
     }
 
+    public MaterialIcon getIcon() {
+        return icon;
+    }
+
     public boolean isOpen() {
         return $this().hasClass(TableCssName.EXPANDED);
     }
@@ -176,7 +176,11 @@ public class TableSubHeader extends TableRow {
     public void removeFromParent() {
         Widget parent = getParent();
         if(parent != null && parent instanceof MaterialWidget) {
-            ((MaterialWidget) parent).getChildren().remove(this);
+            try {
+                ((MaterialWidget) parent).getChildren().remove(this);
+            } catch (NoSuchElementException ex) {
+                // This means we have already removed this subheader.
+            }
         }
         $this().parent().remove();
     }

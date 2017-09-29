@@ -1,10 +1,8 @@
-package gwt.material.design.client.data.component;
-
 /*
  * #%L
  * GwtMaterial
  * %%
- * Copyright (C) 2015 - 2016 GwtMaterialDesign
+ * Copyright (C) 2015 - 2017 GwtMaterialDesign
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +17,7 @@ package gwt.material.design.client.data.component;
  * limitations under the License.
  * #L%
  */
+package gwt.material.design.client.data.component;
 
 import gwt.material.design.client.ui.table.TableSubHeader;
 
@@ -40,16 +39,22 @@ public class CategoryComponent extends Component<TableSubHeader> {
         }
     }
 
-    private String category;
+    private String name;
     private int currentIndex = -1;
-    private int rowCount = -1;
+    private int rowCount = 0;
+    private boolean openByDefault;
 
-    public CategoryComponent(String category) {
-        this.category = category;
+    public CategoryComponent(String name) {
+        this(name, false);
     }
 
-    public String getCategory() {
-        return category;
+    public CategoryComponent(String name, boolean openByDefault) {
+        this.name = name;
+        this.openByDefault = openByDefault;
+    }
+
+    public String getName() {
+        return name;
     }
 
     /**
@@ -66,17 +71,17 @@ public class CategoryComponent extends Component<TableSubHeader> {
      * @return a fully formed {@link TableSubHeader} object.
      */
     public final TableSubHeader render() {
-        TableSubHeader element = getElement();
+        TableSubHeader element = getWidget();
         if(element == null) {
             element = new TableSubHeader(this);
-            setElement(element);
+            setWidget(element);
         }
         render(element);
         return element;
     }
 
     public boolean isOpen() {
-        return isRendered() && getElement().isOpen();
+        return isRendered() && getWidget().isOpen();
     }
 
     public int getCurrentIndex() {
@@ -95,12 +100,20 @@ public class CategoryComponent extends Component<TableSubHeader> {
         this.rowCount = rowCount;
     }
 
-    @Override
-    public void setElement(TableSubHeader element) {
-        // copy the elements style and info
-        element.copy(getElement());
+    public boolean isOpenByDefault() {
+        return openByDefault;
+    }
 
-        super.setElement(element);
+    public void setOpenByDefault(boolean openByDefault) {
+        this.openByDefault = openByDefault;
+    }
+
+    @Override
+    public void setWidget(TableSubHeader widget) {
+        // copy the elements style and info
+        widget.copy(getWidget());
+
+        super.setWidget(widget);
     }
 
     @Override
@@ -109,11 +122,11 @@ public class CategoryComponent extends Component<TableSubHeader> {
         if (o == null || getClass() != o.getClass()) return false;
 
         CategoryComponent that = (CategoryComponent) o;
-        return category.equals(that.category);
+        return name.equals(that.name);
     }
 
     @Override
     public int hashCode() {
-        return category.hashCode();
+        return name.hashCode();
     }
 }

@@ -1,10 +1,8 @@
-package gwt.material.design.client.data;
-
 /*
  * #%L
  * GwtMaterial
  * %%
- * Copyright (C) 2015 - 2016 GwtMaterialDesign
+ * Copyright (C) 2015 - 2017 GwtMaterialDesign
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +17,7 @@ package gwt.material.design.client.data;
  * limitations under the License.
  * #L%
  */
+package gwt.material.design.client.data;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.Panel;
@@ -26,12 +25,14 @@ import com.google.gwt.view.client.HasKeyProvider;
 import com.google.gwt.view.client.HasRows;
 import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.data.component.Component;
+import gwt.material.design.client.data.component.ComponentFactory;
 import gwt.material.design.client.data.component.Components;
 import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.client.data.factory.CategoryComponentFactory;
 import gwt.material.design.client.data.factory.RowComponentFactory;
 import gwt.material.design.client.js.JsTableSubHeaders;
 import gwt.material.design.client.ui.MaterialProgress;
+import gwt.material.design.client.ui.table.TableHeader;
 import gwt.material.design.client.ui.table.TableScaffolding;
 import gwt.material.design.client.ui.table.cell.Column;
 
@@ -107,6 +108,31 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
     String getViewId();
 
     /**
+     * Update a models row within the table.
+     * @param model a model with a valid <code>equals</code> method.
+     */
+    void updateRow(T model);
+
+    /**
+     * Get a row by its representing model.
+     * @param model the model assigned to a row.
+     */
+    RowComponent<T> getRow(T model);
+
+    /**
+     * Get a row by its rendered index.
+     * @param index the value of the render index.
+     */
+    RowComponent<T> getRow(int index);
+
+    /**
+     * Get a models {@link RowComponent} or null if not found.
+     * @param model a model with a valid <code>equals</code> method.
+     * @return the models representing {@link RowComponent}.
+     */
+    RowComponent<T> getRowByModel(T model);
+
+    /**
      * Clear data rows.
      *
      * @param clearData should we also clear the stored data.
@@ -134,6 +160,11 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
      * Check if a header with the given index is visible.
      */
     boolean isHeaderVisible(int colIndex);
+
+    /**
+     * Get the list of rendered header widgets.
+     */
+    List<TableHeader> getHeaders();
 
     /**
      * Add a new column to the data view.
@@ -236,7 +267,7 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
     /**
      * Unselect a selected row.
      */
-    void unselectRow(Element row, boolean fireEvent);
+    void deselectRow(Element row, boolean fireEvent);
 
     /**
      * Does this view have unselected rows.
@@ -244,7 +275,7 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
      * @param visibleOnly should we restrict this check to visible rows only.
      * @return true if there are unselected rows in this view.
      */
-    boolean hasUnselectedRows(boolean visibleOnly);
+    boolean hasDeselectedRows(boolean visibleOnly);
 
     /**
      * Does this view have selected rows.
@@ -280,6 +311,12 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
     int getVisibleItemCount();
 
     /**
+     * Get a stored category component.
+     * @param categoryName name of the category component.
+     */
+    CategoryComponent getCategory(String categoryName);
+
+    /**
      * Get all registered category components.
      */
     List<CategoryComponent> getCategories();
@@ -293,6 +330,13 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
      * Check if a category has data to provide.
      */
     boolean isCategoryEmpty(CategoryComponent category);
+
+    /**
+     * Explicitly add a category, which will be drawn to the table.
+     * If the category already exists then it will be ignored.
+     * @param category The category name.
+     */
+    void addCategory(String category);
 
     /**
      * Explicitly add a {@link CategoryComponent}, which will be drawn to the table.
@@ -310,6 +354,26 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
      * Disable a data view category.
      */
     void disableCategory(String categoryName);
+
+    /**
+     * Open an existing Category.
+     */
+    void openCategory(String categoryName);
+
+    /**
+     * Open an existing Category.
+     */
+    void openCategory(CategoryComponent category);
+
+    /**
+     * Close an existing Category.
+     */
+    void closeCategory(String categoryName);
+
+    /**
+     * Close an existing Category.
+     */
+    void closeCategory(CategoryComponent category);
 
     /**
      * Get the data views current sort context, or null if no sort context is applied.
@@ -334,7 +398,7 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
     /**
      * Set your own custom {@link CategoryComponentFactory} to generate your categories.
      */
-    void setCategoryFactory(CategoryComponentFactory categoryFactory);
+    void setCategoryFactory(ComponentFactory<? extends CategoryComponent, String> categoryFactory);
 
     /**
      * Set the data views loading mask.
@@ -402,4 +466,14 @@ public interface DataView<T> extends HasRows, HasKeyProvider<T> {
      * Set the long press duration requirement.
      */
     void setLongPressDuration(int longPressDuration);
+
+    /**
+     * Set the table body height.
+     */
+    void setHeight(String height);
+
+    /**
+     * Get the table body height.
+     */
+    String getHeight();
 }

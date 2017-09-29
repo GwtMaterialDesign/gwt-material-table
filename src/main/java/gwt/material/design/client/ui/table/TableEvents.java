@@ -1,10 +1,8 @@
-package gwt.material.design.client.ui.table;
-
 /*
  * #%L
  * GwtMaterial
  * %%
- * Copyright (C) 2015 - 2016 GwtMaterialDesign
+ * Copyright (C) 2015 - 2017 GwtMaterialDesign
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +17,7 @@ package gwt.material.design.client.ui.table;
  * limitations under the License.
  * #L%
  */
+package gwt.material.design.client.ui.table;
 
 /**
  * Table event name constants.
@@ -29,6 +28,8 @@ public class TableEvents {
     public static final String STRETCH = "stretch";
     public static final String ROW_EXPAND = "row-expand";
     public static final String ROW_EXPANDED = "row-expanded";
+    public static final String ROW_COLLAPSE = "row-collapse";
+    public static final String ROW_COLLAPSED = "row-collapsed";
     public static final String ROW_COUNT_CHANGE = "row-count-change";
     public static final String ROW_CONTEXTMENU = "row-contextmenu";
     public static final String ROW_DOUBLECLICK = "row-dblclick";
@@ -37,4 +38,6 @@ public class TableEvents {
     public static final String SORT_COLUMN = "sort-column";
     public static final String CATEGORY_OPENED = "category-opened";
     public static final String CATEGORY_CLOSED = "category-closed";
+    public static final String COMPONENTS_RENDERED = "components-rendered";
+    public static final String RENDERED = "rendered";
 }

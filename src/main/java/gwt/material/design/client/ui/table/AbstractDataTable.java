@@ -1,10 +1,8 @@
-package gwt.material.design.client.ui.table;
-
 /*
  * #%L
  * GwtMaterial
  * %%
- * Copyright (C) 2015 - 2016 GwtMaterialDesign
+ * Copyright (C) 2015 - 2017 GwtMaterialDesign
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +17,7 @@ package gwt.material.design.client.ui.table;
  * limitations under the License.
  * #L%
  */
+package gwt.material.design.client.ui.table;
 
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.Cell.Context;
@@ -29,6 +28,7 @@ import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.dom.client.TableRowElement;
+import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
@@ -38,10 +38,12 @@ import com.google.gwt.view.client.Range;
 import com.google.gwt.view.client.RangeChangeEvent.Handler;
 import com.google.gwt.view.client.RowCountChangeEvent;
 import gwt.material.design.client.base.constants.TableCssName;
+import gwt.material.design.client.data.component.ComponentFactory;
+import gwt.material.design.client.data.component.RowComponent;
+import gwt.material.design.jquery.client.api.Functions;
 import gwt.material.design.jquery.client.api.Functions.EventFunc1;
 import gwt.material.design.jquery.client.api.Functions.EventFunc2;
 import gwt.material.design.jquery.client.api.Functions.EventFunc3;
-import gwt.material.design.jquery.client.api.JQuery;
 import gwt.material.design.jquery.client.api.JQueryElement;
 import gwt.material.design.jquery.client.api.MouseEvent;
 import gwt.material.design.jscore.client.api.core.Element;
@@ -55,12 +57,11 @@ import gwt.material.design.client.data.SelectionType;
 import gwt.material.design.client.data.SortContext;
 import gwt.material.design.client.data.component.Component;
 import gwt.material.design.client.data.component.Components;
-import gwt.material.design.client.data.factory.CategoryComponentFactory;
 import gwt.material.design.client.data.factory.RowComponentFactory;
 import gwt.material.design.client.js.JsTableSubHeaders;
 import gwt.material.design.client.ui.MaterialProgress;
 import gwt.material.design.client.ui.table.cell.Column;
-import gwt.material.design.client.ui.table.events.RowExpand;
+import gwt.material.design.client.ui.table.events.RowExpansion;
 
 import java.util.List;
 import java.util.Set;
@@ -117,14 +118,14 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     protected DataView<T> dataView;
     protected TableScaffolding scaffolding;
-    protected LoadedCallback loadedCallback;
 
     private boolean setup;
     private boolean focused;
     private boolean refreshing;
     private boolean cellIsEditing;
     private boolean destroyOnUnload;
-    private String height;
+
+    private HandlerRegistration attachHandler;
 
     public AbstractDataTable() {
         this(new StandardDataView<>());
@@ -161,9 +162,6 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
                 setup = true;
                 setup(scaffolding);
 
-                if(loadedCallback != null) {
-                    loadedCallback.onLoaded();
-                }
             } catch (Exception ex) {
                 logger.log(Level.SEVERE,
                     "Could not setup AbstractDataTable due to previous errors.", ex);
@@ -184,10 +182,6 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     @Override
     public void setup(TableScaffolding scaffolding) throws Exception {
         dataView.setup(scaffolding);
-
-        if(height != null) {
-            setHeight(height);
-        }
     }
 
     @Override
@@ -213,12 +207,12 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     @Override
     public void setHeight(String height) {
-       this.height = height;
+        dataView.setHeight(height);
+    }
 
-        // Avoid setting the height prematurely.
-        if(setup) {
-            JQuery.$(scaffolding.getTableBody()).height(height);
-        }
+    @Override
+    public String getHeight() {
+        return dataView.getHeight();
     }
 
     @Override
@@ -340,8 +334,18 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         return scaffolding;
     }
 
+    /**
+     * @deprecated Use {@link #addAttachHandler(AttachEvent.Handler)}
+     */
+    @Deprecated
     public void setLoadedCallback(LoadedCallback callback) {
-        this.loadedCallback = callback;
+        if(attachHandler == null) {
+            attachHandler = addAttachHandler(event -> {
+                if (event.isAttached()) {
+                    callback.onLoaded();
+                }
+            });
+        }
     }
 
     public boolean isDestroyOnUnload() {
@@ -515,13 +519,13 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
-    public void unselectRow(com.google.gwt.dom.client.Element row, boolean fireEvent) {
-        dataView.unselectRow(row, fireEvent);
+    public void deselectRow(com.google.gwt.dom.client.Element row, boolean fireEvent) {
+        dataView.deselectRow(row, fireEvent);
     }
 
     @Override
-    public boolean hasUnselectedRows(boolean visibleOnly) {
-        return dataView.hasUnselectedRows(visibleOnly);
+    public boolean hasDeselectedRows(boolean visibleOnly) {
+        return dataView.hasDeselectedRows(visibleOnly);
     }
 
     @Override
@@ -570,6 +574,31 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
+    public void updateRow(T model) {
+        dataView.updateRow(model);
+    }
+
+    @Override
+    public RowComponent<T> getRow(T model) {
+        return dataView.getRow(model);
+    }
+
+    @Override
+    public RowComponent<T> getRow(int index) {
+        return dataView.getRow(index);
+    }
+
+    @Override
+    public RowComponent<T> getRowByModel(T model) {
+        return dataView.getRowByModel(model);
+    }
+
+    @Override
+    public void addCategory(String category) {
+        dataView.addCategory(category);
+    }
+
+    @Override
     public void addCategory(CategoryComponent category) {
         dataView.addCategory(category);
     }
@@ -582,6 +611,31 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     @Override
     public void disableCategory(String categoryName) {
         dataView.disableCategory(categoryName);
+    }
+
+    @Override
+    public void openCategory(String categoryName) {
+        dataView.openCategory(categoryName);
+    }
+
+    @Override
+    public void openCategory(CategoryComponent category) {
+        dataView.openCategory(category);
+    }
+
+    @Override
+    public void closeCategory(String categoryName) {
+        dataView.closeCategory(categoryName);
+    }
+
+    @Override
+    public void closeCategory(CategoryComponent category) {
+        dataView.closeCategory(category);
+    }
+
+    @Override
+    public CategoryComponent getCategory(String categoryName) {
+        return dataView.getCategory(categoryName);
     }
 
     @Override
@@ -605,7 +659,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
-    public void setCategoryFactory(CategoryComponentFactory categoryFactory) {
+    public void setCategoryFactory(ComponentFactory<? extends CategoryComponent, String> categoryFactory) {
         dataView.setCategoryFactory(categoryFactory);
     }
 
@@ -699,6 +753,11 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         dataView.setLongPressDuration(longPressDuration);
     }
 
+    @Override
+    public List<TableHeader> getHeaders() {
+        return dataView.getHeaders();
+    }
+
     // Event Handler Methods
 
     @Override
@@ -752,12 +811,12 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
-    public void addRowExpandHandler(EventFunc1<RowExpand> handler) {
+    public void addRowExpandHandler(EventFunc1<RowExpansion> handler) {
         $this().on(TableEvents.ROW_EXPAND + "." + getViewId(), handler);
     }
 
     @Override
-    public void removeRowExpandHandler(EventFunc1<RowExpand> handler) {
+    public void removeRowExpandHandler(EventFunc1<RowExpansion> handler) {
         $this().off(TableEvents.ROW_EXPAND, handler);
     }
 
@@ -767,18 +826,48 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
-    public void addRowExpandedHandler(EventFunc1<RowExpand> handler) {
+    public void addRowExpandedHandler(EventFunc1<RowExpansion> handler) {
         $this().on(TableEvents.ROW_EXPANDED + "." + getViewId(), handler);
     }
 
     @Override
-    public void removeRowExpandedHandler(EventFunc1<RowExpand> handler) {
+    public void removeRowExpandedHandler(EventFunc1<RowExpansion> handler) {
         $this().off(TableEvents.ROW_EXPANDED, handler);
     }
 
     @Override
     public void removeRowExpandedHandlers() {
         $this().off(TableEvents.ROW_EXPANDED);
+    }
+
+    @Override
+    public void addRowCollapseHandler(EventFunc1<RowExpansion> handler) {
+        $this().on(TableEvents.ROW_COLLAPSE + "." + getViewId(), handler);
+    }
+
+    @Override
+    public void removeRowCollapseHandler(EventFunc1<RowExpansion> handler) {
+        $this().off(TableEvents.ROW_COLLAPSE, handler);
+    }
+
+    @Override
+    public void removeRowCollapseHandlers() {
+        $this().off(TableEvents.ROW_COLLAPSE);
+    }
+
+    @Override
+    public void addRowCollapsedHandler(EventFunc1<RowExpansion> handler) {
+        $this().on(TableEvents.ROW_COLLAPSED + "." + getViewId(), handler);
+    }
+
+    @Override
+    public void removeRowCollapsedHandler(EventFunc1<RowExpansion> handler) {
+        $this().off(TableEvents.ROW_COLLAPSED, handler);
+    }
+
+    @Override
+    public void removeRowCollapsedHandlers() {
+        $this().off(TableEvents.ROW_COLLAPSED);
     }
 
     @Override
@@ -899,5 +988,35 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     @Override
     public void removeCategoryClosedHandlers() {
         $this().off(TableEvents.CATEGORY_CLOSED);
+    }
+
+    @Override
+    public void addComponentsRenderedHandler(Functions.EventFunc handler) {
+        $this().on(TableEvents.COMPONENTS_RENDERED + "." + getViewId(), handler);
+    }
+
+    @Override
+    public void removeComponentsRenderedHandler(Functions.EventFunc handler) {
+        $this().off(TableEvents.COMPONENTS_RENDERED, handler);
+    }
+
+    @Override
+    public void removeComponentsRenderedHandlers() {
+        $this().off(TableEvents.COMPONENTS_RENDERED);
+    }
+
+    @Override
+    public void addRenderedHandler(Functions.EventFunc handler) {
+        $this().on(TableEvents.RENDERED + "." + getViewId(), handler);
+    }
+
+    @Override
+    public void removeRenderedHandler(Functions.EventFunc handler) {
+        $this().off(TableEvents.RENDERED, handler);
+    }
+
+    @Override
+    public void removeRenderedHandlers() {
+        $this().off(TableEvents.RENDERED);
     }
 }
