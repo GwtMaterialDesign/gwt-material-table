@@ -1358,15 +1358,13 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         int end = start + length;
 
         // Make sure we have a valid range
-        if(range.getStart() < 0 || range.getLength() < 1) {
-            setVisibleRange(0, length);
-        }
+//        if(range.getStart() < 0 || range.getLength() < 1) {
+            setVisibleRange(start, length);
+//        }
 
         // Current range start and end
         int rangeStart = range.getStart();
-        int rangeEnd = rangeStart + length;
-
-        setVisibleRange(rangeStart, length);
+        int rangeEnd = rangeStart + range.getLength();
 
         // Calculated boundary scope
         int boundedStart = Math.max(start, rangeStart);
