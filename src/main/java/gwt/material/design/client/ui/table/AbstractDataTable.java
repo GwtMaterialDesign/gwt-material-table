@@ -210,6 +210,10 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         }
     }
 
+    protected void build() {
+        // Nothing by default.
+    }
+
     @Override
     public final DataView<T> getView() {
         return view;

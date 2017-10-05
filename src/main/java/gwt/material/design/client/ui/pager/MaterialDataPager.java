@@ -21,14 +21,10 @@ package gwt.material.design.client.ui.pager;
 
 import com.google.gwt.core.client.GWT;
 import gwt.material.design.client.data.DataSource;
-import gwt.material.design.client.data.SortContext;
-import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.data.loader.LoadCallback;
 import gwt.material.design.client.data.loader.LoadConfig;
 import gwt.material.design.client.data.loader.LoadResult;
 import gwt.material.design.client.ui.table.MaterialDataTable;
-
-import java.util.List;
 
 /**
  * Material Data Pager - a simple pager for Material Data Table component
@@ -39,11 +35,14 @@ public class MaterialDataPager<T> extends MaterialDataPagerBase<T> implements Ha
 
     private MaterialDataTable<T> table;
     private DataSource<T> dataSource;
+
     private int offset = 0;
     private int limit = 0;
     private int currentPage = 1;
     private int totalRows = 0;
     private int[] limitOptions = new int[]{5, 10, 20};
+
+    public MaterialDataPager() {}
 
     public MaterialDataPager(MaterialDataTable<T> table, DataSource<T> dataSource) {
         super();
@@ -51,15 +50,12 @@ public class MaterialDataPager<T> extends MaterialDataPagerBase<T> implements Ha
         this.dataSource = dataSource;
     }
 
-    public MaterialDataPager() {
-        super();
-    }
-
     /**
      * Initialize the data pager for navigation
      */
     @Override
-    protected void initialize() {
+    protected void onLoad() {
+        super.onLoad();
         buildNumPagePanel();
         buildLimitOptionsPanel();
         buildActionPanel();
@@ -181,7 +177,7 @@ public class MaterialDataPager<T> extends MaterialDataPagerBase<T> implements Ha
                 totalRows = loadResult.getTotalLength();
                 table.setVisibleRange(offset, finalLimit);
                 table.loaded(loadResult.getOffset(), loadResult.getData());
-                updateUi();
+                updateUI();
             }
 
             @Override
@@ -195,8 +191,7 @@ public class MaterialDataPager<T> extends MaterialDataPagerBase<T> implements Ha
     /**
      * Set and update the ui fields of the pager after the datasource load callback
      */
-    protected void updateUi() {
-
+    protected void updateUI() {
         // Action label (current selection)
         int lastRow = (isExcess() & isLastPage()) ? totalRows : (offset + limit);
         actionLabel.setText((offset + 1) + "-" + lastRow + " of " + totalRows);
