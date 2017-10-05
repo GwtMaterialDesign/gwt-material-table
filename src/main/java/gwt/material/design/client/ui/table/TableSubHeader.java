@@ -55,7 +55,6 @@ public class TableSubHeader extends TableRow {
         build();
     }
 
-    @Override
     protected void build() {
         addStyleName(TableCssName.SUBHEADER);
 
