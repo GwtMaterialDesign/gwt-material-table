@@ -177,7 +177,7 @@ public class MaterialDataPager<T> extends MaterialDataPagerBase<T> implements Ha
                 totalRows = loadResult.getTotalLength();
                 table.setVisibleRange(offset, finalLimit);
                 table.loaded(loadResult.getOffset(), loadResult.getData());
-                updateUI();
+                updateUi();
             }
 
             @Override
