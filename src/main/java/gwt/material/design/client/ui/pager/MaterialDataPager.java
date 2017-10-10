@@ -191,10 +191,11 @@ public class MaterialDataPager<T> extends MaterialDataPagerBase<T> implements Ha
     /**
      * Set and update the ui fields of the pager after the datasource load callback
      */
-    protected void updateUI() {
-        // Action label (current selection)
+    protected void updateUi() {
+        // Action label (current selection) in either the form "x-y of z" or "y of z" (when page has only 1 record)
+        int firstRow = offset + 1;
         int lastRow = (isExcess() & isLastPage()) ? totalRows : (offset + limit);
-        actionLabel.setText((offset + 1) + "-" + lastRow + " of " + totalRows);
+        actionLabel.setText((firstRow == lastRow ? lastRow : firstRow + "-" + lastRow) + " of " + totalRows);
 
         // Build the currentPage number listbox
         listPages.clear();
