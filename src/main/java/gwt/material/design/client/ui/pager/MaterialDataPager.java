@@ -55,7 +55,7 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
     }
 
     public MaterialDataPager(MaterialDataTable<T> table, DataSource<T> dataSource) {
-        super();
+        this();
         this.table = table;
         this.dataSource = dataSource;
     }
