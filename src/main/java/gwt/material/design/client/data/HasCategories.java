@@ -44,7 +44,7 @@ public interface HasCategories {
     List<CategoryComponent> getCategories();
 
     /**
-     * Get all the open {@link CategoryComponent}'s.
+     * Get all the open {@link CategoryComponent}'s or null if categories are disabled.
      */
     List<CategoryComponent> getOpenCategories();
 
