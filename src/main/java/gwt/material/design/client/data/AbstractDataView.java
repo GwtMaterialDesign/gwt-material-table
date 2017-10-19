@@ -1679,8 +1679,9 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     @Override
     public List<CategoryComponent> getOpenCategories() {
-        List<CategoryComponent> openCategories = new ArrayList<>();
+        List<CategoryComponent> openCategories = null;
         if(isUseCategories()) {
+            openCategories = new ArrayList<>();
             for (CategoryComponent category : categories) {
                 TableSubHeader element = category.getWidget();
                 if (element != null && element.isOpen()) {
