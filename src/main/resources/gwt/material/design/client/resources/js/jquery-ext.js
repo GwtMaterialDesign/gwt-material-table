@@ -34,6 +34,22 @@
  * @author Ben Dol
  */
 (function($) {
+  $.fn.forceRedraw = function(){
+    var element = this[0];
+
+    var n = document.createTextNode(' ');
+    var disp = element.style.display;  // don't worry about previous display style
+
+    element.appendChild(n);
+    element.style.display = 'none';
+
+    setTimeout(function(){
+        element.style.display = disp;
+        n.parentNode.removeChild(n);
+    }, 10); // you can play with this timeout to make it as short as possible
+    return this;
+  };
+
   $.fn.insertAt = function(index, element) {
     var lastIndex = this.children().size();
     if (index < 0) {
@@ -121,7 +137,10 @@
     return this.hasVerticalScrollBar() || this.hasHorizontalScrollBar();
   };
 
-  $.scrollBarWidth = function() {
+  $.scrollBarWidth = function(container) {
+    if(container === null || typeof container === "undefined") {
+        container = document.body;
+    }
     var inner = document.createElement("p");
     inner.style.width = "100%";
     inner.style.height = "200px";
@@ -135,15 +154,15 @@
     outer.style.height = "150px";
     outer.style.overflow = "hidden";
     outer.appendChild(inner);
-  
-    document.body.appendChild(outer);
+
+    container.appendChild(outer);
     var w1 = inner.offsetWidth;
     outer.style.overflow = "scroll";
     var w2 = inner.offsetWidth;
-    if (w1 == w2) w2 = outer.clientWidth;
-  
-    document.body.removeChild(outer);
-  
+    if (w1 === w2) w2 = outer.clientWidth;
+
+    container.removeChild(outer);
+
     return (w1 - w2);
   };
 

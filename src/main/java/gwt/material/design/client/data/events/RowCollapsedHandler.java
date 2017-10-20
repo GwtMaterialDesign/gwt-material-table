@@ -17,35 +17,10 @@
  * limitations under the License.
  * #L%
  */
-package gwt.material.design.client.ui.table.events;
+package gwt.material.design.client.data.events;
 
-import gwt.material.design.jquery.client.api.JQueryElement;
+import com.google.gwt.event.shared.EventHandler;
 
-/**
- * Row expansion block.
- *
- * @author Ben Dol
- */
-public class RowExpansion<T> {
-    final T model;
-    final JQueryElement row;
-    final JQueryElement overlay;
-
-    public RowExpansion(T model, JQueryElement row) {
-        this.model = model;
-        this.row = row;
-        this.overlay = row.find("section.overlay");
-    }
-
-    public T getModel() {
-        return model;
-    }
-
-    public JQueryElement getRow() {
-        return row;
-    }
-
-    public JQueryElement getOverlay() {
-        return overlay;
-    }
+public interface RowCollapsedHandler<T> extends EventHandler {
+    void onRowCollapsed(RowCollapsedEvent<T> event);
 }

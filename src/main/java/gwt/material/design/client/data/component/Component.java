@@ -19,7 +19,6 @@
  */
 package gwt.material.design.client.data.component;
 
-
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.List;
@@ -79,12 +78,14 @@ public class Component<E extends Widget> {
     }
 
     public void addAll(List<Component<?>> children) {
-        if(this.children == null) {
-            this.children = new Components<>();
-        }
+        if(children != null) {
+            if (this.children == null) {
+                this.children = new Components<>();
+            }
 
-        for(Component<?> child : children) {
-            add(child);
+            for (Component<?> child : children) {
+                add(child);
+            }
         }
     }
 
@@ -110,7 +111,7 @@ public class Component<E extends Widget> {
     }
 
     protected void clearWidget() {
-        if(widget != null && widget.isAttached()) {
+        if(widget != null) {
             widget.removeFromParent();
             widget = null;
         }

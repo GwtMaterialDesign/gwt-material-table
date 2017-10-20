@@ -63,9 +63,6 @@ function TableSubHeaders($table, $stickies) {
   base.load = function (opts) {
     base.options = $.extend({}, defaults, opts);
 
-    // Calculate scrollbar width
-    base.scrollBarWidth = $.scrollBarWidth();
-
     base.bind();
     base.detect();
 
@@ -128,7 +125,7 @@ function TableSubHeaders($table, $stickies) {
 
     base.$window.smartScroll(base.name, $.throttle(scrollThrottle, function(e, scroll) {
       if(base.debug.enabled) base.debug.smartScroll.window++;
-      base.alignment(e, scroll);
+      base.alignment(scroll);
     }));
     base.$window.on("resize." + base.name, $.debounce(resizeThrottle, function() {
       if(base.debug.enabled) base.debug.resize.window++;
@@ -163,7 +160,7 @@ function TableSubHeaders($table, $stickies) {
       return $(this).hasScrollBar();
     }).smartScroll(base.name, $.throttle(scrollThrottle, function(e, scroll) {
       if(base.debug.enabled) base.debug.smartScroll.outer++;
-      base.alignment(e, scroll);
+      base.alignment(scroll);
     }));
   };
 
@@ -241,6 +238,9 @@ function TableSubHeaders($table, $stickies) {
     if(fireEvents) {
       $base.trigger("before-recalculate");
     }
+
+    // Calculate scrollbar width
+    base.scrollBarWidth = $.scrollBarWidth(base.$tableBody.get(0));
 
     // Detect any new outer scrolls
     base.detectOuterScrolls();
@@ -404,7 +404,7 @@ function TableSubHeaders($table, $stickies) {
   };
 
   // Applies the alignment of all the outer scroll positions.
-  base.alignment = function(e, scroll) {
+  base.alignment = function(scroll) {
     var offset = $table.offset(),
         clipWidth = $table.innerWidth(),
         fullWidth = base.$tableBody.outerWidth(),
@@ -531,8 +531,18 @@ function TableSubHeaders($table, $stickies) {
   base.updateHeights = function() {
     base.$stickies.each(function() {
       var $this = $(this);
-      $this.parent().height($this.outerHeight());
+      var height = $this.attr("data-height");
+      if(typeof height === typeof undefined) {
+        height = $this.outerHeight();
+      }
+      $this.parent().height(height);
     });
+  };
+
+  base.updateHeight = function(el, height) {
+    if($.contains(base.$stickies, $(el))) {
+      $(el).parent().height(height);
+    }
   };
 
   base.setMarginTop = function(marginTop) {

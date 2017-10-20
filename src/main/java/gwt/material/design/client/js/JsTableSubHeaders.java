@@ -19,6 +19,7 @@
  */
 package gwt.material.design.client.js;
 
+import com.google.gwt.dom.client.Element;
 import gwt.material.design.jquery.client.api.JQueryElement;
 import gwt.material.design.client.ui.table.MaterialDataTable;
 import jsinterop.annotations.JsMethod;
@@ -61,9 +62,13 @@ public class JsTableSubHeaders {
 
     @JsMethod public native void recalculate(boolean fireEvents);
 
+    @JsMethod public native void alignment(SmartScrollBlock scroll);
+
     @JsMethod public native void updateWidths();
 
     @JsMethod public native void updateHeights();
+
+    @JsMethod public native void updateHeight(Element el, String height);
 
     @JsMethod public native void setMarginTop(int marginTop);
 

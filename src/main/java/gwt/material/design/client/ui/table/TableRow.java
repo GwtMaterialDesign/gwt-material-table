@@ -82,13 +82,17 @@ public class TableRow extends MaterialWidget {
         }
     }
 
-    public boolean hasExpansionColumn() {
+    public TableData getExpansionColumn() {
         for(Widget column : getChildren()) {
-            if(column.getElement().getId().equals("colex")) {
-                return true;
+            if(column.getElement().getId().equals("colex") && column instanceof TableData) {
+                return (TableData)column;
             }
         }
-        return false;
+        return null;
+    }
+
+    public boolean hasExpansionColumn() {
+        return getExpansionColumn() != null;
     }
 
     public void removeExpansionColumn() {

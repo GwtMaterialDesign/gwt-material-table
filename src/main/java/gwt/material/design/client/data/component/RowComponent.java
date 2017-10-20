@@ -19,6 +19,7 @@
  */
 package gwt.material.design.client.data.component;
 
+import com.google.gwt.user.client.ui.HasEnabled;
 import gwt.material.design.client.data.DataView;
 import gwt.material.design.jquery.client.api.JQuery;
 import gwt.material.design.jquery.client.api.JQueryElement;
@@ -30,7 +31,7 @@ import java.util.List;
 /**
  * @author Ben Dol
  */
-public class RowComponent<T> extends Component<TableRow> {
+public class RowComponent<T> extends Component<TableRow> implements HasEnabled {
     private T data;
     private int index;
     private final String categoryName;
@@ -38,6 +39,7 @@ public class RowComponent<T> extends Component<TableRow> {
 
     public RowComponent(RowComponent<T> clone) {
         super(clone.getWidget(), clone.isRedraw());
+        addAll(clone.getChildren());
         data = clone.data;
         index = clone.index;
         categoryName = clone.categoryName;
@@ -79,6 +81,16 @@ public class RowComponent<T> extends Component<TableRow> {
     }
 
     @Override
+    public boolean isEnabled() {
+        return getWidget().isEnabled();
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        getWidget().setEnabled(enabled);
+    }
+
+    @Override
     protected void clearWidget() {
         TableRow row = getWidget();
         if(row != null) {
@@ -102,5 +114,14 @@ public class RowComponent<T> extends Component<TableRow> {
             }
         }
         return data;
+    }
+
+    @Override
+    public String toString() {
+        return "RowComponent{" +
+                "data=" + data +
+                ", index=" + index +
+                ", categoryName='" + categoryName + '\'' +
+                '}';
     }
 }

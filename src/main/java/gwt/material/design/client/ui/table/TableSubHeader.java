@@ -27,6 +27,7 @@ import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.js.Js;
 import gwt.material.design.client.ui.MaterialIcon;
 import gwt.material.design.client.ui.html.Text;
+import gwt.material.design.jquery.client.api.JQueryElement;
 
 import java.util.NoSuchElementException;
 
@@ -54,7 +55,6 @@ public class TableSubHeader extends TableRow {
         build();
     }
 
-    @Override
     protected void build() {
         addStyleName(TableCssName.SUBHEADER);
 
@@ -145,6 +145,21 @@ public class TableSubHeader extends TableRow {
     public int getScrollPosition() {
         int pos = Integer.valueOf(String.valueOf($this().data("pos")));
         return !Js.isUndefinedOrNull(pos) ? pos : -1;
+    }
+
+    @Override
+    public void setHeight(String height) {
+        if(height != null) {
+            super.setHeight(height);
+            setDataAttribute("data-height", height);
+
+            if (isAttached()) {
+                JQueryElement el = $this().parent();
+                if(el != null && ((String)el.prop("tagName")).equalsIgnoreCase("div")){
+                    el.height(height);
+                }
+            }
+        }
     }
 
     @Override

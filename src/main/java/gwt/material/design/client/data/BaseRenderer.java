@@ -66,7 +66,17 @@ public class BaseRenderer<T> implements Renderer<T> {
 
     private IconType sortAscIcon = IconType.ARROW_UPWARD;
     private IconType sortDescIcon = IconType.ARROW_DOWNWARD;
-    private IconSize sortIconSize = IconSize.TINY;
+    protected IconSize sortIconSize = IconSize.TINY;
+
+    @Override
+    public void copy(Renderer<T> renderer) {
+        expectedRowHeight = renderer.getExpectedRowHeight();
+        calculatedRowHeight = renderer.getCalculatedRowHeight();
+        // Right now we only copy the height data
+        /*sortAscIcon = renderer.getSortAscIcon();
+        sortDescIcon = renderer.getSortDescIcon();
+        sortIconSize = renderer.getSortIconSize();*/
+    }
 
     @Override
     public TableRow drawRow(DataView<T> dataView, RowComponent<T> rowComponent, Object valueKey,
@@ -77,10 +87,11 @@ public class BaseRenderer<T> implements Renderer<T> {
         if(row == null) {
             // Create a new row element
             row = new TableRow();
-            row.getElement().getStyle().setDisplay(Display.NONE);
-            row.getElement().getStyle().setProperty("height", getExpectedRowHeight() + "px");
-            row.getElement().getStyle().setProperty("maxHeight", getExpectedRowHeight() + "px");
-            row.getElement().getStyle().setProperty("minHeight", getExpectedRowHeight() + "px");
+            Style style = row.getElement().getStyle();
+            style.setDisplay(Display.NONE);
+            style.setProperty("height", getExpectedRowHeight() + "px");
+            style.setProperty("maxHeight", getExpectedRowHeight() + "px");
+            style.setProperty("minHeight", getExpectedRowHeight() + "px");
             row.setStyleName(TableCssName.DATA_ROW);
             rowComponent.setWidget(row);
 
@@ -100,7 +111,7 @@ public class BaseRenderer<T> implements Renderer<T> {
             for(int c = 0; c < colSize; c++) {
                 int colIndex = c + colOffset;
                 Context context = new Context(rowComponent.getIndex(), colIndex, valueKey);
-                TableData column = drawColumn(row, context, data, columns.get(c), colIndex, dataView.isHeaderVisible(colIndex));
+                drawColumn(row, context, data, columns.get(c), colIndex, dataView.isHeaderVisible(colIndex));
             }
             rowComponent.setRedraw(false);
         }
@@ -134,6 +145,8 @@ public class BaseRenderer<T> implements Renderer<T> {
             TableSubHeader subHeader = category.getWidget();
             if(subHeader == null) {
                 subHeader = category.render();
+                assert subHeader != null : "rendered category TableSubHeader cannot be null.";
+                subHeader.setHeight(category.getHeight());
             }
             return subHeader;
         }
@@ -153,6 +166,9 @@ public class BaseRenderer<T> implements Renderer<T> {
         checkBox.setId("col0");
         checkBox.setStyleName(TableCssName.SELECTION);
         new MaterialCheckBox(checkBox.getElement());
+        checkBox.addClickHandler(event -> {
+            event.getNativeEvent().preventDefault();
+        });
         return checkBox;
     }
 
@@ -289,5 +305,35 @@ public class BaseRenderer<T> implements Renderer<T> {
     @Override
     public int getCalculatedRowHeight() {
         return calculatedRowHeight;
+    }
+
+    @Override
+    public IconType getSortAscIcon() {
+        return sortAscIcon;
+    }
+
+    @Override
+    public void setSortAscIcon(IconType sortAscIcon) {
+        this.sortAscIcon = sortAscIcon;
+    }
+
+    @Override
+    public IconType getSortDescIcon() {
+        return sortDescIcon;
+    }
+
+    @Override
+    public void setSortDescIcon(IconType sortDescIcon) {
+        this.sortDescIcon = sortDescIcon;
+    }
+
+    @Override
+    public IconSize getSortIconSize() {
+        return sortIconSize;
+    }
+
+    @Override
+    public void setSortIconSize(IconSize sortIconSize) {
+        this.sortIconSize = sortIconSize;
     }
 }

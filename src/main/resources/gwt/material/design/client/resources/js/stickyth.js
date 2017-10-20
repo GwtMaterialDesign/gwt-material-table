@@ -45,8 +45,6 @@
       base.$el.each(function () {
         var $this = $(this);
 
-        base.scrollBarWidth = $.scrollBarWidth();
-
         // remove padding on <table> to fix issue #7
         $this.css('padding', 0);
 
@@ -198,6 +196,7 @@
       }
 
       base.detectOuterScrolls();
+      base.scrollBarWidth = $.scrollBarWidth(base.el);
 
       var scrollLeft = base.$scrollableArea.scrollLeft(),
           leftClip = base.$scrollableArea.scrollLeft() + base.getOuterScrollLeft(),
@@ -282,7 +281,7 @@
     base.getOuterScrollTop = function() {
       var scrollTop = 0;
 
-      base.$scrollableArea.parents(":not(body)").each(function() {
+      base.$scrollableArea.parents(":not(body,html)").each(function(e, el) {
         scrollTop += $(this).scrollTop();
       });
       return scrollTop;

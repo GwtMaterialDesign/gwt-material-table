@@ -128,4 +128,9 @@ public class Person implements HasDataCategory, Serializable {
         result = 31 * result + (category != null ? category.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(getId());
+    }
 }

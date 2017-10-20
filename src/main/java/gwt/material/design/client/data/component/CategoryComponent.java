@@ -19,6 +19,7 @@
  */
 package gwt.material.design.client.data.component;
 
+import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.ui.table.TableSubHeader;
 
 /**
@@ -40,9 +41,11 @@ public class CategoryComponent extends Component<TableSubHeader> {
     }
 
     private String name;
+    private String height;
+    private boolean openByDefault;
+
     private int currentIndex = -1;
     private int rowCount = 0;
-    private boolean openByDefault;
 
     public CategoryComponent(String name) {
         this(name, false);
@@ -106,6 +109,19 @@ public class CategoryComponent extends Component<TableSubHeader> {
 
     public void setOpenByDefault(boolean openByDefault) {
         this.openByDefault = openByDefault;
+    }
+
+    public String getHeight() {
+        return height;
+    }
+
+    public void setHeight(String height) {
+        this.height = height;
+
+        Widget widget = getWidget();
+        if(widget != null && widget.isAttached()) {
+            widget.setHeight(height);
+        }
     }
 
     @Override
