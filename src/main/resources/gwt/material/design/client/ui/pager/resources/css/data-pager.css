@@ -7,7 +7,7 @@
     margin-bottom: 0;
 }
 
-.data-pager .action-page-panel > span, .data-pager .rows-per-page-panel > span, .data-pager .num-page-panel > span, .data-pager .action-page-panel i {
+.data-pager .action-page-panel > span, .data-pager .rows-per-page-panel > span, .data-pager .action-page-panel i {
     float: right;
     margin-right: 8px;
     margin-top: 12px;
@@ -26,16 +26,33 @@
     color: #e9e9e9 !important;
 }
 
-.data-pager .rows-per-page-panel .select-wrapper, .data-pager .num-page-panel .select-wrapper {
+.data-pager .rows-per-page-panel .select-wrapper{
     float: right;
     width: 44px;
     max-width: 64px;
     margin-left: 32px;
 }
 
-.data-pager .rows-per-page-panel .select-dropdown, .data-pager .num-page-panel .select-dropdown {
+.data-pager .rows-per-page-panel .select-dropdown{
     border: none;
     margin-bottom: 0;
+    font-size: 1em;
+}
+
+.data-pager .num-page-panel {
+    display: inline;
+}
+.data-pager .num-page-panel .input-field {
+    display: inline;
+    text-align: right;
+    margin-top: 13px;
+   	margin-bottom: -13px;
+}
+
+.data-pager .num-page-panel .input-field input {
+	width: 50px;
+    text-align: center;
+    border-bottom: none;
     font-size: 1em;
 }
 
