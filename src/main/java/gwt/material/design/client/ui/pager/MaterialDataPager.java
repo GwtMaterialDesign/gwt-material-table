@@ -97,13 +97,17 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
 
     @Override
     public void lastPage() {
-        if (isExcess()) {
-            gotoPage((totalRows / limit) + 1);
-        }else {
-            gotoPage(totalRows / limit);
-        }
+    	gotoPage(totalPages());
 
-        pageNumberSelection.setSelectedIndex(currentPage - 1);
+        pageNumberSelection.updatePageNumber(currentPage - 1);
+    }
+
+    private int totalPages() {
+    	if (isExcess()) {
+            return ((totalRows / limit) + 1);
+        }else {
+            return totalRows / limit;
+        }
     }
 
     @Override
@@ -113,9 +117,19 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
 
     @Override
     public void gotoPage(int page) {
-        this.currentPage = page;
-        doLoad((page * limit) - limit, limit);
+    	this.currentPage = adjustToPageLimits(page);
+        doLoad((currentPage * limit) - limit, limit);
     }
+    /** Adjusts the input page number to the available page range  */
+    private int adjustToPageLimits(int page) {
+	    if(page <= 1) {
+    		return 1;
+    	} else if (page > totalPages()) {
+    		return totalPages();
+    	}
+
+		return page;
+	}
 
     @Override
     public int getCurrentPage() {
@@ -193,7 +207,7 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
      * Set and update the ui fields of the pager after the datasource load callback
      */
     protected void updateUi() {
-        pageNumberSelection.updatePageNumber(totalRows, limit, currentPage);
+        pageNumberSelection.updatePageNumber(currentPage);
 
         // Action label (current selection) in either the form "x-y of z" or "y of z" (when page has only 1 record)
         int firstRow = offset + 1;
