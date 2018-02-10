@@ -41,8 +41,12 @@ public class PageActionsPanel extends MaterialWidget {
 
     public PageActionsPanel(MaterialDataPager pager) {
         super(Document.get().createDivElement(), TableCssName.ACTION_PAGE_PANEL);
-        setGrid("s12 m4 l3");
+        setGrid("s8 m4 l3");
+        setOffset("s2");
         this.pager = pager;
+
+        iconNext.addStyleName("arrow-next");
+        iconPrev.addStyleName("arrow-prev");
     }
 
     @Override

@@ -27,7 +27,6 @@ import gwt.material.design.client.data.DataSource;
 import gwt.material.design.client.data.loader.LoadCallback;
 import gwt.material.design.client.data.loader.LoadConfig;
 import gwt.material.design.client.data.loader.LoadResult;
-import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.table.MaterialDataTable;
 
 /**
@@ -243,5 +242,29 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
 
     public int[] getLimitOptions() {
         return limitOptions;
+    }
+
+    public PageActionsPanel getActionsPanel() {
+        return actionsPanel;
+    }
+
+    public void setActionsPanel(PageActionsPanel actionsPanel) {
+        this.actionsPanel = actionsPanel;
+    }
+
+    public PageNumberSelection getPageNumberSelection() {
+        return pageNumberSelection;
+    }
+
+    public void setPageNumberSelection(PageNumberSelection pageNumberSelection) {
+        this.pageNumberSelection = pageNumberSelection;
+    }
+
+    public PageRowSelection getPageRowSelection() {
+        return pageRowSelection;
+    }
+
+    public void setPageRowSelection(PageRowSelection pageRowSelection) {
+        this.pageRowSelection = pageRowSelection;
     }
 }

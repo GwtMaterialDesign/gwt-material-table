@@ -3,7 +3,7 @@
     padding: 0;
 }
 
-html,body {
+html, body {
     height: 100%;
     padding: 0;
 }
@@ -17,10 +17,11 @@ section.table-container ::-webkit-scrollbar {
     -webkit-appearance: none;
     width: 8px;
 }
+
 section.table-container ::-webkit-scrollbar-thumb {
     /*border-radius: 4px;*/
-    background-color: rgba(0,0,0,.3);
-    -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+    background-color: rgba(0, 0, 0, .3);
+    -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, .5);
 }
 
 th {
@@ -66,16 +67,16 @@ tbody {
     overflow: hidden !important;
 }
 
-tbody [type="checkbox"]+label:before {
+tbody [type="checkbox"] + label:before {
     border-radius: 0 !important;
 }
 
-tbody [type="checkbox"]+label {
-    top:2px;
+tbody [type="checkbox"] + label {
+    top: 2px;
 }
 
-tbody [type="checkbox"].filled-in+label {
-    top:6px;
+tbody [type="checkbox"].filled-in + label {
+    top: 6px;
 }
 
 .frozen-col {
@@ -89,14 +90,14 @@ tbody [type="checkbox"].filled-in+label {
 }
 
 .inner-shadow {
-    -moz-box-shadow:    inset 18px 0 20px -20px #aaaaaa;
+    -moz-box-shadow: inset 18px 0 20px -20px #aaaaaa;
     -webkit-box-shadow: inset 18px 0 20px -20px #aaaaaa;
-    box-shadow:         inset 18px 0 20px -20px #aaaaaa;
+    box-shadow: inset 18px 0 20px -20px #aaaaaa;
 }
 
 .inner-scroll {
-    overflow-x:hidden;
-    overflow-y:visible;
+    overflow-x: hidden;
+    overflow-y: visible;
 }
 
 .x-scroll {
@@ -107,7 +108,7 @@ tbody [type="checkbox"].filled-in+label {
 }
 
 .table-container {
-    height:100%;
+    height: 100%;
     width: 100%;
     background-color: #fff;
     /*border-left: 1px solid #E3E3E3;
@@ -193,9 +194,9 @@ table.table tbody tr.subheader {
 
 table.table tbody tr.subheader.expanded {
     /* CSS3 Box-Shadow */
-    -webkit-box-shadow: 0 10px 9px -12px rgba(0,0,0,0.9);
-    -moz-box-shadow: 0 10px 9px -12px rgba(0,0,0,0.9);
-    box-shadow: 0 10px 9px -12px rgba(0,0,0,0.9);
+    -webkit-box-shadow: 0 10px 9px -12px rgba(0, 0, 0, 0.9);
+    -moz-box-shadow: 0 10px 9px -12px rgba(0, 0, 0, 0.9);
+    box-shadow: 0 10px 9px -12px rgba(0, 0, 0, 0.9);
 }
 
 table.table .table-header {
@@ -226,7 +227,7 @@ table.table tbody tr.subheader span {
 
 table.table tbody tr.subheader th,
 table.table tbody tr.subheader td {
-    white-space:nowrap;
+    white-space: nowrap;
     padding-top: 8px !important;
     padding-bottom: 8px !important;
 }
@@ -241,13 +242,13 @@ table.table tbody tr.selected, table.table tbody tr.selected td {
 }
 
 table.table .mask {
-    position:absolute;
-    width:100%;
-    height:100%;
-    top:0;
-    opacity:0.2;
-    background-color:black;
-    z-index:9999;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    opacity: 0.2;
+    background-color: black;
+    z-index: 9999;
 }
 
 /* Menu Dropdown */
@@ -297,15 +298,20 @@ section.table-container div.tool-panel ul.dropdown-content li > span {
     margin-left: 5px;
 }
 
-.info-panel { float: left; }
-.tool-panel { float: right; }
+.info-panel {
+    float: left;
+}
+
+.tool-panel {
+    float: right;
+}
+
 .title {
     top: -6px;
     position: relative;
     margin-left: 10px;
     font-size: 16px;
 }
-
 
 .table-body {
     width: 100%;
@@ -437,11 +443,11 @@ table.table tbody tr.expansion td > div {
     overflow-y: hidden;
 
     /* CSS3 transition */
-    -webkit-transition: all 0.25s cubic-bezier(0.35,0,0.35,1);
-    -moz-transition: all 0.25s cubic-bezier(0.35,0,0.35,1);
-    -o-transition: all 0.25s cubic-bezier(0.35,0,0.35,1);
-    -ms-transition: all 0.25s cubic-bezier(0.35,0,0.35,1);
-    transition: all 0.25s cubic-bezier(0.35,0,0.35,1);
+    -webkit-transition: all 0.25s cubic-bezier(0.35, 0, 0.35, 1);
+    -moz-transition: all 0.25s cubic-bezier(0.35, 0, 0.35, 1);
+    -o-transition: all 0.25s cubic-bezier(0.35, 0, 0.35, 1);
+    -ms-transition: all 0.25s cubic-bezier(0.35, 0, 0.35, 1);
+    transition: all 0.25s cubic-bezier(0.35, 0, 0.35, 1);
 }
 
 /* --- Expanded Row Columns --- */
@@ -482,80 +488,60 @@ table.table tbody tr.expansion td > div p {
 }
 
 /* ==================== RESPONSIVE LAYOUT ==================== */
-
-/* --- Smaller than standard 960 --- */
-@media only screen and (max-width: 960px), (min-device-width: 768px) and (max-device-width: 959px) {
-    table.table {
-        /*width: 768px;*/ /* --- Overall Table Width --- */
-    }
-}
-
-/* --- Mobile Devices 480 - 768px --- */
-@media only screen and (max-width: 768px), (min-device-width: 480px) and (max-device-width: 767px) {
-    table.table {
-        /*width: 480px;*/ /* --- Overall Table Width --- */
-    }
-
-    div.inner-scroll:not(.frozen) table.table thead tr {
-        height: auto;
-    }
-
-    .table-container {
-        -ms-touch-action: none;
-        touch-action: none;
-    }
-
-    .table-container .top-panel {
-        height: 36px;
-        padding-top: 5px;
-    }
-}
-
 /* --- Mobile Devices Up To 560px --- */
 @media only screen and (max-width: 520px), (min-device-width: 0px) and (max-device-width: 519px) {
-    table.table {
-        /*width: 420px;*/ /* --- Overall Table Width --- */
-    }
-
-    table.table tbody {
-        display: table;
-        width: 100%;
-    }
-
-    /* --- Change Apperance --- */
-    thead,
-    tbody,
-    tr,
+    /** Global **/
+    thead, tbody, tr,
     td:not(tr.expansion) {
         display: inline-block;
     }
 
-    table.table .numeric {
-        text-align: left !important;
-    }
-
     table.table {
         display: block !important;
     }
 
-    /* --- Cell Works Like A Row --- */
-    table.table tbody td {
-        padding: 6px 8px 6px 8px !important;
-        line-height: 150% !important;
-        border-top: 0;
-        position: relative;
-        width: 100% !important;
-        display: block !important;
-        left: 0 !important;
+    /** Table Header **/
+    .top-panel {
+        height: 64px;
+        padding-top: 20px;
+        padding-bottom: 20px;
     }
 
-    table.table tbody tr.data-row td:first-child {
-        background: #f0f0f0;
-        padding-left: 0 !important;
-        padding-top: 0 !important;
-        -webkit-box-shadow: inset 0 1px 0 -1px #ffffff, inset 0 -1px 0 0 #c5c5c5;
-        -moz-box-shadow: inset 0 1px 0 -1px #ffffff, inset 0 -1px 0 0 #c5c5c5;
-        box-shadow: inset 0 1px 0 -1px #ffffff, inset 0 -1px 0 0 #c5c5c5;
+    .top-panel i {
+        margin-top: -4px !important;
+    }
+
+    table.table thead {
+        display: none;
+    }
+
+    /** Table Sub/Fixed Headers **/
+    table.table tbody tr.subheader.fixed {
+        margin-top: -2px;
+    }
+
+    /** Table Column **/
+    tr.data-row td:before {
+        content: attr(data-title);
+        color: #000000;
+        padding-right: 8px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    table.table .cell {
+        color: #00000082;
+    }
+
+    tr.data-row td:before, table.table tbody td > div {
+        width: 50%;
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    table.table .numeric {
+        text-align: left !important;
     }
 
     table.table tbody tr.data-row td:first-child:before {
@@ -566,88 +552,123 @@ table.table tbody tr.expansion td > div p {
         top: 6px;
     }
 
-    /*table.table tbody tr.data-row td:nth-child(2) {
-        display: inline !important;
-    }*/
+    /** Table Body **/
+    table.table tbody {
+        display: table;
+        width: 100%;
+        background: #e9e9e9;
+    }
 
-    /* --- Disable Header Row --- */
-    table.table thead {
+    .table-body {
+        background: #ffffff;
+        height: 440px;
+        top: -6px;
+    }
+
+    /** Table Row **/
+    table.table tbody tr.data-row {
+        display: table;
+        width: 94% !important;
+        margin: auto !important;
+        margin-top: 12px !important;
+        margin-bottom: 12px !important;
+        box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+        background: #ffffff;
+        position: relative;
+    }
+
+    /** Table Row Disabled **/
+    table.table tbody tr.data-row.disabled {
+        box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
+    }
+
+    table.table tbody tr.data-row.disabled td {
+        border: 1px solid #d7d7d7;
+    }
+
+    /** Table Row Selected **/
+    table.table tbody tr.data-row.selected {
+        position: relative;
+        background: #ffffff !important;
+    }
+
+    /** Table Row Expansion **/
+    table.table tbody tr.expansion td {
+        width: 94% !important;
+        padding-top: 0px !important;
+        margin: auto;
+        margin-top: -12px;
+    }
+
+    table.table tbody tr.expansion td div.expanded {
+        box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+    }
+
+    tbody tr td#colex:before {
         display: none;
     }
 
-    table.table tbody tr.expansion {
-        margin-top: -19px;
+    tbody tr td#colex #expand {
+        cursor: pointer;
+        width: 100px !important;
+        background: #e9e9e9;
+        border-radius: 20px;
     }
 
-    /* --- 50% Width Column Turn Into 100% Width Column --- */
-    table.table tbody tr.expansion td div .column_50 {
-        width: 100%;
-        height: 100%;
-        margin-left: 2%;
-        margin-right: 2%;
-        float: left;
-        padding: 10px 0 10px 0;
-        display: block;
+    /** Table Selection **/
+    table.table tbody tr.data-row #col0:not([data-title]) {
+        width: 40px !important;
+        height: 40px !important;
+        background: #e9e9e9;
+        border-radius: 100%;
+        position: absolute;
+        z-index: 1;
+        right: 6px;
+        left: initial !important;
+        top: 2px;
+        box-shadow: none !important;
+        padding-left: 0 !important;
+        padding-top: 0 !important;
     }
 
-    table.table tbody tr.expansion td div .column_50:last-child {
-        width: 100%;
-        height: 100%;
-        margin-left: 2%;
-        margin-right: 2%;
-        float: left;
-        padding: 10px 0 10px 0;
-        display: block;
+    table.table tbody tr.data-row #col0:not([data-title]) label {
+        padding: 0px !important;
+        margin-left: -4px;
+        margin-top: 3px;
     }
 
-    /* --- 33% Width Column Turn Into 100% Width Column --- */
-    table.table tbody tr.expansion td div .column_33 {
-        width: 100%;
-        height: 100%;
-        margin-left: 2%;
-        margin-right: 2%;
-        float: left;
-        padding: 10px 0 10px 0;
-        display: block;
+    /** Table Column **/
+    table.table tbody tr.data-row:hover, table.table tbody tr.selected td {
+        background: #ffffff;
     }
 
-    table.table tbody tr.expansion td div .column_33:first-child {
-        width: 100%;
-        height: 100%;
-        margin-left: 2%;
-        margin-right: 2%;
-        float: left;
-        padding: 10px 0 10px 0;
-        display: block;
+    table.table tbody td {
+        padding: 12px !important;
+        line-height: 150% !important;
+        border-top: 1px solid #e9e9e9;
+        position: relative;
+        width: 100% !important;
+        display: block !important;
+        left: 0 !important;
     }
 
-    table.table tbody tr.expansion td div .column_33:last-child {
-        width: 100%;
-        height: 100%;
-        margin-left: 2%;
-        margin-right: 2%;
-        float: left;
-        padding: 10px 0 10px 0;
-        display: block;
+    /** Table Subheader **/
+    table.table tbody tr.subheader th {
+        min-width: initial !important;
+        max-width: initial !important;
     }
 
-    /* --- Column Labels --- */
-    /* --- Use The Same Labels As In HTML Document --- */
-    tr.data-row td:before {
-        padding-right: 8px;
-        white-space: nowrap;
+    /** Input Fields as Widget Cells **/
+    table.table tbody tr td .widget-cell .input-field {
+        margin: 0px;
     }
 
-    tr.data-row td:before {
-        font-weight: bold;
-        color: #000000;
-    }
-
-    tr.data-row td:before {
-        content: attr(data-title);
-    }
-
+    /** Scrolling **/
     .inner-scroll {
         margin-left: 0 !important;
+    }
+
+    .x-scroll {
+        display: none;
     }
 }

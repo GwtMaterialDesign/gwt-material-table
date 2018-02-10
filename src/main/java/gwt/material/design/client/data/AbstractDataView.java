@@ -32,32 +32,10 @@ import com.google.gwt.view.client.ProvidesKey;
 import com.google.gwt.view.client.Range;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.TableCssName;
-import gwt.material.design.client.data.component.CategoryComponent;
+import gwt.material.design.client.constants.IconType;
+import gwt.material.design.client.data.component.*;
 import gwt.material.design.client.data.component.CategoryComponent.OrphanCategoryComponent;
-import gwt.material.design.client.data.component.Component;
-import gwt.material.design.client.data.component.ComponentFactory;
-import gwt.material.design.client.data.component.Components;
-import gwt.material.design.client.data.component.RowComponent;
-import gwt.material.design.client.data.events.CategoryClosedEvent;
-import gwt.material.design.client.data.events.CategoryOpenedEvent;
-import gwt.material.design.client.data.events.ColumnSortEvent;
-import gwt.material.design.client.data.events.ComponentsRenderedEvent;
-import gwt.material.design.client.data.events.DestroyEvent;
-import gwt.material.design.client.data.events.InsertColumnEvent;
-import gwt.material.design.client.data.events.RangeChangeEvent;
-import gwt.material.design.client.data.events.RemoveColumnEvent;
-import gwt.material.design.client.data.events.RenderedEvent;
-import gwt.material.design.client.data.events.RowCollapsedEvent;
-import gwt.material.design.client.data.events.RowCollapsingEvent;
-import gwt.material.design.client.data.events.RowContextMenuEvent;
-import gwt.material.design.client.data.events.RowDoubleClickEvent;
-import gwt.material.design.client.data.events.RowExpandingEvent;
-import gwt.material.design.client.data.events.RowExpandedEvent;
-import gwt.material.design.client.data.events.RowLongPressEvent;
-import gwt.material.design.client.data.events.RowSelectEvent;
-import gwt.material.design.client.data.events.RowShortPressEvent;
-import gwt.material.design.client.data.events.SelectAllEvent;
-import gwt.material.design.client.data.events.SetupEvent;
+import gwt.material.design.client.data.events.*;
 import gwt.material.design.client.data.factory.CategoryComponentFactory;
 import gwt.material.design.client.data.factory.RowComponentFactory;
 import gwt.material.design.client.jquery.JQueryExtension;
@@ -76,12 +54,7 @@ import gwt.material.design.jquery.client.api.Event;
 import gwt.material.design.jquery.client.api.JQueryElement;
 import gwt.material.design.jquery.client.api.MouseEvent;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -812,9 +785,11 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                                 if(expanding) {
                                     // Fire table expanded event
                                     RowExpandedEvent.fire(this, rowExpansion);
+                                    $(e.currentTarget).html(IconType.KEYBOARD_ARROW_UP.getCssName());
                                 } else {
                                     // Fire table collapsed event
                                     RowCollapsedEvent.fire(this, rowExpansion);
+                                    $(e.currentTarget).html(IconType.KEYBOARD_ARROW_DOWN.getCssName());
                                 }
                             }
                             return true;
@@ -823,6 +798,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                     if(expanding) {
                         // Fire table expand event
                         RowExpandingEvent.fire(this, rowExpansion);
+
                     } else {
                         RowCollapsingEvent.fire(this, rowExpansion);
                     }
