@@ -1,19 +1,16 @@
 .table-container .data-pager {
     width: 100%;
     position: relative;
-    padding: 4px;
     color: #9e9e9e !important;
     font-size: 0.8em;
+    border-top: 1px solid #e9e9e9;
     margin-bottom: 0;
+    padding: 8px 4px;
 }
 
 .data-pager .action-page-panel > span, .data-pager .rows-per-page-panel > span, .data-pager .action-page-panel i {
     float: right;
     margin-right: 8px;
-    margin-top: 12px;
-}
-
-.data-pager .action-page-panel {
     margin-top: 12px;
 }
 
@@ -26,34 +23,47 @@
     color: #e9e9e9 !important;
 }
 
-.data-pager .rows-per-page-panel .select-wrapper{
+.data-pager .action-page-panel, .data-pager .num-page-panel, .data-pager .rows-per-page-panel {
+    float: right;
+}
+
+.data-pager .rows-per-page-panel {
+    width: 200px;
+    margin-right: 40px;
+}
+
+.data-pager .rows-per-page-panel .select-wrapper {
     float: right;
     width: 44px;
     max-width: 64px;
     margin-left: 32px;
 }
 
-.data-pager .rows-per-page-panel .select-dropdown{
+.data-pager .rows-per-page-panel .select-dropdown {
     border: none;
     margin-bottom: 0;
     font-size: 1em;
 }
 
-.data-pager .num-page-panel {
-    display: inline;
+.data-pager .rows-per-page-panel .input-field.listbox-wrapper {
+    margin-top: 0px;
 }
+
 .data-pager .num-page-panel .input-field {
     display: inline;
     text-align: right;
     margin-top: 13px;
-   	margin-bottom: -13px;
+    margin-bottom: -13px;
 }
 
 .data-pager .num-page-panel .input-field input {
-	width: 50px;
+    width: 50px;
     text-align: center;
     border-bottom: none;
     font-size: 1em;
+    margin-bottom: 0px;
+    height: 2.6em;
+    margin-top: 6px;
 }
 
 .data-pager .select-wrapper .caret {
@@ -66,12 +76,15 @@
         border-top: 1px solid #e9e9e9;
         text-align: center;
     }
+
     .table-container .data-pager .action-page-panel {
         margin-top: 0px !important;
     }
+
     .table-container .data-pager .action-page-panel .arrow-prev {
         float: left;
     }
+
     .table-container .data-pager .action-page-panel span {
         display: inline-block;
         float: none;

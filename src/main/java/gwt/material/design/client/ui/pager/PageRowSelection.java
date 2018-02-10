@@ -41,7 +41,6 @@ public class PageRowSelection extends MaterialWidget {
         super(Document.get().createDivElement(), TableCssName.ROWS_PER_PAGE_PANEL);
         this.pager = pager;
 
-        setGrid("s12 m4 l3");
         setHideOn(HideOn.HIDE_ON_SMALL_DOWN);
     }
 

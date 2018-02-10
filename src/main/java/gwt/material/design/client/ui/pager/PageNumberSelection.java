@@ -20,14 +20,12 @@
 package gwt.material.design.client.ui.pager;
 
 import com.google.gwt.dom.client.Document;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.HasValue;
-
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.TableCssName;
-import gwt.material.design.client.constants.HideOn;
-import gwt.material.design.client.ui.MaterialListValueBox;
 import gwt.material.design.client.ui.MaterialIntegerBox;
 import gwt.material.design.client.ui.html.Span;
 
@@ -45,10 +43,6 @@ public class PageNumberSelection extends MaterialWidget implements HasValue<Inte
     public PageNumberSelection(MaterialDataPager<?> pager) {
         super(Document.get().createDivElement(), TableCssName.NUM_PAGE_PANEL);
         this.pager = pager;
-
-        setGrid("s12 m4 l3");
-        setOffset("l3");
-        setHideOn(HideOn.HIDE_ON_SMALL_DOWN);
     }
 
     @Override
@@ -61,6 +55,13 @@ public class PageNumberSelection extends MaterialWidget implements HasValue<Inte
         // Input
         pages.setMin("1");
         add(pages);
+
+        registerHandler(addValueChangeHandler(valueChangeEvent -> pager.gotoPage(valueChangeEvent.getValue())));
+        registerHandler(addKeyDownHandler(keyDownEvent -> {
+            if (keyDownEvent.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+                pager.gotoPage(pages.getValue());
+            }
+        }));
     }
 
     @Override

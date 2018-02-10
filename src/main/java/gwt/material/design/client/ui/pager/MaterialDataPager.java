@@ -36,14 +36,14 @@ import gwt.material.design.client.ui.table.MaterialDataTable;
  */
 public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
 
-    private MaterialDataTable<T> table;
-    private DataSource<T> dataSource;
+    protected MaterialDataTable<T> table;
+    protected DataSource<T> dataSource;
 
-    private int offset = 0;
-    private int limit = 0;
-    private int currentPage = 1;
-    private int totalRows = 0;
-    private int[] limitOptions = new int[]{5, 10, 20};
+    protected int offset = 0;
+    protected int limit = 0;
+    protected int currentPage = 1;
+    protected int totalRows = 0;
+    protected int[] limitOptions = new int[]{5, 10, 20};
 
     private PageActionsPanel actionsPanel = new PageActionsPanel(this);
     private PageNumberSelection pageNumberSelection = new PageNumberSelection(this);
@@ -68,9 +68,9 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
 
         limit = limitOptions[0];
 
-        add(pageNumberSelection);
-        add(pageRowSelection);
         add(actionsPanel);
+        add(pageRowSelection);
+        add(pageNumberSelection);
 
         firstPage();
     }
@@ -176,21 +176,13 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
      * Load the datasource within a given offset and limit
      */
     protected void doLoad(int offset, int limit) {
-        this.offset = offset;
-
-        // Check whether the pager has excess rows with given limit
-        if (isLastPage() & isExcess()) {
-            // Get the difference between total rows and excess rows
-            limit = totalRows - offset;
-        }
-
-        int finalLimit = limit;
         dataSource.load(new LoadConfig<>(offset, limit, table.getView().getSortContext(),
                 table.getView().getOpenCategories()), new LoadCallback<T>() {
             @Override
             public void onSuccess(LoadResult<T> loadResult) {
+                setOffset(loadResult.getOffset());
                 totalRows = loadResult.getTotalLength();
-                table.setVisibleRange(offset, finalLimit);
+                table.setVisibleRange(loadResult.getOffset(), loadResult.getData().size());
                 table.loaded(loadResult.getOffset(), loadResult.getData());
                 updateUi();
             }
@@ -240,6 +232,10 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
 
     public void setDataSource(DataSource<T> dataSource) {
         this.dataSource = dataSource;
+    }
+
+    public void setOffset(int offset) {
+        this.offset = offset;
     }
 
     public int getOffset() {
