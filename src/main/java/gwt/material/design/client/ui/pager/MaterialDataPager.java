@@ -66,8 +66,13 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
     protected void onLoad() {
         super.onLoad();
 
-        limit = limitOptions[0];
+        load();
+    }
 
+    protected void load() {
+        if (limit == 0) {
+            limit = limitOptions[0];
+        }
         add(actionsPanel);
         add(pageRowSelection);
         add(pageNumberSelection);

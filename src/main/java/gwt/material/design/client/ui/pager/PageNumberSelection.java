@@ -49,6 +49,10 @@ public class PageNumberSelection extends MaterialWidget implements HasValue<Inte
     protected void onLoad() {
         super.onLoad();
 
+        load();
+    }
+
+    protected void load() {
         // Label
         add(pageLabel);
 
