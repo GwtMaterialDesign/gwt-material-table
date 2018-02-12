@@ -616,6 +616,9 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
             onSetup(scaffolding);
 
+            // Set the x-scroll panels initial width
+            xScrollPanel.setWidth((innerScroll.asElement().getScrollWidth() + frozenMarginLeft) + "px");
+
             SetupEvent.fire(this, scaffolding);
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "Problem setting up the DataView.", ex);
