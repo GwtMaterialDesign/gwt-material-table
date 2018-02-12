@@ -19,13 +19,31 @@
  */
 package gwt.material.design.client.data;
 
+import gwt.material.design.client.base.helper.EnumHelper;
+import gwt.material.design.client.constants.CssType;
+
 /**
  * Data view selection type.
  *
  * @author Ben Dol
  */
-public enum SelectionType {
-    NONE,
-    SINGLE,
-    MULTIPLE
+public enum SelectionType implements CssType {
+    NONE("selection-none"),
+    SINGLE("selection-single"),
+    MULTIPLE("selection-multiple");
+
+    private final String cssClass;
+
+    SelectionType(final String cssClass) {
+        this.cssClass = cssClass;
+    }
+
+    public static SelectionType fromStyleName(final String styleName) {
+        return EnumHelper.fromStyleName(styleName, SelectionType.class, NONE);
+    }
+
+    @Override
+    public String getCssName() {
+        return cssClass;
+    }
 }

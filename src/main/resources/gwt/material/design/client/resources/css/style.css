@@ -79,6 +79,12 @@ tbody [type="checkbox"].filled-in + label {
     top: 6px;
 }
 
+tbody .frozen-col, thead .frozen-col div,
+table.table th#col0.selection.frozen-col {
+    display: flex;
+    align-items: center;
+}
+
 .frozen-col {
     left: 0;
     top: auto;
@@ -111,19 +117,12 @@ tbody [type="checkbox"].filled-in + label {
     height: 100%;
     width: 100%;
     background-color: #fff;
-    /*border-left: 1px solid #E3E3E3;
-    border-right: 1px solid #E3E3E3;
-    border-bottom: 1px solid #E3E3E3;*/
 }
 
 .table-container.stretch {
-    /*position: absolute !important;*/
     width: 100% !important;
     height: 100% !important;
-    /*top: 0 !important;*/
-    /*left: 0 !important;*/
     max-height: 100% !important;
-    /*overflow: auto !important;*/
 }
 
 .table-container .progress {
@@ -132,10 +131,6 @@ tbody [type="checkbox"].filled-in + label {
     margin: 0;
     margin-bottom: -3px;
     z-index: 20;
-}
-
-.table {
-
 }
 
 table.table .widget-cell {
@@ -156,9 +151,13 @@ table.table tbody td {
     padding: 0 5px 0 20px;
 }
 
-table.table td#col0.selection,
-table.table th#col0.selection {
+table.table td#col0.selection {
     width: 45px;
+}
+
+table.table tbody tr.data-row #col0.frozen-col:not([data-title]) {
+    padding-top: 0px !important;
+    padding-left: 20px !important;
 }
 
 table.table #colex {
@@ -651,6 +650,8 @@ table.table tbody tr.expansion td > div p {
         width: 100% !important;
         display: block !important;
         left: 0 !important;
+        height: auto !important;
+        border-bottom: none !important;
     }
 
     /** Table Subheader **/
