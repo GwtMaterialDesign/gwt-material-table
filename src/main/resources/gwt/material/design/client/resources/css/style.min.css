@@ -165,6 +165,10 @@ table.table tbody tr.data-row #col0.frozen-col:not([data-title]) {
     padding-left: 20px !important;
 }
 
+table.table tbody tr.data-row #col0.frozen-col:not([data-title]) label {
+    top: 0px;
+}
+
 table.table #colex {
     text-align: center;
 }
@@ -553,6 +557,7 @@ table.table tbody tr.expansion td > div p {
         padding-right: 6px !important;
     }
 
+    table.table tbody tr.data-row #col0.frozen-col:not([data-title]) label,
     table.table tbody tr.data-row td:first-child label {
         top: 6px;
     }
@@ -571,6 +576,7 @@ table.table tbody tr.expansion td > div p {
     }
 
     /** Table Row **/
+    .selection-none table.table tbody tr.data-row,
     table.table tbody tr.data-row {
         display: table;
         width: 94% !important;
@@ -643,7 +649,9 @@ table.table tbody tr.expansion td > div p {
     }
 
     /** Table Column **/
-    table.table tbody tr.data-row:hover, table.table tbody tr.selected td {
+    table.table tbody tr.data-row:hover,
+    table.table tbody tr.selected td,
+    table.table tbody tr.selected td.hover{
         background: #ffffff;
     }
 

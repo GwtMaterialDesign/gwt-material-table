@@ -47,6 +47,13 @@ tr {
     text-align: left;
 }
 
+.selection-none table.table tbody tr.data-row,
+.selection-none table.table tbody tr.data-row:hover,
+.selection-none table.table tbody tr.data-row.selected td,
+.selection-none table.table tbody tr.data-row td.hover {
+    background: none;
+}
+
 thead {
     border-bottom: 1px solid #E3E3E3 !important;
     font-size: 12px;
@@ -158,6 +165,10 @@ table.table td#col0.selection {
 table.table tbody tr.data-row #col0.frozen-col:not([data-title]) {
     padding-top: 0px !important;
     padding-left: 20px !important;
+}
+
+table.table tbody tr.data-row #col0.frozen-col:not([data-title]) label {
+    top: 0px;
 }
 
 table.table #colex {
@@ -566,6 +577,7 @@ table.table tbody tr.expansion td > div p {
     }
 
     /** Table Row **/
+    .selection-none table.table tbody tr.data-row,
     table.table tbody tr.data-row {
         display: table;
         width: 94% !important;
@@ -638,7 +650,9 @@ table.table tbody tr.expansion td > div p {
     }
 
     /** Table Column **/
-    table.table tbody tr.data-row:hover, table.table tbody tr.selected td {
+    table.table tbody tr.data-row:hover,
+    table.table tbody tr.selected td,
+    table.table tbody tr.selected td.hover {
         background: #ffffff;
     }
 
@@ -652,6 +666,11 @@ table.table tbody tr.expansion td > div p {
         left: 0 !important;
         height: auto !important;
         border-bottom: none !important;
+    }
+
+    /** Frozen Columns **/
+    table.table tbody tr.data-row #col0.frozen-col:not([data-title]) {
+        padding-left: 0px !important;
     }
 
     /** Table Subheader **/
