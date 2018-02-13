@@ -20,7 +20,6 @@
 package gwt.material.design.client.ui.table;
 
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Panel;
 import gwt.material.design.client.base.constants.TableCssName;
@@ -287,9 +286,9 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
         $this().toggleClass(TableCssName.STRETCH);
 
         // Make sure the body doesn't display scrollbar
-        body().toggleClass(TableCssName.OVERFLOW_HIDDEN);
+        //body().toggleClass(TableCssName.OVERFLOW_HIDDEN);
 
-        // Update table header widths
+        // Update table header width
         JsTableElement tableJs = scaffolding.getTable().getJsElement();
         tableJs.stickyTableHeaders("updateWidth");
         tableJs.stickyTableHeaders("toggleHeaders");

@@ -20,6 +20,7 @@
 package gwt.material.design.client.data.component;
 
 import com.google.gwt.user.client.ui.Widget;
+import gwt.material.design.client.data.HasCategories;
 import gwt.material.design.client.ui.table.TableSubHeader;
 
 /**
@@ -28,8 +29,8 @@ import gwt.material.design.client.ui.table.TableSubHeader;
 public class CategoryComponent extends Component<TableSubHeader> {
 
     public static class OrphanCategoryComponent extends CategoryComponent {
-        public OrphanCategoryComponent() {
-            super(null);
+        public OrphanCategoryComponent(HasCategories parent) {
+            super(parent, null);
         }
 
         @Override
@@ -47,13 +48,45 @@ public class CategoryComponent extends Component<TableSubHeader> {
     private int currentIndex = -1;
     private int rowCount = 0;
 
-    public CategoryComponent(String name) {
-        this(name, false);
+    private HasCategories parent;
+
+    public CategoryComponent(HasCategories parent, String name) {
+        this(parent, name, false);
     }
 
-    public CategoryComponent(String name, boolean openByDefault) {
+    public CategoryComponent(HasCategories parent, String name, boolean openByDefault) {
+        this.parent = parent;
         this.name = name;
         this.openByDefault = openByDefault;
+    }
+
+    /**
+     * Open this category if we are rendered.
+     */
+    public void open() {
+        if(isRendered()) {
+            parent.openCategory(this);
+        }
+    }
+
+    /**
+     * Close this category if we are rendered.
+     */
+    public void close() {
+        if(isRendered()) {
+            parent.closeCategory(this);
+        }
+    }
+
+    /**
+     * Toggle the open/close state of this category.
+     */
+    public void toggle() {
+        if(isOpen()) {
+            close();
+        } else {
+            open();
+        }
     }
 
     public String getName() {
@@ -109,6 +142,10 @@ public class CategoryComponent extends Component<TableSubHeader> {
 
     public void setOpenByDefault(boolean openByDefault) {
         this.openByDefault = openByDefault;
+
+        if(isRendered() && openByDefault && !isOpen()) {
+            open();
+        }
     }
 
     public String getHeight() {
