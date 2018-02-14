@@ -286,7 +286,7 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
         $this().toggleClass(TableCssName.STRETCH);
 
         // Make sure the body doesn't display scrollbar
-        //body().toggleClass(TableCssName.OVERFLOW_HIDDEN);
+        body().toggleClass(TableCssName.OVERFLOW_HIDDEN);
 
         // Update table header width
         JsTableElement tableJs = scaffolding.getTable().getJsElement();
