@@ -777,40 +777,64 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                     final T model = getModelByRowElement(tr.asElement());
 
                     RowExpansion<T> rowExpansion = new RowExpansion<>(model, row);
+                    final JQueryElement content = rowExpansion.getContent();
 
-                    expansion[0].one(transitionEvents,
-                        (e1, param1) -> {
-                            if (!recalculated[0]) {
-                                // Recalculate subheaders
-                                subheaderLib.recalculate(true);
-                                recalculated[0] = true;
+                    JQueryElement[] copy = {expansion[0].find("div#copy")};
+                    if(expanding && hasFrozenColumns()) {
+                        // This will open at the same time as the original.
+                        copy[0] = content.clone().appendTo(expansion[0]);
+                        copy[0].attr("id", "copy");
+                        copy[0].css("height", "80px");
 
-                                // Apply overlay
-                                JQueryElement overlay = row.find("section.overlay");
-                                overlay.height(row.outerHeight(false));
+                        // Assign absolute and left 0 for frozen column support.
+                        content.css("position", "absolute");
+                        content.css("left", "0");
+                        content.css("height", "80px");
+                    }
 
-                                if(expanding) {
-                                    // Fire table expanded event
-                                    RowExpandedEvent.fire(this, rowExpansion);
-                                    $(e.currentTarget).html(IconType.KEYBOARD_ARROW_UP.getCssName());
-                                } else {
-                                    // Fire table collapsed event
-                                    RowCollapsedEvent.fire(this, rowExpansion);
-                                    $(e.currentTarget).html(IconType.KEYBOARD_ARROW_DOWN.getCssName());
-                                }
+                    expansion[0].one(transitionEvents, (e1, param1) -> {
+                        if (!recalculated[0]) {
+                            // Recalculate sub headers
+                            subheaderLib.recalculate(true);
+                            recalculated[0] = true;
+
+                            // Apply overlay
+                            JQueryElement overlay = row.find("section.overlay");
+                            overlay.height(row.outerHeight(false));
+
+                            if(expanding) {
+                                // Fire table expanded event
+                                RowExpandedEvent.fire(this, rowExpansion);
+                                $(e.currentTarget).html(IconType.KEYBOARD_ARROW_UP.getCssName());
+                            } else {
+                                // Fire table collapsed event
+                                RowCollapsedEvent.fire(this, rowExpansion);
+                                $(e.currentTarget).html(IconType.KEYBOARD_ARROW_DOWN.getCssName());
                             }
-                            return true;
-                        });
+                        }
+                        return true;
+                    });
 
                     if(expanding) {
                         // Fire table expand event
                         RowExpandingEvent.fire(this, rowExpansion);
 
                     } else {
+                        // Destroy the copy
+                        if(copy[0] != null) {
+                            copy[0].remove();
+                        }
+
+                        content.css("position", "");
+                        content.css("left", "");
+
                         RowCollapsingEvent.fire(this, rowExpansion);
                     }
 
                     Scheduler.get().scheduleDeferred(() -> {
+                        if(copy[0] != null) {
+                            copy[0].toggleClass("expanded");
+                        }
                         expansion[0].toggleClass("expanded");
                     });
                 }
@@ -2287,5 +2311,9 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     @Override
     public int getRightFrozenColumns() {
         return rightFrozenColumns;
+    }
+
+    public boolean hasFrozenColumns() {
+        return getLeftFrozenColumns() > 0 || getRightFrozenColumns() > 0;
     }
 }
