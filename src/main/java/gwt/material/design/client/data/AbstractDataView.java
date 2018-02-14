@@ -46,6 +46,7 @@ import gwt.material.design.client.js.JsTableSubHeaders;
 import gwt.material.design.client.js.StickyTableOptions;
 import gwt.material.design.client.ui.MaterialCheckBox;
 import gwt.material.design.client.ui.MaterialProgress;
+import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.Selectors;
 import gwt.material.design.client.ui.table.*;
 import gwt.material.design.client.ui.table.cell.Column;
@@ -239,6 +240,9 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 subheaderLib.updateHeights();
 
                 maybeApplyFrozenMargins();
+
+                // Set the x-scroll panels initial width
+                xScrollPanel.setWidth((innerScroll.asElement().getScrollWidth() + frozenMarginLeft) + "px");
 
                 rendering = false;
 
@@ -609,15 +613,15 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             });
 
             JQueryMutate.$(innerScroll).mutate("scrollWidth", (el, info) -> {
-                xScrollPanel.setWidth((el.getScrollWidth() + frozenMarginLeft) + "px");
+                // This event is triggered when the component is unloaded.
+                if(getContainer().isAttached()) {
+                    xScrollPanel.setWidth((el.getScrollWidth() + frozenMarginLeft) + "px");
+                }
             });
 
             setup = true;
 
             onSetup(scaffolding);
-
-            // Set the x-scroll panels initial width
-            xScrollPanel.setWidth((innerScroll.asElement().getScrollWidth() + frozenMarginLeft) + "px");
 
             SetupEvent.fire(this, scaffolding);
         } catch (Exception ex) {
