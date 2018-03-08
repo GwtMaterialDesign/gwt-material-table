@@ -32,32 +32,10 @@ import com.google.gwt.view.client.ProvidesKey;
 import com.google.gwt.view.client.Range;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.TableCssName;
-import gwt.material.design.client.data.component.CategoryComponent;
+import gwt.material.design.client.constants.IconType;
+import gwt.material.design.client.data.component.*;
 import gwt.material.design.client.data.component.CategoryComponent.OrphanCategoryComponent;
-import gwt.material.design.client.data.component.Component;
-import gwt.material.design.client.data.component.ComponentFactory;
-import gwt.material.design.client.data.component.Components;
-import gwt.material.design.client.data.component.RowComponent;
-import gwt.material.design.client.data.events.CategoryClosedEvent;
-import gwt.material.design.client.data.events.CategoryOpenedEvent;
-import gwt.material.design.client.data.events.ColumnSortEvent;
-import gwt.material.design.client.data.events.ComponentsRenderedEvent;
-import gwt.material.design.client.data.events.DestroyEvent;
-import gwt.material.design.client.data.events.InsertColumnEvent;
-import gwt.material.design.client.data.events.RangeChangeEvent;
-import gwt.material.design.client.data.events.RemoveColumnEvent;
-import gwt.material.design.client.data.events.RenderedEvent;
-import gwt.material.design.client.data.events.RowCollapsedEvent;
-import gwt.material.design.client.data.events.RowCollapsingEvent;
-import gwt.material.design.client.data.events.RowContextMenuEvent;
-import gwt.material.design.client.data.events.RowDoubleClickEvent;
-import gwt.material.design.client.data.events.RowExpandingEvent;
-import gwt.material.design.client.data.events.RowExpandedEvent;
-import gwt.material.design.client.data.events.RowLongPressEvent;
-import gwt.material.design.client.data.events.RowSelectEvent;
-import gwt.material.design.client.data.events.RowShortPressEvent;
-import gwt.material.design.client.data.events.SelectAllEvent;
-import gwt.material.design.client.data.events.SetupEvent;
+import gwt.material.design.client.data.events.*;
 import gwt.material.design.client.data.factory.CategoryComponentFactory;
 import gwt.material.design.client.data.factory.RowComponentFactory;
 import gwt.material.design.client.jquery.JQueryExtension;
@@ -68,6 +46,7 @@ import gwt.material.design.client.js.JsTableSubHeaders;
 import gwt.material.design.client.js.StickyTableOptions;
 import gwt.material.design.client.ui.MaterialCheckBox;
 import gwt.material.design.client.ui.MaterialProgress;
+import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.Selectors;
 import gwt.material.design.client.ui.table.*;
 import gwt.material.design.client.ui.table.cell.Column;
@@ -76,12 +55,7 @@ import gwt.material.design.jquery.client.api.Event;
 import gwt.material.design.jquery.client.api.JQueryElement;
 import gwt.material.design.jquery.client.api.MouseEvent;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -266,6 +240,9 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 subheaderLib.updateHeights();
 
                 maybeApplyFrozenMargins();
+
+                // Set the x-scroll panels initial width
+                xScrollPanel.setWidth((innerScroll.asElement().getScrollWidth() + frozenMarginLeft) + "px");
 
                 rendering = false;
 
@@ -636,7 +613,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             });
 
             JQueryMutate.$(innerScroll).mutate("scrollWidth", (el, info) -> {
-                xScrollPanel.setWidth((el.getScrollWidth() + frozenMarginLeft) + "px");
+                // This event is triggered when the component is unloaded.
+                if(getContainer().isAttached()) {
+                    xScrollPanel.setWidth((el.getScrollWidth() + frozenMarginLeft) + "px");
+                }
             });
 
             setup = true;
@@ -797,37 +777,64 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                     final T model = getModelByRowElement(tr.asElement());
 
                     RowExpansion<T> rowExpansion = new RowExpansion<>(model, row);
+                    final JQueryElement content = rowExpansion.getContent();
 
-                    expansion[0].one(transitionEvents,
-                        (e1, param1) -> {
-                            if (!recalculated[0]) {
-                                // Recalculate subheaders
-                                subheaderLib.recalculate(true);
-                                recalculated[0] = true;
+                    JQueryElement[] copy = {expansion[0].find("div#copy")};
+                    if(expanding && hasFrozenColumns()) {
+                        // This will open at the same time as the original.
+                        copy[0] = content.clone().appendTo(expansion[0]);
+                        copy[0].attr("id", "copy");
+                        copy[0].css("height", "80px");
 
-                                // Apply overlay
-                                JQueryElement overlay = row.find("section.overlay");
-                                overlay.height(row.outerHeight(false));
+                        // Assign absolute and left 0 for frozen column support.
+                        content.css("position", "absolute");
+                        content.css("left", "0");
+                        content.css("height", "80px");
+                    }
 
-                                if(expanding) {
-                                    // Fire table expanded event
-                                    RowExpandedEvent.fire(this, rowExpansion);
-                                } else {
-                                    // Fire table collapsed event
-                                    RowCollapsedEvent.fire(this, rowExpansion);
-                                }
+                    expansion[0].one(transitionEvents, (e1, param1) -> {
+                        if (!recalculated[0]) {
+                            // Recalculate sub headers
+                            subheaderLib.recalculate(true);
+                            recalculated[0] = true;
+
+                            // Apply overlay
+                            JQueryElement overlay = row.find("section.overlay");
+                            overlay.height(row.outerHeight(false));
+
+                            if(expanding) {
+                                // Fire table expanded event
+                                RowExpandedEvent.fire(this, rowExpansion);
+                                $(e.currentTarget).html(IconType.KEYBOARD_ARROW_UP.getCssName());
+                            } else {
+                                // Fire table collapsed event
+                                RowCollapsedEvent.fire(this, rowExpansion);
+                                $(e.currentTarget).html(IconType.KEYBOARD_ARROW_DOWN.getCssName());
                             }
-                            return true;
-                        });
+                        }
+                        return true;
+                    });
 
                     if(expanding) {
                         // Fire table expand event
                         RowExpandingEvent.fire(this, rowExpansion);
+
                     } else {
+                        // Destroy the copy
+                        if(copy[0] != null) {
+                            copy[0].remove();
+                        }
+
+                        content.css("position", "");
+                        content.css("left", "");
+
                         RowCollapsingEvent.fire(this, rowExpansion);
                     }
 
                     Scheduler.get().scheduleDeferred(() -> {
+                        if(copy[0] != null) {
+                            copy[0].toggleClass("expanded");
+                        }
                         expansion[0].toggleClass("expanded");
                     });
                 }
@@ -2304,5 +2311,9 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     @Override
     public int getRightFrozenColumns() {
         return rightFrozenColumns;
+    }
+
+    public boolean hasFrozenColumns() {
+        return getLeftFrozenColumns() > 0 || getRightFrozenColumns() > 0;
     }
 }

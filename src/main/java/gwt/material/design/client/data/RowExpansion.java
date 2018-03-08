@@ -28,13 +28,13 @@ import gwt.material.design.jquery.client.api.JQueryElement;
  */
 public class RowExpansion<T> {
     final T model;
-    final JQueryElement row;
-    final JQueryElement overlay;
+    final JQueryElement row, overlay, content;
 
     public RowExpansion(T model, JQueryElement row) {
         this.model = model;
         this.row = row;
         this.overlay = row.find("section.overlay");
+        this.content = row.find(".content");
     }
 
     public T getModel() {
@@ -47,5 +47,13 @@ public class RowExpansion<T> {
 
     public JQueryElement getOverlay() {
         return overlay;
+    }
+
+    public JQueryElement getContent() {
+        return content;
+    }
+
+    public void setHeight(String height) {
+        row.find(".content").height(height);
     }
 }

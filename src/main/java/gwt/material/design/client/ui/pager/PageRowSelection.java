@@ -22,6 +22,7 @@ package gwt.material.design.client.ui.pager;
 import com.google.gwt.dom.client.Document;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.TableCssName;
+import gwt.material.design.client.constants.HideOn;
 import gwt.material.design.client.ui.MaterialListValueBox;
 import gwt.material.design.client.ui.html.Span;
 
@@ -39,14 +40,18 @@ public class PageRowSelection extends MaterialWidget {
     public PageRowSelection(MaterialDataPager pager) {
         super(Document.get().createDivElement(), TableCssName.ROWS_PER_PAGE_PANEL);
         this.pager = pager;
+
+        setHideOn(HideOn.HIDE_ON_SMALL_DOWN);
     }
 
     @Override
     protected void onLoad() {
         super.onLoad();
 
-        setGrid("s12 m4 l3");
+        load();
+    }
 
+    protected void load() {
         add(listPageRows);
         add(rowsPerPageLabel);
 

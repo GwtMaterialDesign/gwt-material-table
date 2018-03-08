@@ -20,12 +20,13 @@
 package gwt.material.design.client.factory;
 
 import gwt.material.design.client.constants.IconType;
+import gwt.material.design.client.data.HasCategories;
 import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.ui.table.TableSubHeader;
 
 public class CustomCategoryComponent extends CategoryComponent {
-    public CustomCategoryComponent(String category) {
-        super(category);
+    public CustomCategoryComponent(HasCategories parent, String category) {
+        super(parent, category);
     }
 
     @Override

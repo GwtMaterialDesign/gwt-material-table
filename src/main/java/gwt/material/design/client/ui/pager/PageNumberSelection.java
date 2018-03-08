@@ -20,10 +20,10 @@
 package gwt.material.design.client.ui.pager;
 
 import com.google.gwt.dom.client.Document;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.HasValue;
-
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.ui.MaterialIntegerBox;
@@ -49,15 +49,23 @@ public class PageNumberSelection extends MaterialWidget implements HasValue<Inte
     protected void onLoad() {
         super.onLoad();
 
-        setGrid("s12 m4 l3");
-        setOffset("l3");
-        
+        load();
+    }
+
+    protected void load() {
         // Label
         add(pageLabel);
-        
+
         // Input
         pages.setMin("1");
         add(pages);
+
+        registerHandler(addValueChangeHandler(valueChangeEvent -> pager.gotoPage(valueChangeEvent.getValue())));
+        registerHandler(addKeyDownHandler(keyDownEvent -> {
+            if (keyDownEvent.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+                pager.gotoPage(pages.getValue());
+            }
+        }));
     }
 
     @Override
@@ -74,7 +82,7 @@ public class PageNumberSelection extends MaterialWidget implements HasValue<Inte
     public void setValue(Integer value, boolean fireEvents) {
     	pages.setValue(value, fireEvents);
     }
-    
+
     public void updatePageNumber(int currentPage) {
     	pages.setValue(currentPage, false);
 	}
