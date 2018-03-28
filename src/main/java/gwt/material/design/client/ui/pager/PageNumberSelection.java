@@ -65,7 +65,8 @@ public class PageNumberSelection extends MaterialWidget implements HasValue<Inte
         listPages.clear();
         int pages = (pager.isExcess()) ? (totalRows / limit) + 1 : totalRows / limit;
         for (int i = 1; i <= pages; i++) {
-            listPages.addItem(i);
+            // Do not reload for each item. Below setSelectedIndex reloads
+            listPages.addItem(i, false);
         }
         listPages.setSelectedIndex(currentPage - 1);
     }
