@@ -165,18 +165,20 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
     protected void doLoad(int offset, int limit) {
         this.offset = offset;
 
-        // Check whether the pager has excess rows with given limit
-        if (isLastPage() & isExcess()) {
-            // Get the difference between total rows and excess rows
-            limit = totalRows - offset;
-        }
-
-        int finalLimit = limit;
         dataSource.load(new LoadConfig<>(offset, limit, table.getView().getSortContext(),
                 table.getView().getOpenCategories()), new LoadCallback<T>() {
             @Override
             public void onSuccess(LoadResult<T> loadResult) {
                 totalRows = loadResult.getTotalLength();
+                
+                int finalLimit = limit;
+                
+                // Check whether the pager has excess rows with given limit
+                if (isLastPage() & isExcess()) {
+                  // Get the difference between total rows and excess rows
+                  finalLimit = totalRows - offset;
+                }
+                
                 table.setVisibleRange(offset, finalLimit);
                 table.loaded(loadResult.getOffset(), loadResult.getData());
                 updateUi();
