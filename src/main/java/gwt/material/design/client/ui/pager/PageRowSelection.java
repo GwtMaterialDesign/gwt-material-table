@@ -57,8 +57,10 @@ public class PageRowSelection extends MaterialWidget {
 
         listPageRows.clear();
         for (int limitOption : pager.getLimitOptions()) {
-            listPageRows.addItem(limitOption, true);
+            listPageRows.addItem(limitOption, false);
         }
+        listPageRows.reload();
+
         registerHandler(listPageRows.addValueChangeHandler(valueChangeEvent -> {
             pager.setLimit(valueChangeEvent.getValue());
             pager.updateRowsPerPage(valueChangeEvent.getValue());
