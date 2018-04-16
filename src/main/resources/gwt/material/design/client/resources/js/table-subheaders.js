@@ -93,6 +93,10 @@ function TableSubHeaders($table, $stickies) {
   base.detect = function () {
     base.$stickies = $($stickies, $table);
 
+    if(base.$stickies.length < 1) {
+        return;
+    }
+
     // Bind toggle click
     base.$stickies.off("." + base.name);
     base.$stickies.on("tap."+base.name+" click."+base.name, function(e) {
@@ -235,6 +239,10 @@ function TableSubHeaders($table, $stickies) {
   };
 
   base.recalculate = function(fireEvents) {
+    if(base.$stickies.length < 1) {
+      return;
+    }
+
     if(fireEvents) {
       $base.trigger("before-recalculate");
     }
@@ -405,6 +413,10 @@ function TableSubHeaders($table, $stickies) {
 
   // Applies the alignment of all the outer scroll positions.
   base.alignment = function(scroll) {
+    if(base.$stickies.length < 1) {
+      return;
+    }
+
     var offset = $table.offset(),
         clipWidth = $table.innerWidth(),
         fullWidth = base.$tableBody.outerWidth(),

@@ -20,6 +20,7 @@
 package gwt.material.design.client.data;
 
 import com.google.gwt.cell.client.Cell.Context;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Display;
@@ -46,7 +47,6 @@ import gwt.material.design.client.js.JsTableSubHeaders;
 import gwt.material.design.client.js.StickyTableOptions;
 import gwt.material.design.client.ui.MaterialCheckBox;
 import gwt.material.design.client.ui.MaterialProgress;
-import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.Selectors;
 import gwt.material.design.client.ui.table.*;
 import gwt.material.design.client.ui.table.cell.Column;
@@ -218,9 +218,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             if(attachHandler != null) {
                 attachHandler.removeHandler();
             }
-            // When the last component has been rendered we
-            // will set the rendering flag to false.
-            // This can be improved later.
+            // When the last component has been rendered we will set the
+            // rendering flag to false.
             Component<?> component = components.get(components.size() - 1);
             Widget componentWidget = component.getWidget();
             AttachEvent.Handler handler = event -> {
@@ -268,6 +267,19 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     /**
+     * Returns a list of the visible headers indexes.
+     */
+    protected List<Integer> getVisibleHeaderIndexes() {
+        List<Integer> visibleHeaders = new ArrayList<>();
+        for(int index = getColumnOffset(); index < getColumnCount(); index++) {
+            if(isHeaderVisible(index)) {
+                visibleHeaders.add(index);
+            }
+        }
+        return visibleHeaders;
+    }
+
+    /**
      * Compile list of {@link RowComponent}'s and invoke a render.
      * Controls the building of category components and custom components.
      * Which then {@link #render(Components)} is invoked to perform DOM render.
@@ -287,6 +299,9 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         }
         rendering = true;
         Range visibleRange = getVisibleRange();
+
+        // Cache the visible headers for the renderer
+        renderer.setVisibleHeaderIndexes(getVisibleHeaderIndexes());
 
         // Check if we need to redraw categories
         if(redrawCategories) {
@@ -341,14 +356,17 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             if (index < this.rows.size()) {
                 RowComponent<T> existingRow = this.rows.get(index);
                 if(existingRow != null) {
-                    // Replace the rows element with the
-                    // existing indexes element.
-                    row.setWidget(existingRow.getWidget());
-                    row.setRedraw(true);
+                    TableRow widget = existingRow.getWidget();
+                    if(widget != null && !row.getWidget().equals(widget)) {
+                        // Replace the rows element with the
+                        // existing indexes element.
+                        row.setWidget(widget);
+                        row.setRedraw(true);
 
-                    // Rebuild the rows custom components
-                    //existingRow.destroyChildren();
-                    buildCustomComponents(existingRow);
+                        // Rebuild the rows custom components
+                        //existingRow.destroyChildren();
+                        buildCustomComponents(row);
+                    }
                 }
             }
             row.setIndex(index++);
@@ -449,7 +467,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     public void renderColumn(Column<T, ?> column) {
-        int index = columns.indexOf(column) + getColumnOffset();
+        int index = column.getIndex() + getColumnOffset();
 
         TableHeader th = renderer.drawColumnHeader(column, column.getName(), index);
         if (th != null) {
@@ -651,7 +669,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             if(maybeApplyAutoSortColumn()) {
                 // We have an auto sort column, sort the pending rows.
                 Column<T, ?> column = sortContext.getSortColumn();
-                sortedRows = sort(pendingRows, sortContext.getTableHeader(), column, columns.indexOf(column) + getColumnOffset(), false);
+                sortedRows = sort(pendingRows, sortContext.getTableHeader(), column, column.getIndex() + getColumnOffset(), false);
             }
 
             if(sortedRows == null) {
@@ -818,7 +836,6 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                     if(expanding) {
                         // Fire table expand event
                         RowExpandingEvent.fire(this, rowExpansion);
-
                     } else {
                         // Destroy the copy
                         if(copy[0] != null) {
@@ -968,9 +985,13 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
         if(columns.size() < beforeIndex) {
             columns.add(column);
+            column.setIndex(columns.size());
         } else {
             columns.add(beforeIndex, column);
+            column.setIndex(beforeIndex);
         }
+
+        reindexColumns(beforeIndex);
 
         if(setup) {
             renderColumn(column);
@@ -1018,7 +1039,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     @Override
     public void sort(Column<T, ?> column, SortDir dir) {
         if(column != null) {
-            int index = columns.indexOf(column) + getColumnOffset();
+            int index = column.getIndex() + getColumnOffset();
             TableHeader th = headers.get(index);
             sort(rows, th, column, index, dir);
         } else {
@@ -1057,7 +1078,11 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             sortContext.setSorted(true);
 
             if (renderRows) {
-                // Render the new sort order.
+                // Sort render requires us to clear widgets for reinsertion
+                this.rows.clearWidgets();
+
+                // Now that the rows are cleared from the DOM we will
+                // invoke a render without redraw to put them into the DOM.
                 renderRows(clonedRows);
             }
 
@@ -1145,11 +1170,12 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             row.getWidget().remove(index);
         }
 
-        reindexColumns();
+        reindexHeadersAndRows();
         refreshStickyHeaders();
 
         if(hardRemove) {
             columns.remove(colIndex);
+            reindexColumns(colIndex);
 
             RemoveColumnEvent.fire(this, colIndex);
         }
@@ -1224,11 +1250,11 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 for (RowComponent<T> row : rows) {
                     row.getWidget().insert(renderer.drawSelectionCell(), 0);
                 }
-                reindexColumns();
+                reindexHeadersAndRows();
             } else if (selectionType.equals(SelectionType.NONE) && hadSelection) {
                 removeHeader(0);
                 $("td#col0", getContainer()).remove();
-                reindexColumns();
+                reindexHeadersAndRows();
             }
         }
     }
@@ -1274,7 +1300,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         });
     }
 
-    protected void reindexColumns() {
+    protected void reindexHeadersAndRows() {
         int colMod = getColumnOffset();
 
         for(RowComponent<T> row : rows) {
@@ -1292,6 +1318,13 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             if(!td.getStyleName().contains("colex")) {
                 td.setId("col" + i);
             }
+        }
+    }
+
+    protected void reindexColumns(int fromIndex) {
+        // Reindex column objects from the given index
+        for(int i = fromIndex; i < columns.size(); i++) {
+            columns.get(i).setIndex(i);
         }
     }
 
@@ -1535,7 +1568,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         if(maybeApplyAutoSortColumn()) {
             // We have an auto sort column, sort the new rows.
             Column<T, ?> column = sortContext.getSortColumn();
-            rows = sort(rows, sortContext.getTableHeader(), column, columns.indexOf(column) + getColumnOffset(), false);
+            rows = sort(rows, sortContext.getTableHeader(), column, column.getIndex() + getColumnOffset(), false);
         }
 
         // Render the new rows normally
@@ -1554,7 +1587,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
             if(autoSortColumn != null) {
                 if(setup) {
-                    int index = columns.indexOf(autoSortColumn) + getColumnOffset();
+                    int index = autoSortColumn.getIndex() + getColumnOffset();
                     updateSortContext(headers.get(index), autoSortColumn);
                     return true;
                 }
@@ -2189,7 +2222,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     @Override
     public List<TableHeader> getHeaders() {
-        return Collections.unmodifiableList(headers);
+        return headers;
     }
 
     protected void addHeader(int index, TableHeader header) {

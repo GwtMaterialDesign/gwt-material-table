@@ -77,4 +77,6 @@ public interface Renderer<T> {
     IconSize getSortIconSize();
 
     void setSortIconSize(IconSize sortIconSize);
+
+    void setVisibleHeaderIndexes(List<Integer> visibleHeaders);
 }

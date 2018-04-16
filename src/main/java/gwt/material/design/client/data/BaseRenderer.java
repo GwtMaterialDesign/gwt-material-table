@@ -51,6 +51,8 @@ import gwt.material.design.client.ui.table.cell.WidgetColumn;
 import gwt.material.design.jquery.client.api.JQuery;
 import gwt.material.design.jquery.client.api.JQueryElement;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -73,6 +75,8 @@ public class BaseRenderer<T> implements Renderer<T> {
     private IconType sortAscIcon = IconType.ARROW_UPWARD;
     private IconType sortDescIcon = IconType.ARROW_DOWNWARD;
     protected IconSize sortIconSize = IconSize.TINY;
+
+    private List<Integer> visibleHeaders = new ArrayList<>();
 
     @Override
     public void copy(Renderer<T> renderer) {
@@ -133,7 +137,7 @@ public class BaseRenderer<T> implements Renderer<T> {
                 int colIndex = c + colOffset;
                 Context context = new Context(rowComponent.getIndex(), colIndex, valueKey);
                 Column<T, ?> column = columns.get(c);
-                TableData td = drawColumn(row, context, data, column, colIndex, dataView.isHeaderVisible(colIndex));
+                TableData td = drawColumn(row, context, data, column, colIndex, isHeaderVisible(colIndex));
                 FrozenProperties frozenProps = column.getFrozenProperties();
                 if(frozenProps != null) {
                     drawColumnFreeze(td, rowComponent, headers.get(colIndex), column, frozenProps.getSide());
@@ -411,6 +415,18 @@ public class BaseRenderer<T> implements Renderer<T> {
                 calculatedRowHeight = rowHeight;
             }
         }
+    }
+
+    @Override
+    public void setVisibleHeaderIndexes(List<Integer> visibleHeaders) {
+        this.visibleHeaders = visibleHeaders;
+    }
+
+    /**
+     * Check the visible header index list for visible headers.
+     */
+    protected boolean isHeaderVisible(int headerIndex) {
+        return visibleHeaders.contains(headerIndex);
     }
 
     @Override

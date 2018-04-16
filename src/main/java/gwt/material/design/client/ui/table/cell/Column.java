@@ -72,6 +72,7 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
     private Map<StyleName, String> styleProps;
 
     private Comparator<? super RowComponent<T>> sortComparator;
+    private int index;
 
     /**
      * Construct a new Column with a given {@link Cell}.
@@ -365,6 +366,14 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
     }
 
     public String width() { return null; }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public int getIndex() {
+        return index;
+    }
 
     @Override
     public String toString() {
