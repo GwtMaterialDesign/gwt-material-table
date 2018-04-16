@@ -433,7 +433,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 }
             } else if(component instanceof CategoryComponent) {
                 CategoryComponent categoryComponent = (CategoryComponent)component;
-                row = bindCategoryEvents(renderer.drawCategory(categoryComponent));
+                row = bindCategoryEvents(renderer.drawCategory(categoryComponent, getColumnCount()-getColumnOffset()));
 
                 if(categoryComponent.isOpenByDefault()) {
                     row.addAttachHandler(event -> openCategory(categoryComponent), true);
@@ -1529,9 +1529,9 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         int end = start + length;
 
         // Make sure we have a valid range
-        if(range.getStart() < 0 || range.getLength() < 1) {
-            setVisibleRange(0, length);
-        }
+        //if(range.getStart() < 0 || range.getLength() < 1) {
+            setVisibleRange(start, length);
+        //}
 
         // Current range start and end
         int rangeStart = range.getStart();
