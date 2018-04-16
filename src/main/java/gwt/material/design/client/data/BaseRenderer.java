@@ -174,11 +174,11 @@ public class BaseRenderer<T> implements Renderer<T> {
     }
 
     @Override
-    public TableSubHeader drawCategory(CategoryComponent category) {
+    public TableSubHeader drawCategory(CategoryComponent category, int columnCount) {
         if(category != null) {
             TableSubHeader subHeader = category.getWidget();
             if(subHeader == null) {
-                subHeader = category.render();
+                subHeader = category.render(columnCount);
                 assert subHeader != null : "rendered category TableSubHeader cannot be null.";
                 subHeader.setHeight(category.getHeight());
             }

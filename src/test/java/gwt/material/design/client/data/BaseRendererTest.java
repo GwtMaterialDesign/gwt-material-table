@@ -206,7 +206,7 @@ public class BaseRendererTest extends DataTableTestCase<MaterialDataTable<Person
         CategoryComponent category = dataView.getCategoryFactory().generate(dataView, person.getDataCategory());
 
         // when
-        TableSubHeader subheader = renderer.drawCategory(category);
+        TableSubHeader subheader = renderer.drawCategory(category, table.getColumns().size());
 
         // then
         assertNotNull(subheader);

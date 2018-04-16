@@ -433,7 +433,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 }
             } else if(component instanceof CategoryComponent) {
                 CategoryComponent categoryComponent = (CategoryComponent)component;
-                row = bindCategoryEvents(renderer.drawCategory(categoryComponent));
+                row = bindCategoryEvents(renderer.drawCategory(categoryComponent, getColumnCount()-getColumnOffset()));
 
                 if(categoryComponent.isOpenByDefault()) {
                     row.addAttachHandler(event -> openCategory(categoryComponent), true);

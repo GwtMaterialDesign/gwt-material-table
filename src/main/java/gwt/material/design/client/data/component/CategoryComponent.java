@@ -21,6 +21,7 @@ package gwt.material.design.client.data.component;
 
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.data.HasCategories;
+import gwt.material.design.client.ui.table.TableHeader;
 import gwt.material.design.client.ui.table.TableSubHeader;
 
 /**
@@ -34,8 +35,8 @@ public class CategoryComponent extends Component<TableSubHeader> {
         }
 
         @Override
-        protected void render(TableSubHeader subheader) {
-            super.render(subheader);
+        protected void render(TableSubHeader subheader, int columnCount) {
+            super.render(subheader, columnCount);
 
             subheader.setName("No Category");
         }
@@ -44,6 +45,7 @@ public class CategoryComponent extends Component<TableSubHeader> {
     private String name;
     private String height;
     private boolean openByDefault;
+    private boolean hideName;
 
     private int currentIndex = -1;
     private int rowCount = 0;
@@ -97,7 +99,7 @@ public class CategoryComponent extends Component<TableSubHeader> {
      * Render the data category row element.
      * Customization to the element can be performed here.
      */
-    protected void render(TableSubHeader subheader) {
+    protected void render(TableSubHeader subheader, int columnCount) {
         // Do nothing by default
     }
 
@@ -106,13 +108,14 @@ public class CategoryComponent extends Component<TableSubHeader> {
      *
      * @return a fully formed {@link TableSubHeader} object.
      */
-    public final TableSubHeader render() {
+    public final TableSubHeader render(int columnCount) {
         TableSubHeader element = getWidget();
         if(element == null) {
-            element = new TableSubHeader(this);
+            element = new TableSubHeader(this, columnCount);
             setWidget(element);
         }
-        render(element);
+
+        render(element, columnCount);
         return element;
     }
 
@@ -148,6 +151,14 @@ public class CategoryComponent extends Component<TableSubHeader> {
         }
     }
 
+    public boolean isHideName() {
+        return hideName;
+    }
+
+    public void setHideName(boolean hideName) {
+        this.hideName = hideName;
+    }
+
     public String getHeight() {
         return height;
     }
@@ -159,6 +170,14 @@ public class CategoryComponent extends Component<TableSubHeader> {
         if(widget != null && widget.isAttached()) {
             widget.setHeight(height);
         }
+    }
+
+    public TableHeader getHeader(int index) {
+        return getWidget().getHeader(index);
+    }
+
+    public TableHeader getHeader(String name) {
+        return getWidget().getHeader(name);
     }
 
     @Override

@@ -30,8 +30,8 @@ public class CustomCategoryComponent extends CategoryComponent {
     }
 
     @Override
-    protected void render(TableSubHeader subheader) {
-        super.render(subheader);
+    protected void render(TableSubHeader subheader, int columnCount) {
+        super.render(subheader, columnCount);
 
         subheader.setOpenIcon(IconType.FOLDER_OPEN);
         subheader.setCloseIcon(IconType.FOLDER);

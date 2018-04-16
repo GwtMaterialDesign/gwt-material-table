@@ -42,7 +42,7 @@ import java.util.List;
 public interface Renderer<T> {
     TableRow drawRow(DataView<T> dataView, RowComponent<T> rowComponent, Object valueKey, List<Column<T, ?>> columns, boolean redraw);
 
-    TableSubHeader drawCategory(CategoryComponent category);
+    TableSubHeader drawCategory(CategoryComponent category, int columnCount);
 
     TableRow drawCustom(Component<?> component);
 
