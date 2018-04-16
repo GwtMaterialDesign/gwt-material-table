@@ -48,10 +48,6 @@ public class PageRowSelection extends MaterialWidget {
     protected void onLoad() {
         super.onLoad();
 
-        load();
-    }
-
-    protected void load() {
         add(listPageRows);
         add(rowsPerPageLabel);
 

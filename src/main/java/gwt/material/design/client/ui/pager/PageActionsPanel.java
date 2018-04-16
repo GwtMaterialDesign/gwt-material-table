@@ -51,10 +51,6 @@ public class PageActionsPanel extends MaterialWidget {
     protected void onLoad() {
         super.onLoad();
 
-        load();
-    }
-
-    protected void load() {
         // Add the next button
         iconNext.setWaves(WavesType.DEFAULT);
         iconNext.setCircle(true);

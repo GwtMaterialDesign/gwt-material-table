@@ -66,10 +66,6 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
     protected void onLoad() {
         super.onLoad();
 
-        load();
-    }
-
-    protected void load() {
         if (limit == 0) {
             limit = limitOptions[0];
         }
