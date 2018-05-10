@@ -271,7 +271,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
      */
     protected List<Integer> getVisibleHeaderIndexes() {
         List<Integer> visibleHeaders = new ArrayList<>();
-        for(int index = getColumnOffset(); index < getColumnCount(); index++) {
+        for(int index = 0; index < getColumnCount(); index++) {
             if(isHeaderVisible(index)) {
                 visibleHeaders.add(index);
             }

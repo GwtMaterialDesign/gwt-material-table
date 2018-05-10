@@ -137,7 +137,7 @@ public class BaseRenderer<T> implements Renderer<T> {
                 int colIndex = c + colOffset;
                 Context context = new Context(rowComponent.getIndex(), colIndex, valueKey);
                 Column<T, ?> column = columns.get(c);
-                TableData td = drawColumn(row, context, data, column, colIndex, isHeaderVisible(colIndex));
+                TableData td = drawColumn(row, context, data, column, colIndex, isHeaderVisible(c));
                 FrozenProperties frozenProps = column.getFrozenProperties();
                 if(frozenProps != null) {
                     drawColumnFreeze(td, rowComponent, headers.get(colIndex), column, frozenProps.getSide());
