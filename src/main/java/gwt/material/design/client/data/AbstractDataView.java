@@ -20,7 +20,6 @@
 package gwt.material.design.client.data;
 
 import com.google.gwt.cell.client.Cell.Context;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Display;
@@ -243,6 +242,14 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 // Set the x-scroll panels initial width
                 xScrollPanel.setWidth((innerScroll.asElement().getScrollWidth() + frozenMarginLeft) + "px");
 
+                // Clear all row displays when not using categories
+                // This is an optimization for firefox rendering
+                if(!isUseCategories()) {
+                    for (RowComponent<T> row : rows) {
+                        row.getWidget().getElement().getStyle().clearDisplay();
+                    }
+                }
+
                 rendering = false;
 
                 if(attachHandler != null) {
@@ -426,7 +433,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                         }
                     } else {
                         // Not using categories
-                        row.getElement().getStyle().clearDisplay();
+                        //row.getElement().getStyle().clearDisplay();
                     }
 
                     rows.add(rowComponent);
