@@ -19,6 +19,9 @@
  */
 package gwt.material.design.client.ui.pager;
 
+import gwt.material.design.client.ui.pager.actions.PageListBox;
+import gwt.material.design.client.ui.pager.actions.PageSelection;
+
 public interface HasPager {
 
     /**
@@ -65,4 +68,13 @@ public interface HasPager {
      * Check if we can still previous()
      */
     boolean isPrevious();
+
+    /**
+     * Set the Page selection type on the data pager.
+     * There are two available components available: {@link gwt.material.design.client.ui.pager.actions.PageNumberBox}
+     * (By Default) and {@link PageListBox}
+     */
+    void setPageSelection(PageSelection pageSelection);
+
+    PageSelection getPageSelection();
 }

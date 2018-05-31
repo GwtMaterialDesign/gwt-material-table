@@ -40,6 +40,8 @@ public interface TableCssName {
     String SELECTED = "selected";
     String DATA_ROW = "data-row";
     String SELECTION = "selection";
+    String ARROW_NEXT = "arrow-next";
+    String ARROW_PREV = "arrow-prev";
     String WIDGET_CELL = "widget-cell";
     String CELL = "cell";
     String NUMERIC = "numeric";

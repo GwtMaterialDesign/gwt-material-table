@@ -49,12 +49,10 @@ import gwt.material.design.client.data.events.RowSelectEvent;
 import gwt.material.design.client.data.events.RowShortPressEvent;
 import gwt.material.design.client.data.events.SelectAllEvent;
 import gwt.material.design.client.model.Person;
-import gwt.material.design.client.ui.MaterialBadge;
-import gwt.material.design.client.ui.MaterialCheckBox;
-import gwt.material.design.client.ui.MaterialDropDown;
-import gwt.material.design.client.ui.MaterialIcon;
-import gwt.material.design.client.ui.MaterialImage;
+import gwt.material.design.client.ui.*;
 import gwt.material.design.client.ui.pager.MaterialDataPager;
+import gwt.material.design.client.ui.pager.actions.PageListBox;
+import gwt.material.design.client.ui.pager.actions.PageNumberBox;
 import gwt.material.design.client.ui.table.cell.Column;
 import gwt.material.design.client.ui.table.cell.TextColumn;
 import gwt.material.design.client.ui.table.cell.WidgetColumn;
@@ -539,6 +537,13 @@ public class MaterialDataTableTest<T extends MaterialDataTable<Person>> extends 
         assertEquals(2, pager.getCurrentPage());
         pager.previous();
         assertEquals(1, pager.getCurrentPage());
+
+        // Check Page selection type
+        assertTrue(pager.getPageSelection() instanceof PageNumberBox);
+        assertTrue(((PageNumberBox)pager.getPageSelection()).getComponent() instanceof MaterialIntegerBox);
+        pager.setPageSelection(new PageListBox());
+        assertTrue(pager.getPageSelection() instanceof PageListBox);
+        assertTrue(((PageListBox)pager.getPageSelection()).getComponent() instanceof MaterialListValueBox);
     }
 
     public void testMenu() throws Exception {
