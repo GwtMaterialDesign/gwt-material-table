@@ -130,7 +130,7 @@
         var $this = $(this);
         $this.off("." + name);
         if($this.hasScrollBar()) {
-          // Ensure the subheaders keep thier alignment 
+          // Ensure the subheaders keep their alignment
           // when outer scrolling occurs.
           $this.on("scroll." + name, base.toggleHeaders);
           //$this.on("touchmove." + name, base.toggleHeaders);
@@ -161,7 +161,10 @@
             base.$originalHeader.css({
               'position': 'fixed',
               'margin-top': base.options.marginTop,
-              'left': newLeft,
+              'left': 0,
+              "-webkit-transform":"translate("+newLeft+"px)",
+              "-ms-transform":"translate("+newLeft+"px)",
+              "-transform":"translate("+newLeft+"px)",
               'z-index': 3 // #18: opacity bug
             });
             base.leftOffset = newLeft;
@@ -178,6 +181,11 @@
           } else if (base.isSticky) {
             base.$originalHeader.css('position', 'static');
             base.$clonedHeader.css('display', 'none');
+            base.$originalHeader.css({
+              "-webkit-transform":"",
+              "-ms-transform":"",
+              "-transform":""
+            });
             base.isSticky = false;
             base.resetWidths($('td,th', base.$clonedHeader), $('td,th', base.$originalHeader));
 
@@ -203,9 +211,15 @@
           topClip = base.getOuterScrollTop() - base.options.marginTop,
           height = base.$originalHeader.outerHeight();
 
+      var top = base.topOffset - (base.isWindowScrolling ? 0 : winScrollTop);
+      var left = base.leftOffset - (base.isWindowScrolling ? 0 : winScrollLeft);
+
       base.$originalHeader.css({
-        'top': base.topOffset - (base.isWindowScrolling ? 0 : winScrollTop),
-        'left': base.leftOffset - (base.isWindowScrolling ? 0 : winScrollLeft),
+        'top': 0,
+        'left': 0,
+        "-webkit-transform":"translate("+left+"px, "+top+"px)",
+        "-ms-transform":"translate("+left+"px, "+top+"px)",
+        "-transform":"translate("+left+"px, "+top+"px)",
         "clip": "rect("+topClip+"px, " + (base.$scrollableArea.outerWidth() + scrollLeft - base.scrollBarWidth) + "px, " + (height + 50) + "px, " + leftClip + "px)"
       });
     };

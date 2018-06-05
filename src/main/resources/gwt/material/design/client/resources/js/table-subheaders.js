@@ -406,8 +406,12 @@ function TableSubHeaders($table, $stickies) {
     $sticky.data("clip-left", leftClip)
            .data("clip-right", rightClip);
 
+    var l = left - scrollLeft - base.$window.scrollLeft();
     $sticky.css({
-      "left": left - scrollLeft - base.$window.scrollLeft(),
+      "left": 0,
+      "-webkit-transform":"translate("+l+"px)",
+      "-ms-transform":"translate("+l+"px)",
+      "-transform":"translate("+l+"px)",
       "clip": "rect("+ topClip +", " + rightClip + ", " + bottomClip + ", " + leftClip + ")"
     });
   };
