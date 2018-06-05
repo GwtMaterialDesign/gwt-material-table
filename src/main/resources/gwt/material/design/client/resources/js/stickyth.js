@@ -95,6 +95,7 @@
 
     base.bind = function () {
       base.$scrollableArea.on('scroll.' + name, base.toggleHeaders);
+      base.$scrollableArea.find(".inner-scroll").on('scroll.' + name, base.toggleHeaders);
       if (!base.isWindowScrolling) {
         base.$window.on('scroll.' + name + base.id, base.setPositionValues);
         //base.$window.on("touchmove." + name + base.id, base.setPositionValues);
@@ -146,18 +147,17 @@
             isNaN(base.options.fixedOffset) ? base.options.fixedOffset.outerHeight() 
               : base.options.fixedOffset) 
               : base.$scrollableArea.offset().top + (!isNaN(base.options.fixedOffset) ? base.options.fixedOffset : 0),
-
+            innerScroll = base.$scrollableArea.find(".inner-scroll"),
             offset = $this.offset(),
-
-            scrollTop = base.$scrollableArea.scrollTop() + newTopOffset,
-            scrollLeft = base.$scrollableArea.scrollLeft(),
+            scrollTop = innerScroll.scrollTop() + newTopOffset,
+            scrollLeft = innerScroll.scrollLeft(),
 
             scrolledPastTop = base.isWindowScrolling ? scrollTop > offset.top : newTopOffset > offset.top,
             notScrolledPastBottom = (base.isWindowScrolling ? scrollTop : 0) < (offset.top + $this.height() 
               - base.$clonedHeader.height() - (base.isWindowScrolling ? 0 : newTopOffset));
 
           if (scrolledPastTop /*&& notScrolledPastBottom*/) {
-            newLeft = offset.left /*- scrollLeft*/ + base.options.leftOffset;
+            newLeft = offset.left + base.options.leftOffset;
             base.$originalHeader.css({
               'position': 'fixed',
               'margin-top': base.options.marginTop,
@@ -198,8 +198,8 @@
       base.detectOuterScrolls();
       base.scrollBarWidth = $.scrollBarWidth(base.el);
 
-      var scrollLeft = base.$scrollableArea.scrollLeft(),
-          leftClip = base.$scrollableArea.scrollLeft() + base.getOuterScrollLeft(),
+      var scrollLeft = base.$scrollableArea.find(".inner-scroll").scrollLeft(),
+          leftClip = scrollLeft + base.getOuterScrollLeft(),
           topClip = base.getOuterScrollTop() - base.options.marginTop,
           height = base.$originalHeader.outerHeight();
 
