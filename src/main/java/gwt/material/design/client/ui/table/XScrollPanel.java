@@ -40,7 +40,7 @@ public class XScrollPanel extends Div {
                 barSize = 8;
             }
             super.setStyle("width: calc(100% - " + barSize + "px)");
-            setHeight((barSize + 1) + "px");
+            setHeight(barSize + "px");
         };
 
         if(!container.isAttached()) {

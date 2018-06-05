@@ -109,12 +109,9 @@ function TableSubHeaders($table, $stickies) {
 
     var isChrome = base.isChrome();
     filtered.each(function () {
-      if(isChrome) {
-        $(this).wrap("<div style='width:100%;z-index:2;cursor:pointer;background-color:#fff;'/>");
-      } else {
-        // Note: we need to ensure the display is 'table-row' to avoid rendering issues in Safari 9+
-        $(this).wrap("<div style='width:100%;z-index:2;cursor:pointer;background-color:#fff;display:table-row;'/>");
-      }
+      // Note: we need to ensure the display is 'table-row' to avoid rendering issues in Safari 9+
+      $(this).wrap("<div style='width:100%;z-index:2;cursor:pointer;background-color:#fff;"
+          + (!isChrome ? "display:table-row;" : "") + "'/>");
     });
   };
 
