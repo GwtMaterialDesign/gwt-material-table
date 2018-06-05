@@ -108,7 +108,8 @@ function TableSubHeaders($table, $stickies) {
     });
 
     filtered.each(function () {
-      $(this).wrap("<div style='width:100%;z-index:2;cursor:pointer;background-color:#fff;'/>");
+      // Note: we need to ensure the display is 'table-row' to avoid rendering issues in Safari 9+
+      $(this).wrap("<div style='width:100%;z-index:2;cursor:pointer;background-color:#fff;display:table-row;'/>");
     });
   };
 
@@ -354,9 +355,6 @@ function TableSubHeaders($table, $stickies) {
           base.emulateXScroll($this, clipWidth, left, scrollLeft, outerScrollLeft);
         }
       }
-
-      // Fixes an issue with Safari 9+ browsers failing to render the div position.
-      $this.parent().hide().show(0);
     });
 
     // Update passed subheaders top position.
@@ -550,7 +548,7 @@ function TableSubHeaders($table, $stickies) {
       if(typeof height === typeof undefined) {
         height = $this.outerHeight();
       }
-      $this.parent().height(height);
+      $this.parent().height(height+1);
     });
   };
 
