@@ -107,9 +107,14 @@ function TableSubHeaders($table, $stickies) {
       return $(this).parent().is(":not(div)");
     });
 
+    var isChrome = base.isChrome();
     filtered.each(function () {
-      // Note: we need to ensure the display is 'table-row' to avoid rendering issues in Safari 9+
-      $(this).wrap("<div style='width:100%;z-index:2;cursor:pointer;background-color:#fff;display:table-row;'/>");
+      if(isChrome) {
+        $(this).wrap("<div style='width:100%;z-index:2;cursor:pointer;background-color:#fff;'/>");
+      } else {
+        // Note: we need to ensure the display is 'table-row' to avoid rendering issues in Safari 9+
+        $(this).wrap("<div style='width:100%;z-index:2;cursor:pointer;background-color:#fff;display:table-row;'/>");
+      }
     });
   };
 
@@ -576,5 +581,13 @@ function TableSubHeaders($table, $stickies) {
 
   base.getDebugInfo = function() {
     return base.debug;
+  };
+
+  base.isChrome = function() {
+    return !!window.chrome && !base.isOpera();
+  };
+
+  base.isOpera = function() {
+    return !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
   }
 }
