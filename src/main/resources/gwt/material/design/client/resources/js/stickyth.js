@@ -162,9 +162,10 @@
               'position': 'fixed',
               'margin-top': base.options.marginTop,
               'left': 0,
-              "-webkit-transform":"translate("+newLeft+"px)",
-              "-ms-transform":"translate("+newLeft+"px)",
-              "-transform":"translate("+newLeft+"px)",
+              "will-change" : "transform",
+              "-webkit-transform":"translate3d("+newLeft+"px, 0, 0)",
+              "-ms-transform":"translate3d("+newLeft+"px, 0, 0)",
+              "-transform":"translate3d("+newLeft+"px, 0, 0)",
               'z-index': 3 // #18: opacity bug
             });
             base.leftOffset = newLeft;
@@ -217,9 +218,10 @@
       base.$originalHeader.css({
         'top': 0,
         'left': 0,
-        "-webkit-transform":"translate("+left+"px, "+top+"px)",
-        "-ms-transform":"translate("+left+"px, "+top+"px)",
-        "-transform":"translate("+left+"px, "+top+"px)",
+        "will-change" : "transform",
+        "-webkit-transform":"translate3d("+left+"px, "+top+"px, 0)",
+        "-ms-transform":"translate3d("+left+"px, "+top+"px, 0)",
+        "-transform":"translate3d("+left+"px, "+top+"px, 0)",
         "clip": "rect("+topClip+"px, " + (base.$scrollableArea.outerWidth() + scrollLeft - base.scrollBarWidth) + "px, " + (height + 50) + "px, " + leftClip + "px)"
       });
     };

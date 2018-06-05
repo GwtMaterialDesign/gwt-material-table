@@ -409,9 +409,10 @@ function TableSubHeaders($table, $stickies) {
     var l = left - scrollLeft - base.$window.scrollLeft();
     $sticky.css({
       "left": 0,
-      "-webkit-transform":"translate("+l+"px)",
-      "-ms-transform":"translate("+l+"px)",
-      "-transform":"translate("+l+"px)",
+      "will-change" : "transform",
+      "-webkit-transform":"translate3d("+l+"px, 0, 0)",
+      "-ms-transform":"translate3d("+l+"px, 0, 0)",
+      "-transform":"translate3d("+l+"px, 0, 0)",
       "clip": "rect("+ topClip +", " + rightClip + ", " + bottomClip + ", " + leftClip + ")"
     });
   };
