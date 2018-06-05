@@ -354,6 +354,9 @@ function TableSubHeaders($table, $stickies) {
           base.emulateXScroll($this, clipWidth, left, scrollLeft, outerScrollLeft);
         }
       }
+
+      // Fixes an issue with Safari 9+ browsers failing to render the div position.
+      $this.parent().hide().show(0);
     });
 
     // Update passed subheaders top position.
