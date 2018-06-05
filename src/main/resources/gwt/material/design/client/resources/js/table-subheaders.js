@@ -123,6 +123,10 @@ function TableSubHeaders($table, $stickies) {
       if(base.debug.enabled) base.debug.smartScroll.table++;
       base.scroll(e, scroll);
     }));
+    $table.find(".inner-scroll").smartScroll(base.name, $.throttle(scrollThrottle, function(e, scroll) {
+      if(base.debug.enabled) base.debug.smartScroll.table++;
+      base.scroll(e, scroll);
+    }));
     $table.on("resize." + base.name, $.debounce(resizeThrottle, function() {
       if(base.debug.enabled) base.resize.table++;
       base.recalculate(true);
@@ -298,7 +302,7 @@ function TableSubHeaders($table, $stickies) {
 
         // Left variables
         left = offset.left + base.options.marginLeft,
-        scrollLeft = $table.scrollLeft(),
+        scrollLeft = $table.find(".inner-scroll").scrollLeft(),
         outerScrollLeft = base.getOuterScrollLeft();
 
     base.$stickies.each(function (i) {
@@ -431,7 +435,7 @@ function TableSubHeaders($table, $stickies) {
 
         // Left variables
         left = (xScroll ? offset.left + base.options.marginLeft : 0),
-        scrollLeft = (xScroll ? $table.scrollLeft() : 0),
+        scrollLeft = (xScroll ? $table.find(".inner-scroll").scrollLeft() : 0),
         outerScrollLeft = (xScroll ? base.getOuterScrollLeft() : 0);
 
     base.$stickies.filter(".fixed").each(function (i) {
