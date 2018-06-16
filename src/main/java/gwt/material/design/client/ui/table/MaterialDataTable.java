@@ -68,6 +68,7 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
     private MaterialDropDown menu;
 
     public MaterialDataTable() {
+        super();
         loadInternalEvents();
     }
 
