@@ -200,7 +200,7 @@
 
       var scrollLeft = base.$scrollableArea.find(".inner-scroll").scrollLeft(),
           leftClip = scrollLeft + base.getOuterScrollLeft(),
-          topClip = base.getOuterScrollTop() - base.options.marginTop,
+          topClip =  Math.max(base.getOuterScrollTop() - base.$scrollableArea.position().top - base.options.marginTop, 0),
           height = base.$originalHeader.outerHeight();
 
       base.$originalHeader.css({

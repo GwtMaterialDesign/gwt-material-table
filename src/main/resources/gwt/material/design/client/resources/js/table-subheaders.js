@@ -378,8 +378,9 @@ function TableSubHeaders($table, $stickies) {
   };
 
   base.emulateYScroll = function($sticky, top, winScrollTop, scrollTop, outerScroll) {
-    var height = $sticky.outerHeight() + 50,
-        totalTop = (outerScroll ? outerScroll : base.getOuterScrollTop()) - base.options.marginTop;
+    var offset = $table.offset(),
+        height = $sticky.outerHeight() + 50,
+        totalTop = (outerScroll ? outerScroll : base.getOuterScrollTop()) - base.options.marginTop - $table.position().top;
 
     var topClip = totalTop + "px",
         bottomClip = height + "px",
