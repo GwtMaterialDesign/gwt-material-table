@@ -21,7 +21,7 @@ package gwt.material.design.client.data.events;
 
 import com.google.gwt.dom.client.Element;
 import gwt.material.design.client.data.DataView;
-import gwt.material.design.jquery.client.api.Event;
+import gwt.material.design.jquery.Event;
 
 public class RowSelectEvent<T> extends RowEvent<T, RowSelectHandler<T>> {
 

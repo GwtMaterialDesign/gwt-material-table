@@ -21,8 +21,8 @@ package gwt.material.design.client.data.events;
 
 import com.google.gwt.dom.client.Element;
 import gwt.material.design.client.data.DataView;
-import gwt.material.design.jquery.client.api.Event;
-import gwt.material.design.jquery.client.api.MouseEvent;
+import gwt.material.design.jquery.Event;
+import gwt.material.design.jquery.MouseEvent;
 
 public class RowDoubleClickEvent<T> extends RowEvent<T, RowDoubleClickHandler<T>> {
 

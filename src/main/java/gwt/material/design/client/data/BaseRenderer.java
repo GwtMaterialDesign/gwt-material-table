@@ -48,8 +48,8 @@ import gwt.material.design.client.ui.table.cell.FrozenProperties;
 import gwt.material.design.client.ui.table.cell.FrozenSide;
 import gwt.material.design.client.ui.table.cell.TextColumn;
 import gwt.material.design.client.ui.table.cell.WidgetColumn;
-import gwt.material.design.jquery.client.api.JQuery;
-import gwt.material.design.jquery.client.api.JQueryElement;
+import gwt.material.design.jquery.JQuery;
+import gwt.material.design.jquery.JQueryElement;
 
 import java.util.ArrayList;
 import java.util.HashMap;

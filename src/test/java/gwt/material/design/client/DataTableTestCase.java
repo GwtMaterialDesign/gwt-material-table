@@ -40,7 +40,7 @@ import gwt.material.design.client.ui.table.AbstractDataTable;
 import gwt.material.design.client.ui.table.MaterialDataTable;
 import gwt.material.design.client.ui.table.cell.TextColumn;
 import gwt.material.design.client.ui.table.cell.WidgetColumn;
-import gwt.material.design.jquery.client.api.JQueryElement;
+import gwt.material.design.jquery.JQueryElement;
 import org.junit.Ignore;
 
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import static gwt.material.design.jquery.client.api.JQuery.$;
+import static gwt.material.design.jquery.JQuery.$;
 
 @Ignore
 public class DataTableTestCase<T extends AbstractDataTable<Person>> extends GWTTestCase {

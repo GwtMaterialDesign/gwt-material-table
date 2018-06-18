@@ -30,7 +30,7 @@ import gwt.material.design.client.data.events.RemoveColumnHandler;
 import gwt.material.design.client.data.events.SetupHandler;
 import gwt.material.design.client.ui.table.events.StretchEvent;
 import gwt.material.design.client.ui.table.events.StretchHandler;
-import gwt.material.design.jquery.client.api.JQueryElement;
+import gwt.material.design.jquery.JQueryElement;
 import gwt.material.design.client.constants.Alignment;
 import gwt.material.design.client.constants.HideOn;
 import gwt.material.design.client.constants.IconType;
@@ -45,7 +45,7 @@ import gwt.material.design.client.ui.html.ListItem;
 import gwt.material.design.client.ui.html.Span;
 import gwt.material.design.client.ui.table.cell.Column;
 
-import static gwt.material.design.jquery.client.api.JQuery.$;
+import static gwt.material.design.jquery.JQuery.$;
 
 /**
  * The standard Material data table with custom "outer" components such as,

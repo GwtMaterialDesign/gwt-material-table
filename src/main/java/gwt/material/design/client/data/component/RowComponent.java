@@ -21,8 +21,8 @@ package gwt.material.design.client.data.component;
 
 import com.google.gwt.user.client.ui.HasEnabled;
 import gwt.material.design.client.data.DataView;
-import gwt.material.design.jquery.client.api.JQuery;
-import gwt.material.design.jquery.client.api.JQueryElement;
+import gwt.material.design.jquery.JQuery;
+import gwt.material.design.jquery.JQueryElement;
 import gwt.material.design.client.ui.table.TableRow;
 
 import java.util.ArrayList;

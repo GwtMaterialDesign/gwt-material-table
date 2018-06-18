@@ -19,7 +19,7 @@
  */
 package gwt.material.design.client.data;
 
-import gwt.material.design.jquery.client.api.JQueryElement;
+import gwt.material.design.jquery.JQueryElement;
 
 /**
  * Row expansion block.

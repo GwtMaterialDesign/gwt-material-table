@@ -20,7 +20,7 @@
 package gwt.material.design.client.jquery;
 
 import com.google.gwt.dom.client.Element;
-import gwt.material.design.jquery.client.api.Functions;
+import gwt.material.design.jquery.Functions;
 import jsinterop.annotations.JsType;
 
 @JsType(name = "jQuery", isNative = true)

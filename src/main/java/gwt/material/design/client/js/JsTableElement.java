@@ -20,7 +20,7 @@
 package gwt.material.design.client.js;
 
 import com.google.gwt.dom.client.Element;
-import gwt.material.design.jquery.client.api.JQueryElement;
+import gwt.material.design.jquery.JQueryElement;
 import jsinterop.annotations.JsIgnore;
 import jsinterop.annotations.JsMethod;
 import jsinterop.annotations.JsPackage;

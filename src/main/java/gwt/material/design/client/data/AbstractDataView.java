@@ -50,16 +50,16 @@ import gwt.material.design.client.ui.Selectors;
 import gwt.material.design.client.ui.table.*;
 import gwt.material.design.client.ui.table.cell.Column;
 import gwt.material.design.client.ui.table.cell.FrozenSide;
-import gwt.material.design.jquery.client.api.Event;
-import gwt.material.design.jquery.client.api.JQueryElement;
-import gwt.material.design.jquery.client.api.MouseEvent;
+import gwt.material.design.jquery.Event;
+import gwt.material.design.jquery.JQueryElement;
+import gwt.material.design.jquery.MouseEvent;
 
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static gwt.material.design.jquery.client.api.JQuery.$;
-import static gwt.material.design.jquery.client.api.JQuery.window;
+import static gwt.material.design.jquery.JQuery.$;
+import static gwt.material.design.jquery.JQuery.window;
 
 /**
  * Abstract DataView handles the creation, preparation and UI logic for

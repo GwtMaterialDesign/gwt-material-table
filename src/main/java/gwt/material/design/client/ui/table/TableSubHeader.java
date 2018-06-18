@@ -28,7 +28,7 @@ import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.js.Js;
 import gwt.material.design.client.ui.MaterialIcon;
 import gwt.material.design.client.ui.html.Text;
-import gwt.material.design.jquery.client.api.JQueryElement;
+import gwt.material.design.jquery.JQueryElement;
 
 import java.util.ArrayList;
 import java.util.List;

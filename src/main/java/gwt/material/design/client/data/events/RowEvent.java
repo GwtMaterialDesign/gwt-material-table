@@ -22,8 +22,8 @@ package gwt.material.design.client.data.events;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
-import gwt.material.design.jquery.client.api.Event;
-import gwt.material.design.jquery.client.api.MouseEvent;
+import gwt.material.design.jquery.Event;
+import gwt.material.design.jquery.MouseEvent;
 
 public abstract class RowEvent<T, H extends EventHandler> extends GwtEvent<H> {
 

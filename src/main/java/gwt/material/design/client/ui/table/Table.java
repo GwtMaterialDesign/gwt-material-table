@@ -21,7 +21,7 @@ package gwt.material.design.client.ui.table;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
-import gwt.material.design.jquery.client.api.JQueryElement;
+import gwt.material.design.jquery.JQueryElement;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.js.JsTableElement;
 

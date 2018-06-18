@@ -25,7 +25,7 @@ import com.google.gwt.view.client.Range;
 import gwt.material.design.client.data.component.Components;
 import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.client.data.factory.RowComponentFactory;
-import gwt.material.design.jquery.client.api.Event;
+import gwt.material.design.jquery.Event;
 
 import java.util.List;
 

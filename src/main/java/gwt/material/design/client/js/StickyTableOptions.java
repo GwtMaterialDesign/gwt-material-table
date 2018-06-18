@@ -20,7 +20,7 @@
 package gwt.material.design.client.js;
 
 import com.google.gwt.core.client.JavaScriptObject;
-import gwt.material.design.jquery.client.api.JQueryElement;
+import gwt.material.design.jquery.JQueryElement;
 
 /**
  * @author Ben Dol

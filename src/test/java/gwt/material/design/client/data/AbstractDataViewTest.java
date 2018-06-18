@@ -41,15 +41,15 @@ import gwt.material.design.client.ui.table.TableHeader;
 import gwt.material.design.client.ui.table.TableRow;
 import gwt.material.design.client.ui.table.cell.Column;
 import gwt.material.design.client.ui.table.cell.TextColumn;
-import gwt.material.design.jquery.client.api.JQueryElement;
-import gwt.material.design.jquery.client.api.KeyEvent;
+import gwt.material.design.jquery.JQueryElement;
+import gwt.material.design.jquery.KeyEvent;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import static gwt.material.design.jquery.client.api.JQuery.$;
+import static gwt.material.design.jquery.JQuery.$;
 
 public class AbstractDataViewTest<T extends MaterialDataTable<Person>> extends DataTableTestCase<T> {
 
