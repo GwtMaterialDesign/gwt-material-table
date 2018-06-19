@@ -543,9 +543,9 @@ function TableSubHeaders($table, $stickies) {
   };
 
   base.updateWidths = function() {
-    /*base.$stickies.each(function() {
+    base.$stickies.each(function() {
       base.updateWidth($(this));
-    });*/
+    });
   };
 
   base.updateHeights = function() {
