@@ -798,6 +798,11 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         return addHandler(handler, RenderedEvent.TYPE);
     }
 
+    @Override
+    public HandlerRegistration addRowsVisibleHandler(RowsVisibleHandler handler) {
+        return addHandler(handler, RowsVisibleEvent.TYPE);
+    }
+
     public CssNameMixin<AbstractDataTable, SelectionType> getSelectionTypeMixin() {
         if (selectionTypeMixin == null) {
             selectionTypeMixin = new CssNameMixin<>(this);

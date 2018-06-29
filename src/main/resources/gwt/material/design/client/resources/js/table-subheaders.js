@@ -485,7 +485,7 @@ function TableSubHeaders($table, $stickies) {
 
   base.updateCellWidths = function ($sticky) {
     // Copy cell widths from header
-    var cellWidths = base.getCellWidths($("th,td", $("thead", $table)));
+    var cellWidths = base.getCellWidths($("th,td", base.$originalHeader));
     base.setCellWidths(cellWidths, $sticky);
   };
 
@@ -518,7 +518,7 @@ function TableSubHeaders($table, $stickies) {
             // ie8 only
             var leftPadding = parseFloat($this.css("padding-left"));
             var rightPadding = parseFloat($this.css("padding-right"));
-            // Needs more investigation - this is assuming constant border 
+            // Needs more investigation - this is assuming constant border
             // around this cell and it's neighbours.
             var border = parseFloat($this.css("border-width"));
             width = $this.outerWidth() - leftPadding - rightPadding - border;

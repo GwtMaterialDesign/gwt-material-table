@@ -22,6 +22,7 @@ package gwt.material.design.client.data;
 import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.shared.GwtEvent;
@@ -45,6 +46,7 @@ import gwt.material.design.client.js.JsTableElement;
 import gwt.material.design.client.js.JsTableSubHeaders;
 import gwt.material.design.client.js.StickyTableOptions;
 import gwt.material.design.client.ui.MaterialCheckBox;
+import gwt.material.design.client.ui.MaterialPanel;
 import gwt.material.design.client.ui.MaterialProgress;
 import gwt.material.design.client.ui.Selectors;
 import gwt.material.design.client.ui.table.*;
@@ -271,6 +273,21 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         } else {
             rendering = false;
         }
+
+        // Guarantee the rows are visible at this point.
+        // There are cases where we require the table body to be visible
+        // before we perform recalculations or pixel chasing logic.
+        int[] maxTries = {0};
+        Scheduler.get().scheduleFixedDelay(() -> {
+            if (tbody.$this().is(":visible")) {
+                subheaderLib.recalculate(true);
+                RowsVisibleEvent.fire(this);
+                return false;
+            } else {
+                // we will only attempt to detect this for 5 seconds
+                return ++maxTries[0] < 125;
+            }
+        }, 40);
     }
 
     /**
