@@ -333,7 +333,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
             // When we perform a category redraw we have
             // to clear the row elements also.
-            this.rows.clearWidgets();
+            clearRows(false);
 
             if (isUseCategories()) {
                 List<CategoryComponent> openCategories = getOpenCategories();
@@ -707,7 +707,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     @Override
     public void destroy() {
-        rows.clear();
+        clearRows(true);
         categories.clear();
 
         columns.clear();
@@ -971,7 +971,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         }
 
         // Clear the rows
-        rows.clear();
+        clearRows(true);
 
         // Update the pager and data source if the range changed
         if (pageStartChanged || pageSizeChanged || forceRangeChangeEvent) {
@@ -1103,7 +1103,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
             if (renderRows) {
                 // Sort render requires us to clear widgets for reinsertion
-                this.rows.clearWidgets();
+                clearRows(false);
 
                 // Now that the rows are cleared from the DOM we will
                 // invoke a render without redraw to put them into the DOM.
@@ -2224,6 +2224,15 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             rows.clear();
         } else {
             rows.clearWidgets();
+        }
+
+        // reset the category counts
+        clearCategoriesRowCount();
+    }
+
+    protected void clearCategoriesRowCount() {
+        for(CategoryComponent category : categories) {
+            category.setRowCount(0);
         }
     }
 
