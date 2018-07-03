@@ -390,7 +390,7 @@ function TableSubHeaders($table, $stickies) {
     // Handle the passed clipping
     if($sticky.hasClass("passed")) {
       var pushBack = $sticky.data("push-back");
-       topClip = (totalTop + pushBack) + "px";
+       topClip = Math.max(pushBack, totalTop + pushBack) + "px";
     }
 
     // Update Y clipping data
