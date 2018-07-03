@@ -485,7 +485,7 @@ function TableSubHeaders($table, $stickies) {
 
   base.updateCellWidths = function ($sticky) {
     // Copy cell widths from header
-    var cellWidths = base.getCellWidths($("th,td", base.$originalHeader));
+    var cellWidths = base.getCellWidths($("th,td", $("thead", $table)));
     base.setCellWidths(cellWidths, $sticky);
   };
 
