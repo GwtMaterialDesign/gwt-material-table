@@ -518,7 +518,7 @@ function TableSubHeaders($table, $stickies) {
             // ie8 only
             var leftPadding = parseFloat($this.css("padding-left"));
             var rightPadding = parseFloat($this.css("padding-right"));
-            // Needs more investigation - this is assuming constant border 
+            // Needs more investigation - this is assuming constant border
             // around this cell and it's neighbours.
             var border = parseFloat($this.css("border-width"));
             width = $this.outerWidth() - leftPadding - rightPadding - border;
@@ -543,9 +543,9 @@ function TableSubHeaders($table, $stickies) {
   };
 
   base.updateWidths = function() {
-    /*base.$stickies.each(function() {
+    base.$stickies.each(function() {
       base.updateWidth($(this));
-    });*/
+    });
   };
 
   base.updateHeights = function() {

@@ -6,9 +6,28 @@
     border-top: 1px solid #e9e9e9;
     margin-bottom: 0;
     padding: 8px 4px;
+    padding-top: 4px;
 }
 
-.data-pager .action-page-panel > span, .data-pager .rows-per-page-panel > span, .data-pager .action-page-panel i {
+.data-pager .num-page-panel .input-field input[type=number] {
+    width: 50px;
+    text-align: center;
+    border-bottom: none;
+    font-size: 1em;
+    margin-bottom: 0px;
+    height: 2em;
+    margin-top: 6px;
+}
+
+.data-pager .num-page-panel > span {
+    padding-top: 12px;
+    margin-right: 8px;
+    display: inline-block;
+}
+
+.data-pager .action-page-panel > span,
+.data-pager .rows-per-page-panel > span,
+.data-pager .action-page-panel i {
     float: right;
     margin-right: 8px;
     margin-top: 12px;
@@ -23,7 +42,9 @@
     color: #e9e9e9 !important;
 }
 
-.data-pager .action-page-panel, .data-pager .num-page-panel, .data-pager .rows-per-page-panel {
+.data-pager .action-page-panel,
+.data-pager .num-page-panel,
+.data-pager .rows-per-page-panel {
     float: right;
 }
 
@@ -56,19 +77,16 @@
     margin-bottom: -13px;
 }
 
-.data-pager .num-page-panel .input-field input {
-    width: 50px;
-    text-align: center;
-    border-bottom: none;
-    font-size: 1em;
-    margin-bottom: 0px;
-    height: 2.6em;
-    margin-top: 6px;
+.data-pager .input-field .select-wrapper .caret:before {
+    right: 4px;
+    bottom: 6px
 }
 
-.data-pager .select-wrapper .caret {
-    color: #9e9e9e !important;
-    margin-top: -2px;
+.data-pager .input-field .select-wrapper input.select-dropdown {
+    height: 1.6em;
+    margin-top: 12px;
+    margin-bottom: 0px;
+    font-size: 1em;
 }
 
 @media only screen and (max-width: 520px), (min-device-width: 0px) and (max-device-width: 519px) {

@@ -49,7 +49,10 @@ public class MapDataSource<T> implements DataSource<T>, HasDataView<T> {
             List<CategoryComponent> categories = loadConfig.getOpenCategories();
             if(dataView.isUseCategories() && categories != null) {
                 for (CategoryComponent category : categories) {
-                    flatData.addAll(dataMap.get(category.getName()));
+                    List<T> data = dataMap.get(category.getName());
+                    if (data != null) {
+                        flatData.addAll(data);
+                    }
                 }
             } else {
                 for(Map.Entry<String, List<T>> entry : dataMap.entrySet()) {

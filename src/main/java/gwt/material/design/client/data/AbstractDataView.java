@@ -22,6 +22,7 @@ package gwt.material.design.client.data;
 import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.shared.GwtEvent;
@@ -45,6 +46,7 @@ import gwt.material.design.client.js.JsTableElement;
 import gwt.material.design.client.js.JsTableSubHeaders;
 import gwt.material.design.client.js.StickyTableOptions;
 import gwt.material.design.client.ui.MaterialCheckBox;
+import gwt.material.design.client.ui.MaterialPanel;
 import gwt.material.design.client.ui.MaterialProgress;
 import gwt.material.design.client.ui.Selectors;
 import gwt.material.design.client.ui.table.*;
@@ -271,6 +273,21 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         } else {
             rendering = false;
         }
+
+        // Guarantee the rows are visible at this point.
+        // There are cases where we require the table body to be visible
+        // before we perform recalculations or pixel chasing logic.
+        int[] maxTries = {0};
+        Scheduler.get().scheduleFixedDelay(() -> {
+            if (tbody.$this().is(":visible")) {
+                subheaderLib.recalculate(true);
+                RowsVisibleEvent.fire(this);
+                return false;
+            } else {
+                // we will only attempt to detect this for 5 seconds
+                return ++maxTries[0] < 125;
+            }
+        }, 40);
     }
 
     /**
@@ -316,7 +333,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
             // When we perform a category redraw we have
             // to clear the row elements also.
-            this.rows.clearWidgets();
+            clearRows(false);
 
             if (isUseCategories()) {
                 List<CategoryComponent> openCategories = getOpenCategories();
@@ -690,7 +707,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     @Override
     public void destroy() {
-        rows.clear();
+        clearRows(true);
         categories.clear();
 
         columns.clear();
@@ -954,7 +971,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         }
 
         // Clear the rows
-        rows.clear();
+        clearRows(true);
 
         // Update the pager and data source if the range changed
         if (pageStartChanged || pageSizeChanged || forceRangeChangeEvent) {
@@ -1086,7 +1103,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
             if (renderRows) {
                 // Sort render requires us to clear widgets for reinsertion
-                this.rows.clearWidgets();
+                clearRows(false);
 
                 // Now that the rows are cleared from the DOM we will
                 // invoke a render without redraw to put them into the DOM.
@@ -2207,6 +2224,15 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             rows.clear();
         } else {
             rows.clearWidgets();
+        }
+
+        // reset the category counts
+        clearCategoriesRowCount();
+    }
+
+    protected void clearCategoriesRowCount() {
+        for(CategoryComponent category : categories) {
+            category.setRowCount(0);
         }
     }
 
