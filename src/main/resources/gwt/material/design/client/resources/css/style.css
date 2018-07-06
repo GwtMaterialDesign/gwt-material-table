@@ -503,8 +503,8 @@ table.table tbody tr.expansion td > div p {
 /* --- Mobile Devices Up To 560px --- */
 @media only screen and (max-width: 520px), (min-device-width: 0px) and (max-device-width: 519px) {
     /** Global **/
-    thead, tbody, tr,
-    td:not(tr.expansion) {
+    table.table thead, table.table tbody, table.table tr,
+    table.table td:not(tr.expansion) {
         display: inline-block;
     }
 
