@@ -84,6 +84,7 @@
 
 .data-pager .input-field .select-wrapper input.select-dropdown {
     height: 1.6em;
+    line-height: 1.6em;
     margin-top: 12px;
     margin-bottom: 0px;
     font-size: 1em;
