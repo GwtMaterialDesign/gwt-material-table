@@ -292,13 +292,13 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
-    public final void addColumn(Column<T, ?> column, String header) {
-        view.addColumn(column, header);
+    public final void addColumn(String header, Column<T, ?> column) {
+        view.addColumn(header, column);
     }
 
     @Override
-    public final void insertColumn(int beforeIndex, Column<T, ?> col, String header) {
-        view.insertColumn(beforeIndex, col, header);
+    public final void insertColumn(String header, int beforeIndex, Column<T, ?> col) {
+        view.insertColumn(header, beforeIndex, col);
     }
 
     @Override
@@ -688,7 +688,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     /**
-     * Event fired when the tables view calls {@link DataView#insertColumn(int, Column, String)}.
+     * Event fired when the tables view calls {@link DataView#insertColumn(String, int, Column)}.
      * @return Handler registration to remove the event handler.
      */
     public HandlerRegistration addInsertColumnHandler(InsertColumnHandler<T> handler) {

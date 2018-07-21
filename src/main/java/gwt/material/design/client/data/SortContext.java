@@ -44,7 +44,7 @@ public class SortContext<T> {
 
     protected SortContext(Column<T, ?> sortColumn, TableHeader tableHeader) {
         this.sortColumn = sortColumn;
-        if(!this.sortColumn.isDefaultSortAscending()) {
+        if(!this.sortColumn.defaultSortAscending()) {
             sortDir = SortDir.DESC;
         }
         setTableHeader(tableHeader);
@@ -66,7 +66,7 @@ public class SortContext<T> {
         reset();
         this.sortColumn = sortColumn;
 
-        if(sortColumn != null && !sortColumn.isDefaultSortAscending()) {
+        if(sortColumn != null && !sortColumn.defaultSortAscending()) {
             sortDir = SortDir.DESC;
         } else {
             sortDir = SortDir.ASC;

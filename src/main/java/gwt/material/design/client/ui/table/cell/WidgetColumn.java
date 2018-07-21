@@ -46,7 +46,7 @@ public abstract class WidgetColumn<T, C extends Widget> extends Column<T, C> {
     }
 
     @Override
-    public void render(Context context, T object, SafeHtmlBuilder sb) {
+    public WidgetColumn<T, C> render(Context context, T object, SafeHtmlBuilder sb) {
       throw new UnsupportedOperationException("Use WidgetColumn#render(context, object).");
     }
 

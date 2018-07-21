@@ -22,7 +22,6 @@ package gwt.material.design.client.data;
 import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.shared.GwtEvent;
@@ -46,7 +45,6 @@ import gwt.material.design.client.js.JsTableElement;
 import gwt.material.design.client.js.JsTableSubHeaders;
 import gwt.material.design.client.js.StickyTableOptions;
 import gwt.material.design.client.ui.MaterialCheckBox;
-import gwt.material.design.client.ui.MaterialPanel;
 import gwt.material.design.client.ui.MaterialProgress;
 import gwt.material.design.client.ui.Selectors;
 import gwt.material.design.client.ui.table.*;
@@ -493,7 +491,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     public void renderColumn(Column<T, ?> column) {
         int index = column.getIndex() + getColumnOffset();
 
-        TableHeader th = renderer.drawColumnHeader(column, column.getName(), index);
+        TableHeader th = renderer.drawColumnHeader(column, column.name(), index);
         if (th != null) {
             if (column.isSortable()) {
                 th.$this().on("click", e -> {
@@ -986,25 +984,25 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     @Override
     public void addColumn(Column<T, ?> column) {
-        addColumn(column, "");
+        addColumn("", column);
     }
 
     @Override
-    public void addColumn(Column<T, ?> column, String header) {
-        insertColumn(columns.size(), column, header);
+    public void addColumn(String header, Column<T, ?> column) {
+        insertColumn(header, columns.size(), column);
     }
 
     @Override
-    public void insertColumn(int beforeIndex, Column<T, ?> column, String header) {
+    public void insertColumn(String header, int beforeIndex, Column<T, ?> column) {
         // Allow insert at the end.
         if (beforeIndex != getColumnCount()) {
             checkColumnBounds(beforeIndex);
         }
 
-        String name = column.getName();
+        String name = column.name();
         if(name == null || name.isEmpty()) {
             // Set the columns name
-            column.setName(header);
+            column.name(header);
         }
 
         if(columns.size() < beforeIndex) {
@@ -1134,7 +1132,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         }
 
         Comparator<? super RowComponent<T>> comparator = sortContext != null
-            ? sortContext.getSortColumn().getSortComparator() : null;
+            ? sortContext.getSortColumn().sortComparator() : null;
         if (isUseCategories()) {
             // Split row data into categories
             Map<String, List<RowComponent<T>>> splitMap = new HashMap<>();
@@ -1600,7 +1598,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     /**
-     * Check and apply the auto sort column {@link Column#setAutoSort(boolean)}
+     * Check and apply the auto sort column {@link Column#autoSort(boolean)}
      * if no sort has been invoked.
      * @return true if the auto sort column is assigned.
      */
@@ -1626,7 +1624,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected Column<T, ?> getAutoSortColumn() {
         if(autoSortColumn == null) {
             for (Column<T, ?> column : columns) {
-                if (column.isAutoSort()) {
+                if (column.autoSort()) {
                     autoSortColumn = column;
                     return autoSortColumn;
                 }
@@ -2325,10 +2323,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 if (column.isFrozenColumn()) {
                     if (left) {
                         leftFrozenColumns++;
-                        column.getFrozenProperties()._setSide(FrozenSide.LEFT);
+                        column.frozenProperties()._setSide(FrozenSide.LEFT);
                     } else {
                         rightFrozenColumns++;
-                        column.getFrozenProperties()._setSide(FrozenSide.RIGHT);
+                        column.frozenProperties()._setSide(FrozenSide.RIGHT);
                     }
                 } else {
                     left = false;
@@ -2357,7 +2355,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             frozenMarginRight = 0;
             int firstRightIndex = 0;
             for(Column column : columns) {
-                if(column.getFrozenProperties().isRight()) {
+                if(column.frozenProperties().isRight()) {
                     break;
                 }
                 firstRightIndex++;

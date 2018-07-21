@@ -23,7 +23,6 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.Range;
 import gwt.material.design.client.DataTableTestCase;
-import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.HideOn;
@@ -31,7 +30,6 @@ import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.constants.TextAlign;
 import gwt.material.design.client.data.ListDataSource;
 import gwt.material.design.client.data.SelectionType;
-import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.client.data.events.CategoryClosedEvent;
 import gwt.material.design.client.data.events.CategoryOpenedEvent;
 import gwt.material.design.client.data.events.ColumnSortEvent;
@@ -59,11 +57,8 @@ import gwt.material.design.client.ui.table.cell.WidgetColumn;
 import gwt.material.design.client.ui.table.events.StretchEvent;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
-
-import static gwt.material.design.jquery.client.api.JQuery.$;
 
 public class MaterialDataTableTest<T extends MaterialDataTable<Person>> extends DataTableTestCase<T> {
 
@@ -142,7 +137,7 @@ public class MaterialDataTableTest<T extends MaterialDataTable<Person>> extends 
         for (Widget w : dropDown) {
             assertTrue(w instanceof MaterialCheckBox);
             MaterialCheckBox checkBox = (MaterialCheckBox) w;
-            assertEquals(checkBox.getText(), table.getColumns().get(index).getName());
+            assertEquals(checkBox.getText(), table.getColumns().get(index).name());
             index++;
         }
     }
@@ -173,12 +168,12 @@ public class MaterialDataTableTest<T extends MaterialDataTable<Person>> extends 
             isInsertedColumnFired[0] = true;
         }, InsertColumnEvent.TYPE);
 
-        table.addColumn(new TextColumn<Person>() {
+        table.addColumn("Last Name", new TextColumn<Person>() {
             @Override
             public String getValue(Person object) {
                 return object.getLastName();
             }
-        }, "Last Name");
+        });
         assertTrue(isInsertedColumnFired[0]);
 
         // RemoveColumnEvent
@@ -337,87 +332,59 @@ public class MaterialDataTableTest<T extends MaterialDataTable<Person>> extends 
 
         Column<Person, ?> col2 = new TextColumn<Person>() {
             @Override
-            public Comparator<? super RowComponent<Person>> sortComparator() {
-                return (o1, o2) -> o1.getData().getFirstName().compareToIgnoreCase(o2.getData().getFirstName());
-            }
-
-            @Override
             public String getValue(Person object) {
                 return object.getFirstName();
             }
-        };
-        table.addColumn(col2, "First Name");
+        }.sortComparator((o1, o2) -> o1.getData().getFirstName().compareToIgnoreCase(o2.getData().getFirstName()));
+
+        table.addColumn("First Name", col2);
         assertEquals(col2, table.getColumns().get(1));
-        assertEquals("First Name", col2.getName());
+        assertEquals("First Name", col2.name());
         assertTrue(col2.isSortable());
 
         Column<Person, ?> col3 = new TextColumn<Person>() {
             @Override
-            public Comparator<? super RowComponent<Person>> sortComparator() {
-                return (o1, o2) -> o1.getData().getLastName().compareToIgnoreCase(o2.getData().getLastName());
-            }
-
-            @Override
             public String getValue(Person object) {
                 return object.getLastName();
             }
-        };
-        table.addColumn(col3, "Last Name");
+        }.sortComparator((o1, o2) -> o1.getData().getLastName().compareToIgnoreCase(o2.getData().getLastName()));
+        table.addColumn("Last Name", col3);
         assertEquals(col3, table.getColumns().get(2));
-        assertEquals("Last Name", col3.getName());
+        assertEquals("Last Name", col3.name());
         assertTrue(col2.isSortable());
 
         Column<Person, ?> col4 = new TextColumn<Person>() {
             @Override
-            public boolean numeric() {
-                return true;
-            }
-
-            @Override
-            public HideOn hideOn() {
-                return HideOn.HIDE_ON_MED_DOWN;
-            }
-
-            @Override
-            public Comparator<? super RowComponent<Person>> sortComparator() {
-                return (o1, o2) -> o1.getData().getPhone().compareToIgnoreCase(o2.getData().getPhone());
-            }
-
-            @Override
             public String getValue(Person object) {
                 return object.getPhone();
             }
-        };
-        table.addColumn(col4, "Phone");
+        }
+        .numeric(true)
+        .hideOn(HideOn.HIDE_ON_MED_DOWN)
+        .sortComparator((o1, o2) -> o1.getData().getPhone().compareToIgnoreCase(o2.getData().getPhone()));
+
+        table.addColumn("Phone", col4);
         assertEquals(col4, table.getColumns().get(3));
-        assertEquals("Phone", col4.getName());
-        assertTrue(col4.isNumeric());
+        assertEquals("Phone", col4.name());
+        assertTrue(col4.numeric());
 
         for (int i = 0; i < 4; i++) {
             final int index = i;
             Column<Person, ?> col = new TextColumn<Person>() {
                 @Override
-                public Comparator<? super RowComponent<Person>> sortComparator() {
-                    return (o1, o2) -> o1.getData().getPhone().compareToIgnoreCase(o2.getData().getPhone());
-                }
-
-                @Override
                 public String getValue(Person object) {
                     return object.getPhone() + " " + index;
                 }
-            };
-            table.addColumn(col, "Column " + index);
+            }
+            .sortComparator((o1, o2) -> o1.getData().getPhone().compareToIgnoreCase(o2.getData().getPhone()));
+
+            table.addColumn("Column " + index, col);
             assertEquals(col, table.getColumns().get(3 + (i + 1)));
-            assertEquals("Column " + index, col.getName());
+            assertEquals("Column " + index, col.name());
             assertTrue(col.isSortable());
         }
 
         Column<Person, ?> lastCol = new WidgetColumn<Person, MaterialBadge>() {
-            @Override
-            public TextAlign textAlign() {
-                return TextAlign.CENTER;
-            }
-
             @Override
             public MaterialBadge getValue(Person object) {
                 MaterialBadge badge = new MaterialBadge();
@@ -425,7 +392,8 @@ public class MaterialDataTableTest<T extends MaterialDataTable<Person>> extends 
                 badge.setBackgroundColor(Color.BLUE);
                 return badge;
             }
-        };
+        }.textAlign(TextAlign.CENTER);
+
         table.addColumn(lastCol);
         assertEquals(lastCol, table.getColumns().get(8));
 
@@ -475,16 +443,13 @@ public class MaterialDataTableTest<T extends MaterialDataTable<Person>> extends 
         // Insert Column
         Column<Person, ?> insertedCol = new TextColumn<Person>() {
             @Override
-            public Comparator<? super RowComponent<Person>> sortComparator() {
-                return (o1, o2) -> o1.getData().getFirstName().compareToIgnoreCase(o2.getData().getFirstName());
-            }
-
-            @Override
             public String getValue(Person object) {
                 return object.getFirstName();
             }
-        };
-        table.insertColumn(0, insertedCol, "insertedCol");
+        }
+        .sortComparator((o1, o2) -> o1.getData().getFirstName().compareToIgnoreCase(o2.getData().getFirstName()));
+
+        table.insertColumn("insertedCol", 0, insertedCol);
         assertEquals(insertedCol, table.getColumns().get(0));
         assertEquals(3, table.getColumns().size());
     }
@@ -541,10 +506,10 @@ public class MaterialDataTableTest<T extends MaterialDataTable<Person>> extends 
 
         // Check Page selection type
         assertTrue(pager.getPageSelection() instanceof PageNumberBox);
-        assertTrue(((PageNumberBox)pager.getPageSelection()).getComponent() instanceof MaterialIntegerBox);
+        assertNotNull(((PageNumberBox) pager.getPageSelection()).getComponent());
         pager.setPageSelection(new PageListBox());
         assertTrue(pager.getPageSelection() instanceof PageListBox);
-        assertTrue(((PageListBox)pager.getPageSelection()).getComponent() instanceof MaterialListValueBox);
+        assertNotNull(((PageListBox) pager.getPageSelection()).getComponent());
     }
 
     public void testMenu() throws Exception {

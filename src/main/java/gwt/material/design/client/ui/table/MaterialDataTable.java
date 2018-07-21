@@ -229,7 +229,7 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
             input.attr("id", ref);
 
             JQueryElement label = $(toggleBox).find("label");
-            label.text(column.getName());
+            label.text(column.name());
             label.attr("for", ref);
 
             toggleBox.setValue(true);

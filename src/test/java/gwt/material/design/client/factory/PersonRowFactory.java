@@ -19,7 +19,6 @@
  */
 package gwt.material.design.client.factory;
 
-
 import gwt.material.design.client.data.DataView;
 import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.client.data.factory.RowComponentFactory;
