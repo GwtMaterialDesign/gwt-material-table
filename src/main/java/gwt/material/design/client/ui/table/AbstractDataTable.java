@@ -24,67 +24,23 @@ import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.ValueUpdater;
-import com.google.gwt.dom.client.BrowserEvents;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.EventTarget;
-import com.google.gwt.dom.client.TableCellElement;
-import com.google.gwt.dom.client.TableRowElement;
+import com.google.gwt.dom.client.*;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.view.client.Range;
+import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.TableCssName;
-import gwt.material.design.client.data.DataSource;
-import gwt.material.design.client.data.Renderer;
-import gwt.material.design.client.data.SelectionType;
-import gwt.material.design.client.data.SortDir;
+import gwt.material.design.client.base.mixin.CssNameMixin;
+import gwt.material.design.client.data.*;
 import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.data.component.ComponentFactory;
 import gwt.material.design.client.data.component.RowComponent;
-import gwt.material.design.client.data.events.CategoryClosedEvent;
-import gwt.material.design.client.data.events.CategoryClosedHandler;
-import gwt.material.design.client.data.events.CategoryOpenedEvent;
-import gwt.material.design.client.data.events.CategoryOpenedHandler;
-import gwt.material.design.client.data.events.ColumnSortEvent;
-import gwt.material.design.client.data.events.ColumnSortHandler;
-import gwt.material.design.client.data.events.ComponentsRenderedEvent;
-import gwt.material.design.client.data.events.ComponentsRenderedHandler;
-import gwt.material.design.client.data.events.DestroyEvent;
-import gwt.material.design.client.data.events.DestroyHandler;
-import gwt.material.design.client.data.events.InsertColumnEvent;
-import gwt.material.design.client.data.events.InsertColumnHandler;
-import gwt.material.design.client.data.events.RemoveColumnEvent;
-import gwt.material.design.client.data.events.RemoveColumnHandler;
-import gwt.material.design.client.data.events.RenderedEvent;
-import gwt.material.design.client.data.events.RenderedHandler;
-import gwt.material.design.client.data.events.RowCollapsedEvent;
-import gwt.material.design.client.data.events.RowCollapsedHandler;
-import gwt.material.design.client.data.events.RowCollapsingEvent;
-import gwt.material.design.client.data.events.RowCollapsingHandler;
-import gwt.material.design.client.data.events.RowContextMenuEvent;
-import gwt.material.design.client.data.events.RowContextMenuHandler;
-import gwt.material.design.client.data.events.RowDoubleClickEvent;
-import gwt.material.design.client.data.events.RowDoubleClickHandler;
-import gwt.material.design.client.data.events.RowExpandedEvent;
-import gwt.material.design.client.data.events.RowExpandedHandler;
-import gwt.material.design.client.data.events.RowExpandingEvent;
-import gwt.material.design.client.data.events.RowExpandingHandler;
-import gwt.material.design.client.data.events.RowLongPressEvent;
-import gwt.material.design.client.data.events.RowLongPressHandler;
-import gwt.material.design.client.data.events.RowSelectEvent;
-import gwt.material.design.client.data.events.RowSelectHandler;
-import gwt.material.design.client.data.events.RowShortPressEvent;
-import gwt.material.design.client.data.events.RowShortPressHandler;
-import gwt.material.design.client.data.events.SelectAllEvent;
-import gwt.material.design.client.data.events.SelectAllHandler;
-import gwt.material.design.client.data.events.SetupEvent;
-import gwt.material.design.client.data.events.SetupHandler;
+import gwt.material.design.client.data.events.*;
 import gwt.material.design.client.data.factory.RowComponentFactory;
 import gwt.material.design.client.events.DefaultHandlerRegistry;
 import gwt.material.design.client.events.HandlerRegistry;
-import gwt.material.design.client.base.MaterialWidget;
-import gwt.material.design.client.data.DataView;
-import gwt.material.design.client.data.StandardDataView;
 import gwt.material.design.client.ui.table.cell.Column;
 
 import java.util.List;
@@ -103,7 +59,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     private static final Logger logger = Logger.getLogger(AbstractDataTable.class.getName());
 
-    public static class DefaultTableScaffolding extends TableScaffolding {
+    public static class DefaultTableScaffolding extends AbstractTableScaffolding {
         @Override
         public MaterialWidget createTableBody() {
             MaterialWidget tableBody = new MaterialWidget(DOM.createDiv());
@@ -138,6 +94,11 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
             table.addStyleName(TableCssName.TABLE);
             return table;
         }
+
+        @Override
+        protected XScrollPanel createXScrollPanel(Panel container) {
+            return new XScrollPanel(container);
+        }
     }
 
     protected DataView<T> view;
@@ -150,6 +111,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     private boolean destroyOnUnload;
 
     private HandlerRegistration setupHandler;
+    protected CssNameMixin<AbstractDataTable, SelectionType> selectionTypeMixin;
 
     public AbstractDataTable() {
         this(new StandardDataView<>());
@@ -380,6 +342,16 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
+    public int getLeftFrozenColumns() {
+        return view.getLeftFrozenColumns();
+    }
+
+    @Override
+    public int getRightFrozenColumns() {
+        return view.getRightFrozenColumns();
+    }
+
+    @Override
     public final void setDataSource(DataSource<T> dataSource) {
         view.setDataSource(dataSource);
     }
@@ -462,6 +434,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     @Override
     public final void setSelectionType(SelectionType selectionType) {
         view.setSelectionType(selectionType);
+        getSelectionTypeMixin().setCssName(selectionType);
     }
 
     @Override
@@ -823,5 +796,17 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     @Override
     public HandlerRegistration addRenderedHandler(RenderedHandler handler) {
         return addHandler(handler, RenderedEvent.TYPE);
+    }
+
+    @Override
+    public HandlerRegistration addRowsVisibleHandler(RowsVisibleHandler handler) {
+        return addHandler(handler, RowsVisibleEvent.TYPE);
+    }
+
+    public CssNameMixin<AbstractDataTable, SelectionType> getSelectionTypeMixin() {
+        if (selectionTypeMixin == null) {
+            selectionTypeMixin = new CssNameMixin<>(this);
+        }
+        return selectionTypeMixin;
     }
 }

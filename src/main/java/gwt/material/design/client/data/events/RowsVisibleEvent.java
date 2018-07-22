@@ -17,33 +17,26 @@
  * limitations under the License.
  * #L%
  */
-package gwt.material.design.client.data;
+package gwt.material.design.client.data.events;
 
-import gwt.material.design.client.base.helper.EnumHelper;
-import gwt.material.design.client.constants.CssType;
+import com.google.gwt.event.shared.GwtEvent;
+import com.google.gwt.event.shared.HasHandlers;
 
-/**
- * Data view selection type.
- *
- * @author Ben Dol
- */
-public enum SelectionType implements CssType {
-    NONE("selection-none"),
-    SINGLE("selection-single"),
-    MULTIPLE("selection-multiple");
+public class RowsVisibleEvent extends GwtEvent<RowsVisibleHandler> {
 
-    private final String cssClass;
+    public static final Type<RowsVisibleHandler> TYPE = new Type<>();
 
-    SelectionType(final String cssClass) {
-        this.cssClass = cssClass;
-    }
-
-    public static SelectionType fromStyleName(final String styleName) {
-        return EnumHelper.fromStyleName(styleName, SelectionType.class, NONE);
+    public static void fire(HasHandlers source) {
+        source.fireEvent(new RowsVisibleEvent());
     }
 
     @Override
-    public String getCssName() {
-        return cssClass;
+    public Type<RowsVisibleHandler> getAssociatedType() {
+        return TYPE;
+    }
+
+    @Override
+    protected void dispatch(RowsVisibleHandler handler) {
+        handler.onRowsVisible(this);
     }
 }

@@ -17,25 +17,13 @@
  * limitations under the License.
  * #L%
  */
-package gwt.material.design.client.ui.table;
-
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.Panel;
+package gwt.material.design.client.ui.table.cell;
 
 /**
- * Table scaffolding that will construct the Panels for the table foundation.
- *
- * @author Ben Dol
+ * @author Ben
  */
-public interface TableScaffolding {
-
-    void build();
-    void apply(HasWidgets container);
-
-    Panel getTableBody();
-    Panel getTopPanel();
-    Panel getInfoPanel();
-    Panel getToolPanel();
-    Panel getXScrollPanel();
-    Table getTable();
+public enum FrozenSide {
+    NONE,
+    LEFT,
+    RIGHT;
 }

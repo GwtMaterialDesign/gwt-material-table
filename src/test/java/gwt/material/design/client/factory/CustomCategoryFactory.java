@@ -31,7 +31,7 @@ public class CustomCategoryFactory extends CategoryComponentFactory {
         CategoryComponent category = super.generate(dataView, categoryName);
 
         if (!(category instanceof OrphanCategoryComponent)) {
-            category = new CustomCategoryComponent(categoryName);
+            category = new CustomCategoryComponent(dataView, categoryName);
         }
         return category;
     }

@@ -80,6 +80,26 @@ public class RowComponent<T> extends Component<TableRow> implements HasEnabled {
         return categoryName;
     }
 
+    public int getLeftFrozenColumns() {
+        return dataView.getLeftFrozenColumns();
+    }
+
+    public int getRightFrozenColumns() {
+        return dataView.getRightFrozenColumns();
+    }
+
+    public boolean hasFrozenColumns() {
+        return hasLeftFrozen() || hasRightFrozen();
+    }
+
+    public boolean hasLeftFrozen() {
+        return getLeftFrozenColumns() > 0;
+    }
+
+    public boolean hasRightFrozen() {
+        return getRightFrozenColumns() > 0;
+    }
+
     @Override
     public boolean isEnabled() {
         return getWidget().isEnabled();

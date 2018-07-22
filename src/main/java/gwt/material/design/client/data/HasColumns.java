@@ -98,4 +98,14 @@ public interface HasColumns<T> {
      * @param dir the sort direction or null for auto reversing.
      */
     void sort(Column<T, ?> column, SortDir dir);
+
+    /**
+     * Get the number of left frozen columns.
+     */
+    int getLeftFrozenColumns();
+
+    /**
+     * Get the number of right frozen columns.
+     */
+    int getRightFrozenColumns();
 }

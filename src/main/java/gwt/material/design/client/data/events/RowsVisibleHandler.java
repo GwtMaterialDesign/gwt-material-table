@@ -17,25 +17,10 @@
  * limitations under the License.
  * #L%
  */
-package gwt.material.design.client.ui.table;
+package gwt.material.design.client.data.events;
 
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.event.shared.EventHandler;
 
-/**
- * Table scaffolding that will construct the Panels for the table foundation.
- *
- * @author Ben Dol
- */
-public interface TableScaffolding {
-
-    void build();
-    void apply(HasWidgets container);
-
-    Panel getTableBody();
-    Panel getTopPanel();
-    Panel getInfoPanel();
-    Panel getToolPanel();
-    Panel getXScrollPanel();
-    Table getTable();
+public interface RowsVisibleHandler extends EventHandler {
+    void onRowsVisible(RowsVisibleEvent event);
 }

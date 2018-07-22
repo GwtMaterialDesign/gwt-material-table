@@ -27,7 +27,10 @@ import gwt.material.design.client.data.DataSource;
 import gwt.material.design.client.data.loader.LoadCallback;
 import gwt.material.design.client.data.loader.LoadConfig;
 import gwt.material.design.client.data.loader.LoadResult;
-import gwt.material.design.client.ui.MaterialToast;
+import gwt.material.design.client.ui.pager.actions.ActionsPanel;
+import gwt.material.design.client.ui.pager.actions.PageNumberBox;
+import gwt.material.design.client.ui.pager.actions.PageSelection;
+import gwt.material.design.client.ui.pager.actions.RowSelection;
 import gwt.material.design.client.ui.table.MaterialDataTable;
 
 /**
@@ -37,18 +40,18 @@ import gwt.material.design.client.ui.table.MaterialDataTable;
  */
 public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
 
-    private MaterialDataTable<T> table;
-    private DataSource<T> dataSource;
+    protected MaterialDataTable<T> table;
+    protected DataSource<T> dataSource;
 
-    private int offset = 0;
-    private int limit = 0;
-    private int currentPage = 1;
-    private int totalRows = 0;
-    private int[] limitOptions = new int[]{5, 10, 20};
+    protected int offset = 0;
+    protected int limit = 0;
+    protected int currentPage = 1;
+    protected int totalRows = 0;
+    protected int[] limitOptions = new int[]{5, 10, 20};
 
-    private PageActionsPanel actionsPanel = new PageActionsPanel(this);
-    private PageNumberSelection pageNumberSelection = new PageNumberSelection(this);
-    private PageRowSelection pageRowSelection = new PageRowSelection(this);
+    private ActionsPanel actionsPanel = new ActionsPanel(this);
+    private RowSelection rowSelection = new RowSelection(this);
+    private PageSelection pageSelection;
 
     public MaterialDataPager() {
         super(Document.get().createDivElement(), TableCssName.DATA_PAGER, TableCssName.ROW);
@@ -67,11 +70,17 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
     protected void onLoad() {
         super.onLoad();
 
-        limit = limitOptions[0];
+        if (limit == 0) {
+            limit = limitOptions[0];
+        }
 
-        add(pageNumberSelection);
-        add(pageRowSelection);
         add(actionsPanel);
+        add(rowSelection);
+
+        if (pageSelection == null) {
+            pageSelection = new PageNumberBox(this);
+        }
+        add(pageSelection);
 
         firstPage();
     }
@@ -81,7 +90,7 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
             lastPage();
             return;
         }
-        gotoPage(pageNumberSelection.getValue());
+        gotoPage(pageSelection.getValue());
     }
 
     @Override
@@ -98,13 +107,17 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
 
     @Override
     public void lastPage() {
-        if (isExcess()) {
-            gotoPage((totalRows / limit) + 1);
-        }else {
-            gotoPage(totalRows / limit);
-        }
+        gotoPage(getTotalPages());
 
-        pageNumberSelection.setSelectedIndex(currentPage - 1);
+        pageSelection.updatePageNumber(currentPage - 1);
+    }
+
+    public int getTotalPages() {
+        if (isExcess()) {
+            return ((totalRows / limit) + 1);
+        } else {
+            return totalRows / limit;
+        }
     }
 
     @Override
@@ -114,8 +127,21 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
 
     @Override
     public void gotoPage(int page) {
-        this.currentPage = page;
-        doLoad((page * limit) - limit, limit);
+        this.currentPage = adjustToPageLimits(page);
+        doLoad((currentPage * limit) - limit, limit);
+    }
+
+    /**
+     * Adjusts the input page number to the available page range
+     */
+    private int adjustToPageLimits(int page) {
+        if (page <= 1) {
+            return 1;
+        } else if (page > getTotalPages()) {
+            return getTotalPages();
+        }
+
+        return page;
     }
 
     @Override
@@ -136,6 +162,17 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
     @Override
     public boolean isPrevious() {
         return offset - limit >= 0;
+    }
+
+    @Override
+    public PageSelection getPageSelection() {
+        return pageSelection;
+    }
+
+    @Override
+    public void setPageSelection(PageSelection pageSelection) {
+        this.pageSelection = pageSelection;
+        pageSelection.setPager(this);
     }
 
     /**
@@ -163,21 +200,13 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
      * Load the datasource within a given offset and limit
      */
     protected void doLoad(int offset, int limit) {
-        this.offset = offset;
-
-        // Check whether the pager has excess rows with given limit
-        if (isLastPage() & isExcess()) {
-            // Get the difference between total rows and excess rows
-            limit = totalRows - offset;
-        }
-
-        int finalLimit = limit;
         dataSource.load(new LoadConfig<>(offset, limit, table.getView().getSortContext(),
                 table.getView().getOpenCategories()), new LoadCallback<T>() {
             @Override
             public void onSuccess(LoadResult<T> loadResult) {
+                setOffset(loadResult.getOffset());
                 totalRows = loadResult.getTotalLength();
-                table.setVisibleRange(offset, finalLimit);
+                table.setVisibleRange(loadResult.getOffset(), loadResult.getData().size());
                 table.loaded(loadResult.getOffset(), loadResult.getData());
                 updateUi();
             }
@@ -194,7 +223,8 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
      * Set and update the ui fields of the pager after the datasource load callback
      */
     protected void updateUi() {
-        pageNumberSelection.updatePageNumber(totalRows, limit, currentPage);
+        pageSelection.updatePageNumber(currentPage);
+        pageSelection.updateTotalPages(getTotalPages());
 
         // Action label (current selection) in either the form "x-y of z" or "y of z" (when page has only 1 record)
         int firstRow = offset + 1;
@@ -229,6 +259,10 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
         this.dataSource = dataSource;
     }
 
+    public void setOffset(int offset) {
+        this.offset = offset;
+    }
+
     public int getOffset() {
         return offset;
     }
@@ -243,5 +277,21 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
 
     public int[] getLimitOptions() {
         return limitOptions;
+    }
+
+    public ActionsPanel getActionsPanel() {
+        return actionsPanel;
+    }
+
+    public void setActionsPanel(ActionsPanel actionsPanel) {
+        this.actionsPanel = actionsPanel;
+    }
+
+    public RowSelection getRowSelection() {
+        return rowSelection;
+    }
+
+    public void setRowSelection(RowSelection rowSelection) {
+        this.rowSelection = rowSelection;
     }
 }

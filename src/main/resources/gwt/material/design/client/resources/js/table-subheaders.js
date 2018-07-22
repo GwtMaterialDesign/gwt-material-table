@@ -93,6 +93,10 @@ function TableSubHeaders($table, $stickies) {
   base.detect = function () {
     base.$stickies = $($stickies, $table);
 
+    if(base.$stickies.length < 1) {
+        return;
+    }
+
     // Bind toggle click
     base.$stickies.off("." + base.name);
     base.$stickies.on("tap."+base.name+" click."+base.name, function(e) {
@@ -103,8 +107,11 @@ function TableSubHeaders($table, $stickies) {
       return $(this).parent().is(":not(div)");
     });
 
+    var isChrome = base.isChrome();
     filtered.each(function () {
-      $(this).wrap("<div style='width:100%;z-index:2;cursor:pointer;background-color:#fff;'/>");
+      // Note: we need to ensure the display is 'table-row' to avoid rendering issues in Safari 9+
+      $(this).wrap("<div style='width:100%;z-index:2;cursor:pointer;background-color:#fff;"
+          + (!isChrome ? "display:table-row;" : "") + "'/>");
     });
   };
 
@@ -115,6 +122,10 @@ function TableSubHeaders($table, $stickies) {
         resizeThrottle = base.options.resizeThrottle;
 
     $table.smartScroll(base.name, $.throttle(scrollThrottle, function(e, scroll) {
+      if(base.debug.enabled) base.debug.smartScroll.table++;
+      base.scroll(e, scroll);
+    }));
+    $table.find(".inner-scroll").smartScroll(base.name, $.throttle(scrollThrottle, function(e, scroll) {
       if(base.debug.enabled) base.debug.smartScroll.table++;
       base.scroll(e, scroll);
     }));
@@ -181,7 +192,7 @@ function TableSubHeaders($table, $stickies) {
     // Get all until next subheader
 
     var $icon = $subheader.find("i");
-    if($icon != null) {
+    if($icon !== null) {
       var closeIcon = $subheader.attr("data-close-icon");
       if(closeIcon === undefined) {
         closeIcon = "remove";
@@ -212,7 +223,7 @@ function TableSubHeaders($table, $stickies) {
     $base.trigger("closing", [$subheader]);
 
     var $icon = $subheader.find("i");
-    if($icon != null) {
+    if($icon !== null) {
       var openIcon = $subheader.attr("data-open-icon");
       if(openIcon === undefined) {
         openIcon = "add";
@@ -235,6 +246,10 @@ function TableSubHeaders($table, $stickies) {
   };
 
   base.recalculate = function(fireEvents) {
+    if(base.$stickies.length < 1) {
+      return;
+    }
+
     if(fireEvents) {
       $base.trigger("before-recalculate");
     }
@@ -289,7 +304,7 @@ function TableSubHeaders($table, $stickies) {
 
         // Left variables
         left = offset.left + base.options.marginLeft,
-        scrollLeft = $table.scrollLeft(),
+        scrollLeft = $table.find(".inner-scroll").scrollLeft(),
         outerScrollLeft = base.getOuterScrollLeft();
 
     base.$stickies.each(function (i) {
@@ -363,8 +378,9 @@ function TableSubHeaders($table, $stickies) {
   };
 
   base.emulateYScroll = function($sticky, top, winScrollTop, scrollTop, outerScroll) {
-    var height = $sticky.outerHeight() + 50,
-        totalTop = (outerScroll ? outerScroll : base.getOuterScrollTop()) - base.options.marginTop;
+    var offset = $table.offset(),
+        height = $sticky.outerHeight() + 50,
+        totalTop = (outerScroll ? outerScroll : base.getOuterScrollTop()) - base.options.marginTop - $table.position().top;
 
     var topClip = totalTop + "px",
         bottomClip = height + "px",
@@ -374,7 +390,7 @@ function TableSubHeaders($table, $stickies) {
     // Handle the passed clipping
     if($sticky.hasClass("passed")) {
       var pushBack = $sticky.data("push-back");
-       topClip = (totalTop + pushBack) + "px";
+       topClip = Math.max(pushBack, totalTop + pushBack) + "px";
     }
 
     // Update Y clipping data
@@ -405,6 +421,10 @@ function TableSubHeaders($table, $stickies) {
 
   // Applies the alignment of all the outer scroll positions.
   base.alignment = function(scroll) {
+    if(base.$stickies.length < 1) {
+      return;
+    }
+
     var offset = $table.offset(),
         clipWidth = $table.innerWidth(),
         fullWidth = base.$tableBody.outerWidth(),
@@ -418,7 +438,7 @@ function TableSubHeaders($table, $stickies) {
 
         // Left variables
         left = (xScroll ? offset.left + base.options.marginLeft : 0),
-        scrollLeft = (xScroll ? $table.scrollLeft() : 0),
+        scrollLeft = (xScroll ? $table.find(".inner-scroll").scrollLeft() : 0),
         outerScrollLeft = (xScroll ? base.getOuterScrollLeft() : 0);
 
     base.$stickies.filter(".fixed").each(function (i) {
@@ -498,7 +518,7 @@ function TableSubHeaders($table, $stickies) {
             // ie8 only
             var leftPadding = parseFloat($this.css("padding-left"));
             var rightPadding = parseFloat($this.css("padding-right"));
-            // Needs more investigation - this is assuming constant border 
+            // Needs more investigation - this is assuming constant border
             // around this cell and it's neighbours.
             var border = parseFloat($this.css("border-width"));
             width = $this.outerWidth() - leftPadding - rightPadding - border;
@@ -523,9 +543,9 @@ function TableSubHeaders($table, $stickies) {
   };
 
   base.updateWidths = function() {
-    /*base.$stickies.each(function() {
+    base.$stickies.each(function() {
       base.updateWidth($(this));
-    });*/
+    });
   };
 
   base.updateHeights = function() {
@@ -535,7 +555,7 @@ function TableSubHeaders($table, $stickies) {
       if(typeof height === typeof undefined) {
         height = $this.outerHeight();
       }
-      $this.parent().height(height);
+      $this.parent().height(height+1);
     });
   };
 
@@ -559,5 +579,13 @@ function TableSubHeaders($table, $stickies) {
 
   base.getDebugInfo = function() {
     return base.debug;
+  };
+
+  base.isChrome = function() {
+    return !!window.chrome && !base.isOpera();
+  };
+
+  base.isOpera = function() {
+    return !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
   }
 }

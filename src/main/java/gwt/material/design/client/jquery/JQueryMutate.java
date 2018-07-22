@@ -17,25 +17,20 @@
  * limitations under the License.
  * #L%
  */
-package gwt.material.design.client.ui.table;
+package gwt.material.design.client.jquery;
 
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.dom.client.Element;
+import gwt.material.design.jquery.client.api.JQueryElement;
+import jsinterop.annotations.JsMethod;
+import jsinterop.annotations.JsPackage;
+import jsinterop.annotations.JsType;
 
-/**
- * Table scaffolding that will construct the Panels for the table foundation.
- *
- * @author Ben Dol
- */
-public interface TableScaffolding {
+@JsType(isNative = true)
+public class JQueryMutate extends JQueryElement {
 
-    void build();
-    void apply(HasWidgets container);
+    @JsMethod(namespace = JsPackage.GLOBAL)
+    public static native JQueryMutateElement $(JQueryElement element);
 
-    Panel getTableBody();
-    Panel getTopPanel();
-    Panel getInfoPanel();
-    Panel getToolPanel();
-    Panel getXScrollPanel();
-    Table getTable();
+    @JsMethod(namespace = JsPackage.GLOBAL)
+    public static native JQueryMutateElement $(Element element);
 }

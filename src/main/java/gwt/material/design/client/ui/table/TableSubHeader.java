@@ -19,6 +19,7 @@
  */
 package gwt.material.design.client.ui.table;
 
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.TableCssName;
@@ -29,6 +30,8 @@ import gwt.material.design.client.ui.MaterialIcon;
 import gwt.material.design.client.ui.html.Text;
 import gwt.material.design.jquery.client.api.JQueryElement;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
@@ -39,23 +42,25 @@ public class TableSubHeader extends TableRow {
     private TableHeader iconTh;
     private TableHeader nameTh;
 
+    private List<TableHeader> headers = new ArrayList<>();
+
     private MaterialIcon icon;
     private Text nameLbl;
 
     private IconType openIcon = IconType.ADD;
     private IconType closeIcon = IconType.REMOVE;
 
-    public TableSubHeader(TableSubHeader clone) {
-        this(clone.getDataCategory());
+    public TableSubHeader(TableSubHeader clone, int columnCount) {
+        this(clone.getDataCategory(), columnCount);
         copy(clone);
     }
 
-    public TableSubHeader(CategoryComponent category) {
+    public TableSubHeader(CategoryComponent category, int columnCount) {
         super(category);
-        build();
+        build(columnCount);
     }
 
-    protected void build() {
+    protected void build(int columnCount) {
         addStyleName(TableCssName.SUBHEADER);
 
         iconTh = new TableHeader();
@@ -68,11 +73,19 @@ public class TableSubHeader extends TableRow {
         nameTh.add(nameLbl);
         add(nameTh);
 
+        // Only assign new header data if we require more columns
+        if(columnCount < 2) {
+            for(int i = 0; i < columnCount - 2; i++) {
+                add(new TableHeader());
+            }
+        }
+
         setName(category.getName());
         setId(category.getName());
     }
 
     public void add(TableHeader tableHeader) {
+        headers.add(tableHeader);
         super.add(tableHeader);
     }
 
@@ -136,6 +149,23 @@ public class TableSubHeader extends TableRow {
 
     public MaterialIcon getIcon() {
         return icon;
+    }
+
+    public TableHeader getHeader(int index) {
+        try {
+            return headers.get(index);
+        } catch (IndexOutOfBoundsException ex) {
+            return null;
+        }
+    }
+
+    public TableHeader getHeader(String name) {
+        for(TableHeader header : headers) {
+            if(header.getHeader().equals(name)) {
+                return header;
+            }
+        }
+        return null;
     }
 
     public boolean isOpen() {

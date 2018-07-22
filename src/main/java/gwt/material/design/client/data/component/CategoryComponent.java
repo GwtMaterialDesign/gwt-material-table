@@ -20,6 +20,8 @@
 package gwt.material.design.client.data.component;
 
 import com.google.gwt.user.client.ui.Widget;
+import gwt.material.design.client.data.HasCategories;
+import gwt.material.design.client.ui.table.TableHeader;
 import gwt.material.design.client.ui.table.TableSubHeader;
 
 /**
@@ -28,13 +30,13 @@ import gwt.material.design.client.ui.table.TableSubHeader;
 public class CategoryComponent extends Component<TableSubHeader> {
 
     public static class OrphanCategoryComponent extends CategoryComponent {
-        public OrphanCategoryComponent() {
-            super(null);
+        public OrphanCategoryComponent(HasCategories parent) {
+            super(parent, null);
         }
 
         @Override
-        protected void render(TableSubHeader subheader) {
-            super.render(subheader);
+        protected void render(TableSubHeader subheader, int columnCount) {
+            super.render(subheader, columnCount);
 
             subheader.setName("No Category");
         }
@@ -43,17 +45,50 @@ public class CategoryComponent extends Component<TableSubHeader> {
     private String name;
     private String height;
     private boolean openByDefault;
+    private boolean hideName;
 
     private int currentIndex = -1;
     private int rowCount = 0;
 
-    public CategoryComponent(String name) {
-        this(name, false);
+    private HasCategories parent;
+
+    public CategoryComponent(HasCategories parent, String name) {
+        this(parent, name, false);
     }
 
-    public CategoryComponent(String name, boolean openByDefault) {
+    public CategoryComponent(HasCategories parent, String name, boolean openByDefault) {
+        this.parent = parent;
         this.name = name;
         this.openByDefault = openByDefault;
+    }
+
+    /**
+     * Open this category if we are rendered.
+     */
+    public void open() {
+        if(isRendered()) {
+            parent.openCategory(this);
+        }
+    }
+
+    /**
+     * Close this category if we are rendered.
+     */
+    public void close() {
+        if(isRendered()) {
+            parent.closeCategory(this);
+        }
+    }
+
+    /**
+     * Toggle the open/close state of this category.
+     */
+    public void toggle() {
+        if(isOpen()) {
+            close();
+        } else {
+            open();
+        }
     }
 
     public String getName() {
@@ -64,7 +99,7 @@ public class CategoryComponent extends Component<TableSubHeader> {
      * Render the data category row element.
      * Customization to the element can be performed here.
      */
-    protected void render(TableSubHeader subheader) {
+    protected void render(TableSubHeader subheader, int columnCount) {
         // Do nothing by default
     }
 
@@ -73,13 +108,14 @@ public class CategoryComponent extends Component<TableSubHeader> {
      *
      * @return a fully formed {@link TableSubHeader} object.
      */
-    public final TableSubHeader render() {
+    public final TableSubHeader render(int columnCount) {
         TableSubHeader element = getWidget();
         if(element == null) {
-            element = new TableSubHeader(this);
+            element = new TableSubHeader(this, columnCount);
             setWidget(element);
         }
-        render(element);
+
+        render(element, columnCount);
         return element;
     }
 
@@ -109,6 +145,18 @@ public class CategoryComponent extends Component<TableSubHeader> {
 
     public void setOpenByDefault(boolean openByDefault) {
         this.openByDefault = openByDefault;
+
+        if(isRendered() && openByDefault && !isOpen()) {
+            open();
+        }
+    }
+
+    public boolean isHideName() {
+        return hideName;
+    }
+
+    public void setHideName(boolean hideName) {
+        this.hideName = hideName;
     }
 
     public String getHeight() {
@@ -122,6 +170,14 @@ public class CategoryComponent extends Component<TableSubHeader> {
         if(widget != null && widget.isAttached()) {
             widget.setHeight(height);
         }
+    }
+
+    public TableHeader getHeader(int index) {
+        return getWidget().getHeader(index);
+    }
+
+    public TableHeader getHeader(String name) {
+        return getWidget().getHeader(name);
     }
 
     @Override

@@ -21,6 +21,7 @@ package gwt.material.design.client.data;
 
 import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.Display;
@@ -43,8 +44,15 @@ import gwt.material.design.client.ui.table.TableHeader;
 import gwt.material.design.client.ui.table.TableRow;
 import gwt.material.design.client.ui.table.TableSubHeader;
 import gwt.material.design.client.ui.table.cell.Column;
+import gwt.material.design.client.ui.table.cell.FrozenProperties;
+import gwt.material.design.client.ui.table.cell.FrozenSide;
+import gwt.material.design.client.ui.table.cell.TextColumn;
 import gwt.material.design.client.ui.table.cell.WidgetColumn;
+import gwt.material.design.jquery.client.api.JQuery;
+import gwt.material.design.jquery.client.api.JQueryElement;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -68,6 +76,8 @@ public class BaseRenderer<T> implements Renderer<T> {
     private IconType sortDescIcon = IconType.ARROW_DOWNWARD;
     protected IconSize sortIconSize = IconSize.TINY;
 
+    private List<Integer> visibleHeaders = new ArrayList<>();
+
     @Override
     public void copy(Renderer<T> renderer) {
         expectedRowHeight = renderer.getExpectedRowHeight();
@@ -83,6 +93,7 @@ public class BaseRenderer<T> implements Renderer<T> {
                             List<Column<T, ?>> columns, boolean redraw) {
         T data = rowComponent.getData();
         TableRow row = rowComponent.getWidget();
+        List<TableHeader> headers = dataView.getHeaders();
         boolean draw = true;
         if(row == null) {
             // Create a new row element
@@ -97,6 +108,20 @@ public class BaseRenderer<T> implements Renderer<T> {
 
             if(!dataView.getSelectionType().equals(SelectionType.NONE)) {
                 TableData selection = drawSelectionCell();
+                if(rowComponent.hasLeftFrozen()) {
+                    drawColumnFreeze(selection, rowComponent, headers.get(0), new TextColumn<T>() {
+                        @Override
+                        public FrozenProperties frozenProperties() {
+                            return new FrozenProperties("42px", "60px")
+                                .setStyleProperty(StyleName.PADDING_TOP, "15px")
+                                .setStyleProperty(StyleName.PADDING_LEFT, "12px");
+                        }
+                        @Override
+                        public String getValue(T object) {
+                            return null; // not needed for emulated
+                        }
+                    }, FrozenSide.LEFT);
+                }
                 row.add(selection);
             }
         } else if(!redraw && !rowComponent.isRedraw()) {
@@ -111,7 +136,12 @@ public class BaseRenderer<T> implements Renderer<T> {
             for(int c = 0; c < colSize; c++) {
                 int colIndex = c + colOffset;
                 Context context = new Context(rowComponent.getIndex(), colIndex, valueKey);
-                drawColumn(row, context, data, columns.get(c), colIndex, dataView.isHeaderVisible(colIndex));
+                Column<T, ?> column = columns.get(c);
+                TableData td = drawColumn(row, context, data, column, colIndex, isHeaderVisible(c));
+                FrozenProperties frozenProps = column.getFrozenProperties();
+                if(frozenProps != null) {
+                    drawColumnFreeze(td, rowComponent, headers.get(colIndex), column, frozenProps.getSide());
+                }
             }
             rowComponent.setRedraw(false);
         }
@@ -127,6 +157,10 @@ public class BaseRenderer<T> implements Renderer<T> {
                 expandIcon.setWaves(WavesType.LIGHT);
                 expandIcon.getElement().getStyle().setCursor(Cursor.POINTER);
                 expand.add(expandIcon);
+
+                if(rowComponent.hasRightFrozen()) {
+                    drawColumnFreeze(expand, rowComponent, headers.get(0), null, FrozenSide.RIGHT);
+                }
                 row.add(expand);
             }
         } else if(row.hasExpansionColumn()) {
@@ -140,11 +174,11 @@ public class BaseRenderer<T> implements Renderer<T> {
     }
 
     @Override
-    public TableSubHeader drawCategory(CategoryComponent category) {
+    public TableSubHeader drawCategory(CategoryComponent category, int columnCount) {
         if(category != null) {
             TableSubHeader subHeader = category.getWidget();
             if(subHeader == null) {
-                subHeader = category.render();
+                subHeader = category.render(columnCount);
                 assert subHeader != null : "rendered category TableSubHeader cannot be null.";
                 subHeader.setHeight(category.getHeight());
             }
@@ -164,7 +198,7 @@ public class BaseRenderer<T> implements Renderer<T> {
     public TableData drawSelectionCell() {
         TableData checkBox = new TableData();
         checkBox.setId("col0");
-        checkBox.setStyleName(TableCssName.SELECTION);
+        checkBox.addStyleName(TableCssName.SELECTION);
         new MaterialCheckBox(checkBox.getElement());
         checkBox.addClickHandler(event -> {
             event.getNativeEvent().preventDefault();
@@ -174,8 +208,7 @@ public class BaseRenderer<T> implements Renderer<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public TableData drawColumn(TableRow row, Context context, T rowValue, Column<T, ?> column,
-                                int beforeIndex, boolean visible) {
+    public TableData drawColumn(TableRow row, Context context, T rowValue, Column<T, ?> column, int beforeIndex, boolean visible) {
         TableData data = null;
         if(row != null && rowValue != null) {
             data = row.getColumn(beforeIndex);
@@ -277,6 +310,88 @@ public class BaseRenderer<T> implements Renderer<T> {
     }
 
     @Override
+    public void drawColumnFreeze(TableData td, RowComponent<T> rowComponent, TableHeader header, Column<T, ?> column, FrozenSide side) {
+        if(column == null || column.isFrozenColumn()) {
+            rowComponent.getWidget().$this().hover((e, param1) -> {
+                td.$this().addClass("hover");
+                return true;
+            }, (e, param1) -> {
+                td.$this().removeClass("hover");
+                return true;
+            });
+
+            td.addAttachHandler(event -> {
+                int left = 0;
+                for(Element el : header.$this().prevAll().get()) {
+                    left += JQuery.$(el).outerWidth();
+                }
+
+                int right = 0;
+                for(Element el : header.$this().nextAll().get()) {
+                    right += JQuery.$(el).outerWidth();
+                }
+
+                double width = header.$this().width();
+                double height = rowComponent.getWidget().$this().outerHeight();
+
+                String paddingTop = td.$this().css("padding-top");
+                String paddingBottom = td.$this().css("padding-bottom");
+                String paddingLeft = td.$this().css("padding-left");
+                String paddingRight = td.$this().css("padding-right");
+
+                String borderBottom = rowComponent.getWidget().$this().css("border-bottom");
+
+                td.addStyleName(TableCssName.FROZEN_COL);
+                header.addStyleName(TableCssName.FROZEN_COL);
+
+                td.$this().width(width + "px");
+                header.$this().width(width + "px");
+                td.$this().height(height + "px");
+                header.$this().height(height + "px");
+
+                td.$this().css("border-bottom", borderBottom);
+                header.$this().css("border-bottom", borderBottom);
+
+                td.$this().css("padding-top", paddingTop);
+                header.$this().css("padding-top", paddingTop);
+
+                td.$this().css("padding-bottom", paddingBottom);
+                header.$this().css("padding-bottom", paddingBottom);
+
+                td.$this().css("padding-left", paddingLeft);
+                header.$this().css("padding-left", paddingLeft);
+
+                td.$this().css("padding-right", paddingRight);
+                header.$this().css("padding-right", paddingRight);
+
+                if(column != null) {
+                    // Apply the style properties
+                    FrozenProperties frozenProps = column.getFrozenProperties();
+                    if(frozenProps != null) {
+                        Style styleTd = td.getElement().getStyle();
+                        frozenProps.forEach((s, v) -> styleTd.setProperty(s.styleName(), v));
+
+                        Style styleHeader = header.getElement().getStyle();
+                        frozenProps.getHeaderStyleProperties().forEach((s, v) -> styleHeader.setProperty(s.styleName(), v));
+                    }
+                }
+
+                if((column != null && column.getFrozenProperties().isLeft()) || side.equals(FrozenSide.LEFT)) {
+                    // Left freeze
+                    td.setLeft(left);
+                    header.setLeft(left);
+                } else if((column != null && column.getFrozenProperties().isRight()) || side.equals(FrozenSide.RIGHT)) {
+                    // Right freeze
+                    td.setRight(right);
+                    td.$this().css("left", "auto");
+                    header.setRight(right);
+                    header.$this().css("left", "auto");
+                }
+            }, true);
+        }
+    }
+
+    @Override
     public int getExpectedRowHeight() {
         return expectedRowHeight;
     }
@@ -300,6 +415,18 @@ public class BaseRenderer<T> implements Renderer<T> {
                 calculatedRowHeight = rowHeight;
             }
         }
+    }
+
+    @Override
+    public void setVisibleHeaderIndexes(List<Integer> visibleHeaders) {
+        this.visibleHeaders = visibleHeaders;
+    }
+
+    /**
+     * Check the visible header index list for visible headers.
+     */
+    protected boolean isHeaderVisible(int headerIndex) {
+        return visibleHeaders.contains(headerIndex);
     }
 
     @Override

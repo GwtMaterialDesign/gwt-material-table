@@ -33,6 +33,7 @@ import gwt.material.design.client.base.HasTextAlign;
 import gwt.material.design.client.base.constants.StyleName;
 import gwt.material.design.client.constants.HideOn;
 import gwt.material.design.client.constants.TextAlign;
+import gwt.material.design.client.data.DataView;
 import gwt.material.design.client.data.component.RowComponent;
 
 import java.util.Comparator;
@@ -67,9 +68,11 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
     private HideOn hideOn;
     private TextAlign textAlign;
 
+    private FrozenProperties frozenProps;
     private Map<StyleName, String> styleProps;
 
     private Comparator<? super RowComponent<T>> sortComparator;
+    private int index;
 
     /**
      * Construct a new Column with a given {@link Cell}.
@@ -87,6 +90,7 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
         setWidth(width());
         setHideOn(hideOn());
         setTextAlign(textAlign());
+        setFrozenProperties(frozenProperties());
         setStyleProperties(styleProperties());
         setSortComparator(sortComparator());
     }
@@ -302,6 +306,50 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
 
     public Map<StyleName, String> styleProperties() { return null;}
 
+    public final void setFrozenProperties(FrozenProperties frozenProps) {
+        if(frozenProps != null) {
+            // Width is a required property for frozen columns
+            setWidth(frozenProps.getStyleProperty(StyleName.WIDTH));
+        }
+
+        this.frozenProps = frozenProps;
+    }
+
+    public final FrozenProperties getFrozenProperties() {
+        return frozenProps;
+    }
+
+    public final boolean isFrozenColumn() {
+        return frozenProps != null;
+    }
+
+    /**
+     * The row cells that are made frozen will no longer follow the rules of the tables row.
+     * This means that all the cells positioning of content needs to be manually set up.
+     * <br><br>
+     * Note that the frozen columns does not support {@link DataView#setUseStickyHeader(boolean)},
+     * this will automatically be disabled if frozen columns are detected.
+     * <br><br>
+     * Like so:
+     * <pre>{@code table.addColumn(new TextColumn<Person>() {
+        @Override
+        public FrozenProperties frozenProperties() {
+            return new FrozenProperties("200px", "60px")
+                .setStyleProperty(StyleName.PADDING_LEFT, "20px")
+                .setStyleProperty(StyleName.PADDING_TOP, "10px")
+                .setHeaderStyleProperty(StyleName.PADDING_TOP, "21px");
+        }
+        @Override
+        public String getValue(Person object) {
+            return object.getName();
+        }
+    }, "Name");
+     * }</pre>
+     *
+     * Columns must be aligned with each other without any unfrozen columns in between.
+     */
+    public FrozenProperties frozenProperties() { return null; }
+
     /**
      * Set the columns header width.
      */
@@ -319,6 +367,14 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
 
     public String width() { return null; }
 
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
     @Override
     public String toString() {
         return "Column{" +
@@ -331,6 +387,7 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
             ", hideOn=" + hideOn +
             ", textAlign=" + textAlign +
             ", styleProps=" + styleProps +
+            ", frozenProps=" + frozenProps +
             ", sortComparator=" + sortComparator +
             '}';
     }

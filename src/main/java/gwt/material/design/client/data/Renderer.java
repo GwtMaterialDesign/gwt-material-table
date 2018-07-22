@@ -19,7 +19,6 @@
  */
 package gwt.material.design.client.data;
 
-
 import com.google.gwt.cell.client.Cell.Context;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.constants.IconSize;
@@ -32,6 +31,7 @@ import gwt.material.design.client.ui.table.TableHeader;
 import gwt.material.design.client.ui.table.TableRow;
 import gwt.material.design.client.ui.table.TableSubHeader;
 import gwt.material.design.client.ui.table.cell.Column;
+import gwt.material.design.client.ui.table.cell.FrozenSide;
 
 import java.util.List;
 
@@ -42,7 +42,7 @@ import java.util.List;
 public interface Renderer<T> {
     TableRow drawRow(DataView<T> dataView, RowComponent<T> rowComponent, Object valueKey, List<Column<T, ?>> columns, boolean redraw);
 
-    TableSubHeader drawCategory(CategoryComponent category);
+    TableSubHeader drawCategory(CategoryComponent category, int columnCount);
 
     TableRow drawCustom(Component<?> component);
 
@@ -53,6 +53,8 @@ public interface Renderer<T> {
     TableHeader drawColumnHeader(Column<T, ?> column, String header, int index);
 
     void drawSortIcon(TableHeader th, SortContext<T> sortContext);
+
+    void drawColumnFreeze(TableData td, RowComponent<T> rowComponent, TableHeader header, Column<T, ?> column, FrozenSide side);
 
     int getExpectedRowHeight();
 
@@ -75,4 +77,6 @@ public interface Renderer<T> {
     IconSize getSortIconSize();
 
     void setSortIconSize(IconSize sortIconSize);
+
+    void setVisibleHeaderIndexes(List<Integer> visibleHeaders);
 }

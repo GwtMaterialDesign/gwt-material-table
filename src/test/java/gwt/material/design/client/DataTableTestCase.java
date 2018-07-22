@@ -90,6 +90,8 @@ public class DataTableTestCase<T extends AbstractDataTable<Person>> extends GWTT
             MaterialDesign.injectJs(MaterialTableBundle.INSTANCE.stickyth());
             MaterialDesign.injectJs(MaterialTableBundle.INSTANCE.tableSubHeaders());
             MaterialDesign.injectJs(MaterialTableBundle.INSTANCE.greedyScroll());
+            MaterialDesign.injectJs(MaterialTableBundle.INSTANCE.mutateEvents());
+            MaterialDesign.injectJs(MaterialTableBundle.INSTANCE.mutate());
             // gwt-material-jquery Test
             assertNotNull($("body"));
         }

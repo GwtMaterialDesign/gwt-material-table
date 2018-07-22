@@ -34,6 +34,6 @@ public class CategoryComponentFactory implements ComponentFactory<CategoryCompon
 
     @Override
     public CategoryComponent generate(DataView dataView, String categoryName) {
-        return categoryName != null ? new CategoryComponent(categoryName) : new OrphanCategoryComponent();
+        return categoryName != null ? new CategoryComponent(dataView, categoryName) : new OrphanCategoryComponent(dataView);
     }
 }
