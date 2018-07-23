@@ -96,6 +96,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected boolean redraw;
     protected boolean redrawCategories;
     private boolean pendingRenderEvent;
+    private Style.TableLayout tableLayout;
 
     // DOM
     protected Table table;
@@ -572,6 +573,11 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             tbody = table.getBody();
             thead = table.getHead();
             $table = table.getJsElement();
+
+            // apply the table-layout style property
+            if (tableLayout != null) {
+                table.getElement().getStyle().setTableLayout(tableLayout);
+            }
 
             headerRow = new TableRow();
             thead.add(headerRow);
@@ -2308,6 +2314,15 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     @Override
     public String getHeight() {
         return height;
+    }
+
+    @Override
+    public void setTableLayout(Style.TableLayout layout) {
+        tableLayout = layout;
+
+        if (isSetup()) {
+            table.getElement().getStyle().setTableLayout(layout);
+        }
     }
 
     public boolean isShiftDown() {
