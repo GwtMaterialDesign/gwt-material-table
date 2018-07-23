@@ -176,6 +176,15 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         // Nothing by default.
     }
 
+    /**
+     * Set the table-layout CSS property.
+     */
+    public void setTableLayout(Style.TableLayout layout) {
+        // TODO: In the 'setup' phase scan the columns and make sure their widths are all percentage values
+        // TODO: when the table layout is FIXED.
+        getElement().getStyle().setTableLayout(layout);
+    }
+
     @Override
     public final DataView<T> getView() {
         return view;
