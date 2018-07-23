@@ -221,7 +221,7 @@ public class BaseRenderer<T> implements Renderer<T> {
 
             Div wrapper = new Div();
 
-            if (column.width() != null ) {
+            if (!column.isDynamicWidth() && column.width() != null) {
                 wrapper.setWidth(column.width());
             }
 
