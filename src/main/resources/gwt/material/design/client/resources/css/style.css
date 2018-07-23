@@ -550,6 +550,7 @@ table.table tbody tr.expansion td > div p {
         width: 50%;
         display: inline-block;
         vertical-align: middle;
+        text-align: left;
     }
 
     table.table .numeric {

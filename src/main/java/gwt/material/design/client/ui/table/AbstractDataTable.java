@@ -538,6 +538,11 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
+    public void setTableLayout(Style.TableLayout layout) {
+        getView().setTableLayout(layout);
+    }
+
+    @Override
     public void onBrowserEvent(Event event) {
         CellBasedWidgetImpl.get().onBrowserEvent(this, event);
 

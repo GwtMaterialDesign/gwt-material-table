@@ -221,6 +221,10 @@ public class BaseRenderer<T> implements Renderer<T> {
 
             Div wrapper = new Div();
 
+            if (!column.isDynamicWidth() && column.width() != null) {
+                wrapper.setWidth(column.width());
+            }
+
             // Render the column cell
             if(column instanceof WidgetColumn) {
                 wrapper.setStyleName(TableCssName.WIDGET_CELL);
