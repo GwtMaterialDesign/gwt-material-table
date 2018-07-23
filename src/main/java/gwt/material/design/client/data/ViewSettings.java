@@ -19,6 +19,8 @@
  */
 package gwt.material.design.client.data;
 
+import com.google.gwt.dom.client.Style;
+
 public interface ViewSettings {
 
     /**
@@ -82,4 +84,9 @@ public interface ViewSettings {
      * Get the table body height.
      */
     String getHeight();
+
+    /**
+     * Set the table layout.
+     */
+    void setTableLayout(Style.TableLayout layout);
 }
