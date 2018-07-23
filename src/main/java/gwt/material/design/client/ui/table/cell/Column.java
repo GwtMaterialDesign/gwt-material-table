@@ -53,6 +53,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
      */
     private final Cell<C> cell;
     private int index;
+    private boolean dynamicWidth;
 
     /**
      * The {@link FieldUpdater} used for updating values in the column.
@@ -318,6 +319,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
      */
     public Column<T, C> width(String width) {
         this.width = width;
+        this.dynamicWidth = width.contains("%");
         return this;
     }
 
@@ -335,6 +337,14 @@ public abstract class Column<T, C> implements HasCell<T, C> {
 
     public final int getIndex() {
         return index;
+    }
+
+    /**
+     * Is our width configuration a dynamic value (i.e. percentage %)
+     * @return false by default but will update to true when % width is set
+     */
+    public boolean isDynamicWidth() {
+        return dynamicWidth;
     }
 
     @Override

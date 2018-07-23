@@ -30,7 +30,7 @@ public abstract class WidgetCell<V, C extends Widget> extends AbstractCell<C> {
 
     @Override
     public void render(Context context, C value, SafeHtmlBuilder sb) {
-        throw new UnsupportedOperationException("Use WidgetCell#render(context, value, cell)");
+        throw new UnsupportedOperationException("Use WidgetCell#render(context, value, widget)");
     }
 
     public abstract void render(Context context, V value, C widget);
