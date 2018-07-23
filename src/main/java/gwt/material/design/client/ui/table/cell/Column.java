@@ -356,7 +356,7 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
      */
     public final void setWidth(String width) {
         this.width = width;
-        this.dynamicWidth = width.contains("%");
+        this.dynamicWidth = width != null && width.contains("%");
     }
 
     /**
