@@ -41,12 +41,12 @@ public interface HasCategories {
     /**
      * Get all registered category components.
      */
-    List<CategoryComponent> getCategories();
+    Categories getCategories();
 
     /**
      * Get all the open {@link CategoryComponent}'s or null if categories are disabled.
      */
-    List<CategoryComponent> getOpenCategories();
+    Categories getOpenCategories();
 
     /**
      * Check if a category has data to provide.
@@ -101,6 +101,16 @@ public interface HasCategories {
      * Close an existing Category.
      */
     void closeCategory(CategoryComponent category);
+
+    /**
+     * Open all the categories.
+     */
+    void openAllCategories();
+
+    /**
+     * Open all the categories.
+     */
+    void closeAllCategories();
 
     /**
      * Clear all rows and categories.

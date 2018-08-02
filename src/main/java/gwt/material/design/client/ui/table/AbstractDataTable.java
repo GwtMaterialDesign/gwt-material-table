@@ -217,12 +217,12 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
-    public final List<CategoryComponent> getCategories() {
+    public final Categories getCategories() {
         return view.getCategories();
     }
 
     @Override
-    public final List<CategoryComponent> getOpenCategories() {
+    public final Categories getOpenCategories() {
         return view.getOpenCategories();
     }
 
@@ -274,6 +274,16 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     @Override
     public final void closeCategory(CategoryComponent category) {
         view.closeCategory(category);
+    }
+
+    @Override
+    public void openAllCategories() {
+        view.openAllCategories();
+    }
+
+    @Override
+    public void closeAllCategories() {
+        view.closeAllCategories();
     }
 
     @Override

@@ -129,7 +129,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     // Components
     protected final Components<RowComponent<T>> rows = new Components<>();
     protected final Components<RowComponent<T>> pendingRows = new Components<>();
-    protected final Components<CategoryComponent> categories = new Components<>();
+    protected final Categories categories = new Categories();
 
     // Rendering
     protected final List<Column<T, ?>> columns = new ArrayList<>();
@@ -335,7 +335,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             clearRows(false);
 
             if (isUseCategories()) {
-                List<CategoryComponent> openCategories = getOpenCategories();
+                Categories openCategories = getOpenCategories();
                 categories.clearWidgets();
 
                 for (CategoryComponent category : categories) {
@@ -1789,15 +1789,15 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
-    public List<CategoryComponent> getCategories() {
-        return Collections.unmodifiableList(categories);
+    public Categories getCategories() {
+        return new Categories(categories);
     }
 
     @Override
-    public List<CategoryComponent> getOpenCategories() {
-        List<CategoryComponent> openCategories = null;
+    public Categories getOpenCategories() {
+        Categories openCategories = null;
         if(isUseCategories()) {
-            openCategories = new ArrayList<>();
+            openCategories = new Categories();
             for (CategoryComponent category : categories) {
                 TableSubHeader element = category.getWidget();
                 if (element != null && element.isOpen()) {
@@ -1919,8 +1919,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         return byCategory;
     }
 
-    protected List<CategoryComponent> getHiddenCategories() {
-        List<CategoryComponent> hidden = new ArrayList<>();
+    protected Categories getHiddenCategories() {
+        Categories hidden = new Categories();
         for(CategoryComponent category : categories) {
             TableSubHeader element = category.getWidget();
             if(element != null && !element.isVisible()) {
@@ -1930,8 +1930,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         return hidden;
     }
 
-    protected List<CategoryComponent> getVisibleCategories() {
-        List<CategoryComponent> visible = new ArrayList<>();
+    protected Categories getVisibleCategories() {
+        Categories visible = new Categories();
         for(CategoryComponent category : categories) {
             TableSubHeader element = category.getWidget();
             if(element != null && element.isVisible()) {
@@ -1941,8 +1941,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         return visible;
     }
 
-    protected List<CategoryComponent> getPassedCategories() {
-        List<CategoryComponent> passed = new ArrayList<>();
+    protected Categories getPassedCategories() {
+        Categories passed = new Categories();
         int scrollTop = tableBody.scrollTop();
         for(CategoryComponent category : categories) {
             if(isCategoryEmpty(category) && scrollTop > (getRowHeight() + thead.$this().height())) {
@@ -1953,7 +1953,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             }
         }
         // No categories are populated.
-        return new ArrayList<>();
+        return new Categories();
     }
 
     @Override
@@ -2194,6 +2194,20 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     public void closeCategory(CategoryComponent category) {
         if(category != null && category.isRendered()) {
             subheaderLib.close(category.getWidget().$this());
+        }
+    }
+
+    @Override
+    public void openAllCategories() {
+        if (isUseCategories()) {
+            categories.openAll();
+        }
+    }
+
+    @Override
+    public void closeAllCategories() {
+        if (isUseCategories()) {
+            categories.closeAll();
         }
     }
 
