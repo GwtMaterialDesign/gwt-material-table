@@ -48,6 +48,10 @@ import java.util.Map;
  */
 public abstract class Column<T, C> implements HasCell<T, C> {
 
+    public interface Value<T, C> {
+        C value(T obj);
+    }
+
     /**
      * The {@link Cell} responsible for rendering items in the column.
      */
@@ -61,23 +65,31 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     private FieldUpdater<T, C> fieldUpdater;
 
     private boolean defaultSortAscending = true;
-    private boolean numeric = false;
-    private boolean autoSort = false;
+    private boolean numeric;
+    private boolean autoSort;
+    private boolean sortable;
     private String name;
     private String width;
     private HideOn hideOn;
     private TextAlign textAlign;
     private FrozenProperties frozenProps;
     private Map<StyleName, String> styleProps;
-    private Comparator<? super RowComponent<T>> sortComparator;
+    private Comparator<? super RowComponent<T>> sortComparator = (o1, o2) -> o1.compareTo(o2.getData());
+
+    private Value<T, C> delegate;
 
     /**
      * Construct a new Column with a given {@link Cell}.
-     * 
+     *
      * @param cell the Cell used by this Column
      */
     public Column(Cell<C> cell) {
         this.cell = cell;
+    }
+
+    public Column(Cell<C> cell, Value<T, C> delegate) {
+        this(cell);
+        this.delegate = delegate;
     }
 
     /**
@@ -98,23 +110,37 @@ public abstract class Column<T, C> implements HasCell<T, C> {
 
     /**
      * Returns the {@link Cell} responsible for rendering items in the column.
-     * 
+     *
      * @return a Cell
      */
     @Override
     public final Cell<C> getCell() {
         return cell;
     }
-    
+
     /**
      * Returns the column value from within the underlying data object.
      */
     @Override
-    public abstract C getValue(T object);
+    public C getValue(T object) {
+        if (delegate != null) {
+            return delegate.value(object);
+        } else {
+            throw new UnsupportedOperationException("No value delegate defined and getValue was not overridden");
+        }
+    }
+
+    public Value<T, C> delegate() {
+        return delegate;
+    }
+
+    public void delegate(Value<T, C> delegate) {
+        this.delegate = delegate;
+    }
 
     /**
      * Render the object into the cell.
-     * 
+     *
      * @param object the object to render
      * @param sb the buffer to render into
      */
@@ -149,7 +175,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
 
     /**
      * Set whether or not the default sort order is ascending.
-     * 
+     *
      * @param defaultSortAscending true to set the default order to ascending, false for descending.
      */
     public Column<T, C> defaultSortAscending(boolean defaultSortAscending) {
@@ -183,13 +209,18 @@ public abstract class Column<T, C> implements HasCell<T, C> {
         return this;
     }
 
+    public Column<T, C> sortable(boolean sortable) {
+        this.sortable = sortable;
+        return this;
+    }
+
     /**
      * Check if the column is sortable.
      *
      * @return true if sortable, false if not
      */
-    public boolean isSortable() {
-        return sortComparator() != null;
+    public boolean sortable() {
+        return sortable;
     }
 
     @Override

@@ -335,23 +335,27 @@ public class MaterialDataTableTest<T extends MaterialDataTable<Person>> extends 
             public String getValue(Person object) {
                 return object.getFirstName();
             }
-        }.sortComparator((o1, o2) -> o1.getData().getFirstName().compareToIgnoreCase(o2.getData().getFirstName()));
+        }
+        .sortable(true)
+        .sortComparator((o1, o2) -> o1.getData().getFirstName().compareToIgnoreCase(o2.getData().getFirstName()));
 
         table.addColumn("First Name", col2);
         assertEquals(col2, table.getColumns().get(1));
         assertEquals("First Name", col2.name());
-        assertTrue(col2.isSortable());
+        assertTrue(col2.sortable());
 
         Column<Person, ?> col3 = new TextColumn<Person>() {
             @Override
             public String getValue(Person object) {
                 return object.getLastName();
             }
-        }.sortComparator((o1, o2) -> o1.getData().getLastName().compareToIgnoreCase(o2.getData().getLastName()));
+        }
+        .sortable(true)
+        .sortComparator((o1, o2) -> o1.getData().getLastName().compareToIgnoreCase(o2.getData().getLastName()));
         table.addColumn("Last Name", col3);
         assertEquals(col3, table.getColumns().get(2));
         assertEquals("Last Name", col3.name());
-        assertTrue(col2.isSortable());
+        assertTrue(col2.sortable());
 
         Column<Person, ?> col4 = new TextColumn<Person>() {
             @Override
@@ -361,6 +365,7 @@ public class MaterialDataTableTest<T extends MaterialDataTable<Person>> extends 
         }
         .numeric(true)
         .hideOn(HideOn.HIDE_ON_MED_DOWN)
+        .sortable(true)
         .sortComparator((o1, o2) -> o1.getData().getPhone().compareToIgnoreCase(o2.getData().getPhone()));
 
         table.addColumn("Phone", col4);
@@ -376,12 +381,13 @@ public class MaterialDataTableTest<T extends MaterialDataTable<Person>> extends 
                     return object.getPhone() + " " + index;
                 }
             }
+            .sortable(true)
             .sortComparator((o1, o2) -> o1.getData().getPhone().compareToIgnoreCase(o2.getData().getPhone()));
 
             table.addColumn("Column " + index, col);
             assertEquals(col, table.getColumns().get(3 + (i + 1)));
             assertEquals("Column " + index, col.name());
-            assertTrue(col.isSortable());
+            assertTrue(col.sortable());
         }
 
         Column<Person, ?> lastCol = new WidgetColumn<Person, MaterialBadge>() {
@@ -447,6 +453,7 @@ public class MaterialDataTableTest<T extends MaterialDataTable<Person>> extends 
                 return object.getFirstName();
             }
         }
+        .sortable(true)
         .sortComparator((o1, o2) -> o1.getData().getFirstName().compareToIgnoreCase(o2.getData().getFirstName()));
 
         table.insertColumn("insertedCol", 0, insertedCol);

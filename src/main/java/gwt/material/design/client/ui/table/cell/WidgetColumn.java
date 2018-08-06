@@ -19,6 +19,7 @@
  */
 package gwt.material.design.client.ui.table.cell;
 
+import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.Widget;
@@ -43,6 +44,10 @@ public abstract class WidgetColumn<T, C extends Widget> extends Column<T, C> {
 
     public WidgetColumn(WidgetCell<T, C> cell) {
       super(cell);
+    }
+
+    public WidgetColumn(Cell<C> cell, Value<T, C> delegate) {
+        super(cell, delegate);
     }
 
     @Override

@@ -20,28 +20,31 @@
 package gwt.material.design.client.ui.table.cell;
 
 import com.google.gwt.cell.client.Cell;
+import com.google.gwt.cell.client.DateCell;
+
+import java.util.Date;
 
 /**
- * A column that displays its contents with a {@link TextCell} and does not make
+ * A column that displays its contents with a {@link DateCell} and does not make
  * use of view data.
  *
  * @param <T> the row type
  * @author Ben Dol
  */
-public abstract class TextColumn<T> extends Column<T, String> {
+public abstract class DateColumn<T> extends Column<T, Date> {
 
     /**
-     * Construct a new TextColumn.
+     * Construct a new DateColumn.
      */
-    public TextColumn() {
-        super(new TextCell());
+    public DateColumn() {
+        super(new DateCell());
     }
 
-    public TextColumn(Value<T, String> delegate) {
-        super(new TextCell(), delegate);
+    public DateColumn(Value<T, Date> delegate) {
+        super(new DateCell(), delegate);
     }
 
-    public TextColumn(Cell<String> cell, Value<T, String> delegate) {
+    public DateColumn(Cell<Date> cell, Value<T, Date> delegate) {
         super(cell, delegate);
     }
 }

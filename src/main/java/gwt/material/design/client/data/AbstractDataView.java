@@ -22,6 +22,7 @@ package gwt.material.design.client.data;
 import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.shared.GwtEvent;
@@ -494,7 +495,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
         TableHeader th = renderer.drawColumnHeader(column, column.name(), index);
         if (th != null) {
-            if (column.isSortable()) {
+            if (column.sortable()) {
                 th.$this().on("click", e -> {
                     sort(rows, th, column, index);
                     return true;
