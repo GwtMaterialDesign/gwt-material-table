@@ -26,6 +26,7 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.base.constants.StyleName;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.constants.HideOn;
@@ -267,7 +268,7 @@ public class BaseRenderer<T> implements Renderer<T> {
     }
 
     @Override
-    public TableHeader drawColumnHeader(Column<T, ?> column, String header, int index) {
+    public TableHeader drawColumnHeader(Widget container, Column<T, ?> column, String header, int index) {
         MaterialIcon sortIcon = new MaterialIcon();
         sortIcon.setIconSize(sortIconSize);
 
@@ -293,10 +294,17 @@ public class BaseRenderer<T> implements Renderer<T> {
             styleProps.forEach((s, v) -> style.setProperty(s.styleName(), v));
         }
 
-        // Set the headers width
-        String width = column.width();
-        if(width != null) {
-            th.setWidth(width);
+        if (!column.widthPixelToPercent()) {
+            // Set the headers width
+            String width = column.width();
+            if (width != null) {
+                th.setWidth(width);
+            }
+        } else {
+            int rowWidth = container.getOffsetWidth();
+            int columnWidth = column.getWidthPixels();
+            int percent = (columnWidth * 100) / rowWidth;
+            th.setWidth(percent + "%");
         }
         th.setVisible(true);
         return th;

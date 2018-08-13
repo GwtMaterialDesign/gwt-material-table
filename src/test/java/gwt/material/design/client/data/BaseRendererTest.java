@@ -162,7 +162,7 @@ public class BaseRendererTest extends DataTableTestCase<MaterialDataTable<Person
         Column<Person, ?> column = dataView.getColumns().get(0);
 
         // when
-        TableHeader th = renderer.drawColumnHeader(column, column.name(), 0);
+        TableHeader th = renderer.drawColumnHeader(dataView.getContainer(), column, column.name(), 0);
 
         // then
         assertEquals("col0", th.getId());

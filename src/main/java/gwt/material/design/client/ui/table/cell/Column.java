@@ -24,6 +24,7 @@ import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.ValueUpdater;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
@@ -57,6 +58,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
      */
     private final Cell<C> cell;
     private int index;
+    private int widthPixels;
     private boolean dynamicWidth;
 
     /**
@@ -68,13 +70,16 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     private boolean numeric;
     private boolean autoSort;
     private boolean sortable;
+    private boolean widthPixelToPercent;
     private String name;
     private String width;
     private HideOn hideOn;
     private TextAlign textAlign;
     private FrozenProperties frozenProps;
     private Map<StyleName, String> styleProps;
-    private Comparator<? super RowComponent<T>> sortComparator = (o1, o2) -> o1.compareTo(o2.getData());
+    private Comparator<? super RowComponent<T>> sortComparator = (o1, o2) -> {
+        return o1.compareTo(o2.getData());
+    };
 
     private Value<T, C> delegate;
 
@@ -350,8 +355,29 @@ public abstract class Column<T, C> implements HasCell<T, C> {
      */
     public Column<T, C> width(String width) {
         this.width = width;
-        this.dynamicWidth = width.contains("%");
+
+        if (widthPixelToPercent()) {
+            if (!extractWidthPixelValues()) {
+                // turn off width pixel percent calculation
+                widthPixels = -1;
+                widthPixelToPercent(false);
+            }
+        } else {
+            this.dynamicWidth = width.contains("%");
+        }
         return this;
+    }
+
+    private boolean extractWidthPixelValues() {
+        try {
+            if (width != null && width.contains("px")) {
+                widthPixels = Integer.valueOf(width.substring(0, width.indexOf("px")));
+                return true;
+            }
+        } catch (NumberFormatException ex) {
+            GWT.log("Could not cast width to an integer.", ex);
+        }
+        return false;
     }
 
     /**
@@ -360,6 +386,25 @@ public abstract class Column<T, C> implements HasCell<T, C> {
      */
     public final String width() {
         return width;
+    }
+
+    /**
+     * Automatically calculate percentages using the {@link #width(String)} pixel configuration.
+     * Note that this won't work if the width configuration isn't <b>px</b>.
+     */
+    public Column<T, C> widthPixelToPercent(boolean widthPixelToPercent) {
+        this.widthPixelToPercent = widthPixelToPercent;
+
+        if (this.dynamicWidth && !widthPixelToPercent && !width.contains("%")) {
+            this.dynamicWidth = false;
+        }
+
+        extractWidthPixelValues();
+        return this;
+    }
+
+    public boolean widthPixelToPercent() {
+        return widthPixelToPercent;
     }
 
     public final void setIndex(int index) {
@@ -376,6 +421,14 @@ public abstract class Column<T, C> implements HasCell<T, C> {
      */
     public boolean isDynamicWidth() {
         return dynamicWidth;
+    }
+
+    public void setWidthPixels(int widthPixels) {
+        this.widthPixels = widthPixels;
+    }
+
+    public int getWidthPixels() {
+        return widthPixels;
     }
 
     @Override
