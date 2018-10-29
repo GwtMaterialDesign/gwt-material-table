@@ -28,20 +28,25 @@ import com.google.gwt.cell.client.Cell;
  * @param <T> the row type
  * @author Ben Dol
  */
-public abstract class FloatColumn<T> extends Column<T, Float> {
+public class FloatColumn<T> extends Column<T, Float> {
 
-    /**
-     * Construct a new TextColumn.
-     */
     public FloatColumn() {
         super(new NumberCell<>());
     }
 
-    public FloatColumn(Value<T, Float> delegate) {
-        super(new NumberCell<>(), delegate);
+    public FloatColumn(Cell<Float> cell) {
+        super(cell);
+    }
+
+    public FloatColumn(Cell<Float> cell, Float nullValue) {
+        super(cell, nullValue);
     }
 
     public FloatColumn(Cell<Float> cell, Value<T, Float> delegate) {
         super(cell, delegate);
+    }
+
+    public FloatColumn(Cell<Float> cell, Value<T, Float> delegate, Float nullValue) {
+        super(cell, delegate, nullValue);
     }
 }

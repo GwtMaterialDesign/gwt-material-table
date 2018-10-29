@@ -20,6 +20,7 @@
 package gwt.material.design.client.ui.table.cell;
 
 import com.google.gwt.cell.client.AbstractSafeHtmlCell;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
@@ -41,7 +42,8 @@ public class NumberCell<T extends Number> extends AbstractSafeHtmlCell<T> {
         super(new SafeHtmlRenderer<T>() {
             @Override
             public SafeHtml render(T object) {
-                return (object == null) ? SafeHtmlUtils.EMPTY_SAFE_HTML : SafeHtmlUtils.fromString(object.toString());
+                return (object == null) ? SafeHtmlUtils.EMPTY_SAFE_HTML
+                        : SafeHtmlUtils.fromString(NumberFormat.getDecimalFormat().format(object));
             }
 
             @Override

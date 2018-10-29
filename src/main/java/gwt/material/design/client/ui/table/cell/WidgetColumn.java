@@ -31,7 +31,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @param <T> the row type
  * @author Ben Dol
  */
-public abstract class WidgetColumn<T, C extends Widget> extends Column<T, C> {
+public class WidgetColumn<T, C extends Widget> extends Column<T, C> {
 
     static class BlankWidgetCell<T, C extends Widget> extends WidgetCell<T, C> {
         @Override
@@ -42,12 +42,20 @@ public abstract class WidgetColumn<T, C extends Widget> extends Column<T, C> {
         super(new BlankWidgetCell<T, C>());
     }
 
-    public WidgetColumn(WidgetCell<T, C> cell) {
-      super(cell);
+    public WidgetColumn(Cell<C> cell) {
+        super(cell);
+    }
+
+    public WidgetColumn(Cell<C> cell, C nullValue) {
+        super(cell, nullValue);
     }
 
     public WidgetColumn(Cell<C> cell, Value<T, C> delegate) {
         super(cell, delegate);
+    }
+
+    public WidgetColumn(Cell<C> cell, Value<T, C> delegate, C nullValue) {
+        super(cell, delegate, nullValue);
     }
 
     @Override
@@ -57,7 +65,7 @@ public abstract class WidgetColumn<T, C extends Widget> extends Column<T, C> {
 
     public C render(Context context, T object) {
       C widget = getValue(object);
-      ((WidgetCell<T,C>)getCell()).render(context, object, widget);
+      ((WidgetCell<T,C>)getCell()).render(context, object, widget != null ? widget : nullValue());
       return widget;
     }
 }

@@ -70,17 +70,16 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     private boolean numeric;
     private boolean autoSort;
     private boolean sortable;
-    private boolean widthPixelToPercent;
+    private boolean widthToPercent;
     private String name;
     private String width;
     private HideOn hideOn;
     private TextAlign textAlign;
     private FrozenProperties frozenProps;
     private Map<StyleName, String> styleProps;
-    private Comparator<? super RowComponent<T>> sortComparator = (o1, o2) -> {
-        return o1.compareTo(o2.getData());
-    };
+    private Comparator<? super RowComponent<T>> sortComparator;
 
+    private C nullValue;
     private Value<T, C> delegate;
 
     /**
@@ -92,9 +91,20 @@ public abstract class Column<T, C> implements HasCell<T, C> {
         this.cell = cell;
     }
 
+    public Column(Cell<C> cell, C nullValue) {
+        this.cell = cell;
+        this.nullValue = nullValue;
+    }
+
     public Column(Cell<C> cell, Value<T, C> delegate) {
         this(cell);
         this.delegate = delegate;
+    }
+
+    public Column(Cell<C> cell, Value<T, C> delegate, C nullValue) {
+        this(cell);
+        this.delegate = delegate;
+        this.nullValue = nullValue;
     }
 
     /**
@@ -110,7 +120,8 @@ public abstract class Column<T, C> implements HasCell<T, C> {
         ValueUpdater<C> valueUpdater = (fieldUpdater == null) ? null : value -> {
             fieldUpdater.update(index, object, value);
         };
-        cell.onBrowserEvent(context, elem, getValue(object), event, valueUpdater);
+        C value = getValue(object);
+        cell.onBrowserEvent(context, elem, value != null ? value : nullValue, event, valueUpdater);
     }
 
     /**
@@ -129,7 +140,10 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     @Override
     public C getValue(T object) {
         if (delegate != null) {
-            return delegate.value(object);
+            C value = delegate.value(object);
+            return value != null ? value : nullValue;
+        } else if (nullValue != null) {
+            return nullValue;
         } else {
             throw new UnsupportedOperationException("No value delegate defined and getValue was not overridden");
         }
@@ -150,7 +164,8 @@ public abstract class Column<T, C> implements HasCell<T, C> {
      * @param sb the buffer to render into
      */
     public Column<T, C> render(Context context, T object, SafeHtmlBuilder sb) {
-        cell.render(context, getValue(object), sb);
+        C value = getValue(object);
+        cell.render(context, value != null ? value : nullValue, sb);
         return this;
     }
 
@@ -206,6 +221,11 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     }
 
     public final Comparator<? super RowComponent<T>> sortComparator() {
+        if (sortComparator == null) {
+            sortComparator = (o1, o2) -> {
+                return o1.compareTo(o2.getData());
+            };
+        }
         return sortComparator;
     }
 
@@ -350,6 +370,10 @@ public abstract class Column<T, C> implements HasCell<T, C> {
         return frozenProps != null;
     }
 
+    public Column<T, C> width(int width) {
+        return width(width + "px");
+    }
+
     /**
      * Set the columns header width.
      */
@@ -393,7 +417,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
      * Note that this won't work if the width configuration isn't <b>px</b>.
      */
     public Column<T, C> widthPixelToPercent(boolean widthPixelToPercent) {
-        this.widthPixelToPercent = widthPixelToPercent;
+        this.widthToPercent = widthPixelToPercent;
 
         if (this.dynamicWidth && !widthPixelToPercent && !width.contains("%")) {
             this.dynamicWidth = false;
@@ -404,7 +428,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     }
 
     public boolean widthPixelToPercent() {
-        return widthPixelToPercent;
+        return widthToPercent;
     }
 
     public final void setIndex(int index) {
@@ -431,6 +455,15 @@ public abstract class Column<T, C> implements HasCell<T, C> {
         return widthPixels;
     }
 
+    public C nullValue() {
+        return nullValue;
+    }
+
+    public Column<T, C> nullValue(C nullValue) {
+        this.nullValue = nullValue;
+        return this;
+    }
+
     @Override
     public String toString() {
         return "Column{" +
@@ -446,7 +479,6 @@ public abstract class Column<T, C> implements HasCell<T, C> {
                 ", textAlign=" + textAlign +
                 ", frozenProps=" + frozenProps +
                 ", styleProps=" + styleProps +
-                ", sortComparator=" + sortComparator +
                 '}';
     }
 }

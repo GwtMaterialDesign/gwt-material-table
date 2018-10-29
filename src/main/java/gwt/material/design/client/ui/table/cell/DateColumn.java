@@ -31,20 +31,25 @@ import java.util.Date;
  * @param <T> the row type
  * @author Ben Dol
  */
-public abstract class DateColumn<T> extends Column<T, Date> {
+public class DateColumn<T> extends Column<T, Date> {
 
-    /**
-     * Construct a new DateColumn.
-     */
     public DateColumn() {
         super(new DateCell());
     }
 
-    public DateColumn(Value<T, Date> delegate) {
-        super(new DateCell(), delegate);
+    public DateColumn(Cell<Date> cell) {
+        super(cell);
+    }
+
+    public DateColumn(Cell<Date> cell, Date nullValue) {
+        super(cell, nullValue);
     }
 
     public DateColumn(Cell<Date> cell, Value<T, Date> delegate) {
         super(cell, delegate);
+    }
+
+    public DateColumn(Cell<Date> cell, Value<T, Date> delegate, Date nullValue) {
+        super(cell, delegate, nullValue);
     }
 }

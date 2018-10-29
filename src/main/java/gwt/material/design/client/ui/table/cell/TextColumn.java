@@ -28,20 +28,25 @@ import com.google.gwt.cell.client.Cell;
  * @param <T> the row type
  * @author Ben Dol
  */
-public abstract class TextColumn<T> extends Column<T, String> {
+public class TextColumn<T> extends Column<T, String> {
 
-    /**
-     * Construct a new TextColumn.
-     */
     public TextColumn() {
         super(new TextCell());
     }
 
-    public TextColumn(Value<T, String> delegate) {
-        super(new TextCell(), delegate);
+    public TextColumn(Cell<String> cell) {
+        super(cell);
+    }
+
+    public TextColumn(Cell<String> cell, String nullValue) {
+        super(cell, nullValue);
     }
 
     public TextColumn(Cell<String> cell, Value<T, String> delegate) {
         super(cell, delegate);
+    }
+
+    public TextColumn(Cell<String> cell, Value<T, String> delegate, String nullValue) {
+        super(cell, delegate, nullValue);
     }
 }

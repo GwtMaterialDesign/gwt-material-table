@@ -28,20 +28,25 @@ import com.google.gwt.cell.client.Cell;
  * @param <T> the row type
  * @author Ben Dol
  */
-public abstract class ShortColumn<T> extends Column<T, Short> {
+public class ShortColumn<T> extends Column<T, Short> {
 
-    /**
-     * Construct a new TextColumn.
-     */
     public ShortColumn() {
         super(new NumberCell<>());
     }
 
-    public ShortColumn(Value<T, Short> delegate) {
-        super(new NumberCell<>(), delegate);
+    public ShortColumn(Cell<Short> cell) {
+        super(cell);
+    }
+
+    public ShortColumn(Cell<Short> cell, Short nullValue) {
+        super(cell, nullValue);
     }
 
     public ShortColumn(Cell<Short> cell, Value<T, Short> delegate) {
         super(cell, delegate);
+    }
+
+    public ShortColumn(Cell<Short> cell, Value<T, Short> delegate, Short nullValue) {
+        super(cell, delegate, nullValue);
     }
 }
