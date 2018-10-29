@@ -325,7 +325,7 @@ section.table-container div.tool-panel ul.dropdown-content li > span {
 }
 
 .table-body {
-    width: 100%;
+    width: calc(100% - 1px);
     height: 100vh;
     /*top: -6px;*/
 
