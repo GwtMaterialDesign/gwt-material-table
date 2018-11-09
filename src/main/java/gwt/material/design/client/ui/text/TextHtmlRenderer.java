@@ -14,7 +14,7 @@ public class TextHtmlRenderer extends AbstractSafeHtmlRenderer<String> {
     }
 
     @Override
-    public SafeHtml safeRender(T object) {
-        return SafeHtmlUtils.fromString(object.toString());
+    public SafeHtml safeRender(String object) {
+        return SafeHtmlUtils.fromString(object);
     }
 }
