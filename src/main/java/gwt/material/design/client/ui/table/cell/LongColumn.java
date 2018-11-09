@@ -38,15 +38,15 @@ public class LongColumn<T> extends Column<T, Long> {
         super(cell);
     }
 
-    public LongColumn(Cell<Long> cell, Long nullValue) {
-        super(cell, nullValue);
+    public LongColumn(Cell<Long> cell, Long defaultValue) {
+        super(cell, defaultValue);
     }
 
     public LongColumn(Cell<Long> cell, Value<T, Long> delegate) {
         super(cell, delegate);
     }
 
-    public LongColumn(Cell<Long> cell, Value<T, Long> delegate, Long nullValue) {
-        super(cell, delegate, nullValue);
+    public LongColumn(Cell<Long> cell, Value<T, Long> delegate, Long defaultValue) {
+        super(cell, delegate, defaultValue);
     }
 }

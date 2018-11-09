@@ -41,15 +41,15 @@ public class DateColumn<T> extends Column<T, Date> {
         super(cell);
     }
 
-    public DateColumn(Cell<Date> cell, Date nullValue) {
-        super(cell, nullValue);
+    public DateColumn(Cell<Date> cell, Date defaultValue) {
+        super(cell, defaultValue);
     }
 
     public DateColumn(Cell<Date> cell, Value<T, Date> delegate) {
         super(cell, delegate);
     }
 
-    public DateColumn(Cell<Date> cell, Value<T, Date> delegate, Date nullValue) {
-        super(cell, delegate, nullValue);
+    public DateColumn(Cell<Date> cell, Value<T, Date> delegate, Date defaultValue) {
+        super(cell, delegate, defaultValue);
     }
 }

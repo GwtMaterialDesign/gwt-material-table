@@ -38,15 +38,15 @@ public class DoubleColumn<T> extends Column<T, Double> {
         super(cell);
     }
 
-    public DoubleColumn(Cell<Double> cell, Double nullValue) {
-        super(cell, nullValue);
+    public DoubleColumn(Cell<Double> cell, Double defaultValue) {
+        super(cell, defaultValue);
     }
 
     public DoubleColumn(Cell<Double> cell, Value<T, Double> delegate) {
         super(cell, delegate);
     }
 
-    public DoubleColumn(Cell<Double> cell, Value<T, Double> delegate, Double nullValue) {
-        super(cell, delegate, nullValue);
+    public DoubleColumn(Cell<Double> cell, Value<T, Double> delegate, Double defaultValue) {
+        super(cell, delegate, defaultValue);
     }
 }

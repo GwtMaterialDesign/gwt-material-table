@@ -24,6 +24,7 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.text.shared.SafeHtmlRenderer;
 import com.google.gwt.text.shared.SimpleSafeHtmlRenderer;
+import gwt.material.design.client.ui.text.TextHtmlRenderer;
 
 /**
  * A {@link com.google.gwt.cell.client.Cell} used to render text.
@@ -37,7 +38,7 @@ public class TextCell extends AbstractSafeHtmlCell<String> {
      * its text.
      */
     public TextCell() {
-        super(SimpleSafeHtmlRenderer.getInstance());
+        super(new TextHtmlRenderer());
     }
 
     /**

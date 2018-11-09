@@ -79,7 +79,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     private Map<StyleName, String> styleProps;
     private Comparator<? super RowComponent<T>> sortComparator;
 
-    private C nullValue;
+    private C defaultValue;
     private Value<T, C> delegate;
 
     /**
@@ -91,9 +91,9 @@ public abstract class Column<T, C> implements HasCell<T, C> {
         this.cell = cell;
     }
 
-    public Column(Cell<C> cell, C nullValue) {
+    public Column(Cell<C> cell, C defaultValue) {
         this.cell = cell;
-        this.nullValue = nullValue;
+        this.defaultValue = defaultValue;
     }
 
     public Column(Cell<C> cell, Value<T, C> delegate) {
@@ -101,10 +101,10 @@ public abstract class Column<T, C> implements HasCell<T, C> {
         this.delegate = delegate;
     }
 
-    public Column(Cell<C> cell, Value<T, C> delegate, C nullValue) {
+    public Column(Cell<C> cell, Value<T, C> delegate, C defaultValue) {
         this(cell);
         this.delegate = delegate;
-        this.nullValue = nullValue;
+        this.defaultValue = defaultValue;
     }
 
     /**
@@ -121,7 +121,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
             fieldUpdater.update(index, object, value);
         };
         C value = getValue(object);
-        cell.onBrowserEvent(context, elem, value != null ? value : nullValue, event, valueUpdater);
+        cell.onBrowserEvent(context, elem, value != null ? value : defaultValue, event, valueUpdater);
     }
 
     /**
@@ -141,9 +141,9 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     public C getValue(T object) {
         if (delegate != null) {
             C value = delegate.value(object);
-            return value != null ? value : nullValue;
-        } else if (nullValue != null) {
-            return nullValue;
+            return value != null ? value : defaultValue;
+        } else if (defaultValue != null) {
+            return defaultValue;
         } else {
             throw new UnsupportedOperationException("No value delegate defined and getValue was not overridden");
         }
@@ -165,7 +165,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
      */
     public Column<T, C> render(Context context, T object, SafeHtmlBuilder sb) {
         C value = getValue(object);
-        cell.render(context, value != null ? value : nullValue, sb);
+        cell.render(context, value != null ? value : defaultValue, sb);
         return this;
     }
 
@@ -455,12 +455,12 @@ public abstract class Column<T, C> implements HasCell<T, C> {
         return widthPixels;
     }
 
-    public C nullValue() {
-        return nullValue;
+    public C defaultValue() {
+        return defaultValue;
     }
 
-    public Column<T, C> nullValue(C nullValue) {
-        this.nullValue = nullValue;
+    public Column<T, C> defaultValue(C defaultValue) {
+        this.defaultValue = defaultValue;
         return this;
     }
 

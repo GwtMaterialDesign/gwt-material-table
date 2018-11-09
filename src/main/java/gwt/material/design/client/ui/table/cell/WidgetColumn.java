@@ -46,16 +46,16 @@ public class WidgetColumn<T, C extends Widget> extends Column<T, C> {
         super(cell);
     }
 
-    public WidgetColumn(Cell<C> cell, C nullValue) {
-        super(cell, nullValue);
+    public WidgetColumn(Cell<C> cell, C defaultValue) {
+        super(cell, defaultValue);
     }
 
     public WidgetColumn(Cell<C> cell, Value<T, C> delegate) {
         super(cell, delegate);
     }
 
-    public WidgetColumn(Cell<C> cell, Value<T, C> delegate, C nullValue) {
-        super(cell, delegate, nullValue);
+    public WidgetColumn(Cell<C> cell, Value<T, C> delegate, C defaultValue) {
+        super(cell, delegate, defaultValue);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class WidgetColumn<T, C extends Widget> extends Column<T, C> {
 
     public C render(Context context, T object) {
       C widget = getValue(object);
-      ((WidgetCell<T,C>)getCell()).render(context, object, widget != null ? widget : nullValue());
+      ((WidgetCell<T,C>)getCell()).render(context, object, widget != null ? widget : defaultValue());
       return widget;
     }
 }

@@ -624,7 +624,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
         C cellValue = column.getValue(rowValue);
         if (cellValue == null && column instanceof Column) {
-            cellValue = ((Column<T, C>) column).nullValue();
+            cellValue = ((Column<T, C>) column).defaultValue();
         }
         boolean cellWasEditing = cell.isEditing(context, parentElem, cellValue);
         if (column instanceof Column) {

@@ -38,15 +38,15 @@ public class TextColumn<T> extends Column<T, String> {
         super(cell);
     }
 
-    public TextColumn(Cell<String> cell, String nullValue) {
-        super(cell, nullValue);
+    public TextColumn(Cell<String> cell, String defaultValue) {
+        super(cell, defaultValue);
     }
 
     public TextColumn(Cell<String> cell, Value<T, String> delegate) {
         super(cell, delegate);
     }
 
-    public TextColumn(Cell<String> cell, Value<T, String> delegate, String nullValue) {
-        super(cell, delegate, nullValue);
+    public TextColumn(Cell<String> cell, Value<T, String> delegate, String defaultValue) {
+        super(cell, delegate, defaultValue);
     }
 }

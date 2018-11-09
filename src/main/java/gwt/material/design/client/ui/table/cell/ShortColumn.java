@@ -38,15 +38,15 @@ public class ShortColumn<T> extends Column<T, Short> {
         super(cell);
     }
 
-    public ShortColumn(Cell<Short> cell, Short nullValue) {
-        super(cell, nullValue);
+    public ShortColumn(Cell<Short> cell, Short defaultValue) {
+        super(cell, defaultValue);
     }
 
     public ShortColumn(Cell<Short> cell, Value<T, Short> delegate) {
         super(cell, delegate);
     }
 
-    public ShortColumn(Cell<Short> cell, Value<T, Short> delegate, Short nullValue) {
-        super(cell, delegate, nullValue);
+    public ShortColumn(Cell<Short> cell, Value<T, Short> delegate, Short defaultValue) {
+        super(cell, delegate, defaultValue);
     }
 }

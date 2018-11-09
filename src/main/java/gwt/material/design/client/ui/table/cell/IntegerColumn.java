@@ -38,15 +38,15 @@ public class IntegerColumn<T> extends Column<T, Integer> {
         super(cell);
     }
 
-    public IntegerColumn(Cell<Integer> cell, Integer nullValue) {
-        super(cell, nullValue);
+    public IntegerColumn(Cell<Integer> cell, Integer defaultValue) {
+        super(cell, defaultValue);
     }
 
     public IntegerColumn(Cell<Integer> cell, Value<T, Integer> delegate) {
         super(cell, delegate);
     }
 
-    public IntegerColumn(Cell<Integer> cell, Value<T, Integer> delegate, Integer nullValue) {
-        super(cell, delegate, nullValue);
+    public IntegerColumn(Cell<Integer> cell, Value<T, Integer> delegate, Integer defaultValue) {
+        super(cell, delegate, defaultValue);
     }
 }

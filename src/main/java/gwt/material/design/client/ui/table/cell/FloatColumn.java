@@ -38,15 +38,15 @@ public class FloatColumn<T> extends Column<T, Float> {
         super(cell);
     }
 
-    public FloatColumn(Cell<Float> cell, Float nullValue) {
-        super(cell, nullValue);
+    public FloatColumn(Cell<Float> cell, Float defaultValue) {
+        super(cell, defaultValue);
     }
 
     public FloatColumn(Cell<Float> cell, Value<T, Float> delegate) {
         super(cell, delegate);
     }
 
-    public FloatColumn(Cell<Float> cell, Value<T, Float> delegate, Float nullValue) {
-        super(cell, delegate, nullValue);
+    public FloatColumn(Cell<Float> cell, Value<T, Float> delegate, Float defaultValue) {
+        super(cell, delegate, defaultValue);
     }
 }

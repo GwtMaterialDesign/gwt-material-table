@@ -20,12 +20,11 @@
 package gwt.material.design.client.ui.table.cell;
 
 import com.google.gwt.cell.client.AbstractSafeHtmlCell;
-import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.text.shared.SafeHtmlRenderer;
 import com.google.gwt.text.shared.SimpleSafeHtmlRenderer;
+import gwt.material.design.client.ui.text.NumberHtmlRenderer;
 
 /**
  * A {@link com.google.gwt.cell.client.Cell} used to render numbers.
@@ -39,18 +38,7 @@ public class NumberCell<T extends Number> extends AbstractSafeHtmlCell<T> {
      * its text.
      */
     public NumberCell() {
-        super(new SafeHtmlRenderer<T>() {
-            @Override
-            public SafeHtml render(T object) {
-                return (object == null) ? SafeHtmlUtils.EMPTY_SAFE_HTML
-                        : SafeHtmlUtils.fromString(NumberFormat.getDecimalFormat().format(object));
-            }
-
-            @Override
-            public void render(T object, SafeHtmlBuilder builder) {
-                builder.append(SafeHtmlUtils.fromString(object.toString()));
-            }
-        });
+        super(new NumberHtmlRenderer<>());
     }
 
     /**
