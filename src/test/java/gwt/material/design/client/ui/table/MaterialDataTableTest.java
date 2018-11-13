@@ -25,10 +25,8 @@ import com.google.gwt.view.client.Range;
 import gwt.material.design.client.DataTableTestCase;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.TableCssName;
-import gwt.material.design.client.constants.Color;
-import gwt.material.design.client.constants.HideOn;
-import gwt.material.design.client.constants.IconType;
-import gwt.material.design.client.constants.TextAlign;
+import gwt.material.design.client.base.density.DisplayDensity;
+import gwt.material.design.client.constants.*;
 import gwt.material.design.client.data.ListDataSource;
 import gwt.material.design.client.data.SelectionType;
 import gwt.material.design.client.data.component.RowComponent;
@@ -553,5 +551,20 @@ public class MaterialDataTableTest<T extends MaterialDataTable<Person>> extends 
 
         // then
         assertTrue(table.getMenu().getWidgetCount() > 0);
+    }
+
+    public void testDensity() throws Exception {
+        // given
+        T table = attachTableWithOnLoad();
+
+        assertEquals(DisplayDensity.DEFAULT, table.getDensity());
+        // Compact Density
+        table.setDensity(DisplayDensity.COMPACT);
+        assertEquals(DisplayDensity.COMPACT, table.getDensity());
+        assertTrue(table.getScaffolding().getTable().getElement().hasClassName(DisplayDensity.COMPACT.getCssName()));
+        // Comfortable Density
+        table.setDensity(DisplayDensity.COMFORTABLE);
+        assertEquals(DisplayDensity.COMFORTABLE, table.getDensity());
+        assertTrue(table.getScaffolding().getTable().getElement().hasClassName(DisplayDensity.COMFORTABLE.getCssName()));
     }
 }
