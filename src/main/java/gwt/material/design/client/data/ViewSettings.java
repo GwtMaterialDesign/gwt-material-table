@@ -20,8 +20,9 @@
 package gwt.material.design.client.data;
 
 import com.google.gwt.dom.client.Style;
+import gwt.material.design.client.base.HasDensity;
 
-public interface ViewSettings {
+public interface ViewSettings extends HasDensity {
 
     /**
      * True if we are using sticky table header.

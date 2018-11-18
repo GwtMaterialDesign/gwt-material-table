@@ -947,7 +947,7 @@ public class AbstractDataViewTest<T extends MaterialDataTable<Person>> extends D
             try {
                 TableData td = (TableData) row.getWidget().getWidget(0);
                 assertTrue(td.getId().equals("col0"));
-                assertEquals(TableCssName.SELECTION, td.getStyleName());
+                assertTrue(td.getElement().hasClassName(TableCssName.SELECTION));
             }
             catch (ClassCastException | IndexOutOfBoundsException ex) {
                 throw new AssertionError("Issue testing selection column.", ex);

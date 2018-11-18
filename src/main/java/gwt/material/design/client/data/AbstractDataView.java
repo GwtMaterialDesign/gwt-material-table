@@ -33,6 +33,9 @@ import com.google.gwt.view.client.ProvidesKey;
 import com.google.gwt.view.client.Range;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.TableCssName;
+import gwt.material.design.client.base.density.Density;
+import gwt.material.design.client.base.density.DisplayDensity;
+import gwt.material.design.client.base.mixin.CssNameMixin;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.data.component.*;
 import gwt.material.design.client.data.component.CategoryComponent.OrphanCategoryComponent;
@@ -46,7 +49,6 @@ import gwt.material.design.client.js.JsTableElement;
 import gwt.material.design.client.js.JsTableSubHeaders;
 import gwt.material.design.client.js.StickyTableOptions;
 import gwt.material.design.client.ui.MaterialCheckBox;
-import gwt.material.design.client.ui.MaterialPanel;
 import gwt.material.design.client.ui.MaterialProgress;
 import gwt.material.design.client.ui.Selectors;
 import gwt.material.design.client.ui.table.*;
@@ -127,11 +129,15 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     private boolean useLoadOverlay;
     private boolean useCategories;
     private SelectionType selectionType = SelectionType.NONE;
+    private Density density = DisplayDensity.DEFAULT;
 
     // Components
     protected final Components<RowComponent<T>> rows = new Components<>();
     protected final Components<RowComponent<T>> pendingRows = new Components<>();
     protected final Components<CategoryComponent> categories = new Components<>();
+
+    // Mixin
+    protected CssNameMixin<Table, Density> densityCssNameMixin;
 
     // Rendering
     protected final List<Column<T, ?>> columns = new ArrayList<>();
@@ -577,6 +583,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             // apply the table-layout style property
             if (tableLayout != null) {
                 table.getElement().getStyle().setTableLayout(tableLayout);
+            }
+
+            if (density != null) {
+                applyDensity(density);
             }
 
             headerRow = new TableRow();
@@ -2325,6 +2335,25 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         }
     }
 
+    @Override
+    public void setDensity(Density density) {
+        this.density = density;
+
+        if (setup) {
+            applyDensity(density);
+        }
+    }
+
+    protected void applyDensity(Density density) {
+        getDensityCssNameMixin().setCssName(density);
+        setRowHeight(density.getValue());
+    }
+
+    @Override
+    public Density getDensity() {
+        return getDensityCssNameMixin().getCssName();
+    }
+
     public boolean isShiftDown() {
         return shiftDown;
     }
@@ -2396,5 +2425,12 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     public boolean hasFrozenColumns() {
         return getLeftFrozenColumns() > 0 || getRightFrozenColumns() > 0;
+    }
+
+    public CssNameMixin<Table, Density> getDensityCssNameMixin() {
+        if (densityCssNameMixin == null) {
+            densityCssNameMixin = new CssNameMixin<>(table);
+        }
+        return densityCssNameMixin;
     }
 }

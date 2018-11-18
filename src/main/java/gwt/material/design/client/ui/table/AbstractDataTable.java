@@ -32,6 +32,7 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.view.client.Range;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.TableCssName;
+import gwt.material.design.client.base.density.Density;
 import gwt.material.design.client.base.mixin.CssNameMixin;
 import gwt.material.design.client.data.*;
 import gwt.material.design.client.data.component.CategoryComponent;
@@ -540,6 +541,16 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     @Override
     public void setTableLayout(Style.TableLayout layout) {
         getView().setTableLayout(layout);
+    }
+
+    @Override
+    public void setDensity(Density density) {
+        getView().setDensity(density);
+    }
+
+    @Override
+    public Density getDensity() {
+        return getView().getDensity();
     }
 
     @Override
