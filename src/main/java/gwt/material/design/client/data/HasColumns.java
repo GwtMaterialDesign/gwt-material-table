@@ -37,7 +37,7 @@ public interface HasColumns<T> {
      *
      * @param column the column object
      */
-    void addColumn(Column<T, ?> column, String header);
+    void addColumn(String header, Column<T, ?> column);
 
     /**
      * Inserts a column into the table at the specified index.
@@ -46,7 +46,7 @@ public interface HasColumns<T> {
      * @param col the column to be added
      * @throws IndexOutOfBoundsException if the index is out of range
      */
-    void insertColumn(int beforeIndex, Column<T, ?> col, String header);
+    void insertColumn(String header, int beforeIndex, Column<T, ?> col);
 
     /**
      * Remove an existing column by index.

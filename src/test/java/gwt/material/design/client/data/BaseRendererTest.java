@@ -162,15 +162,15 @@ public class BaseRendererTest extends DataTableTestCase<MaterialDataTable<Person
         Column<Person, ?> column = dataView.getColumns().get(0);
 
         // when
-        TableHeader th = renderer.drawColumnHeader(column, column.getName(), 0);
+        TableHeader th = renderer.drawColumnHeader(dataView.getContainer(), column, column.name(), 0);
 
         // then
         assertEquals("col0", th.getId());
-        assertEquals(column.getName(), th.getHeader());
-        assertEquals(column.getHideOn(), th.getHideOn());
-        assertEquals(column.getTextAlign(), th.getTextAlign());
-        assertEquals(column.isNumeric(), th.getStyleName().contains(TableCssName.NUMERIC));
-        assertEquals(column.getWidth(), th.getElement().getStyle().getWidth());
+        assertEquals(column.name(), th.getHeader());
+        assertEquals(column.hideOn(), th.getHideOn());
+        assertEquals(column.textAlign(), th.getTextAlign());
+        assertEquals(column.numeric(), th.getStyleName().contains(TableCssName.NUMERIC));
+        assertEquals(column.width(), th.getElement().getStyle().getWidth());
 
         for(Map.Entry<StyleName, String> entry : column.getStyleProperties().entrySet()) {
             assertEquals(entry.getValue(), th.getElement().getStyle().getProperty(entry.getKey().styleName()));

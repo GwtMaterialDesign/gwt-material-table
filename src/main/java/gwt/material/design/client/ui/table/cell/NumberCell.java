@@ -24,30 +24,30 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.text.shared.SafeHtmlRenderer;
 import com.google.gwt.text.shared.SimpleSafeHtmlRenderer;
-import gwt.material.design.client.ui.text.TextHtmlRenderer;
+import gwt.material.design.client.ui.text.NumberHtmlRenderer;
 
 /**
- * A {@link com.google.gwt.cell.client.Cell} used to render text.
+ * A {@link com.google.gwt.cell.client.Cell} used to render numbers.
  *
  * @author Ben Dol
  */
-public class TextCell extends AbstractSafeHtmlCell<String> {
+public class NumberCell<T extends Number> extends AbstractSafeHtmlCell<T> {
 
     /**
      * Constructs a TextCell that uses a {@link SimpleSafeHtmlRenderer} to render
      * its text.
      */
-    public TextCell() {
-        super(new TextHtmlRenderer());
+    public NumberCell() {
+        super(new NumberHtmlRenderer<>());
     }
 
     /**
      * Constructs a TextCell that uses the provided {@link SafeHtmlRenderer} to
      * render its text.
-     * 
+     *
      * @param renderer a {@link SafeHtmlRenderer SafeHtmlRenderer<String>} instance
      */
-    public TextCell(SafeHtmlRenderer<String> renderer) {
+    public NumberCell(SafeHtmlRenderer<T> renderer) {
         super(renderer);
     }
 

@@ -176,51 +176,30 @@ public class DataTableTestCase<T extends AbstractDataTable<Person>> extends GWTT
     }
 
     protected void addSampleColumns(T table) {
-        table.addColumn(new TextColumn<Person>() {
-            @Override
-            public TextAlign textAlign() {
-                return TextAlign.CENTER;
-            }
-            @Override
-            public boolean numeric() {
-                return true;
-            }
-            @Override
-            public String width() {
-                return "200px";
-            }
-            @Override
-            public HideOn hideOn() {
-                return HideOn.HIDE_ON_MED;
-            }
-            @Override
-            public boolean autoSort() {
-                return true;
-            }
-            @Override
-            public Map<StyleName, String> styleProperties() {
-                Map<StyleName, String> styleProps = new HashMap<>();
-                styleProps.put(StyleName.COLOR, "white");
-                return styleProps;
-            }
+        Map<StyleName, String> styleProps = new HashMap<>();
+        styleProps.put(StyleName.COLOR, "white");
+
+        table.addColumn("First Name", new TextColumn<Person>() {
             @Override
             public String getValue(Person object) {
                 return object.getFirstName();
             }
-        }, "First Name");
+        }
+        .textAlign(TextAlign.CENTER)
+        .numeric(true)
+        .width("200px")
+        .hideOn(HideOn.HIDE_ON_MED)
+        .autoSort(true)
+        .styleProperties(styleProps));
 
-        table.addColumn(new TextColumn<Person>() {
+        table.addColumn("Last Name", new TextColumn<Person>() {
             @Override
             public String getValue(Person object) {
                 return object.getLastName();
             }
-        }, "Last Name");
+        });
 
         table.addColumn(new WidgetColumn<Person, MaterialBadge>() {
-            @Override
-            public TextAlign textAlign() {
-                return TextAlign.CENTER;
-            }
             @Override
             public MaterialBadge getValue(Person object) {
                 MaterialBadge badge = new MaterialBadge();
@@ -229,7 +208,7 @@ public class DataTableTestCase<T extends AbstractDataTable<Person>> extends GWTT
                 badge.setLayoutPosition(Style.Position.RELATIVE);
                 return badge;
             }
-        });
+        }.textAlign(TextAlign.CENTER));
     }
 
     public static void assertValidJQueryElement(JQueryElement element) {
@@ -238,9 +217,9 @@ public class DataTableTestCase<T extends AbstractDataTable<Person>> extends GWTT
     }
 
     public static <T> void printRows(Components<RowComponent<T>> rowComponents) {
-        String msg = "[";
+        StringBuilder msg = new StringBuilder("[");
         for(RowComponent<T> row : rowComponents) {
-            msg += row.getData().toString() + ", ";
+            msg.append(row.getData().toString()).append(", ");
         }
         logger.severe(msg + "]");
     }
