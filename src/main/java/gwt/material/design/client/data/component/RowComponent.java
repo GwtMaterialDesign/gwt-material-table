@@ -26,16 +26,21 @@ import gwt.material.design.jquery.client.api.JQueryElement;
 import gwt.material.design.client.ui.table.TableRow;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
  * @author Ben Dol
  */
-public class RowComponent<T> extends Component<TableRow> implements HasEnabled {
+public class RowComponent<T> extends Component<TableRow> implements Comparable<T>, HasEnabled {
+    private Comparator<T> DEFAULT_COMPARATOR = (o1, o2) -> o1.toString().compareToIgnoreCase(o2.toString());
+
     private T data;
     private int index;
     private final String categoryName;
     private final DataView dataView;
+
+    private Comparator<T> comparator;
 
     public RowComponent(RowComponent<T> clone) {
         super(clone.getWidget(), clone.isRedraw());
@@ -134,6 +139,31 @@ public class RowComponent<T> extends Component<TableRow> implements HasEnabled {
             }
         }
         return data;
+    }
+
+    public Comparator<T> getComparator() {
+        return comparator;
+    }
+
+    public void setComparator(Comparator<T> comparator) {
+        this.comparator = comparator;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public int compareTo(T o) {
+        T data = getData();
+        // Favour the comparable object if no comparator is provided.
+        // Fallback to the default comparator otherwise.
+        if (comparator == null) {
+            if (data instanceof Comparable) {
+                return ((Comparable) data).compareTo(o);
+            } else {
+                return DEFAULT_COMPARATOR.compare(getData(), o);
+            }
+        } else {
+            return comparator.compare(getData(), o);
+        }
     }
 
     @Override

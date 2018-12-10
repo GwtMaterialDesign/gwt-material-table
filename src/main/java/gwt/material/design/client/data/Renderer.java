@@ -20,6 +20,7 @@
 package gwt.material.design.client.data;
 
 import com.google.gwt.cell.client.Cell.Context;
+import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.constants.IconSize;
 import gwt.material.design.client.constants.IconType;
@@ -50,7 +51,7 @@ public interface Renderer<T> {
 
     MaterialWidget drawColumn(TableRow row, Context context, T rowValue, Column<T, ?> column, int beforeIndex, boolean visible);
 
-    TableHeader drawColumnHeader(Column<T, ?> column, String header, int index);
+    TableHeader drawColumnHeader(Widget container, Column<T, ?> column, String header, int index);
 
     void drawSortIcon(TableHeader th, SortContext<T> sortContext);
 

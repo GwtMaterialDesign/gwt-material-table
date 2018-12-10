@@ -26,6 +26,7 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.base.constants.StyleName;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.constants.HideOn;
@@ -109,18 +110,16 @@ public class BaseRenderer<T> implements Renderer<T> {
             if(!dataView.getSelectionType().equals(SelectionType.NONE)) {
                 TableData selection = drawSelectionCell();
                 if(rowComponent.hasLeftFrozen()) {
+                    FrozenProperties frozenProperties = new FrozenProperties("42px", "60px")
+                        .setStyleProperty(StyleName.PADDING_TOP, "15px")
+                        .setStyleProperty(StyleName.PADDING_LEFT, "12px");
+
                     drawColumnFreeze(selection, rowComponent, headers.get(0), new TextColumn<T>() {
-                        @Override
-                        public FrozenProperties frozenProperties() {
-                            return new FrozenProperties("42px", "60px")
-                                .setStyleProperty(StyleName.PADDING_TOP, "15px")
-                                .setStyleProperty(StyleName.PADDING_LEFT, "12px");
-                        }
                         @Override
                         public String getValue(T object) {
                             return null; // not needed for emulated
                         }
-                    }, FrozenSide.LEFT);
+                    }.frozenProperties(frozenProperties), FrozenSide.LEFT);
                 }
                 row.add(selection);
             }
@@ -138,7 +137,7 @@ public class BaseRenderer<T> implements Renderer<T> {
                 Context context = new Context(rowComponent.getIndex(), colIndex, valueKey);
                 Column<T, ?> column = columns.get(c);
                 TableData td = drawColumn(row, context, data, column, colIndex, isHeaderVisible(c));
-                FrozenProperties frozenProps = column.getFrozenProperties();
+                FrozenProperties frozenProps = column.frozenProperties();
                 if(frozenProps != null) {
                     drawColumnFreeze(td, rowComponent, headers.get(colIndex), column, frozenProps.getSide());
                 }
@@ -239,16 +238,16 @@ public class BaseRenderer<T> implements Renderer<T> {
             data.add(wrapper);
 
             data.setId("col" + beforeIndex);
-            data.setDataTitle(column.getName());
-            HideOn hideOn = column.getHideOn();
+            data.setDataTitle(column.name());
+            HideOn hideOn = column.hideOn();
             if(hideOn != null) {
                 data.setHideOn(hideOn);
             }
-            TextAlign textAlign = column.getTextAlign();
+            TextAlign textAlign = column.textAlign();
             if(textAlign != null) {
                 data.setTextAlign(textAlign);
             }
-            if(column.isNumeric()) {
+            if(column.numeric()) {
                 data.addStyleName(TableCssName.NUMERIC);
             }
 
@@ -269,22 +268,22 @@ public class BaseRenderer<T> implements Renderer<T> {
     }
 
     @Override
-    public TableHeader drawColumnHeader(Column<T, ?> column, String header, int index) {
+    public TableHeader drawColumnHeader(Widget container, Column<T, ?> column, String header, int index) {
         MaterialIcon sortIcon = new MaterialIcon();
         sortIcon.setIconSize(sortIconSize);
 
         TableHeader th = new TableHeader(sortIcon);
         th.setId("col" + index);
         th.setHeader(header);
-        HideOn hideOn = column.getHideOn();
+        HideOn hideOn = column.hideOn();
         if(hideOn != null) {
             th.setHideOn(hideOn);
         }
-        TextAlign textAlign = column.getTextAlign();
+        TextAlign textAlign = column.textAlign();
         if(textAlign != null) {
             th.setTextAlign(textAlign);
         }
-        if(column.isNumeric()) {
+        if(column.numeric()) {
             th.addStyleName(TableCssName.NUMERIC);
         }
 
@@ -295,10 +294,17 @@ public class BaseRenderer<T> implements Renderer<T> {
             styleProps.forEach((s, v) -> style.setProperty(s.styleName(), v));
         }
 
-        // Set the headers width
-        String width = column.getWidth();
-        if(width != null) {
-            th.setWidth(width);
+        if (!column.widthPixelToPercent()) {
+            // Set the headers width
+            String width = column.width();
+            if (width != null) {
+                th.setWidth(width);
+            }
+        } else {
+            int rowWidth = container.getOffsetWidth();
+            int columnWidth = column.getWidthPixels();
+            int percent = (columnWidth * 100) / rowWidth;
+            th.setWidth(percent + "%");
         }
         th.setVisible(true);
         return th;
@@ -370,7 +376,7 @@ public class BaseRenderer<T> implements Renderer<T> {
 
                 if(column != null) {
                     // Apply the style properties
-                    FrozenProperties frozenProps = column.getFrozenProperties();
+                    FrozenProperties frozenProps = column.frozenProperties();
                     if(frozenProps != null) {
                         Style styleTd = td.getElement().getStyle();
                         frozenProps.forEach((s, v) -> styleTd.setProperty(s.styleName(), v));
@@ -380,11 +386,11 @@ public class BaseRenderer<T> implements Renderer<T> {
                     }
                 }
 
-                if((column != null && column.getFrozenProperties().isLeft()) || side.equals(FrozenSide.LEFT)) {
+                if((column != null && column.frozenProperties().isLeft()) || side.equals(FrozenSide.LEFT)) {
                     // Left freeze
                     td.setLeft(left);
                     header.setLeft(left);
-                } else if((column != null && column.getFrozenProperties().isRight()) || side.equals(FrozenSide.RIGHT)) {
+                } else if((column != null && column.frozenProperties().isRight()) || side.equals(FrozenSide.RIGHT)) {
                     // Right freeze
                     td.setRight(right);
                     td.$this().css("left", "auto");

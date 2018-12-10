@@ -22,31 +22,31 @@ package gwt.material.design.client.ui.table.cell;
 import com.google.gwt.cell.client.Cell;
 
 /**
- * A column that displays its contents with a {@link TextCell} and does not make
+ * A column that displays its contents with a {@link NumberCell} and does not make
  * use of view data.
  *
  * @param <T> the row type
  * @author Ben Dol
  */
-public class TextColumn<T> extends Column<T, String> {
+public class LongColumn<T> extends Column<T, Long> {
 
-    public TextColumn() {
-        super(new TextCell());
+    public LongColumn() {
+        super(new NumberCell<>());
     }
 
-    public TextColumn(Cell<String> cell) {
+    public LongColumn(Cell<Long> cell) {
         super(cell);
     }
 
-    public TextColumn(Cell<String> cell, String defaultValue) {
+    public LongColumn(Cell<Long> cell, Long defaultValue) {
         super(cell, defaultValue);
     }
 
-    public TextColumn(Cell<String> cell, Value<T, String> delegate) {
+    public LongColumn(Cell<Long> cell, Value<T, Long> delegate) {
         super(cell, delegate);
     }
 
-    public TextColumn(Cell<String> cell, Value<T, String> delegate, String defaultValue) {
+    public LongColumn(Cell<Long> cell, Value<T, Long> delegate, Long defaultValue) {
         super(cell, delegate, defaultValue);
     }
 }

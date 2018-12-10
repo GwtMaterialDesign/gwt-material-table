@@ -60,6 +60,8 @@ public class FrozenProperties extends HashMap<StyleName, String> {
     private FrozenSide side = FrozenSide.NONE;
     private Map<StyleName, String> headerStyleProps = new HashMap<>();
 
+    protected FrozenProperties() {}
+
     /**
      * The frozen column width and header cell height must be defined.
      * The row cells that are made frozen will no longer follow the rules of the tables row.
