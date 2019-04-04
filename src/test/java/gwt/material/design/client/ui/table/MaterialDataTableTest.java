@@ -132,7 +132,7 @@ public class MaterialDataTableTest<T extends MaterialDataTable<Person>> extends 
         MaterialDropDown dropDown = table.getMenu();
         assertEquals(3, dropDown.getWidgetCount());
         int index = 0;
-        for (Widget w : dropDown) {
+        for (Widget w : dropDown.getChildren()) {
             assertTrue(w instanceof MaterialCheckBox);
             MaterialCheckBox checkBox = (MaterialCheckBox) w;
             assertEquals(checkBox.getText(), table.getColumns().get(index).name());
