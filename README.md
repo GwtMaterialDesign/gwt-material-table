@@ -1,4 +1,4 @@
-<img src="http://i.imgur.com/SYbHcYN.png" />
+<img src="https://i.imgur.com/AKO3awU.png" width="120px" />
 
 # GWT Material Table [![Build Status](https://travis-ci.org/GwtMaterialDesign/gwt-material-table.svg?branch=master)](https://travis-ci.org/GwtMaterialDesign/gwt-material-table)
 
