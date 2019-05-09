@@ -19,6 +19,7 @@
  */
 package gwt.material.design.client.ui.table.cell;
 
+import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.Widget;
@@ -30,7 +31,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @param <T> the row type
  * @author Ben Dol
  */
-public abstract class WidgetColumn<T, C extends Widget> extends Column<T, C> {
+public class WidgetColumn<T, C extends Widget> extends Column<T, C> {
 
     static class BlankWidgetCell<T, C extends Widget> extends WidgetCell<T, C> {
         @Override
@@ -41,18 +42,30 @@ public abstract class WidgetColumn<T, C extends Widget> extends Column<T, C> {
         super(new BlankWidgetCell<T, C>());
     }
 
-    public WidgetColumn(WidgetCell<T, C> cell) {
-      super(cell);
+    public WidgetColumn(Cell<C> cell) {
+        super(cell);
+    }
+
+    public WidgetColumn(Cell<C> cell, C defaultValue) {
+        super(cell, defaultValue);
+    }
+
+    public WidgetColumn(Cell<C> cell, Value<T, C> delegate) {
+        super(cell, delegate);
+    }
+
+    public WidgetColumn(Cell<C> cell, Value<T, C> delegate, C defaultValue) {
+        super(cell, delegate, defaultValue);
     }
 
     @Override
-    public void render(Context context, T object, SafeHtmlBuilder sb) {
+    public WidgetColumn<T, C> render(Context context, T object, SafeHtmlBuilder sb) {
       throw new UnsupportedOperationException("Use WidgetColumn#render(context, object).");
     }
 
     public C render(Context context, T object) {
       C widget = getValue(object);
-      ((WidgetCell<T,C>)getCell()).render(context, object, widget);
+      ((WidgetCell<T,C>)getCell()).render(context, object, widget != null ? widget : defaultValue());
       return widget;
     }
 }

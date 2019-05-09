@@ -24,12 +24,11 @@ import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.ValueUpdater;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import gwt.material.design.client.base.HasHideOn;
-import gwt.material.design.client.base.HasTextAlign;
 import gwt.material.design.client.base.constants.StyleName;
 import gwt.material.design.client.constants.HideOn;
 import gwt.material.design.client.constants.TextAlign;
@@ -48,12 +47,18 @@ import java.util.Map;
  *
  * @author Ben Dol
  */
-public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextAlign {
+public abstract class Column<T, C> implements HasCell<T, C> {
+
+    public interface Value<T, C> {
+        C value(T obj);
+    }
 
     /**
      * The {@link Cell} responsible for rendering items in the column.
      */
     private final Cell<C> cell;
+    private int index;
+    private int widthPixels;
     private boolean dynamicWidth;
 
     /**
@@ -61,39 +66,45 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
      */
     private FieldUpdater<T, C> fieldUpdater;
 
-    private boolean isDefaultSortAscending = true;
-    private boolean isNumeric = false;
-    private boolean autoSort = false;
+    private boolean defaultSortAscending = true;
+    private boolean numeric;
+    private boolean autoSort;
+    private boolean sortable;
+    private boolean widthToPercent;
     private String name;
     private String width;
     private HideOn hideOn;
     private TextAlign textAlign;
-
     private FrozenProperties frozenProps;
     private Map<StyleName, String> styleProps;
-
     private Comparator<? super RowComponent<T>> sortComparator;
-    private int index;
+
+    private C defaultValue;
+    private Value<T, C> delegate;
 
     /**
      * Construct a new Column with a given {@link Cell}.
-     * 
+     *
      * @param cell the Cell used by this Column
      */
     public Column(Cell<C> cell) {
         this.cell = cell;
+    }
 
-        setFieldUpdater(fieldUpdater());
-        setDefaultSortAscending(defaultSortAscending());
-        setAutoSort(autoSort());
-        setNumeric(numeric());
-        setName(name());
-        setWidth(width());
-        setHideOn(hideOn());
-        setTextAlign(textAlign());
-        setFrozenProperties(frozenProperties());
-        setStyleProperties(styleProperties());
-        setSortComparator(sortComparator());
+    public Column(Cell<C> cell, C defaultValue) {
+        this.cell = cell;
+        this.defaultValue = defaultValue;
+    }
+
+    public Column(Cell<C> cell, Value<T, C> delegate) {
+        this(cell);
+        this.delegate = delegate;
+    }
+
+    public Column(Cell<C> cell, Value<T, C> delegate, C defaultValue) {
+        this(cell);
+        this.delegate = delegate;
+        this.defaultValue = defaultValue;
     }
 
     /**
@@ -106,36 +117,56 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
      */
     public void onBrowserEvent(Context context, Element elem, final T object, NativeEvent event) {
         final int index = context.getIndex();
-        ValueUpdater<C> valueUpdater = (fieldUpdater == null) ? null : (ValueUpdater<C>) value -> {
+        ValueUpdater<C> valueUpdater = (fieldUpdater == null) ? null : value -> {
             fieldUpdater.update(index, object, value);
         };
-        cell.onBrowserEvent(context, elem, getValue(object), event, valueUpdater);
+        C value = getValue(object);
+        cell.onBrowserEvent(context, elem, value != null ? value : defaultValue, event, valueUpdater);
     }
 
     /**
      * Returns the {@link Cell} responsible for rendering items in the column.
-     * 
+     *
      * @return a Cell
      */
     @Override
     public final Cell<C> getCell() {
         return cell;
     }
-    
+
     /**
      * Returns the column value from within the underlying data object.
      */
     @Override
-    public abstract C getValue(T object);
+    public C getValue(T object) {
+        if (delegate != null) {
+            C value = delegate.value(object);
+            return value != null ? value : defaultValue;
+        } else if (defaultValue != null) {
+            return defaultValue;
+        } else {
+            throw new UnsupportedOperationException("No value delegate defined and getValue was not overridden");
+        }
+    }
+
+    public Value<T, C> delegate() {
+        return delegate;
+    }
+
+    public void delegate(Value<T, C> delegate) {
+        this.delegate = delegate;
+    }
 
     /**
      * Render the object into the cell.
-     * 
+     *
      * @param object the object to render
      * @param sb the buffer to render into
      */
-    public void render(Context context, T object, SafeHtmlBuilder sb) {
-        cell.render(context, getValue(object), sb);
+    public Column<T, C> render(Context context, T object, SafeHtmlBuilder sb) {
+        C value = getValue(object);
+        cell.render(context, value != null ? value : defaultValue, sb);
+        return this;
     }
 
     /**
@@ -143,53 +174,40 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
      *
      * @param name name of the column from the data store's perspective
      */
-    public final void setName(String name) {
+    public Column<T, C> name(String name) {
         this.name = name;
+        return this;
     }
 
     /**
      * @return the database name of the column, or null if it's never been set
      */
-    public final String getName() {
-        return name;
-    }
-
-    /**
-     * @return the database name of the column, or null if it's never been set
-     */
-    public String name() { return ""; }
+    public final String name() { return this.name; }
 
     /**
      * Check if the default sort order of the column is ascending or descending.
      *
      * @return true if default sort is ascending, false if not
      */
-    public final boolean isDefaultSortAscending() {
-        return isDefaultSortAscending;
+    public final boolean defaultSortAscending() {
+        return defaultSortAscending;
     }
 
     /**
      * Set whether or not the default sort order is ascending.
-     * 
-     * @param isAscending true to set the default order to ascending, false for
-     *                    descending
-     */
-    public final void setDefaultSortAscending(boolean isAscending) {
-        this.isDefaultSortAscending = isAscending;
-    }
-
-    /**
-     * Check if the default sort order of the column is ascending or descending.
      *
-     * @return true if default sort is ascending, false if not
+     * @param defaultSortAscending true to set the default order to ascending, false for descending.
      */
-    public boolean defaultSortAscending() { return true; }
+    public Column<T, C> defaultSortAscending(boolean defaultSortAscending) {
+        this.defaultSortAscending = defaultSortAscending;
+        return this;
+    }
 
     /**
      * Is this column auto sorting when rendered.
      * @return true if this column is auto sorted.
      */
-    public final boolean isAutoSort() {
+    public final boolean autoSort() {
         return autoSort;
     }
 
@@ -197,75 +215,79 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
      * Make this column auto sort on rendering, if multiple columns are auto
      * sorting it will be based on the first one set to auto sort.
      */
-    public final void setAutoSort(boolean autoSort) {
+    public Column<T, C> autoSort(boolean autoSort) {
         this.autoSort = autoSort;
+        return this;
     }
 
-    public boolean autoSort() { return false; }
+    public final Comparator<? super RowComponent<T>> sortComparator() {
+        if (sortComparator == null) {
+            sortComparator = (o1, o2) -> {
+                return o1.compareTo(o2.getData());
+            };
+        }
+        return sortComparator;
+    }
+
+    public Column<T, C> sortComparator(Comparator<? super RowComponent<T>> sortComparator) {
+        this.sortComparator = sortComparator;
+        return this;
+    }
+
+    public Column<T, C> sortable(boolean sortable) {
+        this.sortable = sortable;
+        return this;
+    }
 
     /**
      * Check if the column is sortable.
      *
      * @return true if sortable, false if not
      */
-    public boolean isSortable() {
-        return getSortComparator() != null;
+    public boolean sortable() {
+        return sortable;
     }
-
-    public final void setSortComparator(Comparator<? super RowComponent<T>> sortComparator) {
-        this.sortComparator = sortComparator;
-    }
-
-    public final Comparator<? super RowComponent<T>> getSortComparator() {
-        return sortComparator;
-    }
-
-    public Comparator<? super RowComponent<T>> sortComparator() { return null; }
 
     @Override
     public final FieldUpdater<T, C> getFieldUpdater() {
         return fieldUpdater;
     }
 
-    public final void setFieldUpdater(FieldUpdater<T, C> fieldUpdater) {
+    public final FieldUpdater<T, C> fieldUpdater() {
+        return fieldUpdater;
+    }
+
+    public Column<T, C> fieldUpdater(FieldUpdater<T, C> fieldUpdater) {
         this.fieldUpdater = fieldUpdater;
+        return this;
     }
 
-    public FieldUpdater<T, C> fieldUpdater() { return null; }
-
-    public final boolean isNumeric() {
-        return isNumeric;
+    public final boolean numeric() {
+        return numeric;
     }
 
-    public final void setNumeric(boolean numeric) {
-        isNumeric = numeric;
+    public Column<T, C> numeric(boolean numeric) {
+        this.numeric = numeric;
+        return this;
     }
 
-    public boolean numeric() { return false; }
-
-    @Override
-    public final void setHideOn(HideOn hideOn) {
+    public Column<T, C> hideOn(HideOn hideOn) {
         this.hideOn = hideOn;
+        return this;
     }
 
-    @Override
-    public final HideOn getHideOn() {
+    public final HideOn hideOn() {
         return hideOn;
     }
 
-    public HideOn hideOn() { return null; }
-
-    @Override
-    public final void setTextAlign(TextAlign align) {
-        this.textAlign = align;
+    public Column<T, C> textAlign(TextAlign textAlign) {
+        this.textAlign = textAlign;
+        return this;
     }
 
-    @Override
-    public final TextAlign getTextAlign() {
+    public final TextAlign textAlign() {
         return textAlign;
     }
-
-    public TextAlign textAlign() { return null; }
 
     /**
      * Set a style property using its name as the key. Please ensure the style name and value
@@ -274,11 +296,12 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
      * @param styleName the style name as seen here {@link Style#STYLE_Z_INDEX} for example.
      * @param value the string value required for the given style property.
      */
-    public final void setStyleProperty(StyleName styleName, String value) {
+    public Column<T, C> styleProperty(StyleName styleName, String value) {
         if(styleProps == null) {
             styleProps = new HashMap<>();
         }
         styleProps.put(styleName, value);
+        return this;
     }
 
     /**
@@ -286,7 +309,7 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
      * @param styleName the styles name as represented in a {@link Style} class.
      * @return null if the style property is not set.
      */
-    public final String getStyleProperty(StyleName styleName) {
+    public String styleProperty(StyleName styleName) {
         return styleProps!=null ? styleProps.get(styleName) : null;
     }
 
@@ -301,27 +324,19 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
     /**
      * Set the style properties map.
      */
-    public final void setStyleProperties(Map<StyleName, String> styleProps) {
+    public Column<T, C> styleProperties(Map<StyleName, String> styleProps) {
         this.styleProps = styleProps;
+        return this;
     }
 
-    public Map<StyleName, String> styleProperties() { return null;}
-
-    public final void setFrozenProperties(FrozenProperties frozenProps) {
+    public Column<T, C> frozenProperties(FrozenProperties frozenProps) {
         if(frozenProps != null) {
             // Width is a required property for frozen columns
-            setWidth(frozenProps.getStyleProperty(StyleName.WIDTH));
+            width(frozenProps.getStyleProperty(StyleName.WIDTH));
         }
 
         this.frozenProps = frozenProps;
-    }
-
-    public final FrozenProperties getFrozenProperties() {
-        return frozenProps;
-    }
-
-    public final boolean isFrozenColumn() {
-        return frozenProps != null;
+        return this;
     }
 
     /**
@@ -349,31 +364,78 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
      *
      * Columns must be aligned with each other without any unfrozen columns in between.
      */
-    public FrozenProperties frozenProperties() { return null; }
+    public final FrozenProperties frozenProperties() { return frozenProps; }
+
+    public final boolean isFrozenColumn() {
+        return frozenProps != null;
+    }
+
+    public Column<T, C> width(int width) {
+        return width(width + "px");
+    }
 
     /**
      * Set the columns header width.
      */
-    public final void setWidth(String width) {
+    public Column<T, C> width(String width) {
         this.width = width;
-        this.dynamicWidth = width != null && width.contains("%");
+
+        if (widthPixelToPercent()) {
+            if (!extractWidthPixelValues()) {
+                // turn off width pixel percent calculation
+                widthPixels = -1;
+                widthPixelToPercent(false);
+            }
+        } else {
+            this.dynamicWidth = width.contains("%");
+        }
+        return this;
+    }
+
+    private boolean extractWidthPixelValues() {
+        try {
+            if (width != null && width.contains("px")) {
+                widthPixels = Integer.valueOf(width.substring(0, width.indexOf("px")));
+                return true;
+            }
+        } catch (NumberFormatException ex) {
+            GWT.log("Could not cast width to an integer.", ex);
+        }
+        return false;
     }
 
     /**
      * Get the columns header width.
      * @return null if not defined.
      */
-    public final String getWidth() {
+    public final String width() {
         return width;
     }
 
-    public String width() { return null; }
+    /**
+     * Automatically calculate percentages using the {@link #width(String)} pixel configuration.
+     * Note that this won't work if the width configuration isn't <b>px</b>.
+     */
+    public Column<T, C> widthPixelToPercent(boolean widthPixelToPercent) {
+        this.widthToPercent = widthPixelToPercent;
 
-    public void setIndex(int index) {
+        if (this.dynamicWidth && !widthPixelToPercent && !width.contains("%")) {
+            this.dynamicWidth = false;
+        }
+
+        extractWidthPixelValues();
+        return this;
+    }
+
+    public boolean widthPixelToPercent() {
+        return widthToPercent;
+    }
+
+    public final void setIndex(int index) {
         this.index = index;
     }
 
-    public int getIndex() {
+    public final int getIndex() {
         return index;
     }
 
@@ -385,20 +447,38 @@ public abstract class Column<T, C> implements HasCell<T, C>, HasHideOn, HasTextA
         return dynamicWidth;
     }
 
+    public void setWidthPixels(int widthPixels) {
+        this.widthPixels = widthPixels;
+    }
+
+    public int getWidthPixels() {
+        return widthPixels;
+    }
+
+    public C defaultValue() {
+        return defaultValue;
+    }
+
+    public Column<T, C> defaultValue(C defaultValue) {
+        this.defaultValue = defaultValue;
+        return this;
+    }
+
     @Override
     public String toString() {
         return "Column{" +
-            "cell=" + cell +
-            ", fieldUpdater=" + fieldUpdater +
-            ", isDefaultSortAscending=" + isDefaultSortAscending +
-            ", isNumeric=" + isNumeric +
-            ", name='" + name + '\'' +
-            ", width='" + width + '\'' +
-            ", hideOn=" + hideOn +
-            ", textAlign=" + textAlign +
-            ", styleProps=" + styleProps +
-            ", frozenProps=" + frozenProps +
-            ", sortComparator=" + sortComparator +
-            '}';
+                "cell=" + cell +
+                ", index=" + index +
+                ", fieldUpdater=" + fieldUpdater +
+                ", defaultSortAscending=" + defaultSortAscending +
+                ", numeric=" + numeric +
+                ", autoSort=" + autoSort +
+                ", name='" + name + '\'' +
+                ", width='" + width + '\'' +
+                ", hideOn=" + hideOn +
+                ", textAlign=" + textAlign +
+                ", frozenProps=" + frozenProps +
+                ", styleProps=" + styleProps +
+                '}';
     }
 }

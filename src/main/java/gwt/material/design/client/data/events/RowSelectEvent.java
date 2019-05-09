@@ -32,15 +32,21 @@ public class RowSelectEvent<T> extends RowEvent<T, RowSelectHandler<T>> {
     }
 
     private final boolean selected;
+    private final Event nativeEvent;
 
     public RowSelectEvent(Event event, T model, Element row, boolean selected) {
         super(event, model, row);
 
         this.selected = selected;
+        this.nativeEvent = event;
     }
 
     public boolean isSelected() {
         return selected;
+    }
+
+    public Event getNativeEvent() {
+        return nativeEvent;
     }
 
     @Override

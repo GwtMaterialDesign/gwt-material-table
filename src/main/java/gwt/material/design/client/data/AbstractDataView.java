@@ -33,6 +33,9 @@ import com.google.gwt.view.client.ProvidesKey;
 import com.google.gwt.view.client.Range;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.TableCssName;
+import gwt.material.design.client.base.density.Density;
+import gwt.material.design.client.base.density.DisplayDensity;
+import gwt.material.design.client.base.mixin.CssNameMixin;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.data.component.*;
 import gwt.material.design.client.data.component.CategoryComponent.OrphanCategoryComponent;
@@ -46,7 +49,6 @@ import gwt.material.design.client.js.JsTableElement;
 import gwt.material.design.client.js.JsTableSubHeaders;
 import gwt.material.design.client.js.StickyTableOptions;
 import gwt.material.design.client.ui.MaterialCheckBox;
-import gwt.material.design.client.ui.MaterialPanel;
 import gwt.material.design.client.ui.MaterialProgress;
 import gwt.material.design.client.ui.Selectors;
 import gwt.material.design.client.ui.table.*;
@@ -127,11 +129,15 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     private boolean useLoadOverlay;
     private boolean useCategories;
     private SelectionType selectionType = SelectionType.NONE;
+    private Density density = DisplayDensity.DEFAULT;
 
     // Components
     protected final Components<RowComponent<T>> rows = new Components<>();
     protected final Components<RowComponent<T>> pendingRows = new Components<>();
-    protected final Components<CategoryComponent> categories = new Components<>();
+    protected final Categories categories = new Categories();
+
+    // Mixin
+    protected CssNameMixin<Table, Density> densityCssNameMixin;
 
     // Rendering
     protected final List<Column<T, ?>> columns = new ArrayList<>();
@@ -337,7 +343,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             clearRows(false);
 
             if (isUseCategories()) {
-                List<CategoryComponent> openCategories = getOpenCategories();
+                Categories openCategories = getOpenCategories();
                 categories.clearWidgets();
 
                 for (CategoryComponent category : categories) {
@@ -494,9 +500,9 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     public void renderColumn(Column<T, ?> column) {
         int index = column.getIndex() + getColumnOffset();
 
-        TableHeader th = renderer.drawColumnHeader(column, column.getName(), index);
+        TableHeader th = renderer.drawColumnHeader(getContainer(), column, column.name(), index);
         if (th != null) {
-            if (column.isSortable()) {
+            if (column.sortable()) {
                 th.$this().on("click", e -> {
                     sort(rows, th, column, index);
                     return true;
@@ -577,6 +583,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             // apply the table-layout style property
             if (tableLayout != null) {
                 table.getElement().getStyle().setTableLayout(tableLayout);
+            }
+
+            if (density != null) {
+                applyDensity(density);
             }
 
             headerRow = new TableRow();
@@ -992,25 +1002,25 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     @Override
     public void addColumn(Column<T, ?> column) {
-        addColumn(column, "");
+        addColumn("", column);
     }
 
     @Override
-    public void addColumn(Column<T, ?> column, String header) {
-        insertColumn(columns.size(), column, header);
+    public void addColumn(String header, Column<T, ?> column) {
+        insertColumn(header, columns.size(), column);
     }
 
     @Override
-    public void insertColumn(int beforeIndex, Column<T, ?> column, String header) {
+    public void insertColumn(String header, int beforeIndex, Column<T, ?> column) {
         // Allow insert at the end.
         if (beforeIndex != getColumnCount()) {
             checkColumnBounds(beforeIndex);
         }
 
-        String name = column.getName();
+        String name = column.name();
         if(name == null || name.isEmpty()) {
             // Set the columns name
-            column.setName(header);
+            column.name(header);
         }
 
         if(columns.size() < beforeIndex) {
@@ -1140,7 +1150,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         }
 
         Comparator<? super RowComponent<T>> comparator = sortContext != null
-            ? sortContext.getSortColumn().getSortComparator() : null;
+            ? sortContext.getSortColumn().sortComparator() : null;
         if (isUseCategories()) {
             // Split row data into categories
             Map<String, List<RowComponent<T>>> splitMap = new HashMap<>();
@@ -1606,7 +1616,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     /**
-     * Check and apply the auto sort column {@link Column#setAutoSort(boolean)}
+     * Check and apply the auto sort column {@link Column#autoSort(boolean)}
      * if no sort has been invoked.
      * @return true if the auto sort column is assigned.
      */
@@ -1632,7 +1642,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected Column<T, ?> getAutoSortColumn() {
         if(autoSortColumn == null) {
             for (Column<T, ?> column : columns) {
-                if (column.isAutoSort()) {
+                if (column.autoSort()) {
                     autoSortColumn = column;
                     return autoSortColumn;
                 }
@@ -1791,15 +1801,15 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
-    public List<CategoryComponent> getCategories() {
-        return Collections.unmodifiableList(categories);
+    public Categories getCategories() {
+        return new Categories(categories);
     }
 
     @Override
-    public List<CategoryComponent> getOpenCategories() {
-        List<CategoryComponent> openCategories = null;
+    public Categories getOpenCategories() {
+        Categories openCategories = null;
         if(isUseCategories()) {
-            openCategories = new ArrayList<>();
+            openCategories = new Categories();
             for (CategoryComponent category : categories) {
                 TableSubHeader element = category.getWidget();
                 if (element != null && element.isOpen()) {
@@ -1921,8 +1931,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         return byCategory;
     }
 
-    protected List<CategoryComponent> getHiddenCategories() {
-        List<CategoryComponent> hidden = new ArrayList<>();
+    protected Categories getHiddenCategories() {
+        Categories hidden = new Categories();
         for(CategoryComponent category : categories) {
             TableSubHeader element = category.getWidget();
             if(element != null && !element.isVisible()) {
@@ -1932,8 +1942,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         return hidden;
     }
 
-    protected List<CategoryComponent> getVisibleCategories() {
-        List<CategoryComponent> visible = new ArrayList<>();
+    protected Categories getVisibleCategories() {
+        Categories visible = new Categories();
         for(CategoryComponent category : categories) {
             TableSubHeader element = category.getWidget();
             if(element != null && element.isVisible()) {
@@ -1943,8 +1953,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         return visible;
     }
 
-    protected List<CategoryComponent> getPassedCategories() {
-        List<CategoryComponent> passed = new ArrayList<>();
+    protected Categories getPassedCategories() {
+        Categories passed = new Categories();
         int scrollTop = tableBody.scrollTop();
         for(CategoryComponent category : categories) {
             if(isCategoryEmpty(category) && scrollTop > (getRowHeight() + thead.$this().height())) {
@@ -1955,7 +1965,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             }
         }
         // No categories are populated.
-        return new ArrayList<>();
+        return new Categories();
     }
 
     @Override
@@ -2199,6 +2209,20 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         }
     }
 
+    @Override
+    public void openAllCategories() {
+        if (isUseCategories()) {
+            categories.openAll();
+        }
+    }
+
+    @Override
+    public void closeAllCategories() {
+        if (isUseCategories()) {
+            categories.closeAll();
+        }
+    }
+
     /**
      * Get a stored data categories subheader by name.
      */
@@ -2325,6 +2349,25 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         }
     }
 
+    @Override
+    public void setDensity(Density density) {
+        this.density = density;
+
+        if (setup) {
+            applyDensity(density);
+        }
+    }
+
+    protected void applyDensity(Density density) {
+        getDensityCssNameMixin().setCssName(density);
+        setRowHeight(density.getValue());
+    }
+
+    @Override
+    public Density getDensity() {
+        return getDensityCssNameMixin().getCssName();
+    }
+
     public boolean isShiftDown() {
         return shiftDown;
     }
@@ -2340,10 +2383,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 if (column.isFrozenColumn()) {
                     if (left) {
                         leftFrozenColumns++;
-                        column.getFrozenProperties()._setSide(FrozenSide.LEFT);
+                        column.frozenProperties()._setSide(FrozenSide.LEFT);
                     } else {
                         rightFrozenColumns++;
-                        column.getFrozenProperties()._setSide(FrozenSide.RIGHT);
+                        column.frozenProperties()._setSide(FrozenSide.RIGHT);
                     }
                 } else {
                     left = false;
@@ -2372,7 +2415,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             frozenMarginRight = 0;
             int firstRightIndex = 0;
             for(Column column : columns) {
-                if(column.getFrozenProperties().isRight()) {
+                if(column.frozenProperties().isRight()) {
                     break;
                 }
                 firstRightIndex++;
@@ -2396,5 +2439,12 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     public boolean hasFrozenColumns() {
         return getLeftFrozenColumns() > 0 || getRightFrozenColumns() > 0;
+    }
+
+    public CssNameMixin<Table, Density> getDensityCssNameMixin() {
+        if (densityCssNameMixin == null) {
+            densityCssNameMixin = new CssNameMixin<>(table);
+        }
+        return densityCssNameMixin;
     }
 }

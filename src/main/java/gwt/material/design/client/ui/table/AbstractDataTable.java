@@ -32,6 +32,7 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.view.client.Range;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.TableCssName;
+import gwt.material.design.client.base.density.Density;
 import gwt.material.design.client.base.mixin.CssNameMixin;
 import gwt.material.design.client.data.*;
 import gwt.material.design.client.data.component.CategoryComponent;
@@ -217,12 +218,12 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
-    public final List<CategoryComponent> getCategories() {
+    public final Categories getCategories() {
         return view.getCategories();
     }
 
     @Override
-    public final List<CategoryComponent> getOpenCategories() {
+    public final Categories getOpenCategories() {
         return view.getOpenCategories();
     }
 
@@ -277,6 +278,16 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
+    public void openAllCategories() {
+        view.openAllCategories();
+    }
+
+    @Override
+    public void closeAllCategories() {
+        view.closeAllCategories();
+    }
+
+    @Override
     public final void clearRowsAndCategories(boolean clearData) {
         view.clearRowsAndCategories(clearData);
     }
@@ -292,13 +303,13 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
-    public final void addColumn(Column<T, ?> column, String header) {
-        view.addColumn(column, header);
+    public final void addColumn(String header, Column<T, ?> column) {
+        view.addColumn(header, column);
     }
 
     @Override
-    public final void insertColumn(int beforeIndex, Column<T, ?> col, String header) {
-        view.insertColumn(beforeIndex, col, header);
+    public final void insertColumn(String header, int beforeIndex, Column<T, ?> col) {
+        view.insertColumn(header, beforeIndex, col);
     }
 
     @Override
@@ -543,6 +554,16 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
+    public void setDensity(Density density) {
+        getView().setDensity(density);
+    }
+
+    @Override
+    public Density getDensity() {
+        return getView().getDensity();
+    }
+
+    @Override
     public void onBrowserEvent(Event event) {
         CellBasedWidgetImpl.get().onBrowserEvent(this, event);
 
@@ -613,6 +634,9 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         }
 
         C cellValue = column.getValue(rowValue);
+        if (cellValue == null && column instanceof Column) {
+            cellValue = ((Column<T, C>) column).defaultValue();
+        }
         boolean cellWasEditing = cell.isEditing(context, parentElem, cellValue);
         if (column instanceof Column) {
           /*
@@ -693,7 +717,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     /**
-     * Event fired when the tables view calls {@link DataView#insertColumn(int, Column, String)}.
+     * Event fired when the tables view calls {@link DataView#insertColumn(String, int, Column)}.
      * @return Handler registration to remove the event handler.
      */
     public HandlerRegistration addInsertColumnHandler(InsertColumnHandler<T> handler) {
