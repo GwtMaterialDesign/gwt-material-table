@@ -47,7 +47,6 @@ public abstract class AbstractPageSelection<T extends AbstractValueWidget<Intege
     public AbstractPageSelection(MaterialDataPager<?> pager) {
         this();
         setPager(pager);
-
     }
 
     @Override
@@ -100,7 +99,7 @@ public abstract class AbstractPageSelection<T extends AbstractValueWidget<Intege
 
     @Override
     public void setLabel(String label) {
-        pageLabel.setText("Page");
+        pageLabel.setText(label);
     }
 
     @Override
