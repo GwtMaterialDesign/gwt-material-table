@@ -35,7 +35,7 @@ import gwt.material.design.client.ui.pager.MaterialDataPager;
 public class RowSelection extends MaterialWidget {
 
     private final MaterialDataPager pager;
-    protected Span rowsPerPageLabel = new Span("Rows per page");
+    protected Span rowsPerPageLabel = new Span();
     protected MaterialListValueBox<Integer> listPageRows = new MaterialListValueBox<>();
 
     public RowSelection(MaterialDataPager pager) {
@@ -43,6 +43,7 @@ public class RowSelection extends MaterialWidget {
         this.pager = pager;
 
         setHideOn(HideOn.HIDE_ON_SMALL_DOWN);
+        setLabel("Rows per page");
     }
 
     @Override
@@ -62,5 +63,9 @@ public class RowSelection extends MaterialWidget {
             pager.setLimit(valueChangeEvent.getValue());
             pager.updateRowsPerPage(valueChangeEvent.getValue());
         }));
+    }
+
+    public void setLabel(String label) {
+        rowsPerPageLabel.setText(label);
     }
 }
