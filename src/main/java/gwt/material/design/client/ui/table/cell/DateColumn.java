@@ -33,6 +33,7 @@ import java.util.Date;
  */
 public class DateColumn<T> extends Column<T, Date> {
 
+    // TODO: add date format constructor
     public DateColumn() {
         super(new DateCell());
     }
