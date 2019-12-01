@@ -99,6 +99,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected boolean redrawCategories;
     private boolean pendingRenderEvent;
     private Style.TableLayout tableLayout;
+    private long lastRowClicked;
 
     // DOM
     protected Table table;
@@ -119,6 +120,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected int longPressDuration = 500;
     protected int leftFrozenColumns = -1;
     protected int rightFrozenColumns = -1;
+    protected int rowClickCooldown = 300;
 
     private int lastSelected;
     private boolean setup;
@@ -754,6 +756,12 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         // Select row click bind
         // This will also update the check status of check all input.
         rows.on("tap." + id + " click." + id, (e, o) -> {
+            long now = new Date().getTime();
+            if ((now - lastRowClicked) < getRowClickCooldown()) {
+                return false;
+            }
+            lastRowClicked = new Date().getTime();
+
             Element row = $(e.getCurrentTarget()).asElement();
             int rowIndex = getRowIndexByElement(row);
             if (selectionType.equals(SelectionType.MULTIPLE) && shiftDown) {
@@ -1564,6 +1572,16 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
+    public void setRowClickCooldown(int clickCooldownMillis) {
+        this.rowClickCooldown = clickCooldownMillis;
+    }
+
+    @Override
+    public int getRowClickCooldown() {
+        return rowClickCooldown;
+    }
+
+    @Override
     public void setRowData(int start, List<? extends T> values) {
         int length = values.size();
         int end = start + length;
@@ -2222,6 +2240,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             categories.closeAll();
         }
     }
+
+    // TODO: add openAll/closeAll with a list of categories
 
     /**
      * Get a stored data categories subheader by name.
