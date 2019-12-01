@@ -29,11 +29,7 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.base.constants.StyleName;
 import gwt.material.design.client.base.constants.TableCssName;
-import gwt.material.design.client.constants.HideOn;
-import gwt.material.design.client.constants.IconSize;
-import gwt.material.design.client.constants.IconType;
-import gwt.material.design.client.constants.TextAlign;
-import gwt.material.design.client.constants.WavesType;
+import gwt.material.design.client.constants.*;
 import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.data.component.Component;
 import gwt.material.design.client.data.component.RowComponent;
@@ -198,7 +194,8 @@ public class BaseRenderer<T> implements Renderer<T> {
         TableData checkBox = new TableData();
         checkBox.setId("col0");
         checkBox.addStyleName(TableCssName.SELECTION);
-        new MaterialCheckBox(checkBox.getElement());
+        MaterialCheckBox cb = new MaterialCheckBox(checkBox.getElement());
+        cb.setType(CheckBoxType.FILLED);
         checkBox.addClickHandler(event -> {
             event.getNativeEvent().preventDefault();
         });

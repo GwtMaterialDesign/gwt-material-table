@@ -29,8 +29,7 @@ import gwt.material.design.client.js.JsTableElement;
  * @author Ben Dol
  */
 public class Table extends MaterialWidget {
-
-    private JsTableElement element;
+    
     private MaterialWidget thead;
     private MaterialWidget tbody;
 
@@ -44,12 +43,10 @@ public class Table extends MaterialWidget {
 
     public Table(Element element) {
         super(element);
-
-        this.element = JsTableElement.$(getElement());
     }
 
     public JsTableElement getJsElement() {
-        return element;
+        return JsTableElement.$(getElement());
     }
 
     public void addHead(MaterialWidget thead) {
