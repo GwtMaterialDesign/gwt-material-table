@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -48,6 +48,7 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
     protected int currentPage = 1;
     protected int totalRows = 0;
     protected int[] limitOptions = new int[]{5, 10, 20};
+    protected DataPagerLocaleProvider localeProvider = new DataPagerLocaleProvider() {};
 
     private ActionsPanel actionsPanel = new ActionsPanel(this);
     private RowSelection rowSelection = new RowSelection(this);
@@ -201,7 +202,7 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
      */
     protected void doLoad(int offset, int limit) {
         dataSource.load(new LoadConfig<>(offset, limit, table.getView().getSortContext(),
-                table.getView().getOpenCategories()), new LoadCallback<T>() {
+            table.getView().getOpenCategories()), new LoadCallback<T>() {
             @Override
             public void onSuccess(LoadResult<T> loadResult) {
                 setOffset(loadResult.getOffset());
@@ -229,7 +230,7 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
         // Action label (current selection) in either the form "x-y of z" or "y of z" (when page has only 1 record)
         int firstRow = offset + 1;
         int lastRow = (isExcess() & isLastPage()) ? totalRows : (offset + limit);
-        actionsPanel.getActionLabel().setText((firstRow == lastRow ? lastRow : firstRow + "-" + lastRow) + " of " + totalRows);
+        actionsPanel.getActionLabel().setText((firstRow == lastRow ? lastRow : firstRow + "-" + lastRow) + " " + getLocaleProvider().of() + " " + totalRows);
 
         actionsPanel.getIconNext().setEnabled(true);
         actionsPanel.getIconPrev().setEnabled(true);
@@ -293,5 +294,13 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
 
     public void setRowSelection(RowSelection rowSelection) {
         this.rowSelection = rowSelection;
+    }
+
+    public DataPagerLocaleProvider getLocaleProvider() {
+        return localeProvider;
+    }
+
+    public void setLocaleProvider(DataPagerLocaleProvider localeProvider) {
+        this.localeProvider = localeProvider;
     }
 }
