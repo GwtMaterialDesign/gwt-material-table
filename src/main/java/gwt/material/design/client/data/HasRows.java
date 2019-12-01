@@ -200,4 +200,14 @@ public interface HasRows<T> extends HasHandlers {
      * @return list of the currently selected row models.
      */
     List<T> getSelectedRowModels(boolean visibleOnly);
+
+    /**
+     * Click event cooldown on a rows, set to 0 for no cooldown.
+     */
+    void setRowClickCooldown(int clickCooldownMillis);
+
+    /**
+     * Click event cooldown on a rows, set to 0 for no cooldown.
+     */
+    int getRowClickCooldown();
 }
