@@ -144,10 +144,6 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         scaffolding.build();
         scaffolding.apply(this);
 
-        //TODO: Remove later
-        JQueryProvider jQueryProvider = GWT.create(JQueryProvider.class);
-        MaterialDesign.injectJs(jQueryProvider.jQuery());
-
         build();
     }
 
