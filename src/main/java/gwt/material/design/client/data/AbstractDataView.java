@@ -2381,8 +2381,6 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected void applyDensity(Density density) {
         getDensityCssNameMixin().setCssName(density);
         setRowHeight(density.getValue());
-        setRedraw(true);
-        refresh();
     }
 
     @Override
