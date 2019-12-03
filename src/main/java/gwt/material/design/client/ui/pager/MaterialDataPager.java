@@ -110,7 +110,7 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
     public void lastPage() {
         gotoPage(getTotalPages());
 
-        pageSelection.updatePageNumber(currentPage - 1);
+        pageSelection.updatePageNumber(currentPage);
     }
 
     public int getTotalPages() {
