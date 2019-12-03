@@ -143,7 +143,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         // Build the table scaffolding
         scaffolding.build();
         scaffolding.apply(this);
-
+        MaterialDesign.checkJQuery(false);
         build();
     }
 
