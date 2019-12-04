@@ -117,4 +117,8 @@ table.table tbody tr.expansion td div.expanded {
     tbody tr td#colex #expand {
         background: #292929;
     }
+
+    table.table tbody tr.data-row #col0:not([data-title]) {
+        background: #414141;
+    }
 }
