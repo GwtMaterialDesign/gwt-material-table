@@ -71,6 +71,10 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
     protected void onLoad() {
         super.onLoad();
 
+        load();
+    }
+    
+    public void load() {
         if (limit == 0) {
             limit = limitOptions[0];
         }
@@ -84,6 +88,20 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
         add(pageSelection);
 
         firstPage();
+    }
+    
+    public void unload() {
+        offset = 0;
+        limit = 0;
+        currentPage = 1;
+        totalRows = 0;
+        limitOptions = new int[]{5, 10, 20};
+        clear();
+    }
+    
+    public void reload() {
+        unload();
+        load();
     }
 
     public void updateRowsPerPage(int limit) {
