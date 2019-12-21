@@ -1,6 +1,6 @@
 /** Dark Mode **/
 section.table-container .top-panel,
-.table-container,
+.table-container, .table-body,
 table.table thead tr th {
     background-color: #424242;
     color: #ffffff;
