@@ -43,13 +43,13 @@ public class RowSelection extends MaterialWidget {
         this.pager = pager;
 
         setHideOn(HideOn.HIDE_ON_SMALL_DOWN);
-        setLabel("Rows per page");
     }
 
     @Override
     protected void onLoad() {
         super.onLoad();
 
+        setLabel(pager.getLocaleProvider().RowsPerPage());
         add(listPageRows);
         add(rowsPerPageLabel);
 

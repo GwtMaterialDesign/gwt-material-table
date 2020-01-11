@@ -24,12 +24,15 @@ import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.ValueUpdater;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.*;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.view.client.Range;
+import gwt.material.design.client.JQueryProvider;
+import gwt.material.design.client.MaterialDesign;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.base.density.Density;
@@ -140,8 +143,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         // Build the table scaffolding
         scaffolding.build();
         scaffolding.apply(this);
-
-        // Apply the DOM build.
+        MaterialDesign.checkJQuery(false);
         build();
     }
 
@@ -486,6 +488,16 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     @Override
     public final List<T> getSelectedRowModels(boolean visibleOnly) {
         return view.getSelectedRowModels(visibleOnly);
+    }
+
+    @Override
+    public void setRowClickCooldown(int clickCooldownMillis) {
+        view.setRowClickCooldown(clickCooldownMillis);
+    }
+
+    @Override
+    public int getRowClickCooldown() {
+        return view.getRowClickCooldown();
     }
 
     @Override

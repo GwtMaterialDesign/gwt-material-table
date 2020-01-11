@@ -23,6 +23,7 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Panel;
 import gwt.material.design.client.base.constants.TableCssName;
+import gwt.material.design.client.constants.*;
 import gwt.material.design.client.data.events.InsertColumnEvent;
 import gwt.material.design.client.data.events.InsertColumnHandler;
 import gwt.material.design.client.data.events.RemoveColumnEvent;
@@ -31,10 +32,6 @@ import gwt.material.design.client.data.events.SetupHandler;
 import gwt.material.design.client.ui.table.events.StretchEvent;
 import gwt.material.design.client.ui.table.events.StretchHandler;
 import gwt.material.design.jquery.client.api.JQueryElement;
-import gwt.material.design.client.constants.Alignment;
-import gwt.material.design.client.constants.HideOn;
-import gwt.material.design.client.constants.IconType;
-import gwt.material.design.client.constants.WavesType;
 import gwt.material.design.client.data.DataView;
 import gwt.material.design.client.js.Js;
 import gwt.material.design.client.js.JsTableElement;
@@ -225,6 +222,7 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
             String ref = getView().getId() + "-col" + index;
 
             MaterialCheckBox toggleBox = new MaterialCheckBox(new ListItem().getElement());
+            toggleBox.setType(CheckBoxType.FILLED);
             JQueryElement input = $(toggleBox).find("input");
             input.attr("id", ref);
 

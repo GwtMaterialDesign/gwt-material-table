@@ -41,7 +41,6 @@ public abstract class AbstractPageSelection<T extends AbstractValueWidget<Intege
 
     public AbstractPageSelection() {
         super(Document.get().createDivElement(), TableCssName.NUM_PAGE_PANEL);
-        setLabel("Page");
     }
 
     public AbstractPageSelection(MaterialDataPager<?> pager) {
@@ -58,6 +57,7 @@ public abstract class AbstractPageSelection<T extends AbstractValueWidget<Intege
 
     @Override
     public void load() {
+        setLabel(pager.getLocaleProvider().Page());
         add(pageLabel);
         add(getComponent());
         registerHandler(addValueChangeHandler(valueChangeEvent -> pager.gotoPage(valueChangeEvent.getValue())));

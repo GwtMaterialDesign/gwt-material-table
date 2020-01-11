@@ -1,0 +1,124 @@
+/** Dark Mode **/
+section.table-container .top-panel,
+.table-container, .table-body,
+table.table thead tr th {
+    background-color: #424242;
+    color: #ffffff;
+}
+
+table.table tbody td {
+    color: #ffffff;
+}
+
+.table-container .top-panel {
+    border-bottom: 2px solid #4a4a4a;
+}
+
+thead {
+    border-bottom: none !important;
+}
+
+table tr.stickyExclude {
+    height: 2px;
+    background-color: transparent !important;
+}
+
+table.table tbody tr.data-row {
+    border-bottom: 1px solid #4a4a4a;
+}
+
+table.table tbody tr.data-row:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+table.table tbody tr.selected, table.table tbody tr.selected td {
+    background-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+table.striped > tbody > tr:nth-child(odd) {
+    background-color: #4a4a4a;
+}
+
+table.table tbody tr.subheader {
+    background-color: #424242;
+    border-bottom: 1px solid #525252;
+    color: #ffffff;
+}
+
+table.table tbody > div {
+    background: transparent !important;
+}
+
+table.table thead tr th.sortable:hover,
+table.table thead tr th,
+table.table thead th.selected {
+    color: rgba(255, 255, 255, 0.52);
+}
+
+table.table tbody tr.expansion td div .content {
+    background-color: #4a4a4a;
+}
+
+table.table tbody tr.expansion td div.expanded {
+    border-bottom: none;
+}
+
+/** Data Pager **/
+.data-pager .input-field .select-wrapper input.select-dropdown,
+.data-pager .num-page-panel .input-field input[type=number] {
+    color: white;
+    border-bottom: 1px solid #818181;
+}
+
+.table-container .data-pager {
+    border: none;
+}
+
+.data-pager .action-page-panel i.disabled {
+    background: #424242 !important;
+    color: rgba(153, 153, 153, 0.2) !important;
+}
+
+.data-pager .action-page-panel i {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.data-pager .action-page-panel i:hover {
+    color: rgb(255, 255, 255);
+}
+
+@media only screen and (max-width: 520px), (max-device-width: 519px) and (min-device-width: 0px) {
+    table.table tbody {
+        background: #292929;
+    }
+
+    .selection-none table.table tbody tr.data-row, table.table tbody tr.data-row {
+        background: #424242;
+    }
+
+    table.table tbody td {
+        border-top: 1px solid #4a4a4a;
+    }
+
+    table.table .cell {
+        color: #ffffff;
+    }
+
+    tr.data-row td:before {
+        color: rgba(255, 255, 255, 0.52);
+    }
+
+    table.table tbody tr.data-row.selected,
+    .selection-none table.table tbody tr.data-row, table.table tbody tr.data-row,
+    table.table tbody tr.data-row:hover, table.table tbody tr.selected td, table.table tbody tr.selected td.hover {
+        background-color: rgba(255, 255, 255, 0.04) !important;
+    }
+
+    tbody tr td#colex #expand {
+        background: #292929;
+    }
+
+    table.table tbody tr.data-row #col0:not([data-title]) {
+        background: #414141;
+    }
+}
