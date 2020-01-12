@@ -1,6 +1,6 @@
 <img src="https://i.imgur.com/AKO3awU.png" width="120px" />
 
-# GWT Material Table [![Build Status](https://travis-ci.org/GwtMaterialDesign/gwt-material-table.svg?branch=master)](https://travis-ci.org/GwtMaterialDesign/gwt-material-table)
+# GWT Material Table [![Build Status](https://travis-ci.org/GwtMaterialDesign/gwt-material-table.svg?branch=master)](https://travis-ci.org/GwtMaterialDesign/gwt-material-table) [![Join us](https://img.shields.io/badge/slack-channel-purple)](https://gmd-project.slack.com)
 
 A complex table component designed for the material design specifications!
 
