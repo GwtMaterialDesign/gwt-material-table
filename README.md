@@ -5,7 +5,7 @@
 A complex table component designed for the material design specifications!
 
 ## Demo
-[GWT Material Table Sample](https://github.com/GwtMaterialDesign/gwt-material-table-sample)
+[Latest Demo](https://gwtmaterialdesign.github.io/gmd-table-demo/)
 
 ## Documentation
 Support documentation can be found [here](https://github.com/GwtMaterialDesign/gwt-material-table/wiki)
@@ -20,12 +20,12 @@ Current Version 2.3.0
 </dependency>
 ```
 
-Snapshot Version 2.3-SNAPSHOT
+Snapshot Version 2.3.1-SNAPSHOT
 ```xml
 <dependency>
     <groupId>com.github.gwtmaterialdesign</groupId>
     <artifactId>gwt-material-table</artifactId>
-    <version>2.3-SNAPSHOT</version>
+    <version>2.3.1-SNAPSHOT</version>
 </dependency>
 ```
 
