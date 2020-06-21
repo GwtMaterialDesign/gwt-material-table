@@ -1,11 +1,11 @@
 <img src="https://i.imgur.com/AKO3awU.png" width="120px" />
 
-# GWT Material Table [![Build Status](https://travis-ci.org/GwtMaterialDesign/gwt-material-table.svg?branch=master)](https://travis-ci.org/GwtMaterialDesign/gwt-material-table)
+# GWT Material Table [![Build Status](https://travis-ci.org/GwtMaterialDesign/gwt-material-table.svg?branch=master)](https://travis-ci.org/GwtMaterialDesign/gwt-material-table) [![Join us](https://img.shields.io/badge/slack-channel-purple)](https://gmd-project.slack.com)
 
 A complex table component designed for the material design specifications!
 
 ## Demo
-[GWT Material Table Sample](https://github.com/GwtMaterialDesign/gwt-material-table-sample)
+[Latest Demo](https://gwtmaterialdesign.github.io/gmd-table-demo/)
 
 ## Documentation
 Support documentation can be found [here](https://github.com/GwtMaterialDesign/gwt-material-table/wiki)
@@ -20,7 +20,6 @@ Current Version 2.3.1
 </dependency>
 ```
 
-Snapshot Version 2.3.2-SNAPSHOT
 ```xml
 <dependency>
     <groupId>com.github.gwtmaterialdesign</groupId>
