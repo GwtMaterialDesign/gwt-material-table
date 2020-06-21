@@ -499,6 +499,11 @@ table.table tbody tr.expansion td > div p {
     padding: 0 !important;
 }
 
+/** Widget Cells **/
+table.table tr td {
+
+}
+
 /* --- Comfortable / Less Density --- */
 table.table.comfortable tr td {
     padding-top: 0px;
@@ -515,6 +520,17 @@ table.table.comfortable tr td .letter-avatar {
     height: 32px !important;
 }
 
+table.table.comfortable tr td .input-field.listbox-wrapper {
+    margin-top: 0px;
+}
+
+table.table.comfortable tr td .input-field input.select-dropdown {
+    height: 28px;
+    font-size: 1em;
+    padding-bottom: 4px;
+    margin-bottom: 6px;
+}
+
 /* --- Compact / High Density --- */
 table.table.compact tr td {
     padding-top: 0px;
@@ -529,6 +545,17 @@ table.table.compact tr td img,
 table.table.compact tr td .letter-avatar {
     width: 20px !important;
     height: 20px !important;
+}
+
+table.table.compact tr td .input-field.listbox-wrapper {
+    margin-top: 0px;
+}
+
+table.table.compact tr td .input-field input.select-dropdown {
+    margin-bottom: 0px;
+    height: 20px;
+    font-size: 1em;
+    padding-bottom: 4px;
 }
 
 /* ==================== RESPONSIVE LAYOUT ==================== */

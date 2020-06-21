@@ -24,14 +24,12 @@ import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.cell.client.ValueUpdater;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.*;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.view.client.Range;
-import gwt.material.design.client.JQueryProvider;
 import gwt.material.design.client.MaterialDesign;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.TableCssName;
@@ -151,7 +149,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     protected void onLoad() {
         super.onLoad();
 
-        if(!view.isSetup()) {
+        if (!view.isSetup()) {
             try {
                 view.setup(scaffolding);
             } catch (Exception ex) {
@@ -159,7 +157,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
                     "Could not setup AbstractDataTable due to previous errors.", ex);
             }
             // We should recalculate when we load again.
-        } else if(view.isUseCategories()) {
+        } else if (view.isUseCategories()) {
             view.getSubheaderLib().recalculate(true);
         }
     }
@@ -170,7 +168,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
         clearHandlers();
 
-        if(destroyOnUnload) {
+        if (destroyOnUnload) {
             view.destroy();
         }
     }
@@ -300,18 +298,18 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
-    public final void addColumn(Column<T, ?> column) {
-        view.addColumn(column);
+    public final Column<T, ?> addColumn(Column<T, ?> column) {
+        return view.addColumn(column);
     }
 
     @Override
-    public final void addColumn(String header, Column<T, ?> column) {
-        view.addColumn(header, column);
+    public final Column<T, ?> addColumn(String header, Column<T, ?> column) {
+        return view.addColumn(header, column);
     }
 
     @Override
-    public final void insertColumn(String header, int beforeIndex, Column<T, ?> col) {
-        view.insertColumn(header, beforeIndex, col);
+    public final Column<T, ?> insertColumn(String header, int beforeIndex, Column<T, ?> col) {
+        return view.insertColumn(header, beforeIndex, col);
     }
 
     @Override
@@ -609,7 +607,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
             // A key event indicates that we already have focus.
             focused = true;
         } else if (BrowserEvents.MOUSEDOWN.equals(eventType)
-                && CellBasedWidgetImpl.get().isFocusable(Element.as(target))) {
+            && CellBasedWidgetImpl.get().isFocusable(Element.as(target))) {
             // If a natively focusable element was just clicked, then we must have
             // focus.
             focused = true;
@@ -651,10 +649,10 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         }
         boolean cellWasEditing = cell.isEditing(context, parentElem, cellValue);
         if (column instanceof Column) {
-          /*
-           * If the HasCell is a Column, let it handle the event itself. This is
-           * here for legacy support.
-           */
+            /*
+             * If the HasCell is a Column, let it handle the event itself. This is
+             * here for legacy support.
+             */
             Column<T, C> col = (Column<T, C>) column;
             col.onBrowserEvent(context, parentElem, rowValue, event);
         } else {
@@ -681,7 +679,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     /**
      * Check if a cell consumes the specified event type.
      *
-     * @param cell the cell
+     * @param cell      the cell
      * @param eventType the event type to check
      * @return true if consumed, false if not
      */
@@ -703,7 +701,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
      */
     @Deprecated
     public void setLoadedCallback(LoadedCallback callback) {
-        if(setupHandler != null) {
+        if (setupHandler != null) {
             setupHandler.removeHandler();
             setupHandler = null;
         }
@@ -714,6 +712,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     /**
      * Event fired when the tables view calls {@link DataView#setup(TableScaffolding)}.
+     *
      * @return Handler registration to remove the event handler.
      */
     public HandlerRegistration addSetupHandler(SetupHandler handler) {
@@ -722,6 +721,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     /**
      * Event fired when the tables view calls {@link DataView#destroy()}.
+     *
      * @return Handler registration to remove the event handler.
      */
     public HandlerRegistration addDestroyHandler(DestroyHandler handler) {
@@ -730,6 +730,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     /**
      * Event fired when the tables view calls {@link DataView#insertColumn(String, int, Column)}.
+     *
      * @return Handler registration to remove the event handler.
      */
     public HandlerRegistration addInsertColumnHandler(InsertColumnHandler<T> handler) {
@@ -738,6 +739,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
     /**
      * Event fired when the tables view calls {@link DataView#removeColumn(int)}.
+     *
      * @return Handler registration to remove the event handler.
      */
     public HandlerRegistration addRemoveColumnHandler(RemoveColumnHandler handler) {
