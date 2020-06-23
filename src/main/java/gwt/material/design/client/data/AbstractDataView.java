@@ -1534,6 +1534,19 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
+    public void selectRow(T model) {
+        selectRow(model, false);
+    }
+
+    @Override
+    public void selectRow(T model, boolean fireEvent) {
+        RowComponent<T> rowByModel = getRowByModel(model);
+        if (rowByModel != null) {
+            selectRow(rowByModel.getWidget().getElement(), fireEvent);
+        }
+    }
+
+    @Override
     public void deselectRow(Element row, boolean fireEvent) {
         JQueryElement $row = $(row);
         if (!$row.hasClass("disabled") && !$row.is("[disabled]")) {

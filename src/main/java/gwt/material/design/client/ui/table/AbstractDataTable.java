@@ -469,6 +469,16 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
+    public final void selectRow(T model) {
+        view.selectRow(model);
+    }
+
+    @Override
+    public final void selectRow(T model, boolean fireEvent) {
+        view.selectRow(model, fireEvent);
+    }
+
+    @Override
     public final void deselectRow(Element row, boolean fireEvent) {
         view.deselectRow(row, fireEvent);
     }
