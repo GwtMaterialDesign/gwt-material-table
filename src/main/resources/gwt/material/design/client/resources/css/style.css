@@ -15,6 +15,7 @@ table {
 section.table-container ::-webkit-scrollbar {
     -webkit-overflow-scrolling: auto;
     -webkit-appearance: none;
+    height: 8px !important;
     width: 8px;
 }
 
