@@ -23,22 +23,22 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.view.client.ProvidesKey;
 import com.google.gwt.view.client.Range;
+import gwt.material.design.client.base.InterruptibleTask;
 import gwt.material.design.client.base.MaterialWidget;
+import gwt.material.design.client.data.AbstractDataView;
+import gwt.material.design.client.data.DataSource;
 import gwt.material.design.client.data.SortContext;
+import gwt.material.design.client.data.component.CategoryComponent;
+import gwt.material.design.client.data.component.Component;
+import gwt.material.design.client.data.component.Components;
+import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.client.data.loader.LoadCallback;
 import gwt.material.design.client.data.loader.LoadConfig;
 import gwt.material.design.client.data.loader.LoadResult;
 import gwt.material.design.client.events.DefaultHandlerRegistry;
 import gwt.material.design.client.events.HandlerRegistry;
-import gwt.material.design.client.ui.table.DataDisplay;
-import gwt.material.design.client.base.InterruptibleTask;
-import gwt.material.design.client.data.AbstractDataView;
-import gwt.material.design.client.data.DataSource;
-import gwt.material.design.client.data.component.CategoryComponent;
-import gwt.material.design.client.data.component.Component;
-import gwt.material.design.client.data.component.Components;
-import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.client.jquery.JQueryExtension;
+import gwt.material.design.client.ui.table.DataDisplay;
 import gwt.material.design.client.ui.table.TableScaffolding;
 import gwt.material.design.jquery.client.api.JQueryElement;
 
@@ -152,7 +152,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
     @Override
     protected void onSetup(TableScaffolding scaffolding) {
         dynamicView = viewSize == DYNAMIC_VIEW;
-        if(dynamicView) {
+        if (dynamicView) {
             setVisibleRange(0, getVisibleRowCapacity());
             setViewSize(range.getLength());
         }
@@ -180,8 +180,8 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
         }));
 
         handlers.registerHandler(display.addRowSelectHandler(event -> {
-            if(event.isSelected()) {
-                if(!selectedModels.contains(event.getModel())) {
+            if (event.isSelected()) {
+                if (!selectedModels.contains(event.getModel())) {
                     selectedModels.add(event.getModel());
                 }
             } else {
@@ -190,7 +190,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
         }));
 
         handlers.registerHandler(display.addSelectAllHandler(event -> {
-            for(T model : event.getModels()) {
+            for (T model : event.getModels()) {
                 if (event.isSelected()) {
                     if (!selectedModels.contains(model)) {
                         selectedModels.add(model);
@@ -202,7 +202,9 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
         }));
 
         // Setup the scroll event handlers
-        JQueryExtension.$(tableBody).scrollY(id, (e, scroll) ->  onVerticalScroll());
+        JQueryExtension.$(tableBody).scrollY(id, (event, scroll) -> {
+            return onVerticalScroll();
+        });
 
         super.onSetup(scaffolding);
     }
@@ -211,7 +213,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
     public void setDisplay(DataDisplay<T> display) {
         super.setDisplay(display);
 
-        if(handlers != null) {
+        if (handlers != null) {
             handlers.clearHandlers();
         }
         // Assign a new registry.
@@ -237,7 +239,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
     @Override
     public boolean renderRows(Components<RowComponent<T>> rows) {
         int prevCategories = categories.size();
-        if(super.renderRows(rows)) {
+        if (super.renderRows(rows)) {
             if (isUseCategories()) {
                 // Update the view size to accommodate the new categories
                 int newCatCount = categories.size() - prevCategories;
@@ -295,7 +297,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
 
     @Override
     protected boolean doSort(SortContext<T> sortContext, Components<RowComponent<T>> rows) {
-        if(super.doSort(sortContext, rows)) {
+        if (super.doSort(sortContext, rows)) {
             // TODO: Potentially sort the cache data?
             dataCache.clear(); // invalidate the cache upon successful sorts
             return true;
@@ -332,9 +334,9 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
     }
 
     protected Object onVerticalScroll() {
-        if(!rendering) {
+        if (!rendering) {
             int index = (int) Math.ceil(tableBody.scrollTop() / getCalculatedRowHeight());
-            if(index == 0 || index != viewIndex) {
+            if (index == 0 || index != viewIndex) {
                 updateRows(index, false);
             }
         }
@@ -348,7 +350,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
     }
 
     protected void requestData(int index, boolean checkCache) {
-        if(loading) {
+        if (loading) {
             // Avoid loading again before the last load
             return;
         }
@@ -359,7 +361,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
             loaderTask = new InterruptibleTask() {
                 @Override
                 public void onExecute() {
-                    if(checkCache) {
+                    if (checkCache) {
                         List<T> cachedData = dataCache.getCache(loaderIndex, loaderSize);
                         if (!cachedData.isEmpty()) {
                             // Found in the cache
@@ -377,7 +379,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
     protected void doLoad() {
         loading = true;
         // Check if the data was found in the cache
-        if(loaderCache != null && !loaderCache.isEmpty()) {
+        if (loaderCache != null && !loaderCache.isEmpty()) {
             loaded(loaderIndex, loaderCache, false);
             loaderCache.clear();
             loaderCache = null;
@@ -385,23 +387,24 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
             setLoadMask(true);
 
             dataSource.load(new LoadConfig<>(loaderIndex, loaderSize, getSortContext(), getOpenCategories()),
-                    new LoadCallback<T>() {
-                @Override
-                public void onSuccess(LoadResult<T> result) {
-                    loaded(result.getOffset(), result.getData(), result.getTotalLength(), result.isCacheData());
-                }
-                @Override
-                public void onFailure(Throwable caught) {
-                    logger.log(Level.SEVERE, "Load failure", caught);
-                    //TODO: What we need to do on failure? Maybe clear table?
-                }
-            });
+                new LoadCallback<T>() {
+                    @Override
+                    public void onSuccess(LoadResult<T> result) {
+                        loaded(result.getOffset(), result.getData(), result.getTotalLength(), result.isCacheData());
+                    }
+
+                    @Override
+                    public void onFailure(Throwable caught) {
+                        logger.log(Level.SEVERE, "Load failure", caught);
+                        //TODO: What we need to do on failure? Maybe clear table?
+                    }
+                });
         }
     }
 
     @Override
     public void setLoadMask(boolean loadMask) {
-        if(loadMask || !forceScroll) {
+        if (loadMask || !forceScroll) {
             super.setLoadMask(loadMask);
 
             // Ensure the mask element uses max height
@@ -432,29 +435,29 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
      * See {@link #loaded(int, List)} for standard use.
      *
      * @param startIndex the new start index
-     * @param data the new list of data loaded
-     * @param totalRows the new total row count
+     * @param data       the new list of data loaded
+     * @param totalRows  the new total row count
      */
     public void loaded(int startIndex, List<T> data, int totalRows, boolean cacheData) {
         lastScrollTop = tableBody.scrollTop();
         setTotalRows(totalRows);
         setVisibleRange(startIndex, loaderSize);
 
-        if(cacheData) {
+        if (cacheData) {
             dataCache.addCache(startIndex, data);
         }
         super.loaded(startIndex, data);
         loading = false;
 
-        if(forceScroll) {
+        if (forceScroll) {
             forceScroll = false;
             updateRows((int) Math.ceil(tableBody.scrollTop() / getCalculatedRowHeight()), false);
         }
 
         // Ensure selection persistence
-        for(T model : selectedModels) {
+        for (T model : selectedModels) {
             Element row = getRowElementByModel(model);
-            if(row != null) {
+            if (row != null) {
                 selectRow(row, false);
             }
         }
@@ -486,14 +489,14 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
         super.setRowHeight(rowHeight);
 
         // Update the view row size.
-        if(isSetup()) {
+        if (isSetup()) {
             refresh();
         }
     }
 
     @Override
     public List<T> getSelectedRowModels(boolean visibleOnly) {
-        if(visibleOnly) {
+        if (visibleOnly) {
             return super.getSelectedRowModels(true);
         } else {
             return selectedModels;
