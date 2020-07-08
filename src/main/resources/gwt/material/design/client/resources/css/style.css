@@ -62,7 +62,7 @@ thead {
     z-index: 500;
 }
 
-thead tr {
+table.table thead tr {
     height: 56px;
     background-color: #fff;
 }
