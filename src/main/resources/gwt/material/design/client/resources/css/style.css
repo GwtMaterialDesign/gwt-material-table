@@ -100,6 +100,10 @@ table.table th#col0.selection.frozen-col {
     position: absolute;
 }
 
+table.striped > tbody > tr:nth-child(odd) td.frozen-col {
+    background-color: #f2f2f2 !important;
+}
+
 .max-height {
     height: 100% !important;
 }
@@ -500,15 +504,14 @@ table.table tbody tr.expansion td > div p {
     padding: 0 !important;
 }
 
-/** Widget Cells **/
-table.table tr td {
-
-}
-
 /* --- Comfortable / Less Density --- */
 table.table.comfortable tr td {
     padding-top: 0px;
     padding-bottom: 0px;
+}
+
+table.table.comfortable thead tr th.frozen-col {
+    height: 44px !important;
 }
 
 table.table.comfortable thead tr {
@@ -536,6 +539,10 @@ table.table.comfortable tr td .input-field input.select-dropdown {
 table.table.compact tr td {
     padding-top: 0px;
     padding-bottom: 0px;
+}
+
+table.table.compact thead tr th.frozen-col {
+    height: 38px !important;
 }
 
 table.table.compact thead tr {

@@ -10,17 +10,22 @@ table.table tbody td {
     color: #ffffff;
 }
 
+table.table tbody tr.data-row:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+}
+
+table.table tbody tr.data-row td.hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+}
+
 .table-container .top-panel {
     border-bottom: 2px solid #4a4a4a;
 }
 
-thead {
-    border-bottom: none !important;
-}
-
-table tr.stickyExclude {
-    height: 2px;
-    background-color: transparent !important;
+table.table thead {
+    border-bottom: 1px solid rgb(74, 74, 74) !important;
 }
 
 table.table tbody tr.data-row {
@@ -61,6 +66,30 @@ table.table tbody tr.expansion td div .content {
 
 table.table tbody tr.expansion td div.expanded {
     border-bottom: none;
+}
+
+/** Frozen **/
+table.striped > tbody > tr:nth-child(odd) td.frozen-col {
+    background-color: #4a4a4a !important;
+}
+
+table tr td.frozen-col {
+    border-bottom: 1px solid #4a4a4a !important;
+}
+
+table tr.selected td.frozen-col {
+    background: #4f4f4f !important;
+}
+
+.inner-shadow {
+    -moz-box-shadow: inset 18px 0 20px -20px #272727;
+    -webkit-box-shadow: inset 18px 0 20px -20px #272727;
+    box-shadow: inset 18px 0 20px -20px #272727;
+}
+
+table tr.stickyExclude {
+    height: 2px;
+    background-color: transparent !important;
 }
 
 /** Data Pager **/
