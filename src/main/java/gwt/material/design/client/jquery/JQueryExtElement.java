@@ -24,6 +24,7 @@ import gwt.material.design.jquery.client.api.Functions;
 import gwt.material.design.jquery.client.api.JQueryElement;
 import jsinterop.annotations.JsType;
 
+//TODO: Object -> JSType
 @JsType(name = "jQuery", isNative = true)
 public class JQueryExtElement extends JQueryElement {
 

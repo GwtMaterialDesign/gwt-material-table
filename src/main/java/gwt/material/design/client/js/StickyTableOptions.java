@@ -29,6 +29,7 @@ public class StickyTableOptions extends JavaScriptObject {
     protected StickyTableOptions() {
     }
 
+    //TODO: Convert to JSInterop
     public native final void setScrollableArea(JQueryElement scrollableArea) /*-{
         this.scrollableArea = scrollableArea;
     }-*/;

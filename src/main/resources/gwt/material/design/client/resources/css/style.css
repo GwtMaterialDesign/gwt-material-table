@@ -55,7 +55,7 @@ tr {
     background: none;
 }
 
-thead {
+table.table thead {
     border-bottom: 1px solid #E3E3E3 !important;
     font-size: 12px;
     color: rgba(0, 0, 0, 0.54);
@@ -67,7 +67,7 @@ table.table thead tr {
     background-color: #fff;
 }
 
-tbody {
+table.table tbody {
     font-size: 13px;
     color: rgba(0, 0, 0, 0.87);
 }

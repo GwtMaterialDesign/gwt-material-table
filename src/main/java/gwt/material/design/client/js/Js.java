@@ -43,32 +43,39 @@ public class Js {
      * penalty because we directly change the native array of super ArrayList
      * implementation.
      */
+    //TODO: Convert to JSInterop
     public static native <T> List<T> asList(JavaScriptObject o) /*-{
         var l = @java.util.ArrayList::new()();
         l.@java.util.ArrayList::array = o;
         return l;
     }-*/;
 
+    //TODO: Convert to JSInterop
     public static native boolean isPrimitiveType(Object dataItem) /*-{
         return Object(dataItem) !== dataItem;
     }-*/;
 
+    //TODO: Convert to JSInterop
     public static native boolean isUndefinedOrNull(Object o) /*-{
         return o === undefined || o === null;
     }-*/;
 
+    //TODO: Convert to JSInterop
     public static native boolean isObject(Object o) /*-{
         return typeof o === "object" && o !== null;
     }-*/;
 
+    //TODO: Convert to JSInterop
     public static native JavaScriptObject getError(String msg) /*-{
         return new Error(msg || '');
     }-*/;
 
+    //TODO: Convert to JSInterop
     public static native JavaScriptObject getUndefined() /*-{
         return undefined;
     }-*/;
 
+    //TODO: Convert to JSInterop
     public static native boolean isTrue(Object o) /*-{
         return o;
     }-*/;
