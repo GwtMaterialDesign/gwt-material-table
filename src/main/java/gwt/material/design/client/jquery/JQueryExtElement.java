@@ -20,11 +20,11 @@
 package gwt.material.design.client.jquery;
 
 import com.google.gwt.dom.client.Element;
+import gwt.material.design.client.js.ScrollData;
 import gwt.material.design.jquery.client.api.Functions;
 import gwt.material.design.jquery.client.api.JQueryElement;
 import jsinterop.annotations.JsType;
 
-//TODO: Object -> JSType
 @JsType(name = "jQuery", isNative = true)
 public class JQueryExtElement extends JQueryElement {
 
@@ -44,19 +44,19 @@ public class JQueryExtElement extends JQueryElement {
 
     public native boolean isScrollEnd();
 
-    public native boolean scrollHandler(Object dir, String name, Functions.EventFunc1<Object> handler);
+    public native boolean scrollHandler(Object dir, String name, Functions.EventFunc1<ScrollData> handler);
 
-    public native boolean smartScroll(String name, Functions.EventFunc1<Object> handler);
+    public native boolean smartScroll(String name, Functions.EventFunc1<ScrollData> handler);
 
-    public native boolean scrollY(String name, Functions.EventFunc1<Object> handler);
+    public native boolean scrollY(String name, Functions.EventFunc1<ScrollData> handler);
 
-    public native boolean scrollX(String name, Functions.EventFunc1<Object> handler);
+    public native boolean scrollX(String name, Functions.EventFunc1<ScrollData> handler);
 
-    public native boolean onScrollUp(String name, Functions.EventFunc1<Object> handler);
+    public native boolean onScrollUp(String name, Functions.EventFunc1<ScrollData> handler);
 
-    public native boolean onScrollDown(String name, Functions.EventFunc1<Object> handler);
+    public native boolean onScrollDown(String name, Functions.EventFunc1<ScrollData> handler);
 
-    public native boolean onScrollLeft(String name, Functions.EventFunc1<Object> handler);
+    public native boolean onScrollLeft(String name, Functions.EventFunc1<ScrollData> handler);
 
-    public native boolean onScrollRight(String name, Functions.EventFunc1<Object> handler);
+    public native boolean onScrollRight(String name, Functions.EventFunc1<ScrollData> handler);
 }

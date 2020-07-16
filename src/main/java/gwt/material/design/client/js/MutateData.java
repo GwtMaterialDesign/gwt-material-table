@@ -2,7 +2,7 @@
  * #%L
  * GwtMaterial
  * %%
- * Copyright (C) 2015 - 2017 GwtMaterialDesign
+ * Copyright (C) 2015 - 2020 GwtMaterialDesign
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,25 @@
  * limitations under the License.
  * #L%
  */
-package gwt.material.design.client.jquery;
+package gwt.material.design.client.js;
 
-import com.google.gwt.dom.client.Element;
-import gwt.material.design.client.js.MutateData;
 import gwt.material.design.jquery.client.api.Functions;
+import jsinterop.annotations.JsPackage;
+import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 
-@JsType(name = "jQuery", isNative = true)
-public class JQueryMutateElement extends JQueryExtElement {
+@JsType(isNative = true, name = "Object", namespace = JsPackage.GLOBAL)
+public class MutateData {
 
-    public native JQueryMutateElement mutate(String events, Functions.Func2<Element, MutateData> callback);
+    @JsProperty
+    public Functions.Func callback;
 
-    public native JQueryMutateElement mutate(String events, Functions.Func2<Element, MutateData> callback, Functions.Func falseCallback);
+    @JsProperty(name = "event_name")
+    public String eventName;
+
+    @JsProperty(name = "false_callback")
+    public Functions.Func falseCallback;
+
+    @JsProperty
+    public Object selector;
 }
-

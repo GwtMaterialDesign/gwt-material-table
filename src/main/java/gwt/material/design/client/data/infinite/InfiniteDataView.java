@@ -202,9 +202,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
         }));
 
         // Setup the scroll event handlers
-        JQueryExtension.$(tableBody).scrollY(id, (event, scroll) -> {
-            return onVerticalScroll();
-        });
+        JQueryExtension.$(tableBody).scrollY(id, (event, scroll) -> onVerticalScroll());
 
         super.onSetup(scaffolding);
     }
