@@ -22,7 +22,6 @@ package gwt.material.design.client.ui.table;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.Range;
-import gwt.material.design.client.DataTableTestCase;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.base.density.DisplayDensity;
 import gwt.material.design.client.constants.*;

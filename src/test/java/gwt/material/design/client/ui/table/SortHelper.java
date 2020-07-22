@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package gwt.material.design.client;
+package gwt.material.design.client.ui.table;
 
 import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.client.model.Person;
