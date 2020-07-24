@@ -22,10 +22,8 @@ package gwt.material.design.client.data;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.shared.HasHandlers;
 import com.google.gwt.view.client.Range;
-import gwt.material.design.client.data.component.Components;
 import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.client.data.factory.RowComponentFactory;
-import gwt.material.design.jquery.client.api.Event;
 
 import java.util.List;
 
@@ -35,7 +33,6 @@ public interface HasRows<T> extends HasHandlers {
      * Get the range of visible rows.
      *
      * @return the visible range
-     *
      * @see #setVisibleRange(Range)
      * @see #setVisibleRange(int, int)
      */
@@ -45,9 +42,8 @@ public interface HasRows<T> extends HasHandlers {
      * Set the visible range or rows. This method defers to
      * {@link #setVisibleRange(Range)}.
      *
-     * @param start the start index
+     * @param start  the start index
      * @param length the length
-     *
      * @see #getVisibleRange()
      */
     void setVisibleRange(int start, int length);
@@ -56,7 +52,6 @@ public interface HasRows<T> extends HasHandlers {
      * Set the visible range or rows.
      *
      * @param range the visible range
-     *
      * @see #getVisibleRange()
      */
     void setVisibleRange(Range range);
@@ -81,7 +76,7 @@ public interface HasRows<T> extends HasHandlers {
     /**
      * Set values associated with the rows in the visible range.
      *
-     * @param start the start index of the data
+     * @param start  the start index of the data
      * @param values the values within the range
      */
     void setRowData(int start, List<? extends T> values);
@@ -99,6 +94,7 @@ public interface HasRows<T> extends HasHandlers {
 
     /**
      * Update a models row within the table.
+     *
      * @param model a model with a valid <code>equals</code> method.
      */
     void updateRow(T model);
@@ -110,18 +106,21 @@ public interface HasRows<T> extends HasHandlers {
 
     /**
      * Get a row by its representing model.
+     *
      * @param model the model assigned to a row.
      */
     RowComponent<T> getRow(T model);
 
     /**
      * Get a row by its rendered index.
+     *
      * @param index the value of the render index.
      */
     RowComponent<T> getRow(int index);
 
     /**
      * Get a models {@link RowComponent} or null if not found.
+     *
      * @param model a model with a valid <code>equals</code> method.
      * @return the models representing {@link RowComponent}.
      */
@@ -156,6 +155,7 @@ public interface HasRows<T> extends HasHandlers {
 
     /**
      * Select or deselect all rows.
+     *
      * @param select true will select, false with deselect
      */
     void selectAllRows(boolean select);
@@ -163,7 +163,7 @@ public interface HasRows<T> extends HasHandlers {
     /**
      * Select or deselect all rows.
      *
-     * @param select true will select, false with deselect
+     * @param select    true will select, false with deselect
      * @param fireEvent fire the '{@value gwt.material.design.client.ui.table.TableEvents#SELECT_ALL}' event.
      */
     void selectAllRows(boolean select, boolean fireEvent);
@@ -172,6 +172,13 @@ public interface HasRows<T> extends HasHandlers {
      * Select a given row.
      */
     void selectRow(Element row, boolean fireEvent);
+
+    /**
+     * Select a given model
+     */
+    void selectRow(T model);
+
+    void selectRow(T model, boolean fireEvent);
 
     /**
      * Unselect a selected row.
@@ -196,6 +203,7 @@ public interface HasRows<T> extends HasHandlers {
 
     /**
      * Get all the selected row models.
+     *
      * @param visibleOnly should we restrict this check to visible rows only.
      * @return list of the currently selected row models.
      */

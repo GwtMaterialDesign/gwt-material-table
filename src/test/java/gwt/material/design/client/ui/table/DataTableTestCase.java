@@ -17,12 +17,13 @@
  * limitations under the License.
  * #L%
  */
-package gwt.material.design.client;
+package gwt.material.design.client.ui.table;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.junit.client.GWTTestCase;
 import com.google.gwt.user.client.ui.RootPanel;
+import gwt.material.design.client.MaterialDesign;
 import gwt.material.design.client.base.constants.StyleName;
 import gwt.material.design.client.constants.Color;
 import gwt.material.design.client.constants.HideOn;
@@ -36,8 +37,6 @@ import gwt.material.design.client.resources.MaterialResources;
 import gwt.material.design.client.resources.MaterialTableBundle;
 import gwt.material.design.client.resources.WithJQueryResources;
 import gwt.material.design.client.ui.MaterialBadge;
-import gwt.material.design.client.ui.table.AbstractDataTable;
-import gwt.material.design.client.ui.table.MaterialDataTable;
 import gwt.material.design.client.ui.table.cell.TextColumn;
 import gwt.material.design.client.ui.table.cell.WidgetColumn;
 import gwt.material.design.jquery.client.api.JQueryElement;

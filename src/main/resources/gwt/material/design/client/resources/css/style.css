@@ -15,6 +15,7 @@ table {
 section.table-container ::-webkit-scrollbar {
     -webkit-overflow-scrolling: auto;
     -webkit-appearance: none;
+    height: 8px !important;
     width: 8px;
 }
 
@@ -54,19 +55,19 @@ tr {
     background: none;
 }
 
-thead {
+table.table thead {
     border-bottom: 1px solid #E3E3E3 !important;
     font-size: 12px;
     color: rgba(0, 0, 0, 0.54);
     z-index: 500;
 }
 
-thead tr {
+table.table thead tr {
     height: 56px;
     background-color: #fff;
 }
 
-tbody {
+table.table tbody {
     font-size: 13px;
     color: rgba(0, 0, 0, 0.87);
 }
@@ -97,6 +98,10 @@ table.table th#col0.selection.frozen-col {
     left: 0;
     top: auto;
     position: absolute;
+}
+
+table.striped > tbody > tr:nth-child(odd) td.frozen-col {
+    background-color: #f2f2f2 !important;
 }
 
 .max-height {
@@ -505,6 +510,10 @@ table.table.comfortable tr td {
     padding-bottom: 0px;
 }
 
+table.table.comfortable thead tr th.frozen-col {
+    height: 44px !important;
+}
+
 table.table.comfortable thead tr {
     height: 40px;
 }
@@ -515,10 +524,25 @@ table.table.comfortable tr td .letter-avatar {
     height: 32px !important;
 }
 
+table.table.comfortable tr td .input-field.listbox-wrapper {
+    margin-top: 0px;
+}
+
+table.table.comfortable tr td .input-field input.select-dropdown {
+    height: 28px;
+    font-size: 1em;
+    padding-bottom: 4px;
+    margin-bottom: 6px;
+}
+
 /* --- Compact / High Density --- */
 table.table.compact tr td {
     padding-top: 0px;
     padding-bottom: 0px;
+}
+
+table.table.compact thead tr th.frozen-col {
+    height: 38px !important;
 }
 
 table.table.compact thead tr {
@@ -529,6 +553,17 @@ table.table.compact tr td img,
 table.table.compact tr td .letter-avatar {
     width: 20px !important;
     height: 20px !important;
+}
+
+table.table.compact tr td .input-field.listbox-wrapper {
+    margin-top: 0px;
+}
+
+table.table.compact tr td .input-field input.select-dropdown {
+    margin-bottom: 0px;
+    height: 20px;
+    font-size: 1em;
+    padding-bottom: 4px;
 }
 
 /* ==================== RESPONSIVE LAYOUT ==================== */

@@ -21,7 +21,7 @@ package gwt.material.design.client.data;
 
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.dom.client.Style;
-import gwt.material.design.client.DataTableTestCase;
+import gwt.material.design.client.ui.table.DataTableTestCase;
 import gwt.material.design.client.base.constants.StyleName;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.constants.Color;
