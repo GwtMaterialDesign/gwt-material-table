@@ -258,7 +258,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
                         Range range = getVisibleRange();
                         int reach = range.getStart() + range.getLength();
 
-                        if (reach < getTotalRows()) {
+                        if (getTotalRows() > reach) {
                             if (category.isRendered()) {
                                 category.getWidget().setVisible(false);
                             }
@@ -310,8 +310,9 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
 
     @Override
     public void refresh() {
-        super.refresh();
         int rangeStart = range.getStart();
+        setVisibleRange(rangeStart, 0);
+        super.refresh();
         setVisibleRange(rangeStart, dynamicView ? getVisibleRowCapacity() : viewSize);
         setViewSize(range.getLength());
         updateRows(viewIndex, true);

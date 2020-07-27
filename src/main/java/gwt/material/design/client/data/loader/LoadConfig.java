@@ -22,7 +22,9 @@ package gwt.material.design.client.data.loader;
 import gwt.material.design.client.data.SortContext;
 import gwt.material.design.client.data.component.CategoryComponent;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LoadConfig<T> {
 
@@ -67,6 +69,12 @@ public class LoadConfig<T> {
      */
     public List<CategoryComponent> getOpenCategories() {
         return openCategories;
+    }
+
+    public List<String> getOpenCategoryNames() {
+        return openCategories != null
+            ? openCategories.stream().map(CategoryComponent::getName).collect(Collectors.toList())
+            : null;
     }
 
     @Override

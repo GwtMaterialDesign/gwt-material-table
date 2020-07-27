@@ -38,6 +38,6 @@ public class RowComponentFactory<M> implements ComponentFactory<RowComponent<M>,
     }
 
     public String getCategory(M model) {
-        return model != null && model instanceof HasDataCategory ? ((HasDataCategory) model).getDataCategory() : null;
+        return model instanceof HasDataCategory ? ((HasDataCategory) model).getDataCategory() : null;
     }
 }
