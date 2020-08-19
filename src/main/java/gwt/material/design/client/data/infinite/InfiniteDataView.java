@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -91,20 +91,23 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
     // Data loading task
     private InterruptibleTask loaderTask;
 
-    private int loaderBuffer = 10;
-    private int loaderIndex;
-    private int loaderSize;
+    protected int loaderBuffer = 10;
+    protected int loaderIndex;
+    protected int loaderSize;
 
     // Data loader delay millis
     private int loaderDelay = 200;
 
-    private List<T> loaderCache;
+    protected List<T> loaderCache;
 
     // Cache the selected rows for persistence
     private List<T> selectedModels = new ArrayList<>();
 
     // Cached models
     protected InfiniteDataCache<T> dataCache = new InfiniteDataCache<>();
+
+    // Row Loader
+    protected InfiniteRowLoader<T> rowLoader = new InfiniteRowLoader<>(this);
 
     // Handler registry
     private HandlerRegistry handlers;
@@ -377,6 +380,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
 
     protected void doLoad() {
         loading = true;
+
         // Check if the data was found in the cache
         if (loaderCache != null && !loaderCache.isEmpty()) {
             loaded(loaderIndex, loaderCache, false);
@@ -384,11 +388,12 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
             loaderCache = null;
         } else {
             setLoadMask(true);
-
+            rowLoader.show();
             dataSource.load(new LoadConfig<>(loaderIndex, loaderSize, getSortContext(), getOpenCategories()),
                 new LoadCallback<T>() {
                     @Override
                     public void onSuccess(LoadResult<T> result) {
+                        rowLoader.hide();
                         loaded(result.getOffset(), result.getData(), result.getTotalLength(), result.isCacheData());
                     }
 
