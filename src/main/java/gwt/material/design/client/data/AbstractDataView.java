@@ -51,6 +51,7 @@ import gwt.material.design.client.js.StickyTableOptions;
 import gwt.material.design.client.ui.MaterialCheckBox;
 import gwt.material.design.client.ui.MaterialProgress;
 import gwt.material.design.client.ui.Selectors;
+import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControl;
 import gwt.material.design.client.ui.table.*;
 import gwt.material.design.client.ui.table.cell.Column;
 import gwt.material.design.client.ui.table.cell.FrozenSide;
@@ -132,6 +133,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     private boolean useCategories;
     private SelectionType selectionType = SelectionType.NONE;
     private Density density = DisplayDensity.DEFAULT;
+    private DataTableAccessibilityControl accessibilityControl;
 
     // Components
     protected final Components<RowComponent<T>> rows = new Components<>();
@@ -183,6 +185,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         this.keyProvider = keyProvider;
         this.categoryFactory = new CategoryComponentFactory();
         this.rowFactory = new RowComponentFactory<>();
+        this.accessibilityControl = new DataTableAccessibilityControl(this);
         //this.componentFactories = new ArrayList<>();
 
         setRenderer(new BaseRenderer<>());
@@ -464,6 +467,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
                     rows.add(rowComponent);
                 }
+
+                accessibilityControl.registerRowTrigger(rowComponent);
             } else if (component instanceof CategoryComponent) {
                 CategoryComponent categoryComponent = (CategoryComponent) component;
                 row = bindCategoryEvents(renderer.drawCategory(categoryComponent, getColumnCount() - getColumnOffset()));
@@ -471,6 +476,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 if (categoryComponent.isOpenByDefault()) {
                     row.addAttachHandler(event -> openCategory(categoryComponent), true);
                 }
+                accessibilityControl.registerCategoryTrigger(categoryComponent);
             } else {
                 row = renderer.drawCustom(component);
             }
@@ -510,6 +516,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                     return true;
                 });
                 th.addStyleName(TableCssName.SORTABLE);
+                accessibilityControl.registerHeaderTrigger(th);
             }
 
             addHeader(index, th);
@@ -1299,7 +1306,9 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
                 // Rebuild the columns
                 for (RowComponent<T> row : rows) {
-                    row.getWidget().insert(renderer.drawSelectionCell(), 0);
+                    TableData selectionCell = renderer.drawSelectionCell();
+                    selectionCell.getElement().removeAttribute("tabIndex");
+                    row.getWidget().insert(selectionCell, 0);
                 }
                 reindexHeadersAndRows();
             } else if (selectionType.equals(SelectionType.NONE) && hadSelection) {
@@ -2476,6 +2485,14 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     public boolean hasFrozenColumns() {
         return getLeftFrozenColumns() > 0 || getRightFrozenColumns() > 0;
+    }
+
+    public DataTableAccessibilityControl getAccessibilityControl() {
+        return accessibilityControl;
+    }
+
+    public void setAccessibilityControl(DataTableAccessibilityControl accessibilityControl) {
+        this.accessibilityControl = accessibilityControl;
     }
 
     public CssNameMixin<Table, Density> getDensityCssNameMixin() {

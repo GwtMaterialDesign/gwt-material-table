@@ -20,18 +20,24 @@
 package gwt.material.design.client.ui.pager;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Style;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.data.DataSource;
 import gwt.material.design.client.data.loader.LoadCallback;
 import gwt.material.design.client.data.loader.LoadConfig;
 import gwt.material.design.client.data.loader.LoadResult;
+import gwt.material.design.client.ui.MaterialPanel;
+import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControl;
 import gwt.material.design.client.ui.pager.actions.ActionsPanel;
 import gwt.material.design.client.ui.pager.actions.PageNumberBox;
 import gwt.material.design.client.ui.pager.actions.PageSelection;
 import gwt.material.design.client.ui.pager.actions.RowSelection;
 import gwt.material.design.client.ui.table.MaterialDataTable;
+
+import static gwt.material.design.jquery.client.api.JQuery.$;
 
 /**
  * Material Data Pager - a simple pager for Material Data Table component
@@ -50,6 +56,7 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
     protected int[] limitOptions = new int[]{5, 10, 20};
     protected DataPagerLocaleProvider localeProvider = new DataPagerLocaleProvider() {};
 
+    private MaterialPanel pagerWrapper = new MaterialPanel();
     private ActionsPanel actionsPanel = new ActionsPanel(this);
     private RowSelection rowSelection = new RowSelection(this);
     private PageSelection pageSelection;
@@ -79,15 +86,23 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
             limit = limitOptions[0];
         }
 
-        add(actionsPanel);
-        add(rowSelection);
-
         if (pageSelection == null) {
             pageSelection = new PageNumberBox(this);
         }
-        add(pageSelection);
+        pagerWrapper.add(pageSelection);
+        pagerWrapper.add(rowSelection);
+        pagerWrapper.add(actionsPanel);
 
+        pagerWrapper.setFloat(Style.Float.RIGHT);
+        add(pagerWrapper);
         firstPage();
+
+        // Register Accessibility Controls
+        DataTableAccessibilityControl accessibilityControl = getTable().getView().getAccessibilityControl();
+        if (accessibilityControl != null && accessibilityControl.isEnabled()) {
+            Scheduler.get().scheduleDeferred(() -> $(getElement()).focus());
+            accessibilityControl.registerPageTrigger(this);
+        }
     }
     
     public void unload() {

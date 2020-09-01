@@ -601,9 +601,9 @@ table.table.compact tr td .input-field input.select-dropdown {
     -webkit-animation-timing-function: linear;
     animation-timing-function: linear;
     background: #f6f7f8;
-    background: -webkit-gradient(linear,left top,right top,color-stop(8%,#eee),color-stop(18%,#ddd),color-stop(33%,#eee));
-    background: -webkit-linear-gradient(left,#eee 8%,#ddd 18%,#eee 33%);
-    background: linear-gradient(to right,#eee 8%,#ddd 18%,#eee 33%);
+    background: -webkit-gradient(linear, left top, right top, color-stop(8%, #eee), color-stop(18%, #ddd), color-stop(33%, #eee));
+    background: -webkit-linear-gradient(left, #eee 8%, #ddd 18%, #eee 33%);
+    background: linear-gradient(to right, #eee 8%, #ddd 18%, #eee 33%);
     -webkit-background-size: 800px 104px;
     background-size: 800px 104px;
     position: relative;
@@ -804,4 +804,14 @@ table.table.compact tr td .input-field input.select-dropdown {
     .x-scroll {
         display: none;
     }
+}
+
+/** Focusable Datatable **/
+table.table tbody tr.subheader.focus-visible,
+table.table tbody tr.data-row.focus-visible {
+    background-color: #F5F5F5 !important;
+}
+
+table.table thead tr th.sortable.focus-visible {
+    color: rgba(0, 0, 0, 0.87);
 }

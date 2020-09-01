@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -470,6 +470,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
     /**
      * Returns the total number of rows that are visible given
      * the current grid height.
+     * //TODO: Issue with returned number of rows causing the bottom area to have an excess whitespace.
      */
     public int getVisibleRowCapacity() {
         int rh = getCalculatedRowHeight();
@@ -485,7 +486,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
 
         logger.finest("row height: " + rh + " visibleHeight: " + visibleHeight + " visible rows: "
             + rows + " calcHeight: " + calcHeight);
-        return rows;
+        return rows + 2;
     }
 
     @Override
