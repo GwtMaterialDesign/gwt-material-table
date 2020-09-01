@@ -151,3 +151,13 @@ table tr.stickyExclude {
         background: #414141;
     }
 }
+
+/** Focusable Datatable **/
+table.table tbody tr.subheader.focus-visible,
+table.table tbody tr.data-row.focus-visible {
+    background-color: rgba(255,255,255,.2) !important;
+}
+
+table.table thead tr th.sortable.focus-visible {
+    color: rgba(255, 255, 255, 0.87);
+}
