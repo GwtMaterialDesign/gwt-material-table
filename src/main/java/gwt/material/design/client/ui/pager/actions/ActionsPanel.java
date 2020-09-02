@@ -27,7 +27,7 @@ import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.constants.WavesType;
 import gwt.material.design.client.ui.MaterialIcon;
 import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControl;
-import gwt.material.design.client.ui.accessibility.TriggerCallback;
+import gwt.material.design.client.accessibility.TriggerCallback;
 import gwt.material.design.client.ui.html.Span;
 import gwt.material.design.client.ui.pager.MaterialDataPager;
 import gwt.material.design.client.ui.table.MaterialDataTable;
@@ -85,7 +85,7 @@ public class ActionsPanel extends MaterialWidget {
         if (table != null) {
             DataTableAccessibilityControl accessibilityControl = table.getView().getAccessibilityControl();
             if (accessibilityControl != null) {
-                accessibilityControl.register(icon, KeyCodes.KEY_ENTER, callback);
+                accessibilityControl.registerWidget(icon, KeyCodes.KEY_ENTER, callback);
             }
         }
     }
