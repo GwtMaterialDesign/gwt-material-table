@@ -2495,6 +2495,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         this.accessibilityControl = accessibilityControl;
     }
 
+    public Table getTable() {
+        return table;
+    }
+
     public CssNameMixin<Table, Density> getDensityCssNameMixin() {
         if (densityCssNameMixin == null) {
             densityCssNameMixin = new CssNameMixin<>(table);

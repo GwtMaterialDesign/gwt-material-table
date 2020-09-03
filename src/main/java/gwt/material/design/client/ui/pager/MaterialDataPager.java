@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,7 +20,6 @@
 package gwt.material.design.client.ui.pager;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Style;
 import gwt.material.design.client.base.MaterialWidget;
@@ -37,8 +36,6 @@ import gwt.material.design.client.ui.pager.actions.PageSelection;
 import gwt.material.design.client.ui.pager.actions.RowSelection;
 import gwt.material.design.client.ui.table.MaterialDataTable;
 
-import static gwt.material.design.jquery.client.api.JQuery.$;
-
 /**
  * Material Data Pager - a simple pager for Material Data Table component
  *
@@ -54,7 +51,8 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
     protected int currentPage = 1;
     protected int totalRows = 0;
     protected int[] limitOptions = new int[]{5, 10, 20};
-    protected DataPagerLocaleProvider localeProvider = new DataPagerLocaleProvider() {};
+    protected DataPagerLocaleProvider localeProvider = new DataPagerLocaleProvider() {
+    };
 
     private MaterialPanel pagerWrapper = new MaterialPanel();
     private ActionsPanel actionsPanel = new ActionsPanel(this);
@@ -80,7 +78,7 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
 
         load();
     }
-    
+
     public void load() {
         if (limit == 0) {
             limit = limitOptions[0];
@@ -99,12 +97,11 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
 
         // Register Accessibility Controls
         DataTableAccessibilityControl accessibilityControl = getTable().getView().getAccessibilityControl();
-        if (accessibilityControl != null && accessibilityControl.isEnabled()) {
-            Scheduler.get().scheduleDeferred(() -> $(getElement()).focus());
-            accessibilityControl.registerPageTrigger(this);
+        if (accessibilityControl != null) {
+            accessibilityControl.registerPageTriggers(this);
         }
     }
-    
+
     public void unload() {
         offset = 0;
         limit = 0;
@@ -113,7 +110,7 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
         limitOptions = new int[]{5, 10, 20};
         clear();
     }
-    
+
     public void reload() {
         unload();
         load();

@@ -19,11 +19,13 @@
  */
 package gwt.material.design.client.ui.accessibility;
 
+import com.google.gwt.event.dom.client.KeyUpEvent;
 import gwt.material.design.client.accessibility.AccessibilityControl;
 import gwt.material.design.client.data.AbstractDataView;
 import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.client.ui.pager.MaterialDataPager;
+import gwt.material.design.client.ui.table.Table;
 import gwt.material.design.client.ui.table.TableHeader;
 
 /**
@@ -33,6 +35,7 @@ public class DataTableAccessibilityControl extends AccessibilityControl {
 
     protected AbstractDataView<?> dataView;
     protected AccessibilityOption option = new AccessibilityOption();
+    protected MaterialDataPager<?> dataPager;
 
 
     protected DataTableAccessibilityControl() {
@@ -59,8 +62,35 @@ public class DataTableAccessibilityControl extends AccessibilityControl {
         registerWidget(tableHeader, option.getKeys().getHeaderTrigger());
     }
 
-    public void registerPageTrigger(MaterialDataPager pager) {
-        registerWidget(pager, option.getKeys().getPageNext(), event -> pager.next());
-        registerWidget(pager, option.getKeys().getPagePrevious(), event -> pager.previous());
+    public void registerPageTriggers(MaterialDataPager<?> dataPager) {
+        this.dataPager = dataPager;
+        Table table = dataView.getTable();
+        if (table != null) {
+            table.setFocus(true);
+            registerWidget(table, option.getKeys().getPageNext(), this::onPageNext);
+            registerWidget(table, option.getKeys().getPagePrevious(), this::onPagePrevious);
+        }
+    }
+
+    protected void onPageNext(KeyUpEvent event) {
+        if (dataPager != null) {
+            if (event.isShiftKeyDown()) {
+                dataPager.lastPage();
+            } else {
+                dataPager.next();
+            }
+            dataView.getTable().setFocus(true);
+        }
+    }
+
+    protected void onPagePrevious(KeyUpEvent event) {
+        if (dataPager != null) {
+            if (event.isShiftKeyDown()) {
+                dataPager.firstPage();
+            } else {
+                dataPager.previous();
+            }
+            dataView.getTable().setFocus(true);
+        }
     }
 }
