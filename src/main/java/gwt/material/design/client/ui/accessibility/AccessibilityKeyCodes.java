@@ -29,7 +29,7 @@ public class AccessibilityKeyCodes {
     private int pageNext = KeyCodes.KEY_RIGHT;
     private int pagePrevious = KeyCodes.KEY_LEFT;
     private int infiniteLoadNext = KeyCodes.KEY_DOWN;
-    private int infiniteLoadPrevious = KeyCodes.KEY_DOWN;
+    private int infiniteLoadPrevious = KeyCodes.KEY_UP;
 
     public AccessibilityKeyCodes() {
     }

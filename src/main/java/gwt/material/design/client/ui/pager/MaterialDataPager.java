@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,7 +29,7 @@ import gwt.material.design.client.data.loader.LoadCallback;
 import gwt.material.design.client.data.loader.LoadConfig;
 import gwt.material.design.client.data.loader.LoadResult;
 import gwt.material.design.client.ui.MaterialPanel;
-import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControl;
+import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControls;
 import gwt.material.design.client.ui.pager.actions.ActionsPanel;
 import gwt.material.design.client.ui.pager.actions.PageNumberBox;
 import gwt.material.design.client.ui.pager.actions.PageSelection;
@@ -96,9 +96,9 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
         firstPage();
 
         // Register Accessibility Controls
-        DataTableAccessibilityControl accessibilityControl = getTable().getView().getAccessibilityControl();
+        DataTableAccessibilityControls accessibilityControl = getTable().getView().getAccessibilityControl();
         if (accessibilityControl != null) {
-            accessibilityControl.registerPageTriggers(this);
+            accessibilityControl.registerPageControl(this);
         }
     }
 

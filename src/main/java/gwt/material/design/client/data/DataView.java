@@ -25,7 +25,7 @@ import gwt.material.design.client.data.component.Component;
 import gwt.material.design.client.data.component.Components;
 import gwt.material.design.client.js.JsTableSubHeaders;
 import gwt.material.design.client.ui.MaterialProgress;
-import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControl;
+import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControls;
 import gwt.material.design.client.ui.table.DataDisplay;
 import gwt.material.design.client.ui.table.TableHeader;
 import gwt.material.design.client.ui.table.TableScaffolding;
@@ -138,7 +138,7 @@ public interface DataView<T> extends HasRows<T>, HasColumns<T>, HasDataSource<T>
     /**
      * Controls the datatable's accessibility features including it's component focused states.
      */
-    void setAccessibilityControl(DataTableAccessibilityControl accessibilityControl);
+    void setAccessibilityControl(DataTableAccessibilityControls accessibilityControl);
 
-    DataTableAccessibilityControl getAccessibilityControl();
+    DataTableAccessibilityControls getAccessibilityControl();
 }

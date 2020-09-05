@@ -38,6 +38,7 @@ import gwt.material.design.client.data.loader.LoadResult;
 import gwt.material.design.client.events.DefaultHandlerRegistry;
 import gwt.material.design.client.events.HandlerRegistry;
 import gwt.material.design.client.jquery.JQueryExtension;
+import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControls;
 import gwt.material.design.client.ui.table.DataDisplay;
 import gwt.material.design.client.ui.table.TableScaffolding;
 import gwt.material.design.jquery.client.api.JQueryElement;
@@ -207,6 +208,12 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
         // Setup the scroll event handlers
         JQueryExtension.$(tableBody).scrollY(id, (event, scroll) -> onVerticalScroll());
 
+        // Accessibility Controls for infinite loading
+        DataTableAccessibilityControls accessibilityControl = getAccessibilityControl();
+        if (accessibilityControl != null) {
+            accessibilityControl.registerInfiniteDataLoadingControl(this);
+        }
+
         super.onSetup(scaffolding);
     }
 
@@ -335,7 +342,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
         return tableBody.height() - headerRow.$this().height();
     }
 
-    protected Object onVerticalScroll() {
+    public Object onVerticalScroll() {
         if (!rendering) {
             int index = (int) Math.ceil(tableBody.scrollTop() / getCalculatedRowHeight());
             if (index == 0 || index != viewIndex) {
