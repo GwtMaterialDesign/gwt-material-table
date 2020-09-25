@@ -33,12 +33,12 @@ import java.util.List;
  * @author Ben Dol
  */
 public class RowComponent<T> extends Component<TableRow> implements Comparable<T>, HasEnabled {
-    private Comparator<T> DEFAULT_COMPARATOR = (o1, o2) -> o1.toString().compareToIgnoreCase(o2.toString());
+    private final Comparator<T> DEFAULT_COMPARATOR = (o1, o2) -> o1.toString().compareToIgnoreCase(o2.toString());
 
     private T data;
     private int index;
     private final String categoryName;
-    private final DataView dataView;
+    private final DataView<T> dataView;
 
     private Comparator<T> comparator;
 
@@ -49,9 +49,10 @@ public class RowComponent<T> extends Component<TableRow> implements Comparable<T
         index = clone.index;
         categoryName = clone.categoryName;
         dataView = clone.dataView;
+        comparator = clone.comparator;
     }
 
-    public RowComponent(T data, DataView dataView, String categoryName) {
+    public RowComponent(T data, DataView<T> dataView, String categoryName) {
         this.data = data;
         this.dataView = dataView;
         this.categoryName = categoryName;
@@ -73,7 +74,7 @@ public class RowComponent<T> extends Component<TableRow> implements Comparable<T
         this.index = index;
     }
 
-    public DataView getDataView() {
+    public DataView<T> getDataView() {
         return dataView;
     }
 
@@ -103,6 +104,30 @@ public class RowComponent<T> extends Component<TableRow> implements Comparable<T
 
     public boolean hasRightFrozen() {
         return getRightFrozenColumns() > 0;
+    }
+
+    /**
+     * Expands the row.
+     * Also see {@link #shrink()}
+     */
+    public boolean expand() {
+        return dataView.expandRow(this, true);
+    }
+
+    /**
+     * Shrinks the row.
+     * Also see {@link #expand()}
+     */
+    public boolean shrink() {
+        return dataView.expandRow(this, false);
+    }
+
+    /**
+     * Expand or shrink the row.
+     * Also see {@link #expand()} and {@link #shrink()}
+     */
+    public boolean expandOrShrink() {
+        return dataView.expandOrShrinkRow(this);
     }
 
     @Override

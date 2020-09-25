@@ -44,6 +44,7 @@ import gwt.material.design.client.data.factory.RowComponentFactory;
 import gwt.material.design.client.events.DefaultHandlerRegistry;
 import gwt.material.design.client.events.HandlerRegistry;
 import gwt.material.design.client.ui.table.cell.Column;
+import gwt.material.design.jquery.client.api.JQueryElement;
 
 import java.util.List;
 import java.util.Set;
@@ -496,6 +497,26 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     @Override
     public final List<T> getSelectedRowModels(boolean visibleOnly) {
         return view.getSelectedRowModels(visibleOnly);
+    }
+
+    @Override
+    public boolean expandRow(RowComponent<T> row, boolean expand) {
+        return view.expandRow(row, expand);
+    }
+
+    @Override
+    public boolean expandRow(JQueryElement tr, boolean expand) {
+        return view.expandRow(tr, expand);
+    }
+
+    @Override
+    public boolean expandOrShrinkRow(RowComponent<T> row) {
+        return view.expandOrShrinkRow(row);
+    }
+
+    @Override
+    public boolean expandOrShrinkRow(JQueryElement tr) {
+        return view.expandOrShrinkRow(tr);
     }
 
     @Override
