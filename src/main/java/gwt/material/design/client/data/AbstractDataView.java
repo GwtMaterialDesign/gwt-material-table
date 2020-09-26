@@ -835,7 +835,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             // Expand current row extra information
             expands.on("tap." + id + " click." + id, e -> {
                 JQueryElement tr = $(e.getCurrentTarget()).parent().parent();
-                if (expandOrShrinkRow(tr)) {
+                if (expandOrCollapseRow(tr)) {
                     e.stopPropagation();
                 }
                 return true;
@@ -937,13 +937,13 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
-    public boolean expandOrShrinkRow(RowComponent<T> row) {
+    public boolean expandOrCollapseRow(RowComponent<T> row) {
         JQueryElement tr = row.getWidget() != null ? row.getWidget().$this() : null;
-        return tr != null && expandOrShrinkRow(tr);
+        return tr != null && expandOrCollapseRow(tr);
     }
 
     @Override
-    public boolean expandOrShrinkRow(JQueryElement tr) {
+    public boolean expandOrCollapseRow(JQueryElement tr) {
         JQueryElement expansion = tr.next().find("td.expansion div");
         return expandRow(tr, !expansion.hasClass("expanded"));
     }

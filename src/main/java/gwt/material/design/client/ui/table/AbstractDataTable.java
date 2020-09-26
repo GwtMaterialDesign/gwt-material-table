@@ -510,13 +510,13 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
-    public boolean expandOrShrinkRow(RowComponent<T> row) {
-        return view.expandOrShrinkRow(row);
+    public boolean expandOrCollapseRow(RowComponent<T> row) {
+        return view.expandOrCollapseRow(row);
     }
 
     @Override
-    public boolean expandOrShrinkRow(JQueryElement tr) {
-        return view.expandOrShrinkRow(tr);
+    public boolean expandOrCollapseRow(JQueryElement tr) {
+        return view.expandOrCollapseRow(tr);
     }
 
     @Override

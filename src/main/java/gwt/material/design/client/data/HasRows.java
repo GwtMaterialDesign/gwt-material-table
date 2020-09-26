@@ -221,32 +221,32 @@ public interface HasRows<T> extends HasHandlers {
     int getRowClickCooldown();
 
     /**
-     * Expand or shrink a row.
+     * Expand or collapse a row.
      *
-     * @param row the {@link RowComponent} to expand or shrink
-     * @param expand true to expand, false to shrink
+     * @param row the {@link RowComponent} to expand or collapse
+     * @param expand true to expand, false to collapse
      */
     boolean expandRow(RowComponent<T> row, boolean expand);
 
     /**
-     * Expand or shrink a row.
+     * Expand or collapse a row.
      *
-     * @param tr the rows tr element to expand or shrink
-     * @param expand true to expand, false to shrink
+     * @param tr the rows tr element to expand or collapse
+     * @param expand true to expand, false to collapse
      */
     boolean expandRow(JQueryElement tr, boolean expand);
 
     /**
-     * Expand or shrink a row.
+     * Expand or collapse a row.
      *
-     * @param row the {@link RowComponent} to expand or shrink
+     * @param row the {@link RowComponent} to expand or collapse
      */
-    boolean expandOrShrinkRow(RowComponent<T> row);
+    boolean expandOrCollapseRow(RowComponent<T> row);
 
     /**
-     * Expand or shrink a row.
+     * Expand or collapse a row.
      *
-     * @param tr the rows tr element to expand or shrink
+     * @param tr the rows tr element to expand or collapse
      */
-    boolean expandOrShrinkRow(JQueryElement tr);
+    boolean expandOrCollapseRow(JQueryElement tr);
 }

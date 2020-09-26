@@ -108,26 +108,26 @@ public class RowComponent<T> extends Component<TableRow> implements Comparable<T
 
     /**
      * Expands the row.
-     * Also see {@link #shrink()}
+     * Also see {@link #collapse()}
      */
     public boolean expand() {
         return dataView.expandRow(this, true);
     }
 
     /**
-     * Shrinks the row.
+     * Collapses the row.
      * Also see {@link #expand()}
      */
-    public boolean shrink() {
+    public boolean collapse() {
         return dataView.expandRow(this, false);
     }
 
     /**
-     * Expand or shrink the row.
-     * Also see {@link #expand()} and {@link #shrink()}
+     * Expand or collapse the row.
+     * Also see {@link #expand()} and {@link #collapse()}
      */
-    public boolean expandOrShrink() {
-        return dataView.expandOrShrinkRow(this);
+    public boolean expandOrCollapse() {
+        return dataView.expandOrCollapseRow(this);
     }
 
     @Override
