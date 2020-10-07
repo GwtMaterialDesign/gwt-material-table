@@ -125,8 +125,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     public AbstractDataTable(TableScaffolding scaffolding) {
-        this();
-        this.scaffolding = scaffolding;
+        this(new StandardDataView<>(), scaffolding);
     }
 
     public AbstractDataTable(DataView<T> view, TableScaffolding scaffolding) {
