@@ -51,6 +51,7 @@ import gwt.material.design.client.js.StickyTableOptions;
 import gwt.material.design.client.ui.MaterialCheckBox;
 import gwt.material.design.client.ui.MaterialProgress;
 import gwt.material.design.client.ui.Selectors;
+import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControls;
 import gwt.material.design.client.ui.table.*;
 import gwt.material.design.client.ui.table.cell.Column;
 import gwt.material.design.client.ui.table.cell.FrozenSide;
@@ -132,6 +133,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     private boolean useCategories;
     private SelectionType selectionType = SelectionType.NONE;
     private Density density = DisplayDensity.DEFAULT;
+    private DataTableAccessibilityControls accessibilityControl;
 
     // Components
     protected final Components<RowComponent<T>> rows = new Components<>();
@@ -183,6 +185,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         this.keyProvider = keyProvider;
         this.categoryFactory = new CategoryComponentFactory();
         this.rowFactory = new RowComponentFactory<>();
+        this.accessibilityControl = new DataTableAccessibilityControls(this);
         //this.componentFactories = new ArrayList<>();
 
         setRenderer(new BaseRenderer<>());
@@ -464,6 +467,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
                     rows.add(rowComponent);
                 }
+
+                accessibilityControl.registerRowControl(rowComponent);
             } else if (component instanceof CategoryComponent) {
                 CategoryComponent categoryComponent = (CategoryComponent) component;
                 row = bindCategoryEvents(renderer.drawCategory(categoryComponent, getColumnCount() - getColumnOffset()));
@@ -471,6 +476,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 if (categoryComponent.isOpenByDefault()) {
                     row.addAttachHandler(event -> openCategory(categoryComponent), true);
                 }
+                accessibilityControl.registerCategoryControl(categoryComponent);
             } else {
                 row = renderer.drawCustom(component);
             }
@@ -510,6 +516,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                     return true;
                 });
                 th.addStyleName(TableCssName.SORTABLE);
+                accessibilityControl.registerHeaderControl(th);
             }
 
             addHeader(index, th);
@@ -827,84 +834,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         if (useRowExpansion) {
             // Expand current row extra information
             expands.on("tap." + id + " click." + id, e -> {
-                final boolean[] recalculated = {false};
-
                 JQueryElement tr = $(e.getCurrentTarget()).parent().parent();
-                if (!tr.hasClass("disabled") && !tr.is("[disabled]")) {
-                    JQueryElement[] expansion = new JQueryElement[]{tr.next().find("td.expansion div")};
-
-                    if (expansion[0].length() < 1) {
-                        expansion[0] = $(expansionHtml).insertAfter(tr);
-                        expansion[0] = expansion[0].find("td.expansion div");
-                    }
-
-                    final boolean expanding = !expansion[0].hasClass("expanded");
-                    final JQueryElement row = tr.next();
-                    final T model = getModelByRowElement(tr.asElement());
-
-                    RowExpansion<T> rowExpansion = new RowExpansion<>(model, row);
-                    final JQueryElement content = rowExpansion.getContent();
-
-                    JQueryElement[] copy = {expansion[0].find("div#copy")};
-                    if (expanding && hasFrozenColumns()) {
-                        // This will open at the same time as the original.
-                        copy[0] = content.clone().appendTo(expansion[0]);
-                        copy[0].attr("id", "copy");
-                        copy[0].css("height", "80px");
-
-                        // Assign absolute and left 0 for frozen column support.
-                        content.css("position", "absolute");
-                        content.css("left", "0");
-                        content.css("height", "80px");
-                    }
-
-                    expansion[0].one(transitionEvents, (e1, param1) -> {
-                        if (!recalculated[0]) {
-                            // Recalculate sub headers
-                            subheaderLib.recalculate(true);
-                            recalculated[0] = true;
-
-                            // Apply overlay
-                            JQueryElement overlay = row.find("section.overlay");
-                            overlay.height(row.outerHeight(false));
-
-                            if (expanding) {
-                                // Fire table expanded event
-                                RowExpandedEvent.fire(this, rowExpansion);
-                                $(e.currentTarget).html(IconType.KEYBOARD_ARROW_UP.getCssName());
-                            } else {
-                                // Fire table collapsed event
-                                RowCollapsedEvent.fire(this, rowExpansion);
-                                $(e.currentTarget).html(IconType.KEYBOARD_ARROW_DOWN.getCssName());
-                            }
-                        }
-                        return true;
-                    });
-
-                    if (expanding) {
-                        // Fire table expand event
-                        RowExpandingEvent.fire(this, rowExpansion);
-                    } else {
-                        // Destroy the copy
-                        if (copy[0] != null) {
-                            copy[0].remove();
-                        }
-
-                        content.css("position", "");
-                        content.css("left", "");
-
-                        RowCollapsingEvent.fire(this, rowExpansion);
-                    }
-
-                    Scheduler.get().scheduleDeferred(() -> {
-                        if (copy[0] != null) {
-                            copy[0].toggleClass("expanded");
-                        }
-                        expansion[0].toggleClass("expanded");
-                    });
+                if (expandOrCollapseRow(tr)) {
+                    e.stopPropagation();
                 }
-
-                e.stopPropagation();
                 return true;
             });
         }
@@ -913,10 +846,111 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         subheaderLib.recalculate(true);
     }
 
+    @Override
+    public boolean expandRow(RowComponent<T> row, boolean expand) {
+        JQueryElement tr = row.getWidget() != null ? row.getWidget().$this() : null;
+        return tr != null && expandRow(tr, expand);
+    }
+
+    @Override
+    public boolean expandRow(JQueryElement tr, boolean expand) {
+        final boolean[] recalculated = {false};
+
+        if (!tr.hasClass("disabled") && !tr.is("[disabled]")) {
+            JQueryElement[] expansion = new JQueryElement[]{tr.next().find("td.expansion div")};
+
+            if (expansion[0].length() < 1) {
+                expansion[0] = $(expansionHtml).insertAfter(tr);
+                expansion[0] = expansion[0].find("td.expansion div");
+            }
+
+            final JQueryElement row = tr.next();
+            final T model = getModelByRowElement(tr.asElement());
+
+            RowExpansion<T> rowExpansion = new RowExpansion<>(model, row);
+            final JQueryElement content = rowExpansion.getContent();
+
+            JQueryElement[] copy = {expansion[0].find("div#copy")};
+            if (expand && hasFrozenColumns()) {
+                // This will open at the same time as the original.
+                copy[0] = content.clone().appendTo(expansion[0]);
+                copy[0].attr("id", "copy");
+                copy[0].css("height", "80px");
+
+                // Assign absolute and left 0 for frozen column support.
+                content.css("position", "absolute");
+                content.css("left", "0");
+                content.css("height", "80px");
+            }
+
+            expansion[0].one(transitionEvents, (e1, param1) -> {
+                if (!recalculated[0]) {
+                    // Recalculate sub headers
+                    subheaderLib.recalculate(true);
+                    recalculated[0] = true;
+
+                    // Apply overlay
+                    JQueryElement overlay = row.find("section.overlay");
+                    overlay.height(row.outerHeight(false));
+
+                    JQueryElement icon = tr.find("i#expand");
+
+                    if (expand) {
+                        // Fire table expanded event
+                        RowExpandedEvent.fire(this, rowExpansion);
+                        icon.html(IconType.KEYBOARD_ARROW_UP.getCssName());
+                    } else {
+                        // Fire table collapsed event
+                        RowCollapsedEvent.fire(this, rowExpansion);
+                        icon.html(IconType.KEYBOARD_ARROW_DOWN.getCssName());
+                    }
+                }
+                return true;
+            });
+
+            if (expand) {
+                // Fire table expand event
+                RowExpandingEvent.fire(this, rowExpansion);
+            } else {
+                // Destroy the copy
+                if (copy[0] != null) {
+                    copy[0].remove();
+                }
+
+                content.css("position", "");
+                content.css("left", "");
+
+                RowCollapsingEvent.fire(this, rowExpansion);
+            }
+
+            Scheduler.get().scheduleDeferred(() -> {
+                if (copy[0] != null) {
+                    copy[0].toggleClass("expanded");
+                }
+                expansion[0].toggleClass("expanded");
+            });
+
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean expandOrCollapseRow(RowComponent<T> row) {
+        JQueryElement tr = row.getWidget() != null ? row.getWidget().$this() : null;
+        return tr != null && expandOrCollapseRow(tr);
+    }
+
+    @Override
+    public boolean expandOrCollapseRow(JQueryElement tr) {
+        JQueryElement expansion = tr.next().find("td.expansion div");
+        return expandRow(tr, !expansion.hasClass("expanded"));
+    }
+
     protected void setupStickyHeader() {
         if ($table != null && display != null) {
-            $table.stickyTableHeaders(StickyTableOptions.create(
-                $(".table-body", getContainer())));
+            $table.stickyTableHeaders(StickyTableOptions.create($(".table-body", getContainer())));
         }
     }
 
@@ -1299,7 +1333,9 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
                 // Rebuild the columns
                 for (RowComponent<T> row : rows) {
-                    row.getWidget().insert(renderer.drawSelectionCell(), 0);
+                    TableData selectionCell = renderer.drawSelectionCell();
+                    selectionCell.getElement().removeAttribute("tabIndex");
+                    row.getWidget().insert(selectionCell, 0);
                 }
                 reindexHeadersAndRows();
             } else if (selectionType.equals(SelectionType.NONE) && hadSelection) {
@@ -2476,6 +2512,18 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     public boolean hasFrozenColumns() {
         return getLeftFrozenColumns() > 0 || getRightFrozenColumns() > 0;
+    }
+
+    public DataTableAccessibilityControls getAccessibilityControl() {
+        return accessibilityControl;
+    }
+
+    public void setAccessibilityControl(DataTableAccessibilityControls accessibilityControl) {
+        this.accessibilityControl = accessibilityControl;
+    }
+
+    public Table getTable() {
+        return table;
     }
 
     public CssNameMixin<Table, Density> getDensityCssNameMixin() {

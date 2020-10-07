@@ -25,6 +25,7 @@ import gwt.material.design.client.data.component.Component;
 import gwt.material.design.client.data.component.Components;
 import gwt.material.design.client.js.JsTableSubHeaders;
 import gwt.material.design.client.ui.MaterialProgress;
+import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControls;
 import gwt.material.design.client.ui.table.DataDisplay;
 import gwt.material.design.client.ui.table.TableHeader;
 import gwt.material.design.client.ui.table.TableScaffolding;
@@ -133,4 +134,11 @@ public interface DataView<T> extends HasRows<T>, HasColumns<T>, HasDataSource<T>
      * Get the data views progress widget.
      */
     MaterialProgress getProgressWidget();
+
+    /**
+     * Controls the datatable's accessibility features including it's component focused states.
+     */
+    void setAccessibilityControl(DataTableAccessibilityControls accessibilityControl);
+
+    DataTableAccessibilityControls getAccessibilityControl();
 }

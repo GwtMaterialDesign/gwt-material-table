@@ -20,6 +20,7 @@
 package gwt.material.design.client.ui.table;
 
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Panel;
 import gwt.material.design.client.base.constants.TableCssName;
@@ -122,6 +123,7 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
             stretchIcon.setId("stretch");
             stretchIcon.getElement().getStyle().setCursor(Style.Cursor.POINTER);
             toolPanel.add(stretchIcon);
+            getView().getAccessibilityControl().registerWidget(stretchIcon);
         }
 
         if(columnMenuIcon == null || !columnMenuIcon.isAttached()) {
@@ -133,6 +135,7 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
             columnMenuIcon.setId("columnToggle");
             columnMenuIcon.getElement().getStyle().setCursor(Style.Cursor.POINTER);
             toolPanel.add(columnMenuIcon);
+            getView().getAccessibilityControl().registerWidget(columnMenuIcon);
         }
 
         if(stretchContainer == null) {
