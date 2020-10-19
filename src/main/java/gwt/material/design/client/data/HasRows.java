@@ -24,6 +24,7 @@ import com.google.gwt.event.shared.HasHandlers;
 import com.google.gwt.view.client.Range;
 import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.client.data.factory.RowComponentFactory;
+import gwt.material.design.jquery.client.api.JQueryElement;
 
 import java.util.List;
 
@@ -218,4 +219,34 @@ public interface HasRows<T> extends HasHandlers {
      * Click event cooldown on a rows, set to 0 for no cooldown.
      */
     int getRowClickCooldown();
+
+    /**
+     * Expand or collapse a row.
+     *
+     * @param row the {@link RowComponent} to expand or collapse
+     * @param expand true to expand, false to collapse
+     */
+    boolean expandRow(RowComponent<T> row, boolean expand);
+
+    /**
+     * Expand or collapse a row.
+     *
+     * @param tr the rows tr element to expand or collapse
+     * @param expand true to expand, false to collapse
+     */
+    boolean expandRow(JQueryElement tr, boolean expand);
+
+    /**
+     * Expand or collapse a row.
+     *
+     * @param row the {@link RowComponent} to expand or collapse
+     */
+    boolean expandOrCollapseRow(RowComponent<T> row);
+
+    /**
+     * Expand or collapse a row.
+     *
+     * @param tr the rows tr element to expand or collapse
+     */
+    boolean expandOrCollapseRow(JQueryElement tr);
 }
