@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -44,10 +44,7 @@ import gwt.material.design.client.data.factory.CategoryComponentFactory;
 import gwt.material.design.client.data.factory.RowComponentFactory;
 import gwt.material.design.client.jquery.JQueryExtension;
 import gwt.material.design.client.jquery.JQueryMutate;
-import gwt.material.design.client.js.Js;
-import gwt.material.design.client.js.JsTableElement;
-import gwt.material.design.client.js.JsTableSubHeaders;
-import gwt.material.design.client.js.StickyTableOptions;
+import gwt.material.design.client.js.*;
 import gwt.material.design.client.ui.MaterialCheckBox;
 import gwt.material.design.client.ui.MaterialProgress;
 import gwt.material.design.client.ui.Selectors;
@@ -56,6 +53,7 @@ import gwt.material.design.client.ui.table.*;
 import gwt.material.design.client.ui.table.cell.Column;
 import gwt.material.design.client.ui.table.cell.FrozenSide;
 import gwt.material.design.jquery.client.api.Event;
+import gwt.material.design.jquery.client.api.Functions;
 import gwt.material.design.jquery.client.api.JQueryElement;
 import gwt.material.design.jquery.client.api.MouseEvent;
 
@@ -122,6 +120,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected int leftFrozenColumns = -1;
     protected int rightFrozenColumns = -1;
     protected int rowClickCooldown = 100;
+    protected int debounceThrottle = 250;
 
     private int lastSelected;
     private boolean setup;
@@ -639,21 +638,17 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             // Setup the subheaders for categories
             setupSubHeaders();
 
-            // Setup the resize event handlers
-            tableBody.on("resize." + id, e -> {
-                refresh();
-                return true;
-            });
 
-            // We will check the window resize just in case
-            // it has updated the view size of the data view.
-            $(window()).on("resize." + id, e -> {
+            // Will need to make sure that we only call refresh() only once when mutation called.
+            Functions.Func2<Element, MutateData> refreshFunction = JsDebounce.debounce(250, (mutateEl, mutateData) -> {
                 // In the cases where the table is not currently attached.
                 if (getContainer().isAttached()) {
                     refresh();
                 }
-                return true;
             });
+
+            // Setup the height mutations event handler
+            JQueryMutate.$(tableBody).mutate("height", refreshFunction);
 
             // XScroll Setup
             $table.on("resize." + id, e -> {
