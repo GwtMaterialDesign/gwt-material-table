@@ -379,12 +379,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 CategoryComponent category = row.getCategory();
                 if (category == null) {
                     category = buildCategoryComponent(row);
-                    if (category != null) {
-                        categories.add(category);
-                    }
+                    categories.add(category);
                 }
 
-                if (category != null && category.isRendered()) {
+                if (category.isRendered()) {
                     category.getWidget().setVisible(true);
                 }
             }
@@ -415,9 +413,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         return true;
     }
 
-    @Override
     @SuppressWarnings("unchecked")
-    public void renderComponent(Component<?> component) {
+    protected void renderComponent(Component<?> component) {
         if (component != null) {
             TableRow row;
             int index = -1;
@@ -545,6 +542,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             // Render the rows
             renderRows(rows);
         }
+
+        $(tableBody).scrollTop(0);
     }
 
     @Override
@@ -640,6 +639,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
             // Setup the subheaders for categories
             setupSubHeaders();
+
 
             // Will need to make sure that we only call refresh() only once when mutation called.
             Functions.Func2<Element, MutateData> refreshFunction = JsDebounce.debounce(250, (mutateEl, mutateData) -> {

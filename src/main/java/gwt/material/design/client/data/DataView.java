@@ -46,11 +46,6 @@ public interface DataView<T> extends HasRows<T>, HasColumns<T>, HasDataSource<T>
     void render(Components<Component<?>> components);
 
     /**
-     * Render individual data view component to DOM.
-     */
-    void renderComponent(Component<?> component);
-
-    /**
      * Setup the data view.
      */
     void setup(TableScaffolding scaffolding) throws Exception;

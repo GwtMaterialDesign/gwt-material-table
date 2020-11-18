@@ -37,7 +37,7 @@ public class RowComponent<T> extends Component<TableRow> implements Comparable<T
 
     private T data;
     private int index;
-    private String categoryName;
+    private final String categoryName;
     private final DataView<T> dataView;
 
     private Comparator<T> comparator;
@@ -84,13 +84,6 @@ public class RowComponent<T> extends Component<TableRow> implements Comparable<T
 
     public String getCategoryName() {
         return categoryName;
-    }
-
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
-        setRedraw(true);
-        dataView.addCategory(categoryName);
-        dataView.renderComponent(this);
     }
 
     public int getLeftFrozenColumns() {
