@@ -41,6 +41,7 @@ import java.util.List;
  * @param <T>
  */
 public interface Renderer<T> {
+
     TableRow drawRow(DataView<T> dataView, RowComponent<T> rowComponent, Object valueKey, List<Column<T, ?>> columns, boolean redraw);
 
     TableSubHeader drawCategory(CategoryComponent category, int columnCount);
