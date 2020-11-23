@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,6 +41,7 @@ import gwt.material.design.client.data.component.*;
 import gwt.material.design.client.data.component.CategoryComponent.OrphanCategoryComponent;
 import gwt.material.design.client.data.events.*;
 import gwt.material.design.client.data.factory.CategoryComponentFactory;
+import gwt.material.design.client.data.factory.CategoryPair;
 import gwt.material.design.client.data.factory.RowComponentFactory;
 import gwt.material.design.client.jquery.JQueryExtension;
 import gwt.material.design.client.jquery.JQueryMutate;
@@ -84,7 +85,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected SortContext<T> sortContext;
     protected Column<T, ?> autoSortColumn;
     protected RowComponentFactory<T> rowFactory;
-    protected ComponentFactory<? extends CategoryComponent, String> categoryFactory;
+    protected ComponentFactory<? extends CategoryComponent, CategoryPair> categoryFactory;
     protected ProvidesKey<T> keyProvider;
     //protected List<ComponentFactory<?, T>> componentFactories;
     protected JsTableSubHeaders subheaderLib;
@@ -1719,7 +1720,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         return autoSortColumn;
     }
 
-    public ComponentFactory<? extends CategoryComponent, String> getCategoryFactory() {
+    public ComponentFactory<? extends CategoryComponent, CategoryPair> getCategoryFactory() {
         return categoryFactory;
     }
 
@@ -1733,16 +1734,16 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     protected CategoryComponent buildCategoryComponent(RowComponent<T> row) {
-        return row != null ? buildCategoryComponent(row.getCategoryName()) : null;
+        return row != null ? buildCategoryComponent(row.getCategoryInfo()) : null;
     }
 
-    protected CategoryComponent buildCategoryComponent(String categoryName) {
-        if (categoryName != null) {
+    protected CategoryComponent buildCategoryComponent(CategoryPair categoryPair) {
+        if (categoryPair != null && categoryPair.getName() != null) {
             // Generate the category if not exists
             if (categoryFactory != null) {
-                CategoryComponent category = getCategory(categoryName);
+                CategoryComponent category = getCategory(categoryPair.getName());
                 if (category == null) {
-                    return categoryFactory.generate(this, categoryName);
+                    return categoryFactory.generate(this, categoryPair);
                 } else {
                     return category;
                 }
@@ -1811,6 +1812,13 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     @Override
     public void addCategory(String category) {
+        if (category != null) {
+            addCategory(buildCategoryComponent(new CategoryPair(category)));
+        }
+    }
+
+    @Override
+    public void addCategory(CategoryPair category) {
         if (category != null) {
             addCategory(buildCategoryComponent(category));
         }
@@ -2047,7 +2055,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
-    public void setCategoryFactory(ComponentFactory<? extends CategoryComponent, String> categoryFactory) {
+    public void setCategoryFactory(ComponentFactory<? extends CategoryComponent, CategoryPair> categoryFactory) {
         this.categoryFactory = categoryFactory;
     }
 

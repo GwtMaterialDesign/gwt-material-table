@@ -21,6 +21,7 @@ package gwt.material.design.client.data.component;
 
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.data.HasCategories;
+import gwt.material.design.client.data.factory.CategoryPair;
 import gwt.material.design.client.ui.table.TableHeader;
 import gwt.material.design.client.ui.table.TableSubHeader;
 
@@ -31,7 +32,7 @@ public class CategoryComponent extends Component<TableSubHeader> {
 
     public static class OrphanCategoryComponent extends CategoryComponent {
         public OrphanCategoryComponent(HasCategories parent) {
-            super(parent, null);
+            super(parent, null, null);
         }
 
         @Override
@@ -42,6 +43,7 @@ public class CategoryComponent extends Component<TableSubHeader> {
         }
     }
 
+    private String id;
     private String name;
     private String height;
     private boolean openByDefault;
@@ -52,13 +54,14 @@ public class CategoryComponent extends Component<TableSubHeader> {
 
     private HasCategories parent;
 
-    public CategoryComponent(HasCategories parent, String name) {
-        this(parent, name, false);
+    public CategoryComponent(HasCategories parent, String name, String id) {
+        this(parent, name, id, false);
     }
 
-    public CategoryComponent(HasCategories parent, String name, boolean openByDefault) {
+    public CategoryComponent(HasCategories parent, String name, String id, boolean openByDefault) {
         this.parent = parent;
         this.name = name;
+        this.id = id;
         this.openByDefault = openByDefault;
     }
 
@@ -93,6 +96,14 @@ public class CategoryComponent extends Component<TableSubHeader> {
 
     public String getName() {
         return name;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     /**

@@ -25,8 +25,12 @@ import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.ui.table.TableSubHeader;
 
 public class CustomCategoryComponent extends CategoryComponent {
-    public CustomCategoryComponent(HasCategories parent, String category) {
-        super(parent, category);
+    public CustomCategoryComponent(HasCategories parent, String name, String id) {
+        super(parent, name, id);
+    }
+
+    public CustomCategoryComponent(HasCategories parent, String name, String id, boolean openByDefault) {
+        super(parent, name, id, openByDefault);
     }
 
     @Override

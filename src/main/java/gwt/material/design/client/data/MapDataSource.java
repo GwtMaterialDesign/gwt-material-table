@@ -20,6 +20,7 @@
 package gwt.material.design.client.data;
 
 import gwt.material.design.client.data.component.CategoryComponent;
+import gwt.material.design.client.data.factory.CategoryPair;
 import gwt.material.design.client.data.loader.LoadCallback;
 import gwt.material.design.client.data.loader.LoadConfig;
 import gwt.material.design.client.data.loader.LoadResult;
@@ -49,7 +50,7 @@ public class MapDataSource<T> implements DataSource<T>, HasDataView<T> {
             List<CategoryComponent> categories = loadConfig.getOpenCategories();
             if(dataView.isUseCategories() && categories != null) {
                 for (CategoryComponent category : categories) {
-                    List<T> data = dataMap.get(category.getName());
+                    List<T> data = dataMap.get(category.getId());
                     if (data != null) {
                         flatData.addAll(data);
                     }
@@ -80,14 +81,14 @@ public class MapDataSource<T> implements DataSource<T>, HasDataView<T> {
 
     public void add(Collection<T> list) {
         for(T item : list) {
-            String category = null;
+            CategoryPair category = null;
             if(dataView.isUseCategories()) {
                 category = dataView.getRowFactory().getCategory(item);
             }
             if(category == null) {
-                category = AbstractDataView.ORPHAN_PATTERN;
+                category = new CategoryPair(AbstractDataView.ORPHAN_PATTERN);
             }
-            List<T> data = dataMap.computeIfAbsent(category, k -> new ArrayList<>());
+            List<T> data = dataMap.computeIfAbsent(category.getId(), k -> new ArrayList<>());
             data.add(item);
         }
     }

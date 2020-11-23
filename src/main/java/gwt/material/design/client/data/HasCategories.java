@@ -22,6 +22,7 @@ package gwt.material.design.client.data;
 import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.data.component.ComponentFactory;
 import gwt.material.design.client.data.factory.CategoryComponentFactory;
+import gwt.material.design.client.data.factory.CategoryPair;
 
 import java.util.List;
 
@@ -30,7 +31,7 @@ public interface HasCategories {
     /**
      * Set your own custom {@link CategoryComponentFactory} to generate your categories.
      */
-    void setCategoryFactory(ComponentFactory<? extends CategoryComponent, String> categoryFactory);
+    void setCategoryFactory(ComponentFactory<? extends CategoryComponent, CategoryPair> categoryFactory);
 
     /**
      * Get a stored category component.
@@ -59,6 +60,13 @@ public interface HasCategories {
      * @param category The category name.
      */
     void addCategory(String category);
+
+    /**
+     * Explicitly add a category, which will be drawn to the table.
+     * If the category already exists then it will be ignored.
+     * @param category The category pair info.
+     */
+    void addCategory(CategoryPair category);
 
     /**
      * Explicitly add a {@link CategoryComponent}, which will be drawn to the table.

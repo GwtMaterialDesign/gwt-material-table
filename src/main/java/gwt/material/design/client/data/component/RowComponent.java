@@ -21,6 +21,7 @@ package gwt.material.design.client.data.component;
 
 import com.google.gwt.user.client.ui.HasEnabled;
 import gwt.material.design.client.data.DataView;
+import gwt.material.design.client.data.factory.CategoryPair;
 import gwt.material.design.jquery.client.api.JQuery;
 import gwt.material.design.jquery.client.api.JQueryElement;
 import gwt.material.design.client.ui.table.TableRow;
@@ -37,7 +38,7 @@ public class RowComponent<T> extends Component<TableRow> implements Comparable<T
 
     private T data;
     private int index;
-    private String categoryName;
+    private CategoryPair categoryInfo;
     private final DataView<T> dataView;
 
     private Comparator<T> comparator;
@@ -47,15 +48,15 @@ public class RowComponent<T> extends Component<TableRow> implements Comparable<T
         addAll(clone.getChildren());
         data = clone.data;
         index = clone.index;
-        categoryName = clone.categoryName;
+        categoryInfo = clone.categoryInfo;
         dataView = clone.dataView;
         comparator = clone.comparator;
     }
 
-    public RowComponent(T data, DataView<T> dataView, String categoryName) {
+    public RowComponent(T data, DataView<T> dataView, CategoryPair categoryInfo) {
         this.data = data;
         this.dataView = dataView;
-        this.categoryName = categoryName;
+        this.categoryInfo = categoryInfo;
     }
 
     public T getData() {
@@ -79,18 +80,24 @@ public class RowComponent<T> extends Component<TableRow> implements Comparable<T
     }
 
     public CategoryComponent getCategory() {
-        return dataView.getCategory(categoryName);
+        return categoryInfo != null ? dataView.getCategory(categoryInfo.getName()) : null;
     }
 
     public String getCategoryName() {
-        return categoryName;
+        return categoryInfo != null ? categoryInfo.getName() : null;
     }
 
     public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
-        setRedraw(true);
-        dataView.addCategory(categoryName);
-        dataView.renderComponent(this);
+        if (categoryInfo != null) {
+            this.categoryInfo.setName(categoryName);
+            setRedraw(true);
+            dataView.addCategory(categoryName);
+            dataView.renderComponent(this);
+        }
+    }
+
+    public CategoryPair getCategoryInfo() {
+        return categoryInfo;
     }
 
     public int getLeftFrozenColumns() {
@@ -203,7 +210,7 @@ public class RowComponent<T> extends Component<TableRow> implements Comparable<T
         return "RowComponent{" +
                 "data=" + data +
                 ", index=" + index +
-                ", categoryName='" + categoryName + '\'' +
+                ", categoryInfo='" + categoryInfo + '\'' +
                 '}';
     }
 }
