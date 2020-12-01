@@ -407,6 +407,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
                     @Override
                     public void onFailure(Throwable caught) {
                         logger.log(Level.SEVERE, "Load failure", caught);
+                        loading = false;
                         // TODO: What we need to do on failure? Maybe clear table?
                     }
                 });
