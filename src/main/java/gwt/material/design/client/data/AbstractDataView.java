@@ -41,7 +41,7 @@ import gwt.material.design.client.data.component.*;
 import gwt.material.design.client.data.component.CategoryComponent.OrphanCategoryComponent;
 import gwt.material.design.client.data.events.*;
 import gwt.material.design.client.data.factory.CategoryComponentFactory;
-import gwt.material.design.client.data.factory.CategoryPair;
+import gwt.material.design.client.data.factory.Category;
 import gwt.material.design.client.data.factory.RowComponentFactory;
 import gwt.material.design.client.jquery.JQueryExtension;
 import gwt.material.design.client.jquery.JQueryMutate;
@@ -85,7 +85,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected SortContext<T> sortContext;
     protected Column<T, ?> autoSortColumn;
     protected RowComponentFactory<T> rowFactory;
-    protected ComponentFactory<? extends CategoryComponent, CategoryPair> categoryFactory;
+    protected ComponentFactory<? extends CategoryComponent, Category> categoryFactory;
     protected ProvidesKey<T> keyProvider;
     //protected List<ComponentFactory<?, T>> componentFactories;
     protected JsTableSubHeaders subheaderLib;
@@ -1720,7 +1720,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         return autoSortColumn;
     }
 
-    public ComponentFactory<? extends CategoryComponent, CategoryPair> getCategoryFactory() {
+    public ComponentFactory<? extends CategoryComponent, Category> getCategoryFactory() {
         return categoryFactory;
     }
 
@@ -1737,7 +1737,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         return row != null ? buildCategoryComponent(row.getCategoryInfo()) : null;
     }
 
-    protected CategoryComponent buildCategoryComponent(CategoryPair categoryPair) {
+    protected CategoryComponent buildCategoryComponent(Category categoryPair) {
         if (categoryPair != null && categoryPair.getName() != null) {
             // Generate the category if not exists
             if (categoryFactory != null) {
@@ -1813,12 +1813,12 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     @Override
     public void addCategory(String category) {
         if (category != null) {
-            addCategory(buildCategoryComponent(new CategoryPair(category)));
+            addCategory(buildCategoryComponent(new Category(category)));
         }
     }
 
     @Override
-    public void addCategory(CategoryPair category) {
+    public void addCategory(Category category) {
         if (category != null) {
             addCategory(buildCategoryComponent(category));
         }
@@ -2055,7 +2055,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
-    public void setCategoryFactory(ComponentFactory<? extends CategoryComponent, CategoryPair> categoryFactory) {
+    public void setCategoryFactory(ComponentFactory<? extends CategoryComponent, Category> categoryFactory) {
         this.categoryFactory = categoryFactory;
     }
 

@@ -21,7 +21,7 @@ package gwt.material.design.client.factory;
 
 import gwt.material.design.client.data.DataView;
 import gwt.material.design.client.data.component.RowComponent;
-import gwt.material.design.client.data.factory.CategoryPair;
+import gwt.material.design.client.data.factory.Category;
 import gwt.material.design.client.data.factory.RowComponentFactory;
 import gwt.material.design.client.model.Person;
 
@@ -34,11 +34,11 @@ public class PersonRowFactory extends RowComponentFactory<Person> {
     }
 
     @Override
-    public CategoryPair getCategory(Person model) {
+    public Category getCategory(Person model) {
         // We want to override the standard category retrieval
         // This is where we can define a models category.
         // This is useful when we don't want to pollute our
         // object models with the interface HasDataCategory.
-        return new CategoryPair(model.getCategory());
+        return new Category(model.getCategory());
     }
 }

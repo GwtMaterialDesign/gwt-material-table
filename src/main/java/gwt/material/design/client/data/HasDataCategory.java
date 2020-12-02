@@ -19,7 +19,7 @@
  */
 package gwt.material.design.client.data;
 
-import gwt.material.design.client.data.factory.CategoryPair;
+import gwt.material.design.client.data.factory.Category;
 
 /**
  * Used for data categorization for features such as data categories.<br>
@@ -32,5 +32,5 @@ public interface HasDataCategory {
     /**
      * Returns the objects data category name.
      */
-    CategoryPair getDataCategory();
+    Category getDataCategory();
 }

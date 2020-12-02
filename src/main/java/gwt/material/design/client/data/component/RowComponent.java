@@ -21,7 +21,8 @@ package gwt.material.design.client.data.component;
 
 import com.google.gwt.user.client.ui.HasEnabled;
 import gwt.material.design.client.data.DataView;
-import gwt.material.design.client.data.factory.CategoryPair;
+import gwt.material.design.client.data.factory.Category;
+import gwt.material.design.client.data.factory.Category;
 import gwt.material.design.jquery.client.api.JQuery;
 import gwt.material.design.jquery.client.api.JQueryElement;
 import gwt.material.design.client.ui.table.TableRow;
@@ -38,7 +39,7 @@ public class RowComponent<T> extends Component<TableRow> implements Comparable<T
 
     private T data;
     private int index;
-    private CategoryPair categoryInfo;
+    private Category categoryInfo;
     private final DataView<T> dataView;
 
     private Comparator<T> comparator;
@@ -53,7 +54,7 @@ public class RowComponent<T> extends Component<TableRow> implements Comparable<T
         comparator = clone.comparator;
     }
 
-    public RowComponent(T data, DataView<T> dataView, CategoryPair categoryInfo) {
+    public RowComponent(T data, DataView<T> dataView, Category categoryInfo) {
         this.data = data;
         this.dataView = dataView;
         this.categoryInfo = categoryInfo;
@@ -96,7 +97,7 @@ public class RowComponent<T> extends Component<TableRow> implements Comparable<T
         }
     }
 
-    public CategoryPair getCategoryInfo() {
+    public Category getCategoryInfo() {
         return categoryInfo;
     }
 

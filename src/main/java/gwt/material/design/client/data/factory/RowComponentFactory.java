@@ -39,7 +39,7 @@ public class RowComponentFactory<M> implements ComponentFactory<RowComponent<M>,
         return rowComponent;
     }
 
-    public CategoryPair getCategory(M model) {
+    public Category getCategory(M model) {
         return model instanceof HasDataCategory ? ((HasDataCategory) model).getDataCategory() : null;
     }
 

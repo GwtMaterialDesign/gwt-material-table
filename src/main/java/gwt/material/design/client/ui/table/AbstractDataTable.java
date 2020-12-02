@@ -40,7 +40,7 @@ import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.data.component.ComponentFactory;
 import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.client.data.events.*;
-import gwt.material.design.client.data.factory.CategoryPair;
+import gwt.material.design.client.data.factory.Category;
 import gwt.material.design.client.data.factory.RowComponentFactory;
 import gwt.material.design.client.events.DefaultHandlerRegistry;
 import gwt.material.design.client.events.HandlerRegistry;
@@ -209,7 +209,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
-    public final void setCategoryFactory(ComponentFactory<? extends CategoryComponent, CategoryPair> categoryFactory) {
+    public final void setCategoryFactory(ComponentFactory<? extends CategoryComponent, Category> categoryFactory) {
         view.setCategoryFactory(categoryFactory);
     }
 
@@ -239,7 +239,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
-    public void addCategory(CategoryPair category) {
+    public void addCategory(Category category) {
         view.addCategory(category);
     }
 

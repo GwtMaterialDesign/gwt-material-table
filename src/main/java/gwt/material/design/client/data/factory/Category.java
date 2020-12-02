@@ -21,15 +21,15 @@ package gwt.material.design.client.data.factory;
 
 import java.util.Objects;
 
-public class CategoryPair {
+public class Category {
     String name;
-    String id;
+    Object id;
 
-    public CategoryPair(String name) {
+    public Category(String name) {
         this(name, name);
     }
 
-    public CategoryPair(String name, String id) {
+    public Category(String name, Object id) {
         this.name = name;
         this.id = id;
     }
@@ -42,11 +42,11 @@ public class CategoryPair {
         this.name = name;
     }
 
-    public String getId() {
+    public Object getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Object id) {
         this.id = id;
     }
 
@@ -54,7 +54,7 @@ public class CategoryPair {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CategoryPair that = (CategoryPair) o;
+        Category that = (Category) o;
         return name.equals(that.name) &&
             Objects.equals(id, that.id);
     }
@@ -66,7 +66,7 @@ public class CategoryPair {
 
     @Override
     public String toString() {
-        return "CategoryPair{" +
+        return "Category{" +
             "name='" + name + '\'' +
             ", id='" + id + '\'' +
             '}';

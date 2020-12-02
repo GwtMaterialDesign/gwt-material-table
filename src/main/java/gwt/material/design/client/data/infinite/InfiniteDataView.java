@@ -396,7 +396,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
         } else {
             setLoadMask(true);
             rowLoader.show();
-            dataSource.load(new LoadConfig<>(loaderIndex, loaderSize, getSortContext(), getOpenCategories()),
+            dataSource.load(new LoadConfig<T>(this, loaderIndex, loaderSize, getSortContext(), getOpenCategories()),
                 new LoadCallback<T>() {
                     @Override
                     public void onSuccess(LoadResult<T> result) {
