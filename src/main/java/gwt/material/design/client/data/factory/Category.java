@@ -22,8 +22,10 @@ package gwt.material.design.client.data.factory;
 import java.util.Objects;
 
 public class Category {
+
     String name;
     Object id;
+    CategoryState state;
 
     public Category(String name) {
         this(name, name);
@@ -48,6 +50,14 @@ public class Category {
 
     public void setId(Object id) {
         this.id = id;
+    }
+
+    public CategoryState getState() {
+        return state;
+    }
+
+    public void setState(CategoryState state) {
+        this.state = state;
     }
 
     @Override
