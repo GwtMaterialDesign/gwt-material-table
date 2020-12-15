@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,6 +21,7 @@ package gwt.material.design.client.data.component;
 
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.data.HasCategories;
+import gwt.material.design.client.data.factory.CategoryState;
 import gwt.material.design.client.ui.table.TableHeader;
 import gwt.material.design.client.ui.table.TableSubHeader;
 
@@ -47,6 +48,7 @@ public class CategoryComponent extends Component<TableSubHeader> {
     private String height;
     private boolean openByDefault;
     private boolean hideName;
+    private CategoryState state;
 
     private int currentIndex = -1;
     private int rowCount = 0;
@@ -68,7 +70,7 @@ public class CategoryComponent extends Component<TableSubHeader> {
      * Open this category if we are rendered.
      */
     public void open() {
-        if(isRendered()) {
+        if (isRendered()) {
             parent.openCategory(this);
         }
     }
@@ -77,7 +79,7 @@ public class CategoryComponent extends Component<TableSubHeader> {
      * Close this category if we are rendered.
      */
     public void close() {
-        if(isRendered()) {
+        if (isRendered()) {
             parent.closeCategory(this);
         }
     }
@@ -86,7 +88,7 @@ public class CategoryComponent extends Component<TableSubHeader> {
      * Toggle the open/close state of this category.
      */
     public void toggle() {
-        if(isOpen()) {
+        if (isOpen()) {
             close();
         } else {
             open();
@@ -120,7 +122,7 @@ public class CategoryComponent extends Component<TableSubHeader> {
      */
     public final TableSubHeader render(int columnCount) {
         TableSubHeader element = getWidget();
-        if(element == null) {
+        if (element == null) {
             element = new TableSubHeader(this, columnCount);
             setWidget(element);
         }
@@ -156,7 +158,7 @@ public class CategoryComponent extends Component<TableSubHeader> {
     public void setOpenByDefault(boolean openByDefault) {
         this.openByDefault = openByDefault;
 
-        if(isRendered() && openByDefault && !isOpen()) {
+        if (isRendered() && openByDefault && !isOpen()) {
             open();
         }
     }
@@ -177,9 +179,17 @@ public class CategoryComponent extends Component<TableSubHeader> {
         this.height = height;
 
         Widget widget = getWidget();
-        if(widget != null && widget.isAttached()) {
+        if (widget != null && widget.isAttached()) {
             widget.setHeight(height);
         }
+    }
+
+    public CategoryState getState() {
+        return state;
+    }
+
+    public void setState(CategoryState state) {
+        this.state = state;
     }
 
     public TableHeader getHeader(int index) {
