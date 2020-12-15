@@ -27,10 +27,7 @@ import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.data.component.Component;
 import gwt.material.design.client.data.component.RowComponent;
-import gwt.material.design.client.ui.table.TableData;
-import gwt.material.design.client.ui.table.TableHeader;
-import gwt.material.design.client.ui.table.TableRow;
-import gwt.material.design.client.ui.table.TableSubHeader;
+import gwt.material.design.client.ui.table.*;
 import gwt.material.design.client.ui.table.cell.Column;
 import gwt.material.design.client.ui.table.cell.FrozenSide;
 
@@ -44,7 +41,7 @@ public interface Renderer<T> {
 
     TableRow drawRow(DataView<T> dataView, RowComponent<T> rowComponent, Object valueKey, List<Column<T, ?>> columns, boolean redraw);
 
-    TableSubHeader drawCategory(CategoryComponent category, int columnCount);
+    TableSubHeader drawCategory(CategoryComponent category, int columnCount, DataView<T> dataView);
 
     TableRow drawCustom(Component<?> component);
 

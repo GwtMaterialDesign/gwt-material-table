@@ -164,14 +164,14 @@ public class BaseRenderer<T> implements Renderer<T> {
     }
 
     @Override
-    public TableSubHeader drawCategory(CategoryComponent category, int columnCount) {
+    public TableSubHeader drawCategory(CategoryComponent category, int columnCount, DataView<T> dataView) {
         if (category != null) {
             TableSubHeader subHeader = category.getWidget();
             if (subHeader == null) {
                 subHeader = category.render(columnCount);
                 assert subHeader != null : "rendered category TableSubHeader cannot be null.";
                 subHeader.setHeight(category.getHeight());
-                applyCategoryState(category.getState(), subHeader);
+                applyCategoryState(category.getState(), subHeader, dataView);
             }
             return subHeader;
         }
@@ -180,18 +180,21 @@ public class BaseRenderer<T> implements Renderer<T> {
         return null;
     }
 
-    protected void applyCategoryState(CategoryState state, TableSubHeader element) {
+    protected void applyCategoryState(CategoryState state, TableSubHeader subHeader, DataView<T> dataView) {
         if (state != null) {
             switch (state) {
                 case DISABLE:
-                    element.setEnabled(false);
+                    subHeader.setEnabled(false);
+                    dataView.closeAllCategories();
                     break;
                 case HIDDEN:
-                    element.setVisible(false);
+                    subHeader.addStyleName(CategoryState.HIDDEN.getName());
+                    dataView.closeAllCategories();
                     break;
                 case ENABLE:
                 default:
-                    element.setEnabled(true);
+                    subHeader.removeStyleName(CategoryState.HIDDEN.getName());
+                    subHeader.setEnabled(true);
                     break;
             }
         }

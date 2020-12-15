@@ -232,6 +232,11 @@ table.table tbody tr.subheader.fixed.passed {
 
 }
 
+table.table tbody tr.subheader.hidden {
+    display: none;
+    visibility: hidden;
+}
+
 table.table tbody tr.subheader td {
     padding: 10px 5px !important;
 }
