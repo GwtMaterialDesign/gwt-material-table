@@ -2,8 +2,8 @@ package gwt.material.design.client.data.factory;
 
 public enum CategoryState {
 
-    ENABLE("enable"),
-    DISABLE("disable"),
+    ENABLED("enabled"),
+    DISABLED("disabled"),
     HIDDEN("hidden");
 
     private String name;

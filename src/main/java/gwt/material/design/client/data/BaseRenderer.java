@@ -42,12 +42,13 @@ import gwt.material.design.client.ui.table.TableHeader;
 import gwt.material.design.client.ui.table.TableRow;
 import gwt.material.design.client.ui.table.TableSubHeader;
 import gwt.material.design.client.ui.table.cell.*;
-import gwt.material.design.jquery.client.api.JQuery;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+
+import static gwt.material.design.jquery.client.api.JQuery.$;
 
 /**
  * Base Component Renderer used by {@link AbstractDataView}.
@@ -183,18 +184,22 @@ public class BaseRenderer<T> implements Renderer<T> {
     protected void applyCategoryState(CategoryState state, TableSubHeader subHeader, DataView<T> dataView) {
         if (state != null) {
             switch (state) {
-                case DISABLE:
+                case DISABLED:
                     subHeader.setEnabled(false);
                     dataView.closeAllCategories();
+                    dataView.hideTableScrollbar(true);
                     break;
                 case HIDDEN:
                     subHeader.addStyleName(CategoryState.HIDDEN.getName());
                     dataView.closeAllCategories();
+                    dataView.hideTableScrollbar(true);
                     break;
-                case ENABLE:
+                case ENABLED:
                 default:
+                    dataView.getContainer().getElement().getStyle().clearOverflow();
                     subHeader.removeStyleName(CategoryState.HIDDEN.getName());
                     subHeader.setEnabled(true);
+                    dataView.hideTableScrollbar(false);
                     break;
             }
         }
@@ -346,12 +351,12 @@ public class BaseRenderer<T> implements Renderer<T> {
             td.addAttachHandler(event -> {
                 int left = 0;
                 for (Element el : header.$this().prevAll().get()) {
-                    left += JQuery.$(el).outerWidth();
+                    left += $(el).outerWidth();
                 }
 
                 int right = 0;
                 for (Element el : header.$this().nextAll().get()) {
-                    right += JQuery.$(el).outerWidth();
+                    right += $(el).outerWidth();
                 }
 
                 double width = header.$this().width();

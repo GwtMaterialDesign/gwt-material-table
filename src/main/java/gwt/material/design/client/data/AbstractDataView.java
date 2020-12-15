@@ -42,7 +42,6 @@ import gwt.material.design.client.data.component.CategoryComponent.OrphanCategor
 import gwt.material.design.client.data.events.*;
 import gwt.material.design.client.data.factory.Category;
 import gwt.material.design.client.data.factory.CategoryComponentFactory;
-import gwt.material.design.client.data.factory.CategoryState;
 import gwt.material.design.client.data.factory.RowComponentFactory;
 import gwt.material.design.client.jquery.JQueryExtension;
 import gwt.material.design.client.jquery.JQueryMutate;
@@ -2153,6 +2152,13 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     @Override
     public Widget getContainer() {
         return display.asWidget();
+    }
+
+    @Override
+    public void hideTableScrollbar(boolean hideScrollbar) {
+        if (tableBody != null) {
+            tableBody.css("overflow", hideScrollbar ? "hidden" : "");
+        }
     }
 
     @Override
