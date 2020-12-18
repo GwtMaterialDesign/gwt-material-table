@@ -45,6 +45,8 @@ import gwt.material.design.client.data.factory.RowComponentFactory;
 import gwt.material.design.client.events.DefaultHandlerRegistry;
 import gwt.material.design.client.events.HandlerRegistry;
 import gwt.material.design.client.ui.table.cell.Column;
+import gwt.material.design.client.ui.table.cell.ColumnValueProvider;
+import gwt.material.design.client.ui.table.cell.TextColumn;
 import gwt.material.design.jquery.client.api.JQueryElement;
 
 import java.util.List;
@@ -306,6 +308,11 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     @Override
     public final Column<T, ?> addColumn(Column<T, ?> column) {
         return view.addColumn(column);
+    }
+
+    @Override
+    public final Column<T, ?> addColumn(ColumnValueProvider<T> provider, String columnName) {
+        return view.addColumn(provider, columnName);
     }
 
     @Override

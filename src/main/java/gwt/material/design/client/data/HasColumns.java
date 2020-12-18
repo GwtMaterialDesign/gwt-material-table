@@ -20,6 +20,7 @@
 package gwt.material.design.client.data;
 
 import gwt.material.design.client.ui.table.cell.Column;
+import gwt.material.design.client.ui.table.cell.ColumnValueProvider;
 
 import java.util.List;
 
@@ -31,6 +32,11 @@ public interface HasColumns<T> {
      * @param column the column object
      */
     Column<T, ?> addColumn(Column<T, ?> column);
+
+    /**
+     * Add a new column to the data view.
+     */
+    Column<T, ?> addColumn(ColumnValueProvider<T> provider, String columnName);
 
     /**
      * Add a new column to the data view.

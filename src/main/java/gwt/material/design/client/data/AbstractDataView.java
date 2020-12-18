@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -52,7 +52,9 @@ import gwt.material.design.client.ui.Selectors;
 import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControls;
 import gwt.material.design.client.ui.table.*;
 import gwt.material.design.client.ui.table.cell.Column;
+import gwt.material.design.client.ui.table.cell.ColumnValueProvider;
 import gwt.material.design.client.ui.table.cell.FrozenSide;
+import gwt.material.design.client.ui.table.cell.TextColumn;
 import gwt.material.design.jquery.client.api.Event;
 import gwt.material.design.jquery.client.api.Functions;
 import gwt.material.design.jquery.client.api.JQueryElement;
@@ -1047,6 +1049,17 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     @Override
     public Column<T, ?> addColumn(String header, Column<T, ?> column) {
         return insertColumn(header, columns.size(), column);
+    }
+
+    @Override
+    public final Column<T, ?> addColumn(ColumnValueProvider<T> renderer, String columnName) {
+        return addColumn(new TextColumn<T>(){
+            @Override
+            public String getValue(T object) {
+                String value = renderer.getValue(object);
+                return value;
+            }
+        }).name(columnName);
     }
 
     @Override
