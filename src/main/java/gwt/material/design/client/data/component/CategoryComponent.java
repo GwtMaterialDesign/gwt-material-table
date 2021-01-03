@@ -21,6 +21,7 @@ package gwt.material.design.client.data.component;
 
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.data.HasCategories;
+import gwt.material.design.client.data.factory.CategoryState;
 import gwt.material.design.client.ui.table.TableHeader;
 import gwt.material.design.client.ui.table.TableSubHeader;
 
@@ -31,7 +32,7 @@ public class CategoryComponent extends Component<TableSubHeader> {
 
     public static class OrphanCategoryComponent extends CategoryComponent {
         public OrphanCategoryComponent(HasCategories parent) {
-            super(parent, null);
+            super(parent, null, null);
         }
 
         @Override
@@ -42,23 +43,26 @@ public class CategoryComponent extends Component<TableSubHeader> {
         }
     }
 
+    private Object id;
     private String name;
     private String height;
     private boolean openByDefault;
     private boolean hideName;
+    private CategoryState state;
 
     private int currentIndex = -1;
     private int rowCount = 0;
 
     private HasCategories parent;
 
-    public CategoryComponent(HasCategories parent, String name) {
-        this(parent, name, false);
+    public CategoryComponent(HasCategories parent, String name, Object id) {
+        this(parent, name, id, false);
     }
 
-    public CategoryComponent(HasCategories parent, String name, boolean openByDefault) {
+    public CategoryComponent(HasCategories parent, String name, Object id, boolean openByDefault) {
         this.parent = parent;
         this.name = name;
+        this.id = id;
         this.openByDefault = openByDefault;
     }
 
@@ -66,7 +70,7 @@ public class CategoryComponent extends Component<TableSubHeader> {
      * Open this category if we are rendered.
      */
     public void open() {
-        if(isRendered()) {
+        if (isRendered()) {
             parent.openCategory(this);
         }
     }
@@ -75,7 +79,7 @@ public class CategoryComponent extends Component<TableSubHeader> {
      * Close this category if we are rendered.
      */
     public void close() {
-        if(isRendered()) {
+        if (isRendered()) {
             parent.closeCategory(this);
         }
     }
@@ -84,7 +88,7 @@ public class CategoryComponent extends Component<TableSubHeader> {
      * Toggle the open/close state of this category.
      */
     public void toggle() {
-        if(isOpen()) {
+        if (isOpen()) {
             close();
         } else {
             open();
@@ -93,6 +97,14 @@ public class CategoryComponent extends Component<TableSubHeader> {
 
     public String getName() {
         return name;
+    }
+
+    public Object getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     /**
@@ -110,7 +122,7 @@ public class CategoryComponent extends Component<TableSubHeader> {
      */
     public final TableSubHeader render(int columnCount) {
         TableSubHeader element = getWidget();
-        if(element == null) {
+        if (element == null) {
             element = new TableSubHeader(this, columnCount);
             setWidget(element);
         }
@@ -146,7 +158,7 @@ public class CategoryComponent extends Component<TableSubHeader> {
     public void setOpenByDefault(boolean openByDefault) {
         this.openByDefault = openByDefault;
 
-        if(isRendered() && openByDefault && !isOpen()) {
+        if (isRendered() && openByDefault && !isOpen()) {
             open();
         }
     }
@@ -167,9 +179,17 @@ public class CategoryComponent extends Component<TableSubHeader> {
         this.height = height;
 
         Widget widget = getWidget();
-        if(widget != null && widget.isAttached()) {
+        if (widget != null && widget.isAttached()) {
             widget.setHeight(height);
         }
+    }
+
+    public CategoryState getState() {
+        return state;
+    }
+
+    public void setState(CategoryState state) {
+        this.state = state;
     }
 
     public TableHeader getHeader(int index) {

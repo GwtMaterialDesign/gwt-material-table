@@ -19,6 +19,7 @@
  */
 package gwt.material.design.client.data;
 
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasKeyProvider;
 import gwt.material.design.client.data.component.Component;
@@ -69,6 +70,11 @@ public interface DataView<T> extends HasRows<T>, HasColumns<T>, HasDataSource<T>
      * Get the displays main container.
      */
     Widget getContainer();
+
+    /**
+     * Set the Table Body's overflow
+     */
+    void hideTableScrollbar(boolean hideScrollbar);
 
     /**
      * Get the data views id.

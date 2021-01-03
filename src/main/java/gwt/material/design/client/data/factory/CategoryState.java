@@ -17,20 +17,21 @@
  * limitations under the License.
  * #L%
  */
-package gwt.material.design.client.js;
+package gwt.material.design.client.data.factory;
 
-import com.google.gwt.dom.client.Element;
-import gwt.material.design.jquery.client.api.Functions;
-import jsinterop.annotations.JsMethod;
-import jsinterop.annotations.JsPackage;
-import jsinterop.annotations.JsType;
+public enum CategoryState {
 
-@JsType(isNative = true, namespace = JsPackage.GLOBAL, name = "$")
-public class JsDebounce {
+    ENABLED("enabled"),
+    DISABLED("disabled"),
+    HIDDEN("hidden");
 
-    @JsMethod
-    public static native Functions.EventFunc debounce(int throttle, Functions.Func func);
+    private String name;
 
-    @JsMethod
-    public static native Functions.Func2<Element, MutateData> debounce(int throttle, Functions.Func2<Element, MutateData> func);
+    CategoryState(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

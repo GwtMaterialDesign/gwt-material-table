@@ -176,10 +176,12 @@ function TableSubHeaders($table, $stickies) {
   };
 
   base.toggle = function($subheader) {
-    if($subheader.hasClass("expanded")) {
-      base.close($subheader);
-    } else {
-      base.open($subheader);
+    if (!$subheader.hasClass("disabled")) {
+      if ($subheader.hasClass("expanded")) {
+        base.close($subheader);
+      } else {
+        base.open($subheader);
+      }
     }
   };
 

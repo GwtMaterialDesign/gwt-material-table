@@ -25,6 +25,7 @@ import com.google.gwt.dom.client.Style;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.data.DataSource;
+import gwt.material.design.client.data.DataView;
 import gwt.material.design.client.data.loader.LoadCallback;
 import gwt.material.design.client.data.loader.LoadConfig;
 import gwt.material.design.client.data.loader.LoadResult;
@@ -231,8 +232,10 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
      * Load the datasource within a given offset and limit
      */
     protected void doLoad(int offset, int limit) {
-        dataSource.load(new LoadConfig<>(offset, limit, table.getView().getSortContext(),
-            table.getView().getOpenCategories()), new LoadCallback<T>() {
+        DataView<T> dataView = table.getView();
+
+        dataSource.load(new LoadConfig<>(dataView, offset, limit, dataView.getSortContext(),
+                dataView.getOpenCategories()), new LoadCallback<T>() {
             @Override
             public void onSuccess(LoadResult<T> loadResult) {
                 setOffset(loadResult.getOffset());

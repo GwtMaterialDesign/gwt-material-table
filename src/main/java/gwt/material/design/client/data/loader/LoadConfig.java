@@ -19,6 +19,7 @@
  */
 package gwt.material.design.client.data.loader;
 
+import gwt.material.design.client.data.DataView;
 import gwt.material.design.client.data.SortContext;
 import gwt.material.design.client.data.component.CategoryComponent;
 
@@ -28,12 +29,23 @@ import java.util.stream.Collectors;
 
 public class LoadConfig<T> {
 
+    private final DataView<T> dataView;
+
     private final int offset;
     private final int limit;
     private final SortContext<T> sortContext;
     private final List<CategoryComponent> openCategories;
 
-    public LoadConfig(int offset, int limit, SortContext<T> sortContext, List<CategoryComponent> openCategories) {
+    public LoadConfig(int offset, int limit) {
+        this(null, offset, limit, null, null);
+    }
+
+    public LoadConfig(int offset, int limit, SortContext<T> sortContext) {
+        this(null, offset, limit, sortContext, null);
+    }
+
+    public LoadConfig(DataView<T> dataView, int offset, int limit, SortContext<T> sortContext, List<CategoryComponent> openCategories) {
+        this.dataView = dataView;
         this.offset = offset;
         this.limit = limit;
         this.sortContext = sortContext;
@@ -60,6 +72,13 @@ public class LoadConfig<T> {
      */
     public SortContext<T> getSortContext() {
         return sortContext;
+    }
+
+    /**
+     * Get the {@link DataView} making this load.
+     */
+    public DataView<T> getDataView() {
+        return dataView;
     }
 
     /**
