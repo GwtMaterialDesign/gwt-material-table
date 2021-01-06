@@ -48,10 +48,10 @@ tr {
     text-align: left;
 }
 
-.selection-none table.table tbody tr.data-row,
-.selection-none table.table tbody tr.data-row:hover,
-.selection-none table.table tbody tr.data-row.selected td,
-.selection-none table.table tbody tr.data-row td.hover {
+.selection-none table.table:not(.striped) tbody tr.data-row,
+.selection-none table.table:not(.striped) tbody tr.data-row:hover,
+.selection-none table.table:not(.striped) tbody tr.data-row.selected td,
+.selection-none table.table:not(.striped) tbody tr.data-row td.hover {
     background: none;
 }
 
