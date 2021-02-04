@@ -21,7 +21,7 @@ package gwt.material.design.client.data.component;
 
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.data.HasCategories;
-import gwt.material.design.client.data.factory.CategoryState;
+import gwt.material.design.client.data.factory.CategoryMode;
 import gwt.material.design.client.ui.table.TableHeader;
 import gwt.material.design.client.ui.table.TableSubHeader;
 
@@ -48,7 +48,7 @@ public class CategoryComponent extends Component<TableSubHeader> {
     private String height;
     private boolean openByDefault;
     private boolean hideName;
-    private CategoryState state;
+    private CategoryMode mode;
 
     private int currentIndex = -1;
     private int rowCount = 0;
@@ -184,12 +184,12 @@ public class CategoryComponent extends Component<TableSubHeader> {
         }
     }
 
-    public CategoryState getState() {
-        return state;
+    public CategoryMode getMode() {
+        return mode;
     }
 
-    public void setState(CategoryState state) {
-        this.state = state;
+    public void setMode(CategoryMode mode) {
+        this.mode = mode;
     }
 
     public TableHeader getHeader(int index) {

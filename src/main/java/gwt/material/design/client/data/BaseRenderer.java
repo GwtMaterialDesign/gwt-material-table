@@ -33,7 +33,7 @@ import gwt.material.design.client.constants.*;
 import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.data.component.Component;
 import gwt.material.design.client.data.component.RowComponent;
-import gwt.material.design.client.data.factory.CategoryState;
+import gwt.material.design.client.data.factory.CategoryMode;
 import gwt.material.design.client.ui.MaterialCheckBox;
 import gwt.material.design.client.ui.MaterialIcon;
 import gwt.material.design.client.ui.html.Div;
@@ -172,7 +172,7 @@ public class BaseRenderer<T> implements Renderer<T> {
                 subHeader = category.render(columnCount);
                 assert subHeader != null : "rendered category TableSubHeader cannot be null.";
                 subHeader.setHeight(category.getHeight());
-                applyCategoryState(category.getState(), subHeader, dataView);
+                applyCategoryState(category.getMode(), subHeader, dataView);
             }
             return subHeader;
         }
@@ -181,7 +181,7 @@ public class BaseRenderer<T> implements Renderer<T> {
         return null;
     }
 
-    protected void applyCategoryState(CategoryState state, TableSubHeader subHeader, DataView<T> dataView) {
+    protected void applyCategoryState(CategoryMode state, TableSubHeader subHeader, DataView<T> dataView) {
         if (state != null) {
             switch (state) {
                 case DISABLED:
@@ -190,14 +190,14 @@ public class BaseRenderer<T> implements Renderer<T> {
                     dataView.hideTableScrollbar(true);
                     break;
                 case HIDDEN:
-                    subHeader.addStyleName(CategoryState.HIDDEN.getName());
+                    subHeader.addStyleName(CategoryMode.HIDDEN.getName());
                     dataView.closeAllCategories();
                     dataView.hideTableScrollbar(true);
                     break;
                 case ENABLED:
                 default:
                     dataView.getContainer().getElement().getStyle().clearOverflow();
-                    subHeader.removeStyleName(CategoryState.HIDDEN.getName());
+                    subHeader.removeStyleName(CategoryMode.HIDDEN.getName());
                     subHeader.setEnabled(true);
                     dataView.hideTableScrollbar(false);
                     break;

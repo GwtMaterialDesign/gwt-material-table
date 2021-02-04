@@ -21,6 +21,7 @@ package gwt.material.design.client.data;
 
 import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.data.component.Components;
+import gwt.material.design.client.data.factory.CategoryMode;
 
 import java.util.Collection;
 
@@ -41,7 +42,9 @@ public class Categories extends Components<CategoryComponent> {
         super(components, clone);
     }
 
-    //TODO: setEmptyMode(HIDE, DISABLE, ENABLE)
+    public void setEmptyMode(CategoryMode mode) {
+        forEach(categoryComponent -> categoryComponent.setMode(mode));
+    }
 
     public void openAll() {
         forEach(CategoryComponent::open);

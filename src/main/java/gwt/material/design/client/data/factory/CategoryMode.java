@@ -19,7 +19,7 @@
  */
 package gwt.material.design.client.data.factory;
 
-public enum CategoryState {
+public enum CategoryMode {
 
     ENABLED("enabled"),
     DISABLED("disabled"),
@@ -27,7 +27,7 @@ public enum CategoryState {
 
     private String name;
 
-    CategoryState(String name) {
+    CategoryMode(String name) {
         this.name = name;
     }
 
