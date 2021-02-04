@@ -20,6 +20,7 @@
 package gwt.material.design.client.ui.table.cell;
 
 import com.google.gwt.cell.client.Cell;
+import com.google.gwt.i18n.client.NumberFormat;
 
 /**
  * A column that displays its contents with a {@link NumberCell} and does not make
@@ -32,6 +33,10 @@ public class ShortColumn<T> extends Column<T, Short> {
 
     public ShortColumn() {
         super(new NumberCell<>());
+    }
+
+    public ShortColumn(NumberFormat format) {
+        super(new NumberCell<>(format));
     }
 
     public ShortColumn(Cell<Short> cell) {
