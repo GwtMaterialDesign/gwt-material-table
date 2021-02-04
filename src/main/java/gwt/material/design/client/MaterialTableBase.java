@@ -31,6 +31,7 @@ public class MaterialTableBase extends MaterialDesignBase {
 
     @Override
     public void load() {
+        // Scripts
         injectJs(MaterialTableBundle.INSTANCE.jQueryExt());
         injectJs(MaterialTableBundle.INSTANCE.stickyth());
         injectJs(MaterialTableBundle.INSTANCE.tableSubHeaders());
@@ -38,7 +39,8 @@ public class MaterialTableBase extends MaterialDesignBase {
         injectJs(MaterialTableBundle.INSTANCE.mutateEvents());
         injectJs(MaterialTableBundle.INSTANCE.mutate());
 
-        StyleInjector.inject(MaterialTableBundle.INSTANCE.style().getText());
-        StyleInjector.inject(MaterialDataPagerClientBundle.INSTANCE.dataPagerCss().getText());
+        // Styles
+        injectCss(MaterialTableBundle.INSTANCE.style());
+        injectCss(MaterialDataPagerClientBundle.INSTANCE.dataPagerCss());
     }
 }

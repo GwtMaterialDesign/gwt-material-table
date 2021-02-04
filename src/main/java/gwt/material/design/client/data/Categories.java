@@ -41,6 +41,8 @@ public class Categories extends Components<CategoryComponent> {
         super(components, clone);
     }
 
+    //TODO: setEmptyMode(HIDE, DISABLE, ENABLE)
+
     public void openAll() {
         forEach(CategoryComponent::open);
     }

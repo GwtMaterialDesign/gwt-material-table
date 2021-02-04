@@ -37,7 +37,7 @@ public class MaterialTableDebugBase extends MaterialDesignBase {
         injectDebugJs(MaterialTableDebugBundle.INSTANCE.greedyScroll());
         injectDebugJs(MaterialTableDebugBundle.INSTANCE.mutateEvents());
         injectDebugJs(MaterialTableDebugBundle.INSTANCE.mutate());
-        StyleInjector.inject(MaterialTableDebugBundle.INSTANCE.style().getText());
-        StyleInjector.inject(MaterialDataPagerClientBundle.INSTANCE.dataPagerDebugCss().getText());
+        injectCss(MaterialTableDebugBundle.INSTANCE.style());
+        injectCss(MaterialDataPagerClientBundle.INSTANCE.dataPagerDebugCss());
     }
 }
