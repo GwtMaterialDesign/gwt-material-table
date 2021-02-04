@@ -22,6 +22,7 @@ package gwt.material.design.client.ui.table;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Panel;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.constants.*;
@@ -57,6 +58,9 @@ import static gwt.material.design.jquery.client.api.JQuery.$;
 public class MaterialDataTable<T> extends AbstractDataTable<T> implements InsertColumnHandler<T>, RemoveColumnHandler {
 
     private JQueryElement stretchContainer;
+
+    // Global Configs
+    private static DateTimeFormat defaultDateFormat;
 
     // Interface
     private MaterialIcon tableIcon;
@@ -338,5 +342,16 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
         // Register data view events, these are removed onUnload.
         addInsertColumnHandler(this);
         addRemoveColumnHandler(this);
+    }
+
+    public static void setDefaultDateFormat(DateTimeFormat defaultDateFormat) {
+        MaterialDataTable.defaultDateFormat = defaultDateFormat;
+    }
+
+    public static DateTimeFormat getDefaultDateFormat() {
+        if (defaultDateFormat == null) {
+            defaultDateFormat = DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_FULL);
+        }
+        return defaultDateFormat;
     }
 }
