@@ -57,7 +57,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     /**
      * The {@link Cell} responsible for rendering items in the column.
      */
-    private final Cell<C> cell;
+    protected final Cell<C> cell;
     private int index;
     private int widthPixels;
     private boolean dynamicWidth;
@@ -81,6 +81,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     private Comparator<? super RowComponent<T>> sortComparator;
 
     protected C defaultValue;
+    protected String blankPlaceholder;
     private Value<T, C> delegate;
 
     /**
@@ -166,7 +167,17 @@ public abstract class Column<T, C> implements HasCell<T, C> {
      */
     public Column<T, C> render(Context context, T object, SafeHtmlBuilder sb) {
         C value = getValue(object);
-        cell.render(context, value != null ? value : defaultValue, sb);
+
+        if (value == null) {
+            value = defaultValue;
+        }
+
+        if (value != null) {
+            cell.render(context, value, sb);
+        } else {
+            sb.append(this::blankPlaceholder);
+        }
+
         return this;
     }
 
@@ -462,6 +473,15 @@ public abstract class Column<T, C> implements HasCell<T, C> {
 
     public Column<T, C> defaultValue(C defaultValue) {
         this.defaultValue = defaultValue;
+        return this;
+    }
+
+    public String blankPlaceholder() {
+        return blankPlaceholder;
+    }
+
+    public Column<T, C> blankPlaceholder(String blankPlaceholder) {
+        this.blankPlaceholder = blankPlaceholder;
         return this;
     }
 

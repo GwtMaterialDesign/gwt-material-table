@@ -20,10 +20,8 @@
 package gwt.material.design.client.ui.table.cell;
 
 import com.google.gwt.cell.client.Cell;
-import com.google.gwt.cell.client.DateCell;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.text.shared.SimpleSafeHtmlRenderer;
 import gwt.material.design.client.ui.table.MaterialDataTable;
 
 import java.util.Date;
@@ -71,10 +69,11 @@ public class DateColumn<T> extends Column<T, Date> {
 
     @Override
     public Column<T, Date> render(Cell.Context context, T object, SafeHtmlBuilder sb) {
-        Date value = getValue(object);
-        if (value != null) {
-            sb.append(SimpleSafeHtmlRenderer.getInstance().render(getFormat().format(value)));
+        if (cell instanceof DateCell) {
+            DateCell dateCell = (DateCell) cell;
+            dateCell.setFormat(getFormat());
         }
+        super.render(context, object, sb);
         return this;
     }
 

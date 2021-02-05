@@ -3,7 +3,6 @@ package gwt.material.design.client.ui.table.cell;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.text.shared.SimpleSafeHtmlRenderer;
 
 public class NumberColumn<T, N extends Number> extends Column<T, N> {
 
@@ -41,10 +40,11 @@ public class NumberColumn<T, N extends Number> extends Column<T, N> {
 
     @Override
     public Column<T, N> render(Cell.Context context, T object, SafeHtmlBuilder sb) {
-        N value = getValue(object);
-        if (value != null) {
-            sb.append(SimpleSafeHtmlRenderer.getInstance().render(format != null ? format.format(value) : String.valueOf(value)));
+        if (cell instanceof NumberCell) {
+            NumberCell<N> numberCell = (NumberCell) cell;
+            numberCell.setFormat(format);
         }
+        super.render(context, object, sb);
         return this;
     }
 }
