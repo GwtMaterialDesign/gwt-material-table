@@ -1042,28 +1042,17 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
-    public Column<T, ?> addColumn(Column<T, ?> column) {
-        return addColumn("", column);
+    public <X extends Column<T, ?>> X addColumn(X column) {
+        return  addColumn("", column);
     }
 
     @Override
-    public Column<T, ?> addColumn(String header, Column<T, ?> column) {
+    public <X extends Column<T, ?>> X addColumn(String header, X column) {
         return insertColumn(header, columns.size(), column);
     }
 
     @Override
-    public final Column<T, ?> addColumn(ColumnValueProvider<T> renderer, String columnName) {
-        return addColumn(new TextColumn<T>(){
-            @Override
-            public String getValue(T object) {
-                String value = renderer.getValue(object);
-                return value;
-            }
-        }).name(columnName);
-    }
-
-    @Override
-    public Column<T, ?> insertColumn(String header, int beforeIndex, Column<T, ?> column) {
+    public <X extends Column<T, ?>> X insertColumn(String header, int beforeIndex, X column) {
         // Allow insert at the end.
         if (beforeIndex != getColumnCount()) {
             checkColumnBounds(beforeIndex);
@@ -1092,6 +1081,17 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         InsertColumnEvent.fire(this, beforeIndex, column, header);
 
         return column;
+    }
+
+    @Override
+    public final Column<T, ?> addColumn(ColumnValueProvider<T> renderer, String columnName) {
+        return addColumn(new TextColumn<T>(){
+            @Override
+            public String getValue(T object) {
+                String value = renderer.getValue(object);
+                return value;
+            }
+        }).name(columnName);
     }
 
     protected void updateSortContext(TableHeader th, Column<T, ?> column) {

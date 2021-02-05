@@ -34,19 +34,12 @@ import gwt.material.design.client.ui.text.NumberHtmlRenderer;
  */
 public class NumberCell<T extends Number> extends AbstractSafeHtmlCell<T> {
 
-    protected NumberFormat format;
-
     /**
      * Constructs a TextCell that uses a {@link SimpleSafeHtmlRenderer} to render
      * its text.
      */
     public NumberCell() {
         super(new NumberHtmlRenderer<>());
-    }
-
-    public NumberCell(NumberFormat format) {
-        this();
-        this.format = format;
     }
 
     /**
@@ -63,15 +56,6 @@ public class NumberCell<T extends Number> extends AbstractSafeHtmlCell<T> {
     protected void render(Context context, SafeHtml data, SafeHtmlBuilder sb) {
         if (data != null) {
             sb.append(data);
-        }
-    }
-
-    @Override
-    public void render(Context context, T data, SafeHtmlBuilder sb) {
-        if (data != null) {
-            String value = format != null ? format.format(data) : String.valueOf(data);
-            SafeHtml safeHtml = SimpleSafeHtmlRenderer.getInstance().render(value);
-            render(context, safeHtml, sb);
         }
     }
 }

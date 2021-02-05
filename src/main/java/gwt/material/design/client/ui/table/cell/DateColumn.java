@@ -21,9 +21,9 @@ package gwt.material.design.client.ui.table.cell;
 
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.DateCell;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.text.shared.SimpleSafeHtmlRenderer;
 import gwt.material.design.client.ui.table.MaterialDataTable;
 
 import java.util.Date;
@@ -37,12 +37,15 @@ import java.util.Date;
  */
 public class DateColumn<T> extends Column<T, Date> {
 
-    public DateColumn(DateTimeFormat format) {
-        super(new DateCell(format));
-    }
+    protected DateTimeFormat format;
 
     public DateColumn() {
-        this(MaterialDataTable.getDefaultDateFormat());
+        super(new DateCell());
+    }
+
+    public DateColumn(DateTimeFormat format) {
+        this();
+        this.format = format;
     }
 
     public DateColumn(Cell<Date> cell) {
@@ -59,5 +62,26 @@ public class DateColumn<T> extends Column<T, Date> {
 
     public DateColumn(Cell<Date> cell, Value<T, Date> delegate, Date defaultValue) {
         super(cell, delegate, defaultValue);
+    }
+
+    public DateColumn<T> format(DateTimeFormat format) {
+        this.format = format;
+        return this;
+    }
+
+    @Override
+    public Column<T, Date> render(Cell.Context context, T object, SafeHtmlBuilder sb) {
+        Date value = getValue(object);
+        if (value != null) {
+            sb.append(SimpleSafeHtmlRenderer.getInstance().render(getFormat().format(value)));
+        }
+        return this;
+    }
+
+    public DateTimeFormat getFormat() {
+        if (format == null) {
+            format = MaterialDataTable.getDefaultDateFormat();
+        }
+        return format;
     }
 }

@@ -306,23 +306,23 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
-    public final Column<T, ?> addColumn(Column<T, ?> column) {
+    public <X extends Column<T, ?>> X addColumn(X column) {
         return view.addColumn(column);
+    }
+
+    @Override
+    public final <X extends Column<T, ?>> X addColumn(String header, X column) {
+        return view.addColumn(header, column);
+    }
+
+    @Override
+    public final <X extends Column<T, ?>> X insertColumn(String header, int beforeIndex, X col) {
+        return view.insertColumn(header, beforeIndex, col);
     }
 
     @Override
     public final Column<T, ?> addColumn(ColumnValueProvider<T> provider, String columnName) {
         return view.addColumn(provider, columnName);
-    }
-
-    @Override
-    public final Column<T, ?> addColumn(String header, Column<T, ?> column) {
-        return view.addColumn(header, column);
-    }
-
-    @Override
-    public final Column<T, ?> insertColumn(String header, int beforeIndex, Column<T, ?> col) {
-        return view.insertColumn(header, beforeIndex, col);
     }
 
     @Override

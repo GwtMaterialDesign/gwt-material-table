@@ -31,19 +31,14 @@ public interface HasColumns<T> {
      *
      * @param column the column object
      */
-    Column<T, ?> addColumn(Column<T, ?> column);
-
-    /**
-     * Add a new column to the data view.
-     */
-    Column<T, ?> addColumn(ColumnValueProvider<T> provider, String columnName);
+    <X extends Column<T, ?>> X addColumn(X column);
 
     /**
      * Add a new column to the data view.
      *
      * @param column the column object
      */
-    Column<T, ?> addColumn(String header, Column<T, ?> column);
+    <X extends Column<T, ?>> X addColumn(String header, X column);
 
     /**
      * Inserts a column into the table at the specified index.
@@ -52,7 +47,12 @@ public interface HasColumns<T> {
      * @param col the column to be added
      * @throws IndexOutOfBoundsException if the index is out of range
      */
-    Column<T, ?> insertColumn(String header, int beforeIndex, Column<T, ?> col);
+    <X extends Column<T, ?>> X insertColumn(String header, int beforeIndex, X col);
+
+    /**
+     * Add a new column to the data view.
+     */
+    Column<T, ?> addColumn(ColumnValueProvider<T> provider, String columnName);
 
     /**
      * Remove an existing column by index.
