@@ -23,6 +23,8 @@ import com.google.gwt.cell.client.Cell;
 import com.google.gwt.i18n.client.NumberFormat;
 import gwt.material.design.client.ui.table.MaterialDataTable;
 
+import java.math.BigDecimal;
+
 /**
  * A column that displays its contents with a {@link NumberCell} and does not make
  * use of view data.
@@ -30,33 +32,33 @@ import gwt.material.design.client.ui.table.MaterialDataTable;
  * @param <T> the row type
  * @author Ben Dol
  */
-public class IntegerColumn<T> extends NumberColumn<T, Integer> {
+public class BigDecimalColumn<T> extends NumberColumn<T, BigDecimal> {
 
-    public IntegerColumn() {
+    public BigDecimalColumn() {
     }
 
-    public IntegerColumn(NumberFormat format) {
+    public BigDecimalColumn(NumberFormat format) {
         super(format);
     }
 
-    public IntegerColumn(Cell<Integer> cell) {
+    public BigDecimalColumn(Cell<BigDecimal> cell) {
         super(cell);
     }
 
-    public IntegerColumn(Cell<Integer> cell, Integer defaultValue) {
+    public BigDecimalColumn(Cell<BigDecimal> cell, BigDecimal defaultValue) {
         super(cell, defaultValue);
     }
 
-    public IntegerColumn(Cell<Integer> cell, Value<T, Integer> delegate) {
+    public BigDecimalColumn(Cell<BigDecimal> cell, Value<T, BigDecimal> delegate) {
         super(cell, delegate);
     }
 
-    public IntegerColumn(Cell<Integer> cell, Value<T, Integer> delegate, Integer defaultValue) {
+    public BigDecimalColumn(Cell<BigDecimal> cell, Value<T, BigDecimal> delegate, BigDecimal defaultValue) {
         super(cell, delegate, defaultValue);
     }
 
     @Override
     public NumberFormat getDefaultFormat() {
-        return MaterialDataTable.getDefaultIntegerFormat();
+        return MaterialDataTable.getDefaultBigDecimalFormat();
     }
 }

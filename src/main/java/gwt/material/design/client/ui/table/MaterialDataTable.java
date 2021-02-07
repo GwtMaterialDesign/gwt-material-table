@@ -20,9 +20,9 @@
 package gwt.material.design.client.ui.table;
 
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.Panel;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.constants.*;
@@ -60,7 +60,14 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
     private JQueryElement stretchContainer;
 
     // Global Configs
+    private static String defaultBlankPlaceholder;
     private static DateTimeFormat defaultDateFormat;
+    private static NumberFormat defaultIntegerFormat;
+    private static NumberFormat defaultLongFormat;
+    private static NumberFormat defaultDoubleFormat;
+    private static NumberFormat defaultFloatFormat;
+    private static NumberFormat defaultBigDecimalFormat;
+    private static NumberFormat defaultShortFormat;
 
     // Interface
     private MaterialIcon tableIcon;
@@ -344,14 +351,98 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
         addRemoveColumnHandler(this);
     }
 
-    public static void setDefaultDateFormat(DateTimeFormat defaultDateFormat) {
-        MaterialDataTable.defaultDateFormat = defaultDateFormat;
-    }
-
     public static DateTimeFormat getDefaultDateFormat() {
         if (defaultDateFormat == null) {
             defaultDateFormat = DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_FULL);
         }
         return defaultDateFormat;
+    }
+
+    /**
+     * Will set a global default date format for {@link gwt.material.design.client.ui.table.cell.DateColumn}
+     */
+    public static void setDefaultDateFormat(DateTimeFormat defaultDateFormat) {
+        MaterialDataTable.defaultDateFormat = defaultDateFormat;
+    }
+
+    public static NumberFormat getDefaultIntegerFormat() {
+        return defaultIntegerFormat;
+    }
+
+    /**
+     * Will set a global default integer format for {@link gwt.material.design.client.ui.table.cell.IntegerColumn}
+     */
+    public static void setDefaultIntegerFormat(NumberFormat defaultIntegerFormat) {
+        MaterialDataTable.defaultIntegerFormat = defaultIntegerFormat;
+    }
+
+    public static NumberFormat getDefaultLongFormat() {
+        return defaultLongFormat;
+    }
+
+    /**
+     * Will set a global default long format for {@link gwt.material.design.client.ui.table.cell.LongColumn}
+     */
+    public static void setDefaultLongFormat(NumberFormat defaultLongFormat) {
+        MaterialDataTable.defaultLongFormat = defaultLongFormat;
+    }
+
+    public static NumberFormat getDefaultDoubleFormat() {
+        return defaultDoubleFormat;
+    }
+
+    /**
+     * Will set a global default double format for {@link gwt.material.design.client.ui.table.cell.DoubleColumn}
+     */
+    public static void setDefaultDoubleFormat(NumberFormat defaultDoubleFormat) {
+        MaterialDataTable.defaultDoubleFormat = defaultDoubleFormat;
+    }
+
+    public static NumberFormat getDefaultFloatFormat() {
+        return defaultFloatFormat;
+    }
+
+    /**
+     * Will set a global default float format for {@link gwt.material.design.client.ui.table.cell.FloatColumn}
+     */
+    public static void setDefaultFloatFormat(NumberFormat defaultFloatFormat) {
+        MaterialDataTable.defaultFloatFormat = defaultFloatFormat;
+    }
+
+    public static NumberFormat getDefaultBigDecimalFormat() {
+        return defaultBigDecimalFormat;
+    }
+
+    /**
+     * Will set a global default BigDecimal format for {@link gwt.material.design.client.ui.table.cell.BigDecimalColumn}
+     */
+    public static void setDefaultBigDecimalFormat(NumberFormat defaultBigDecimalFormat) {
+        MaterialDataTable.defaultBigDecimalFormat = defaultBigDecimalFormat;
+    }
+
+    public static NumberFormat getDefaultShortFormat() {
+        return defaultShortFormat;
+    }
+
+    /**
+     * Will set a global default Short format for {@link gwt.material.design.client.ui.table.cell.ShortColumn}
+     */
+    public static void setDefaultShortFormat(NumberFormat defaultShortFormat) {
+        MaterialDataTable.defaultShortFormat = defaultShortFormat;
+    }
+
+    public static String getDefaultBlankPlaceholder() {
+        if (defaultBlankPlaceholder == null) {
+            defaultBlankPlaceholder = "";
+        }
+        return defaultBlankPlaceholder;
+    }
+
+    /**
+     * Will set a global default blank placeholder used within {@link Column#blankPlaceholder()} to replace
+     * any null values.
+     */
+    public static void setDefaultBlankPlaceholder(String defaultBlankPlaceholder) {
+        MaterialDataTable.defaultBlankPlaceholder = defaultBlankPlaceholder;
     }
 }

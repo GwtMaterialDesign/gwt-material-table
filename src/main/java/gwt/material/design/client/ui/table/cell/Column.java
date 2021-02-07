@@ -35,6 +35,7 @@ import gwt.material.design.client.constants.TextAlign;
 import gwt.material.design.client.data.DataView;
 import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.client.ui.MaterialToast;
+import gwt.material.design.client.ui.table.MaterialDataTable;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -476,7 +477,13 @@ public abstract class Column<T, C> implements HasCell<T, C> {
         return this;
     }
 
+    /**
+     * A blank or empty placeholder when column's value is null.
+     */
     public String blankPlaceholder() {
+        if (blankPlaceholder == null) {
+            blankPlaceholder = MaterialDataTable.getDefaultBlankPlaceholder();
+        }
         return blankPlaceholder;
     }
 
