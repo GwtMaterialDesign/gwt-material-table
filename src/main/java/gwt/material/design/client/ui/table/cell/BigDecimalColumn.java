@@ -59,6 +59,7 @@ public class BigDecimalColumn<T> extends NumberColumn<T, BigDecimal> {
 
     @Override
     public NumberFormat getDefaultFormat() {
-        return MaterialDataTable.getDefaultColumnFormatter().getBigDecimalFormat();
+        NumberFormat defaultFormat = MaterialDataTable.getDefaultColumnFormatter().getBigDecimalFormat();
+        return defaultFormat != null ? defaultFormat : NumberFormat.getDecimalFormat();
     }
 }

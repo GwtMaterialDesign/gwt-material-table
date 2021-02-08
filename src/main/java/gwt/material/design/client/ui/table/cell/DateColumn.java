@@ -79,7 +79,8 @@ public class DateColumn<T> extends Column<T, Date> {
 
     public DateTimeFormat getFormat() {
         if (format == null) {
-            format = MaterialDataTable.getDefaultColumnFormatter().getDateFormat();
+            DateTimeFormat defaultFormat = MaterialDataTable.getDefaultColumnFormatter().getDateFormat();
+            format = defaultFormat != null ? defaultFormat : DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_FULL);
         }
         return format;
     }
