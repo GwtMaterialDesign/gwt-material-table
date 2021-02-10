@@ -311,7 +311,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
-    public final <X extends Column<T, ?>> X addColumn(String header, X column) {
+    public <X extends Column<T, ?>> X addColumn(String header, X column) {
         return view.addColumn(header, column);
     }
 
