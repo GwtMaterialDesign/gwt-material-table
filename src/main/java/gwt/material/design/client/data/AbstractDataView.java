@@ -19,6 +19,7 @@
  */
 package gwt.material.design.client.data;
 
+import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
@@ -27,6 +28,7 @@ import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ProvidesKey;
@@ -51,10 +53,7 @@ import gwt.material.design.client.ui.MaterialProgress;
 import gwt.material.design.client.ui.Selectors;
 import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControls;
 import gwt.material.design.client.ui.table.*;
-import gwt.material.design.client.ui.table.cell.Column;
-import gwt.material.design.client.ui.table.cell.ColumnValueProvider;
-import gwt.material.design.client.ui.table.cell.FrozenSide;
-import gwt.material.design.client.ui.table.cell.TextColumn;
+import gwt.material.design.client.ui.table.cell.*;
 import gwt.material.design.jquery.client.api.Event;
 import gwt.material.design.jquery.client.api.Functions;
 import gwt.material.design.jquery.client.api.JQueryElement;
@@ -227,6 +226,9 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 category.setRowCount(0);
             }
         }
+
+        // Calculate computed columns.
+        calculateComputedColumns();
 
         if (!components.isEmpty()) {
             // Remove the last attach handler
@@ -2496,6 +2498,20 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             }
         }
     }
+
+    protected void calculateComputedColumns() {
+        List<RowComponent<T>> rows = getRows();
+        for (RowComponent<T> row : rows) {
+            row.getComputedColumns().forEach(computedColumnData -> {
+                Number computedValue = computedColumnData.compute(row.getData(), getData());
+                ColumnContext<T> columnContext = row.getColumnContext(computedColumnData.name());
+                if (columnContext != null) {
+                    computedColumnData.render(columnContext, computedValue);
+                }
+            });
+        }
+    }
+
 
     public void maybeApplyFrozenMargins() {
         // Assign left frozen column margin

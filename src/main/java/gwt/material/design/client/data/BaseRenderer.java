@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -128,11 +128,12 @@ public class BaseRenderer<T> implements Renderer<T> {
                 int colIndex = c + colOffset;
                 Context context = new Context(rowComponent.getIndex(), colIndex, valueKey);
                 Column<T, ?> column = columns.get(c);
-                TableData td = drawColumn(row, context, data, column, colIndex, isHeaderVisible(c));
+                ColumnContext<T> columnContext = drawColumn(row, context, data, column, colIndex, isHeaderVisible(c));
                 FrozenProperties frozenProps = column.frozenProperties();
                 if (frozenProps != null) {
-                    drawColumnFreeze(td, rowComponent, headers.get(colIndex), column, frozenProps.getSide());
+                    drawColumnFreeze(columnContext.getTableData(), rowComponent, headers.get(colIndex), column, frozenProps.getSide());
                 }
+                rowComponent.addColumn(columnContext);
             }
             rowComponent.setRedraw(false);
         }
@@ -225,8 +226,9 @@ public class BaseRenderer<T> implements Renderer<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public TableData drawColumn(TableRow row, Context context, T rowValue, Column<T, ?> column, int beforeIndex, boolean visible) {
+    public ColumnContext<T> drawColumn(TableRow row, Context context, T rowValue, Column<T, ?> column, int beforeIndex, boolean visible) {
         TableData data = null;
+        SafeHtmlBuilder sb = new SafeHtmlBuilder();
         if (row != null && rowValue != null) {
             data = row.getColumn(beforeIndex);
             if (data == null) {
@@ -247,8 +249,10 @@ public class BaseRenderer<T> implements Renderer<T> {
                 wrapper.setStyleName(TableCssName.WIDGET_CELL);
                 wrapper.add(((WidgetColumn) column).render(context, rowValue));
             } else {
-                SafeHtmlBuilder sb = new SafeHtmlBuilder();
-                column.render(context, rowValue, sb);
+                // Render Regular Column
+                if (!(column instanceof ComputedColumn)) {
+                    column.render(context, rowValue, sb);
+                }
                 wrapper.getElement().setInnerHTML(sb.toSafeHtml().asString());
                 wrapper.setStyleName(TableCssName.CELL);
             }
@@ -282,7 +286,7 @@ public class BaseRenderer<T> implements Renderer<T> {
                 data.$this().hide();
             }
         }
-        return data;
+        return new ColumnContext<>(column, data, context);
     }
 
     @Override

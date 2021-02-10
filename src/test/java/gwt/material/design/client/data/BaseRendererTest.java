@@ -117,15 +117,15 @@ public class BaseRendererTest extends DataTableTestCase<MaterialDataTable<Person
 
         // when
         TableRow row = new TableRow();
-        TableData columnText = renderer.drawColumn(row,
+        ColumnContext columnText = renderer.drawColumn(row,
             new Cell.Context(1, 0, dataView.getValueKey(person)), person, columns.get(0), 0, true);
-        TableData columnWidget = renderer.drawColumn(row,
+        ColumnContext columnWidget = renderer.drawColumn(row,
             new Cell.Context(1, 1, dataView.getValueKey(person)), person, columns.get(2), 1, true);
 
         // then
 
         try {
-            Div wrapper = (Div)columnText.getWidget(0);
+            Div wrapper = (Div)columnText.getTableData().getWidget(0);
             assertEquals("John", wrapper.getElement().getInnerHTML());
             assertTrue(wrapper.getStyleName().contains(TableCssName.CELL));
 
@@ -136,7 +136,7 @@ public class BaseRendererTest extends DataTableTestCase<MaterialDataTable<Person
         }
 
         try {
-            Div wrapper = (Div)columnWidget.getWidget(0);
+            Div wrapper = (Div)columnWidget.getTableData().getWidget(0);
             assertTrue(wrapper.getStyleName().contains(TableCssName.WIDGET_CELL));
 
             MaterialBadge widget = (MaterialBadge)wrapper.getWidget(0);

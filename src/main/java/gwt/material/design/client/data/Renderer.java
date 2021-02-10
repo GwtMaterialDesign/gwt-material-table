@@ -21,7 +21,6 @@ package gwt.material.design.client.data;
 
 import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.user.client.ui.Widget;
-import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.constants.IconSize;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.data.component.CategoryComponent;
@@ -47,7 +46,7 @@ public interface Renderer<T> {
 
     TableData drawSelectionCell();
 
-    MaterialWidget drawColumn(TableRow row, Context context, T rowValue, Column<T, ?> column, int beforeIndex, boolean visible);
+    ColumnContext<T> drawColumn(TableRow row, Context context, T rowValue, Column<T, ?> column, int beforeIndex, boolean visible);
 
     TableHeader drawColumnHeader(Widget container, Column<T, ?> column, String header, int index);
 

@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,16 +20,15 @@
 package gwt.material.design.client.data.component;
 
 import com.google.gwt.user.client.ui.HasEnabled;
+import gwt.material.design.client.data.ColumnContext;
 import gwt.material.design.client.data.DataView;
 import gwt.material.design.client.data.factory.Category;
-import gwt.material.design.client.data.factory.Category;
+import gwt.material.design.client.ui.table.TableRow;
+import gwt.material.design.client.ui.table.cell.ComputedColumn;
 import gwt.material.design.jquery.client.api.JQuery;
 import gwt.material.design.jquery.client.api.JQueryElement;
-import gwt.material.design.client.ui.table.TableRow;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Ben Dol
@@ -41,7 +40,7 @@ public class RowComponent<T> extends Component<TableRow> implements Comparable<T
     private int index;
     private Category categoryInfo;
     private final DataView<T> dataView;
-
+    private Map<String, ColumnContext<T>> columns = new LinkedHashMap<>();
     private Comparator<T> comparator;
 
     public RowComponent(RowComponent<T> clone) {
@@ -158,7 +157,7 @@ public class RowComponent<T> extends Component<TableRow> implements Comparable<T
     @Override
     protected void clearWidget() {
         TableRow row = getWidget();
-        if(row != null) {
+        if (row != null) {
             clearRowExpansion();
         }
         super.clearWidget();
@@ -166,15 +165,15 @@ public class RowComponent<T> extends Component<TableRow> implements Comparable<T
 
     public void clearRowExpansion() {
         JQueryElement next = JQuery.$(getWidget()).next();
-        if(next.is("tr.expansion")) {
+        if (next.is("tr.expansion")) {
             next.remove();
         }
     }
 
     public static <T> List<T> extractData(List<RowComponent<T>> rows) {
         List<T> data = new ArrayList<>();
-        for(RowComponent<T> row : rows) {
-            if(row != null) {
+        for (RowComponent<T> row : rows) {
+            if (row != null) {
                 data.add(row.getData());
             }
         }
@@ -206,12 +205,37 @@ public class RowComponent<T> extends Component<TableRow> implements Comparable<T
         }
     }
 
+    public void addColumn(ColumnContext<T> computedColumn) {
+        columns.put(computedColumn.getColumn().name(), computedColumn);
+    }
+
+    public List<ColumnContext<T>> getColumns() {
+        return new ArrayList<>(columns.values());
+    }
+
+    public List<ComputedColumn<T, ?>> getComputedColumns() {
+        List<ComputedColumn<T, ?>> computedColumns = new ArrayList<>();
+        if (columns != null) {
+            for (String key : columns.keySet()) {
+                ColumnContext<T> columnTableData = columns.get(key);
+                if (columnTableData.getColumn() instanceof ComputedColumn) {
+                    computedColumns.add((ComputedColumn<T, ?>) columnTableData.getColumn());
+                }
+            }
+        }
+        return computedColumns;
+    }
+
+    public ColumnContext<T> getColumnContext(String name) {
+        return columns.get(name);
+    }
+
     @Override
     public String toString() {
         return "RowComponent{" +
-                "data=" + data +
-                ", index=" + index +
-                ", categoryInfo='" + categoryInfo + '\'' +
-                '}';
+            "data=" + data +
+            ", index=" + index +
+            ", categoryInfo='" + categoryInfo + '\'' +
+            '}';
     }
 }
