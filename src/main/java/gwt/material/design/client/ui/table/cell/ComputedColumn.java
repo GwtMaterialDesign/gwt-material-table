@@ -19,12 +19,14 @@ public class ComputedColumn<T, N extends Number> extends NumberColumn<T, N> {
         return null;
     }
 
-    public void render(ColumnContext<T> columnContext, Number value) {
+    public void render(ColumnContext<T> columnContext, Number computedValue) {
+        N value = computedValue != null ? (N) computedValue : defaultValue;
         Div wrapper = new Div();
         SafeHtmlBuilder sb = new SafeHtmlBuilder();
         NumberCell<N> numberCell = (NumberCell) getCell();
         numberCell.setFormat(format);
-        numberCell.render(columnContext.getContext(), (N) value, sb);
+        delegate(obj -> value);
+        numberCell.render(columnContext.getContext(), value, sb);
         wrapper.getElement().setInnerHTML(sb.toSafeHtml().asString());
         wrapper.setStyleName(TableCssName.CELL);
         wrapper.addStyleName(TableCssName.COMPUTED_CELL);
