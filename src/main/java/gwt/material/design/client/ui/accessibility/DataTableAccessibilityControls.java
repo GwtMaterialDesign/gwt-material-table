@@ -21,6 +21,7 @@ package gwt.material.design.client.ui.accessibility;
 
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import gwt.material.design.client.accessibility.AccessibilityControl;
+import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.data.AbstractDataView;
 import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.data.component.RowComponent;
@@ -57,7 +58,7 @@ public class DataTableAccessibilityControls extends AccessibilityControl {
     }
 
     public void registerCategoryControl(CategoryComponent categoryComponent) {
-        registerWidget(categoryComponent.getWidget(), option.getKeys().getCategoryTrigger());
+        registerWidget((MaterialWidget) categoryComponent.getWidget(), option.getKeys().getCategoryTrigger());
     }
 
     public void registerHeaderControl(TableHeader tableHeader) {

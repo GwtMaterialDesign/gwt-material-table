@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,7 +19,6 @@
  */
 package gwt.material.design.client.data;
 
-import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
@@ -28,7 +27,6 @@ import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ProvidesKey;
@@ -53,7 +51,10 @@ import gwt.material.design.client.ui.MaterialProgress;
 import gwt.material.design.client.ui.Selectors;
 import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControls;
 import gwt.material.design.client.ui.table.*;
-import gwt.material.design.client.ui.table.cell.*;
+import gwt.material.design.client.ui.table.cell.Column;
+import gwt.material.design.client.ui.table.cell.ColumnValueProvider;
+import gwt.material.design.client.ui.table.cell.FrozenSide;
+import gwt.material.design.client.ui.table.cell.TextColumn;
 import gwt.material.design.jquery.client.api.Event;
 import gwt.material.design.jquery.client.api.Functions;
 import gwt.material.design.jquery.client.api.JQueryElement;
@@ -139,7 +140,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     // Components
     protected final Components<RowComponent<T>> rows = new Components<>();
     protected final Components<RowComponent<T>> pendingRows = new Components<>();
-    protected final Categories categories = new Categories();
+    protected final Categories<T> categories = new Categories();
 
     // Mixin
     protected CssNameMixin<Table, Density> densityCssNameMixin;
@@ -221,7 +222,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
         // Reset category indexes and row counts
         if (isUseCategories()) {
-            for (CategoryComponent category : categories) {
+            for (CategoryComponent<T> category : categories) {
                 category.setCurrentIndex(-1);
                 category.setRowCount(0);
             }
@@ -352,10 +353,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             clearRows(false);
 
             if (isUseCategories()) {
-                Categories openCategories = getOpenCategories();
+                Categories<T> openCategories = getOpenCategories();
                 categories.clearWidgets();
 
-                for (CategoryComponent category : categories) {
+                for (CategoryComponent<T> category : categories) {
                     // Re-render the category component
                     renderComponent(category);
 
@@ -381,7 +382,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             }
 
             if (isUseCategories()) {
-                CategoryComponent category = row.getCategory();
+                CategoryComponent<T> category = row.getCategory();
                 if (category == null) {
                     category = buildCategoryComponent(row);
                     if (category != null) {
@@ -432,13 +433,16 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
                 // Check if the row has a category
                 // Categories have been rendered before the rows
-                CategoryComponent category = null;
+                CategoryComponent<T> category = null;
                 if (isUseCategories()) {
                     category = rowComponent.getCategory();
 
                     // Ensure the category exists and is rendered
-                    if (category != null && !category.isRendered()) {
-                        renderComponent(category);
+                    if (category != null) {
+                        if (!category.isRendered()) {
+                            renderComponent(category);
+                        }
+                        category.addRow(rowComponent);
                     }
                 }
                 T data = rowComponent.getData();
@@ -477,7 +481,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
                 accessibilityControl.registerRowControl(rowComponent);
             } else if (component instanceof CategoryComponent) {
-                CategoryComponent categoryComponent = (CategoryComponent) component;
+                CategoryComponent<T> categoryComponent = (CategoryComponent<T>) component;
                 row = bindCategoryEvents(renderer.drawCategory(categoryComponent, getColumnCount() - getColumnOffset(), this));
                 if (categoryComponent.isOpenByDefault()) {
                     row.addAttachHandler(event -> openCategory(categoryComponent), true);
@@ -708,7 +712,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
         renderColumns();
 
-        for (CategoryComponent category : categories) {
+        for (CategoryComponent<T> category : categories) {
             if (!category.isRendered()) {
                 renderCategory(category);
             }
@@ -1045,7 +1049,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     @Override
     public <X extends Column<T, ?>> X addColumn(X column) {
-        return  addColumn("", column);
+        return addColumn("", column);
     }
 
     @Override
@@ -1087,7 +1091,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     @Override
     public final Column<T, ?> addColumn(ColumnValueProvider<T> renderer, String columnName) {
-        return addColumn(new TextColumn<T>(){
+        return addColumn(new TextColumn<T>() {
             @Override
             public String getValue(T object) {
                 String value = renderer.getValue(object);
@@ -1747,15 +1751,15 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         return null;
     }
 
-    protected CategoryComponent buildCategoryComponent(RowComponent<T> row) {
+    protected CategoryComponent<T> buildCategoryComponent(RowComponent<T> row) {
         return row != null ? buildCategoryComponent(row.getCategoryInfo()) : null;
     }
 
-    protected CategoryComponent buildCategoryComponent(Category categoryPair) {
+    protected CategoryComponent<T> buildCategoryComponent(Category categoryPair) {
         if (categoryPair != null && categoryPair.getName() != null) {
             // Generate the category if not exists
             if (categoryFactory != null) {
-                CategoryComponent category = getCategory(categoryPair.getName());
+                CategoryComponent<T> category = getCategory(categoryPair.getName());
                 if (category == null) {
                     return categoryFactory.generate(this, categoryPair);
                 } else {
@@ -1875,7 +1879,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     @Override
     public void disableCategory(String categoryName) {
-        CategoryComponent category = getCategory(categoryName);
+        CategoryComponent<T> category = getCategory(categoryName);
         if (category != null && category.isRendered()) {
             subheaderLib.close(category.getWidget().$this());
             category.getWidget().setEnabled(false);
@@ -1884,7 +1888,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     @Override
     public void enableCategory(String categoryName) {
-        CategoryComponent category = getCategory(categoryName);
+        CategoryComponent<T> category = getCategory(categoryName);
         if (category != null && category.isRendered()) {
             category.getWidget().setEnabled(true);
         }
@@ -1900,7 +1904,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         Categories openCategories = null;
         if (isUseCategories()) {
             openCategories = new Categories();
-            for (CategoryComponent category : categories) {
+            for (CategoryComponent<T> category : categories) {
                 TableSubHeader element = category.getWidget();
                 if (element != null && element.isOpen()) {
                     openCategories.add(category);
@@ -2021,9 +2025,9 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         return byCategory;
     }
 
-    protected Categories getHiddenCategories() {
-        Categories hidden = new Categories();
-        for (CategoryComponent category : categories) {
+    protected Categories<T> getHiddenCategories() {
+        Categories<T> hidden = new Categories<>();
+        for (CategoryComponent<T> category : categories) {
             TableSubHeader element = category.getWidget();
             if (element != null && !element.isVisible()) {
                 hidden.add(category);
@@ -2032,9 +2036,9 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         return hidden;
     }
 
-    protected Categories getVisibleCategories() {
-        Categories visible = new Categories();
-        for (CategoryComponent category : categories) {
+    protected Categories<T> getVisibleCategories() {
+        Categories<T> visible = new Categories<>();
+        for (CategoryComponent<T> category : categories) {
             TableSubHeader element = category.getWidget();
             if (element != null && element.isVisible()) {
                 visible.add(category);
@@ -2043,10 +2047,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         return visible;
     }
 
-    protected Categories getPassedCategories() {
-        Categories passed = new Categories();
+    protected Categories<T> getPassedCategories() {
+        Categories<T> passed = new Categories<>();
         int scrollTop = tableBody.scrollTop();
-        for (CategoryComponent category : categories) {
+        for (CategoryComponent<T> category : categories) {
             if (isCategoryEmpty(category) && scrollTop > (getRowHeight() + thead.$this().height())) {
                 passed.add(category);
             } else {
@@ -2055,7 +2059,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             }
         }
         // No categories are populated.
-        return new Categories();
+        return new Categories<>();
     }
 
     @Override
@@ -2069,7 +2073,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
-    public void setCategoryFactory(ComponentFactory<? extends CategoryComponent, Category> categoryFactory) {
+    public void setCategoryFactory(ComponentFactory<? extends CategoryComponent<T>, Category> categoryFactory) {
         this.categoryFactory = categoryFactory;
     }
 
@@ -2289,7 +2293,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
-    public void openCategory(CategoryComponent category) {
+    public void openCategory(CategoryComponent<T> category) {
         if (category != null && category.isRendered()) {
             subheaderLib.open(category.getWidget().$this());
         }
@@ -2301,7 +2305,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
-    public void closeCategory(CategoryComponent category) {
+    public void closeCategory(CategoryComponent<T> category) {
         if (category != null && category.isRendered()) {
             subheaderLib.close(category.getWidget().$this());
         }
@@ -2327,7 +2331,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
      * Get a stored data categories subheader by name.
      */
     protected TableSubHeader getTableSubHeader(String name) {
-        CategoryComponent category = getCategory(name);
+        CategoryComponent<T> category = getCategory(name);
         return category != null ? category.getWidget() : null;
     }
 
@@ -2335,7 +2339,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
      * Get a stored data categories subheader by jquery element.
      */
     protected TableSubHeader getTableSubHeader(JQueryElement elem) {
-        for (CategoryComponent category : categories) {
+        for (CategoryComponent<T> category : categories) {
             TableSubHeader subheader = category.getWidget();
             if (subheader != null && $(subheader).is(elem)) {
                 return subheader;
@@ -2368,7 +2372,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     @Override
     public void clearCategories() {
-        for (CategoryComponent category : categories) {
+        for (CategoryComponent<T> category : categories) {
             TableSubHeader subheader = category.getWidget();
             if (subheader != null && subheader.isAttached()) {
                 subheader.removeFromParent();
@@ -2504,7 +2508,6 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         List<RowComponent<T>> rows = getRows();
         for (RowComponent<T> row : rows) {
             row.getComputedColumns().forEach(computedColumnData -> {
-
                 Number computedValue = computedColumnData.compute(row);
                 ColumnContext<T> columnContext = row.getColumnContext(computedColumnData.name());
                 if (columnContext != null) {

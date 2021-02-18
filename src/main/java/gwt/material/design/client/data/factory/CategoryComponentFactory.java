@@ -30,11 +30,11 @@ import gwt.material.design.client.data.component.ComponentFactory;
  *
  * @author Ben Dol
  */
-public class CategoryComponentFactory implements ComponentFactory<CategoryComponent, Category> {
+public class CategoryComponentFactory<T> implements ComponentFactory<CategoryComponent<T>, Category> {
 
     @Override
-    public CategoryComponent generate(DataView dataView, Category category) {
+    public CategoryComponent<T> generate(DataView dataView, Category category) {
         return category != null && category.name != null ?
-            new CategoryComponent(dataView, category.getName(), category.getId()) : new OrphanCategoryComponent(dataView);
+            new CategoryComponent<>(dataView, category.getName(), category.getId()) : new OrphanCategoryComponent<>(dataView);
     }
 }

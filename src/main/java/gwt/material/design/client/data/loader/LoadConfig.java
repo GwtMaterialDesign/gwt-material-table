@@ -34,7 +34,7 @@ public class LoadConfig<T> {
     private final int offset;
     private final int limit;
     private final SortContext<T> sortContext;
-    private final List<CategoryComponent> openCategories;
+    private final List<CategoryComponent<T>> openCategories;
 
     public LoadConfig(int offset, int limit) {
         this(null, offset, limit, null, null);
@@ -44,7 +44,7 @@ public class LoadConfig<T> {
         this(null, offset, limit, sortContext, null);
     }
 
-    public LoadConfig(DataView<T> dataView, int offset, int limit, SortContext<T> sortContext, List<CategoryComponent> openCategories) {
+    public LoadConfig(DataView<T> dataView, int offset, int limit, SortContext<T> sortContext, List<CategoryComponent<T>> openCategories) {
         this.dataView = dataView;
         this.offset = offset;
         this.limit = limit;
@@ -86,7 +86,7 @@ public class LoadConfig<T> {
      * Return null if no categories exists.
      * FIXME: CategoryComponent belongs to table package, need to make similar class in data package
      */
-    public List<CategoryComponent> getOpenCategories() {
+    public List<CategoryComponent<T>> getOpenCategories() {
         return openCategories;
     }
 

@@ -40,7 +40,7 @@ public interface Renderer<T> {
 
     TableRow drawRow(DataView<T> dataView, RowComponent<T> rowComponent, Object valueKey, List<Column<T, ?>> columns, boolean redraw);
 
-    TableSubHeader drawCategory(CategoryComponent category, int columnCount, DataView<T> dataView);
+    TableSubHeader drawCategory(CategoryComponent<T> category, int columnCount, DataView<T> dataView);
 
     TableRow drawCustom(Component<?> component);
 

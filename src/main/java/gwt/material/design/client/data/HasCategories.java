@@ -26,33 +26,33 @@ import gwt.material.design.client.data.factory.Category;
 
 import java.util.List;
 
-public interface HasCategories {
+public interface HasCategories<T> {
 
     /**
      * Set your own custom {@link CategoryComponentFactory} to generate your categories.
      */
-    void setCategoryFactory(ComponentFactory<? extends CategoryComponent, Category> categoryFactory);
+    void setCategoryFactory(ComponentFactory<? extends CategoryComponent<T>, Category> categoryFactory);
 
     /**
      * Get a stored category component.
      * @param categoryName name of the category component.
      */
-    CategoryComponent getCategory(String categoryName);
+    CategoryComponent<T> getCategory(String categoryName);
 
     /**
      * Get all registered category components.
      */
-    Categories getCategories();
+    Categories<T> getCategories();
 
     /**
      * Get all the open {@link CategoryComponent}'s or null if categories are disabled.
      */
-    Categories getOpenCategories();
+    Categories<T> getOpenCategories();
 
     /**
      * Check if a category has data to provide.
      */
-    boolean isCategoryEmpty(CategoryComponent category);
+    boolean isCategoryEmpty(CategoryComponent<T> category);
 
     /**
      * Explicitly add a category, which will be drawn to the table.
@@ -73,7 +73,7 @@ public interface HasCategories {
      * If the category already exists then it will be ignored.
      * @param category The category data defined.
      */
-    void addCategory(CategoryComponent category);
+    void addCategory(CategoryComponent<T> category);
 
     /**
      * Has this data view got an existing {@link CategoryComponent} with given name.
@@ -98,7 +98,7 @@ public interface HasCategories {
     /**
      * Open an existing Category.
      */
-    void openCategory(CategoryComponent category);
+    void openCategory(CategoryComponent<T> category);
 
     /**
      * Close an existing Category.
@@ -108,7 +108,7 @@ public interface HasCategories {
     /**
      * Close an existing Category.
      */
-    void closeCategory(CategoryComponent category);
+    void closeCategory(CategoryComponent<T> category);
 
     /**
      * Open all the categories.

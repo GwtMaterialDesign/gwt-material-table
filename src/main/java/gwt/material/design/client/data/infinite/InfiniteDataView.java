@@ -290,7 +290,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
                 }
 
                 // hide passed empty categories
-                for (CategoryComponent category : getPassedCategories()) {
+                for (CategoryComponent<T> category : getPassedCategories()) {
                     if (category.isRendered()) {
                         category.getWidget().setVisible(false);
                     }

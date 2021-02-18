@@ -47,9 +47,9 @@ public class MapDataSource<T> implements DataSource<T>, HasDataView<T> {
     public void load(LoadConfig<T> loadConfig, LoadCallback<T> callback) {
         try {
             List<T> flatData = new ArrayList<>();
-            List<CategoryComponent> categories = loadConfig.getOpenCategories();
+            List<CategoryComponent<T>> categories = loadConfig.getOpenCategories();
             if(dataView.isUseCategories() && categories != null) {
-                for (CategoryComponent category : categories) {
+                for (CategoryComponent<T> category : categories) {
                     List<T> data = dataMap.get(category.getId());
                     if (data != null) {
                         flatData.addAll(data);

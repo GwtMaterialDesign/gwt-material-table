@@ -842,7 +842,7 @@ public class AbstractDataViewTest<T extends MaterialDataTable<Person>> extends D
         dataView.addCategory(categoryName);
         RootPanel.get().add(table);
 
-        CategoryComponent category = dataView.getCategory(categoryName);
+        CategoryComponent<T> category = dataView.getCategory(categoryName);
 
         // when
         dataView.disableCategory(categoryName);
@@ -862,7 +862,7 @@ public class AbstractDataViewTest<T extends MaterialDataTable<Person>> extends D
         dataView.addCategory(categoryName);
         RootPanel.get().add(table);
 
-        CategoryComponent category = dataView.getCategory(categoryName);
+        CategoryComponent<T> category = dataView.getCategory(categoryName);
         dataView.disableCategory(categoryName);
         assertFalse(category.getWidget().isEnabled());
 
@@ -905,8 +905,8 @@ public class AbstractDataViewTest<T extends MaterialDataTable<Person>> extends D
         return components;
     }
 
-    public Components<CategoryComponent> generateCategoryComponents(AbstractDataView<Person> dataView) {
-        Components<CategoryComponent> components = new Components<>();
+    public Components<CategoryComponent<T>> generateCategoryComponents(AbstractDataView<Person> dataView) {
+        Components<CategoryComponent<T>> components = new Components<>();
         for(Person person : people) {
             CategoryComponent category = dataView.getCategoryFactory().generate(dataView, person.getDataCategory());
             if(!components.contains(category)) {

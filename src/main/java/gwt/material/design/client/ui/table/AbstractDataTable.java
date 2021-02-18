@@ -211,27 +211,27 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
-    public final void setCategoryFactory(ComponentFactory<? extends CategoryComponent, Category> categoryFactory) {
+    public final void setCategoryFactory(ComponentFactory<? extends CategoryComponent<T>, Category> categoryFactory) {
         view.setCategoryFactory(categoryFactory);
     }
 
     @Override
-    public final CategoryComponent getCategory(String categoryName) {
+    public final CategoryComponent<T> getCategory(String categoryName) {
         return view.getCategory(categoryName);
     }
 
     @Override
-    public final Categories getCategories() {
+    public final Categories<T> getCategories() {
         return view.getCategories();
     }
 
     @Override
-    public final Categories getOpenCategories() {
+    public final Categories<T> getOpenCategories() {
         return view.getOpenCategories();
     }
 
     @Override
-    public final boolean isCategoryEmpty(CategoryComponent category) {
+    public final boolean isCategoryEmpty(CategoryComponent<T> category) {
         return view.isCategoryEmpty(category);
     }
 

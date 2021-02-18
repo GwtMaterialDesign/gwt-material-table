@@ -40,7 +40,7 @@ import java.util.List;
  * @author Ben Dol
  */
 public interface DataView<T> extends HasRows<T>, HasColumns<T>, HasDataSource<T>, HasRenderer<T>, HasKeyProvider<T>,
-        HasCategories, ViewSettings {
+        HasCategories<T>, ViewSettings {
 
     /**
      * Render the data view components to DOM.

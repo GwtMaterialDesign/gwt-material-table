@@ -79,7 +79,7 @@ public class RowComponent<T> extends Component<TableRow> implements Comparable<T
         return dataView;
     }
 
-    public CategoryComponent getCategory() {
+    public CategoryComponent<T> getCategory() {
         return categoryInfo != null ? dataView.getCategory(categoryInfo.getName()) : null;
     }
 

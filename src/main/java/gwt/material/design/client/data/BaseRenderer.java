@@ -166,7 +166,7 @@ public class BaseRenderer<T> implements Renderer<T> {
     }
 
     @Override
-    public TableSubHeader drawCategory(CategoryComponent category, int columnCount, DataView<T> dataView) {
+    public TableSubHeader drawCategory(CategoryComponent<T> category, int columnCount, DataView<T> dataView) {
         if (category != null) {
             TableSubHeader subHeader = category.getWidget();
             if (subHeader == null) {

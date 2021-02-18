@@ -25,13 +25,16 @@ import gwt.material.design.client.data.factory.CategoryMode;
 import gwt.material.design.client.ui.table.TableHeader;
 import gwt.material.design.client.ui.table.TableSubHeader;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Ben Dol
  */
-public class CategoryComponent extends Component<TableSubHeader> {
+public class CategoryComponent<T> extends Component<TableSubHeader> {
 
-    public static class OrphanCategoryComponent extends CategoryComponent {
-        public OrphanCategoryComponent(HasCategories parent) {
+    public static class OrphanCategoryComponent<T> extends CategoryComponent<T> {
+        public OrphanCategoryComponent(HasCategories<T> parent) {
             super(parent, null, null);
         }
 
@@ -53,13 +56,14 @@ public class CategoryComponent extends Component<TableSubHeader> {
     private int currentIndex = -1;
     private int rowCount = 0;
 
-    private HasCategories parent;
+    private HasCategories<T> parent;
+    private List<RowComponent<T>> rows = new ArrayList<>();
 
-    public CategoryComponent(HasCategories parent, String name, Object id) {
+    public CategoryComponent(HasCategories<T> parent, String name, Object id) {
         this(parent, name, id, false);
     }
 
-    public CategoryComponent(HasCategories parent, String name, Object id, boolean openByDefault) {
+    public CategoryComponent(HasCategories<T> parent, String name, Object id, boolean openByDefault) {
         this.parent = parent;
         this.name = name;
         this.id = id;
@@ -208,12 +212,26 @@ public class CategoryComponent extends Component<TableSubHeader> {
         super.setWidget(widget);
     }
 
+    public List<T> getData() {
+        return RowComponent.extractData(rows);
+    }
+
+    public void addRow(RowComponent<T> rowComponent) {
+        if (!rows.contains(rowComponent)) {
+            rows.add(rowComponent);
+        }
+    }
+
+    public List<RowComponent<T>> getRows() {
+        return rows;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        CategoryComponent that = (CategoryComponent) o;
+        CategoryComponent<T> that = (CategoryComponent<T>) o;
         return name.equals(that.name);
     }
 
