@@ -57,6 +57,6 @@ public class LongColumn<T> extends NumberColumn<T, Long> {
 
     @Override
     public NumberFormat getDefaultFormat() {
-        return MaterialDataTable.getDefaultColumnFormatProvider().getLongFormat();
+        return MaterialDataTable.getGlobalFormatProvider().getLongFormat();
     }
 }

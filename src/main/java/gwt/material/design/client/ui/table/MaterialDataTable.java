@@ -60,7 +60,7 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
 
     // Global Configs
     private static String defaultBlankPlaceholder;
-    private static ColumnFormatProvider defaultColumnFormatProvider;
+    private static ColumnFormatProvider globalFormatProvider;
 
     // Interface
     private MaterialIcon tableIcon;
@@ -344,15 +344,15 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
         addRemoveColumnHandler(this);
     }
 
-    public static ColumnFormatProvider getDefaultColumnFormatProvider() {
-        if (defaultColumnFormatProvider == null) {
-            defaultColumnFormatProvider = new ColumnFormatProvider();
+    public static ColumnFormatProvider getGlobalFormatProvider() {
+        if (globalFormatProvider == null) {
+            globalFormatProvider = new ColumnFormatProvider();
         }
-        return defaultColumnFormatProvider;
+        return globalFormatProvider;
     }
 
-    public static void setDefaultColumnFormatProvider(ColumnFormatProvider defaultColumnFormatProvider) {
-        MaterialDataTable.defaultColumnFormatProvider = defaultColumnFormatProvider;
+    public static void setGlobalFormatProvider(ColumnFormatProvider globalFormatProvider) {
+        MaterialDataTable.globalFormatProvider = globalFormatProvider;
     }
 
     public static String getDefaultBlankPlaceholder() {

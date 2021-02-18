@@ -34,6 +34,6 @@ public class ComputedColumn<T, N extends Number> extends NumberColumn<T, N> {
 
     @Override
     public NumberFormat getDefaultFormat() {
-        return MaterialDataTable.getDefaultColumnFormatProvider().getLongFormat();
+        return MaterialDataTable.getGlobalFormatProvider().getLongFormat();
     }
 }

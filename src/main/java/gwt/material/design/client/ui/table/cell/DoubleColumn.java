@@ -58,6 +58,6 @@ public class DoubleColumn<T> extends NumberColumn<T, Double> {
 
     @Override
     public NumberFormat getDefaultFormat() {
-        return MaterialDataTable.getDefaultColumnFormatProvider().getDoubleFormat();
+        return MaterialDataTable.getGlobalFormatProvider().getDoubleFormat();
     }
 }
