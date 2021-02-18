@@ -24,6 +24,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasKeyProvider;
 import gwt.material.design.client.data.component.Component;
 import gwt.material.design.client.data.component.Components;
+import gwt.material.design.client.data.factory.Category;
 import gwt.material.design.client.js.JsTableSubHeaders;
 import gwt.material.design.client.ui.MaterialProgress;
 import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControls;
@@ -152,4 +153,9 @@ public interface DataView<T> extends HasRows<T>, HasColumns<T>, HasDataSource<T>
     void setAccessibilityControl(DataTableAccessibilityControls accessibilityControl);
 
     DataTableAccessibilityControls getAccessibilityControl();
+
+    /**
+     * Will return all the data of the datatable
+     */
+    List<T> getData();
 }

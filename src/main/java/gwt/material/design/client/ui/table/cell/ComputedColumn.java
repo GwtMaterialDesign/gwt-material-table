@@ -4,6 +4,7 @@ import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.data.ColumnContext;
+import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.client.ui.html.Div;
 import gwt.material.design.client.ui.table.MaterialDataTable;
 
@@ -15,7 +16,7 @@ public class ComputedColumn<T, N extends Number> extends NumberColumn<T, N> {
         super(new NumberCell<>());
     }
 
-    public N compute(T currentData, List<T> entireData) {
+    public N compute(RowComponent<T> row) {
         return null;
     }
 

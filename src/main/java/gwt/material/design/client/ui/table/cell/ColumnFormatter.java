@@ -22,6 +22,7 @@ package gwt.material.design.client.ui.table.cell;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
 
+//TOD: ColumnFormatProvider
 public class ColumnFormatter {
 
     private DateTimeFormat dateFormat;
@@ -33,6 +34,7 @@ public class ColumnFormatter {
     private NumberFormat shortFormat;
 
     public DateTimeFormat getDateFormat() {
+        //TODO: move the DateColumn Default Logic (i.e DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_FULL))
         return dateFormat;
     }
 

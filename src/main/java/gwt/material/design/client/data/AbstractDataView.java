@@ -2235,7 +2235,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         return Collections.unmodifiableList(rows);
     }
 
-    protected List<T> getData() {
+    @Override
+    public List<T> getData() {
         return RowComponent.extractData(rows);
     }
 
@@ -2503,7 +2504,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         List<RowComponent<T>> rows = getRows();
         for (RowComponent<T> row : rows) {
             row.getComputedColumns().forEach(computedColumnData -> {
-                Number computedValue = computedColumnData.compute(row.getData(), getData());
+
+                Number computedValue = computedColumnData.compute(row);
                 ColumnContext<T> columnContext = row.getColumnContext(computedColumnData.name());
                 if (columnContext != null) {
                     computedColumnData.render(columnContext, computedValue);
