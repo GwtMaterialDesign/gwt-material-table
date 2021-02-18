@@ -57,7 +57,6 @@ public class IntegerColumn<T> extends NumberColumn<T, Integer> {
 
     @Override
     public NumberFormat getDefaultFormat() {
-        NumberFormat defaultFormat = MaterialDataTable.getDefaultColumnFormatter().getIntegerFormat();
-        return defaultFormat != null ? defaultFormat : NumberFormat.getFormat("#");
+        return MaterialDataTable.getDefaultColumnFormatProvider().getIntegerFormat();
     }
 }

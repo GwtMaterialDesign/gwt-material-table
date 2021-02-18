@@ -57,7 +57,6 @@ public class FloatColumn<T> extends NumberColumn<T, Float> {
 
     @Override
     public NumberFormat getDefaultFormat() {
-        NumberFormat defaultFormat = MaterialDataTable.getDefaultColumnFormatter().getFloatFormat();
-        return defaultFormat != null ? defaultFormat : NumberFormat.getDecimalFormat();
+        return MaterialDataTable.getDefaultColumnFormatProvider().getFloatFormat();
     }
 }

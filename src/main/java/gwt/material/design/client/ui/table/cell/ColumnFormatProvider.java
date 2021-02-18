@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,8 +22,7 @@ package gwt.material.design.client.ui.table.cell;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
 
-//TOD: ColumnFormatProvider
-public class ColumnFormatter {
+public class ColumnFormatProvider {
 
     private DateTimeFormat dateFormat;
     private NumberFormat integerFormat;
@@ -34,65 +33,85 @@ public class ColumnFormatter {
     private NumberFormat shortFormat;
 
     public DateTimeFormat getDateFormat() {
-        //TODO: move the DateColumn Default Logic (i.e DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_FULL))
+        if (dateFormat == null) {
+            dateFormat = DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_FULL);
+        }
         return dateFormat;
     }
 
-    public ColumnFormatter setDateFormat(DateTimeFormat dateFormat) {
+    public ColumnFormatProvider setDateFormat(DateTimeFormat dateFormat) {
         this.dateFormat = dateFormat;
         return this;
     }
 
     public NumberFormat getIntegerFormat() {
+        if (integerFormat == null) {
+            integerFormat = NumberFormat.getFormat("#");
+        }
         return integerFormat;
     }
 
-    public ColumnFormatter setIntegerFormat(NumberFormat integerFormat) {
+    public ColumnFormatProvider setIntegerFormat(NumberFormat integerFormat) {
         this.integerFormat = integerFormat;
         return this;
     }
 
     public NumberFormat getLongFormat() {
+        if (longFormat == null) {
+            longFormat = NumberFormat.getFormat("#");
+        }
         return longFormat;
     }
 
-    public ColumnFormatter setLongFormat(NumberFormat longFormat) {
+    public ColumnFormatProvider setLongFormat(NumberFormat longFormat) {
         this.longFormat = longFormat;
         return this;
     }
 
     public NumberFormat getDoubleFormat() {
+        if (doubleFormat == null) {
+            doubleFormat = NumberFormat.getDecimalFormat();
+        }
         return doubleFormat;
     }
 
-    public ColumnFormatter setDoubleFormat(NumberFormat doubleFormat) {
+    public ColumnFormatProvider setDoubleFormat(NumberFormat doubleFormat) {
         this.doubleFormat = doubleFormat;
         return this;
     }
 
     public NumberFormat getFloatFormat() {
+        if (floatFormat == null) {
+            floatFormat = NumberFormat.getDecimalFormat();
+        }
         return floatFormat;
     }
 
-    public ColumnFormatter setFloatFormat(NumberFormat floatFormat) {
+    public ColumnFormatProvider setFloatFormat(NumberFormat floatFormat) {
         this.floatFormat = floatFormat;
         return this;
     }
 
     public NumberFormat getBigDecimalFormat() {
+        if (bigDecimalFormat == null) {
+            bigDecimalFormat = NumberFormat.getDecimalFormat();
+        }
         return bigDecimalFormat;
     }
 
-    public ColumnFormatter setBigDecimalFormat(NumberFormat bigDecimalFormat) {
+    public ColumnFormatProvider setBigDecimalFormat(NumberFormat bigDecimalFormat) {
         this.bigDecimalFormat = bigDecimalFormat;
         return this;
     }
 
     public NumberFormat getShortFormat() {
+        if (shortFormat == null) {
+            shortFormat = NumberFormat.getFormat("#");
+        }
         return shortFormat;
     }
 
-    public ColumnFormatter setShortFormat(NumberFormat shortFormat) {
+    public ColumnFormatProvider setShortFormat(NumberFormat shortFormat) {
         this.shortFormat = shortFormat;
         return this;
     }

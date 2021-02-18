@@ -29,7 +29,7 @@ import gwt.material.design.client.data.events.InsertColumnHandler;
 import gwt.material.design.client.data.events.RemoveColumnEvent;
 import gwt.material.design.client.data.events.RemoveColumnHandler;
 import gwt.material.design.client.data.events.SetupHandler;
-import gwt.material.design.client.ui.table.cell.ColumnFormatter;
+import gwt.material.design.client.ui.table.cell.ColumnFormatProvider;
 import gwt.material.design.client.ui.table.events.StretchEvent;
 import gwt.material.design.client.ui.table.events.StretchHandler;
 import gwt.material.design.jquery.client.api.JQueryElement;
@@ -60,7 +60,7 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
 
     // Global Configs
     private static String defaultBlankPlaceholder;
-    private static ColumnFormatter defaultColumnFormatter;
+    private static ColumnFormatProvider defaultColumnFormatProvider;
 
     // Interface
     private MaterialIcon tableIcon;
@@ -344,15 +344,15 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
         addRemoveColumnHandler(this);
     }
 
-    public static ColumnFormatter getDefaultColumnFormatter() {
-        if (defaultColumnFormatter == null) {
-            defaultColumnFormatter = new ColumnFormatter();
+    public static ColumnFormatProvider getDefaultColumnFormatProvider() {
+        if (defaultColumnFormatProvider == null) {
+            defaultColumnFormatProvider = new ColumnFormatProvider();
         }
-        return defaultColumnFormatter;
+        return defaultColumnFormatProvider;
     }
 
-    public static void setDefaultColumnFormatter(ColumnFormatter defaultColumnFormats) {
-        MaterialDataTable.defaultColumnFormatter = defaultColumnFormats;
+    public static void setDefaultColumnFormatProvider(ColumnFormatProvider defaultColumnFormatProvider) {
+        MaterialDataTable.defaultColumnFormatProvider = defaultColumnFormatProvider;
     }
 
     public static String getDefaultBlankPlaceholder() {

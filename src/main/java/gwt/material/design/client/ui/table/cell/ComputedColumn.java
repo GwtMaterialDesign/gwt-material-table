@@ -8,8 +8,6 @@ import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.client.ui.html.Div;
 import gwt.material.design.client.ui.table.MaterialDataTable;
 
-import java.util.List;
-
 public class ComputedColumn<T, N extends Number> extends NumberColumn<T, N> {
 
     public ComputedColumn() {
@@ -36,6 +34,6 @@ public class ComputedColumn<T, N extends Number> extends NumberColumn<T, N> {
 
     @Override
     public NumberFormat getDefaultFormat() {
-        return MaterialDataTable.getDefaultColumnFormatter().getLongFormat();
+        return MaterialDataTable.getDefaultColumnFormatProvider().getLongFormat();
     }
 }
