@@ -1091,13 +1091,13 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     @Override
     public final Column<T, ?> addColumn(ColumnValueProvider<T> renderer, String columnName) {
-        return addColumn(new TextColumn<T>() {
+        return addColumn(columnName, new TextColumn<T>() {
             @Override
             public String getValue(T object) {
                 String value = renderer.getValue(object);
                 return value;
             }
-        }).name(columnName);
+        });
     }
 
     protected void updateSortContext(TableHeader th, Column<T, ?> column) {
