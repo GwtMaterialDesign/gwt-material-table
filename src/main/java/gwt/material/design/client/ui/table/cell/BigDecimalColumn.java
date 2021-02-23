@@ -21,7 +21,6 @@ package gwt.material.design.client.ui.table.cell;
 
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.i18n.client.NumberFormat;
-import gwt.material.design.client.ui.table.MaterialDataTable;
 
 import java.math.BigDecimal;
 
@@ -59,6 +58,6 @@ public class BigDecimalColumn<T> extends NumberColumn<T, BigDecimal> {
 
     @Override
     public NumberFormat getDefaultFormat() {
-        return MaterialDataTable.getGlobalFormatProvider().getBigDecimalFormat();
+        return getDataView().getDefaultFormatProvider().getBigDecimalFormat();
     }
 }

@@ -31,6 +31,7 @@ import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControl
 import gwt.material.design.client.ui.table.DataDisplay;
 import gwt.material.design.client.ui.table.TableHeader;
 import gwt.material.design.client.ui.table.TableScaffolding;
+import gwt.material.design.client.ui.table.cell.ColumnFormatProvider;
 
 import java.util.List;
 
@@ -158,4 +159,12 @@ public interface DataView<T> extends HasRows<T>, HasColumns<T>, HasDataSource<T>
      * Will return all the data of the datatable
      */
     List<T> getData();
+
+    void setDefaultFormatProvider(ColumnFormatProvider defaultFormatProvider);
+
+    ColumnFormatProvider getDefaultFormatProvider();
+
+    void setDefaultBlankPlaceholder(String defaultBlankPlaceholder);
+
+    String getDefaultBlankPlaceholder();
 }

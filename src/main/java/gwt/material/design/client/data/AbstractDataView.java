@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -51,10 +51,7 @@ import gwt.material.design.client.ui.MaterialProgress;
 import gwt.material.design.client.ui.Selectors;
 import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControls;
 import gwt.material.design.client.ui.table.*;
-import gwt.material.design.client.ui.table.cell.Column;
-import gwt.material.design.client.ui.table.cell.ColumnValueProvider;
-import gwt.material.design.client.ui.table.cell.FrozenSide;
-import gwt.material.design.client.ui.table.cell.TextColumn;
+import gwt.material.design.client.ui.table.cell.*;
 import gwt.material.design.jquery.client.api.Event;
 import gwt.material.design.jquery.client.api.Functions;
 import gwt.material.design.jquery.client.api.JQueryElement;
@@ -136,6 +133,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     private SelectionType selectionType = SelectionType.NONE;
     private Density density = DisplayDensity.DEFAULT;
     private DataTableAccessibilityControls accessibilityControl;
+    private ColumnFormatProvider defaultFormatProvider;
+    private String defaultBlankPlaceholder;
 
     // Components
     protected final Components<RowComponent<T>> rows = new Components<>();
@@ -517,7 +516,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     public void renderColumn(Column<T, ?> column) {
         int index = column.getIndex() + getColumnOffset();
-
+        column.setDataView(this);
         TableHeader th = renderer.drawColumnHeader(getContainer(), column, column.name(), index);
         if (th != null) {
             if (column.sortable()) {
@@ -2565,6 +2564,29 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     public void setAccessibilityControl(DataTableAccessibilityControls accessibilityControl) {
         this.accessibilityControl = accessibilityControl;
+    }
+
+    @Override
+    public void setDefaultFormatProvider(ColumnFormatProvider defaultFormatProvider) {
+        this.defaultFormatProvider = defaultFormatProvider;
+    }
+
+    @Override
+    public ColumnFormatProvider getDefaultFormatProvider() {
+        if (defaultFormatProvider == null) {
+            defaultFormatProvider = new ColumnFormatProvider();
+        }
+        return defaultFormatProvider;
+    }
+
+    @Override
+    public void setDefaultBlankPlaceholder(String defaultBlankPlaceholder) {
+        this.defaultBlankPlaceholder = defaultBlankPlaceholder;
+    }
+
+    @Override
+    public String getDefaultBlankPlaceholder() {
+        return defaultBlankPlaceholder;
     }
 
     public Table getTable() {

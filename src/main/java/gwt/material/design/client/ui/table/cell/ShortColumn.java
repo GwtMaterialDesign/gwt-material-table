@@ -57,6 +57,6 @@ public class ShortColumn<T> extends NumberColumn<T, Short> {
 
     @Override
     public NumberFormat getDefaultFormat() {
-        return MaterialDataTable.getGlobalFormatProvider().getIntegerFormat();
+        return getDataView().getDefaultFormatProvider().getIntegerFormat();
     }
 }

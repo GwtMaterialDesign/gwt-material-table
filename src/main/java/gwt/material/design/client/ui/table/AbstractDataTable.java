@@ -45,6 +45,7 @@ import gwt.material.design.client.data.factory.RowComponentFactory;
 import gwt.material.design.client.events.DefaultHandlerRegistry;
 import gwt.material.design.client.events.HandlerRegistry;
 import gwt.material.design.client.ui.table.cell.Column;
+import gwt.material.design.client.ui.table.cell.ColumnFormatProvider;
 import gwt.material.design.client.ui.table.cell.ColumnValueProvider;
 import gwt.material.design.client.ui.table.cell.TextColumn;
 import gwt.material.design.jquery.client.api.JQueryElement;
@@ -655,6 +656,26 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
             // focus.
             focused = true;
         }
+    }
+
+    @Override
+    public ColumnFormatProvider getDefaultFormatProvider() {
+        return view.getDefaultFormatProvider();
+    }
+
+    @Override
+    public void setDefaultFormatProvider(ColumnFormatProvider defaultFormatProvider) {
+        view.setDefaultFormatProvider(defaultFormatProvider);
+    }
+
+    @Override
+    public String getDefaultBlankPlaceholder() {
+        return view.getDefaultBlankPlaceholder();
+    }
+
+    @Override
+    public void setDefaultBlankPlaceholder(String defaultBlankPlaceholder) {
+        view.setDefaultBlankPlaceholder(defaultBlankPlaceholder);
     }
 
     protected void onFocus() {

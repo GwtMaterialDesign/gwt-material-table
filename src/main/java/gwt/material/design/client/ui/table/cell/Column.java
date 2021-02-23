@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,7 +34,6 @@ import gwt.material.design.client.constants.HideOn;
 import gwt.material.design.client.constants.TextAlign;
 import gwt.material.design.client.data.DataView;
 import gwt.material.design.client.data.component.RowComponent;
-import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.table.MaterialDataTable;
 
 import java.util.Comparator;
@@ -46,7 +45,6 @@ import java.util.Map;
  *
  * @param <T> the row type
  * @param <C> the column type
- *
  * @author Ben Dol
  */
 public abstract class Column<T, C> implements HasCell<T, C> {
@@ -80,6 +78,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     private FrozenProperties frozenProps;
     private Map<StyleName, String> styleProps;
     private Comparator<? super RowComponent<T>> sortComparator;
+    private DataView<T> dataView;
 
     protected C defaultValue;
     protected String blankPlaceholder;
@@ -114,9 +113,9 @@ public abstract class Column<T, C> implements HasCell<T, C> {
      * Handle a browser event that took place within the column.
      *
      * @param context the cell context
-     * @param elem the parent Element
-     * @param object the base object to be updated
-     * @param event the native browser event
+     * @param elem    the parent Element
+     * @param object  the base object to be updated
+     * @param event   the native browser event
      */
     public void onBrowserEvent(Context context, Element elem, final T object, NativeEvent event) {
         final int index = context.getIndex();
@@ -164,7 +163,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
      * Render the object into the cell.
      *
      * @param object the object to render
-     * @param sb the buffer to render into
+     * @param sb     the buffer to render into
      */
     public Column<T, C> render(Context context, T object, SafeHtmlBuilder sb) {
         C value = getValue(object);
@@ -195,7 +194,9 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     /**
      * @return the database name of the column, or null if it's never been set
      */
-    public final String name() { return this.name; }
+    public final String name() {
+        return this.name;
+    }
 
     /**
      * Check if the default sort order of the column is ascending or descending.
@@ -218,6 +219,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
 
     /**
      * Is this column auto sorting when rendered.
+     *
      * @return true if this column is auto sorted.
      */
     public final boolean autoSort() {
@@ -307,10 +309,10 @@ public abstract class Column<T, C> implements HasCell<T, C> {
      * are appropriately configured or it may result in unexpected behavior.
      *
      * @param styleName the style name as seen here {@link Style#STYLE_Z_INDEX} for example.
-     * @param value the string value required for the given style property.
+     * @param value     the string value required for the given style property.
      */
     public Column<T, C> styleProperty(StyleName styleName, String value) {
-        if(styleProps == null) {
+        if (styleProps == null) {
             styleProps = new HashMap<>();
         }
         styleProps.put(styleName, value);
@@ -319,15 +321,17 @@ public abstract class Column<T, C> implements HasCell<T, C> {
 
     /**
      * Get a styles property.
+     *
      * @param styleName the styles name as represented in a {@link Style} class.
      * @return null if the style property is not set.
      */
     public String styleProperty(StyleName styleName) {
-        return styleProps!=null ? styleProps.get(styleName) : null;
+        return styleProps != null ? styleProps.get(styleName) : null;
     }
 
     /**
      * Return the registered style properties.
+     *
      * @return null if no styles are added.
      */
     public final Map<StyleName, String> getStyleProperties() {
@@ -343,7 +347,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     }
 
     public Column<T, C> frozenProperties(FrozenProperties frozenProps) {
-        if(frozenProps != null) {
+        if (frozenProps != null) {
             // Width is a required property for frozen columns
             width(frozenProps.getStyleProperty(StyleName.WIDTH));
         }
@@ -361,23 +365,25 @@ public abstract class Column<T, C> implements HasCell<T, C> {
      * <br><br>
      * Like so:
      * <pre>{@code table.addColumn(new TextColumn<Person>() {
-        @Override
-        public FrozenProperties frozenProperties() {
-            return new FrozenProperties("200px", "60px")
-                .setStyleProperty(StyleName.PADDING_LEFT, "20px")
-                .setStyleProperty(StyleName.PADDING_TOP, "10px")
-                .setHeaderStyleProperty(StyleName.PADDING_TOP, "21px");
-        }
-        @Override
-        public String getValue(Person object) {
-            return object.getName();
-        }
-    }, "Name");
+     * @Override
+     * public FrozenProperties frozenProperties() {
+     * return new FrozenProperties("200px", "60px")
+     * .setStyleProperty(StyleName.PADDING_LEFT, "20px")
+     * .setStyleProperty(StyleName.PADDING_TOP, "10px")
+     * .setHeaderStyleProperty(StyleName.PADDING_TOP, "21px");
+     * }
+     * @Override
+     * public String getValue(Person object) {
+     * return object.getName();
+     * }
+     * }, "Name");
      * }</pre>
-     *
+     * <p>
      * Columns must be aligned with each other without any unfrozen columns in between.
      */
-    public final FrozenProperties frozenProperties() { return frozenProps; }
+    public final FrozenProperties frozenProperties() {
+        return frozenProps;
+    }
 
     public final boolean isFrozenColumn() {
         return frozenProps != null;
@@ -419,6 +425,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
 
     /**
      * Get the columns header width.
+     *
      * @return null if not defined.
      */
     public final String width() {
@@ -454,6 +461,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
 
     /**
      * Is our width configuration a dynamic value (i.e. percentage %)
+     *
      * @return false by default but will update to true when % width is set
      */
     public boolean isDynamicWidth() {
@@ -482,7 +490,8 @@ public abstract class Column<T, C> implements HasCell<T, C> {
      */
     public String blankPlaceholder() {
         if (blankPlaceholder == null) {
-            blankPlaceholder = MaterialDataTable.getDefaultBlankPlaceholder();
+            String defaultBlankPlaceholder = getDataView().getDefaultBlankPlaceholder();
+            blankPlaceholder = defaultBlankPlaceholder != null ? defaultBlankPlaceholder : MaterialDataTable.getGlobals().getDefaultBlankPlaceholder();
         }
         return blankPlaceholder;
     }
@@ -492,21 +501,29 @@ public abstract class Column<T, C> implements HasCell<T, C> {
         return this;
     }
 
+    public DataView<T> getDataView() {
+        return dataView;
+    }
+
+    public void setDataView(DataView<T> dataView) {
+        this.dataView = dataView;
+    }
+
     @Override
     public String toString() {
         return "Column{" +
-                "cell=" + cell +
-                ", index=" + index +
-                ", fieldUpdater=" + fieldUpdater +
-                ", defaultSortAscending=" + defaultSortAscending +
-                ", numeric=" + numeric +
-                ", autoSort=" + autoSort +
-                ", name='" + name + '\'' +
-                ", width='" + width + '\'' +
-                ", hideOn=" + hideOn +
-                ", textAlign=" + textAlign +
-                ", frozenProps=" + frozenProps +
-                ", styleProps=" + styleProps +
-                '}';
+            "cell=" + cell +
+            ", index=" + index +
+            ", fieldUpdater=" + fieldUpdater +
+            ", defaultSortAscending=" + defaultSortAscending +
+            ", numeric=" + numeric +
+            ", autoSort=" + autoSort +
+            ", name='" + name + '\'' +
+            ", width='" + width + '\'' +
+            ", hideOn=" + hideOn +
+            ", textAlign=" + textAlign +
+            ", frozenProps=" + frozenProps +
+            ", styleProps=" + styleProps +
+            '}';
     }
 }
