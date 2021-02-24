@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,13 +27,14 @@ import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.Widget;
+import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.StyleName;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.constants.*;
 import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.data.component.Component;
 import gwt.material.design.client.data.component.RowComponent;
-import gwt.material.design.client.data.factory.CategoryMode;
+import gwt.material.design.client.data.factory.Mode;
 import gwt.material.design.client.ui.MaterialCheckBox;
 import gwt.material.design.client.ui.MaterialIcon;
 import gwt.material.design.client.ui.html.Div;
@@ -136,6 +137,7 @@ public class BaseRenderer<T> implements Renderer<T> {
                 rowComponent.addColumn(columnContext);
             }
             rowComponent.setRedraw(false);
+            applyComponentMode(rowComponent, dataView);
         }
 
         if (dataView.isUseRowExpansion()) {
@@ -173,7 +175,7 @@ public class BaseRenderer<T> implements Renderer<T> {
                 subHeader = category.render(columnCount);
                 assert subHeader != null : "rendered category TableSubHeader cannot be null.";
                 subHeader.setHeight(category.getHeight());
-                applyCategoryState(category.getMode(), subHeader, dataView);
+                applyComponentMode(category, dataView);
             }
             return subHeader;
         }
@@ -182,26 +184,36 @@ public class BaseRenderer<T> implements Renderer<T> {
         return null;
     }
 
-    protected void applyCategoryState(CategoryMode state, TableSubHeader subHeader, DataView<T> dataView) {
-        if (state != null) {
-            switch (state) {
-                case DISABLED:
-                    subHeader.setEnabled(false);
-                    dataView.closeAllCategories();
-                    dataView.hideTableScrollbar(true);
-                    break;
-                case HIDDEN:
-                    subHeader.addStyleName(CategoryMode.HIDDEN.getName());
-                    dataView.closeAllCategories();
-                    dataView.hideTableScrollbar(true);
-                    break;
-                case ENABLED:
-                default:
-                    dataView.getContainer().getElement().getStyle().clearOverflow();
-                    subHeader.removeStyleName(CategoryMode.HIDDEN.getName());
-                    subHeader.setEnabled(true);
-                    dataView.hideTableScrollbar(false);
-                    break;
+    protected void applyComponentMode(Component component, DataView<T> dataView) {
+        if (component.getWidget() instanceof MaterialWidget) {
+            Mode mode = component.getMode();
+            MaterialWidget widget = (MaterialWidget) component.getWidget();
+            if (mode != null && widget != null) {
+                switch (mode) {
+                    case DISABLED:
+                        widget.setEnabled(false);
+                        if (dataView.isUseCategories()) {
+                            dataView.closeAllCategories();
+                            dataView.hideTableScrollbar(true);
+                        }
+                        break;
+                    case HIDDEN:
+                        widget.addStyleName(Mode.HIDDEN.getName());
+                        if (dataView.isUseCategories()) {
+                            dataView.closeAllCategories();
+                            dataView.hideTableScrollbar(true);
+                        }
+                        break;
+                    case ENABLED:
+                    default:
+                        widget.removeStyleName(Mode.HIDDEN.getName());
+                        widget.setEnabled(true);
+                        if (dataView.isUseCategories()) {
+                            dataView.getContainer().getElement().getStyle().clearOverflow();
+                            dataView.hideTableScrollbar(false);
+                        }
+                        break;
+                }
             }
         }
     }
@@ -215,9 +227,9 @@ public class BaseRenderer<T> implements Renderer<T> {
     public TableData drawSelectionCell() {
         TableData checkBox = new TableData();
         checkBox.setId("col0");
-        checkBox.addStyleName(TableCssName.SELECTION);
         MaterialCheckBox cb = new MaterialCheckBox(checkBox.getElement());
         cb.setType(CheckBoxType.FILLED);
+        cb.addStyleName(TableCssName.SELECTION);
         checkBox.addClickHandler(event -> {
             event.getNativeEvent().preventDefault();
         });

@@ -50,4 +50,5 @@ public interface TableCssName {
     String COLEX = "colex";
     String SORTABLE = "sortable";
     String FROZEN_COL = "frozen-col";
+    String FOOTER_PANEL = "footer-panel";
 }

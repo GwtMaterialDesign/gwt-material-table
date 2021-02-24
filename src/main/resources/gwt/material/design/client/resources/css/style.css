@@ -232,7 +232,8 @@ table.table tbody tr.subheader.fixed.passed {
 
 }
 
-table.table tbody tr.subheader.hidden {
+table.table tbody tr.subheader.hidden,
+table.table tbody tr.data-row.hidden {
     display: none;
     visibility: hidden;
 }
