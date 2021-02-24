@@ -20,6 +20,7 @@
 package gwt.material.design.client.data.component;
 
 import com.google.gwt.user.client.ui.Widget;
+import gwt.material.design.client.data.factory.Mode;
 
 import java.util.List;
 
@@ -30,6 +31,7 @@ public class Component<E extends Widget> {
 
     private E widget;
     private boolean redraw;
+    private Mode mode;
 
     private Components<Component<?>> children;
 
@@ -62,6 +64,14 @@ public class Component<E extends Widget> {
 
     public boolean isDrawable() {
         return widget != null;
+    }
+
+    public Mode getMode() {
+        return mode;
+    }
+
+    public void setMode(Mode mode) {
+        this.mode = mode;
     }
 
     public Components<Component<?>> getChildren() {

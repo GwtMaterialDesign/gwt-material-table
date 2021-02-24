@@ -1365,10 +1365,9 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         // Setup select all checkbox
         TableHeader th = new TableHeader();
         th.setId("col0");
-        th.addStyleName(TableCssName.SELECTION);
         if (selectionType.equals(SelectionType.MULTIPLE)) {
-            new MaterialCheckBox(th.getElement());
-
+            MaterialCheckBox checkBox = new MaterialCheckBox(th.getElement());
+            checkBox.addStyleName(TableCssName.SELECTION);
             // Select all row click bind
             // This will also update the check status of check all input.
             JQueryElement selectAll = $(th).find("label");

@@ -96,6 +96,13 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         }
 
         @Override
+        protected MaterialWidget createFooterPanel() {
+            MaterialWidget footerPanel = new MaterialWidget(DOM.createDiv());
+            footerPanel.addStyleName(TableCssName.FOOTER_PANEL);
+            return footerPanel;
+        }
+
+        @Override
         protected Table createTable() {
             Table table = new Table();
             table.addStyleName(TableCssName.TABLE);
