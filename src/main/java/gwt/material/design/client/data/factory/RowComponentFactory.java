@@ -34,10 +34,16 @@ public class RowComponentFactory<M> implements ComponentFactory<RowComponent<M>,
 
     @Override
     public RowComponent<M> generate(DataView dataView, M model) {
-        return new RowComponent<>(model, dataView, getCategory(model));
+        RowComponent<M> rowComponent = new RowComponent<>(model, dataView, getCategory(model));
+        getCategoryAsync(dataView, rowComponent);
+        return rowComponent;
     }
 
-    public String getCategory(M model) {
+    public Category getCategory(M model) {
         return model instanceof HasDataCategory ? ((HasDataCategory) model).getDataCategory() : null;
+    }
+
+    public void getCategoryAsync(DataView<M> dataView, RowComponent<M> rowComponent) {
+        // Nothing by default
     }
 }

@@ -21,10 +21,11 @@ package gwt.material.design.client.data;
 
 import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.data.component.Components;
+import gwt.material.design.client.data.factory.Mode;
 
 import java.util.Collection;
 
-public class Categories extends Components<CategoryComponent> {
+public class Categories<T> extends Components<CategoryComponent<T>> {
 
     public Categories() {
     }
@@ -33,12 +34,16 @@ public class Categories extends Components<CategoryComponent> {
         super(maxSize);
     }
 
-    public Categories(Collection<? extends CategoryComponent> components) {
+    public Categories(Collection<CategoryComponent<T>> components) {
         super(components);
     }
 
-    public Categories(Collection<? extends CategoryComponent> components, Clone<CategoryComponent> clone) {
+    public Categories(Collection<CategoryComponent<T>> components, Clone<CategoryComponent<T>> clone) {
         super(components, clone);
+    }
+
+    public void setEmptyMode(Mode mode) {
+        forEach(categoryComponent -> categoryComponent.setMode(mode));
     }
 
     public void openAll() {

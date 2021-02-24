@@ -40,10 +40,15 @@ import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.data.component.ComponentFactory;
 import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.client.data.events.*;
+import gwt.material.design.client.data.factory.Category;
 import gwt.material.design.client.data.factory.RowComponentFactory;
 import gwt.material.design.client.events.DefaultHandlerRegistry;
 import gwt.material.design.client.events.HandlerRegistry;
 import gwt.material.design.client.ui.table.cell.Column;
+import gwt.material.design.client.ui.table.cell.ColumnFormatProvider;
+import gwt.material.design.client.ui.table.cell.ColumnValueProvider;
+import gwt.material.design.client.ui.table.cell.TextColumn;
+import gwt.material.design.jquery.client.api.JQueryElement;
 
 import java.util.List;
 import java.util.Set;
@@ -91,6 +96,13 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         }
 
         @Override
+        protected MaterialWidget createFooterPanel() {
+            MaterialWidget footerPanel = new MaterialWidget(DOM.createDiv());
+            footerPanel.addStyleName(TableCssName.FOOTER_PANEL);
+            return footerPanel;
+        }
+
+        @Override
         protected Table createTable() {
             Table table = new Table();
             table.addStyleName(TableCssName.TABLE);
@@ -124,8 +136,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     public AbstractDataTable(TableScaffolding scaffolding) {
-        this();
-        this.scaffolding = scaffolding;
+        this(new StandardDataView<>(), scaffolding);
     }
 
     public AbstractDataTable(DataView<T> view, TableScaffolding scaffolding) {
@@ -208,32 +219,37 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
-    public final void setCategoryFactory(ComponentFactory<? extends CategoryComponent, String> categoryFactory) {
+    public final void setCategoryFactory(ComponentFactory<? extends CategoryComponent<T>, Category> categoryFactory) {
         view.setCategoryFactory(categoryFactory);
     }
 
     @Override
-    public final CategoryComponent getCategory(String categoryName) {
+    public final CategoryComponent<T> getCategory(String categoryName) {
         return view.getCategory(categoryName);
     }
 
     @Override
-    public final Categories getCategories() {
+    public final Categories<T> getCategories() {
         return view.getCategories();
     }
 
     @Override
-    public final Categories getOpenCategories() {
+    public final Categories<T> getOpenCategories() {
         return view.getOpenCategories();
     }
 
     @Override
-    public final boolean isCategoryEmpty(CategoryComponent category) {
+    public final boolean isCategoryEmpty(CategoryComponent<T> category) {
         return view.isCategoryEmpty(category);
     }
 
     @Override
     public final void addCategory(String category) {
+        view.addCategory(category);
+    }
+
+    @Override
+    public void addCategory(Category category) {
         view.addCategory(category);
     }
 
@@ -298,18 +314,23 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
-    public final Column<T, ?> addColumn(Column<T, ?> column) {
+    public <X extends Column<T, ?>> X addColumn(X column) {
         return view.addColumn(column);
     }
 
     @Override
-    public final Column<T, ?> addColumn(String header, Column<T, ?> column) {
+    public <X extends Column<T, ?>> X addColumn(String header, X column) {
         return view.addColumn(header, column);
     }
 
     @Override
-    public final Column<T, ?> insertColumn(String header, int beforeIndex, Column<T, ?> col) {
+    public final <X extends Column<T, ?>> X insertColumn(String header, int beforeIndex, X col) {
         return view.insertColumn(header, beforeIndex, col);
+    }
+
+    @Override
+    public final Column<T, ?> addColumn(ColumnValueProvider<T> provider, String columnName) {
+        return view.addColumn(provider, columnName);
     }
 
     @Override
@@ -499,6 +520,26 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
+    public boolean expandRow(RowComponent<T> row, boolean expand) {
+        return view.expandRow(row, expand);
+    }
+
+    @Override
+    public boolean expandRow(JQueryElement tr, boolean expand) {
+        return view.expandRow(tr, expand);
+    }
+
+    @Override
+    public boolean expandOrCollapseRow(RowComponent<T> row) {
+        return view.expandOrCollapseRow(row);
+    }
+
+    @Override
+    public boolean expandOrCollapseRow(JQueryElement tr) {
+        return view.expandOrCollapseRow(tr);
+    }
+
+    @Override
     public void setRowClickCooldown(int clickCooldownMillis) {
         view.setRowClickCooldown(clickCooldownMillis);
     }
@@ -622,6 +663,26 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
             // focus.
             focused = true;
         }
+    }
+
+    @Override
+    public ColumnFormatProvider getDefaultFormatProvider() {
+        return view.getDefaultFormatProvider();
+    }
+
+    @Override
+    public void setDefaultFormatProvider(ColumnFormatProvider defaultFormatProvider) {
+        view.setDefaultFormatProvider(defaultFormatProvider);
+    }
+
+    @Override
+    public String getDefaultBlankPlaceholder() {
+        return view.getDefaultBlankPlaceholder();
+    }
+
+    @Override
+    public void setDefaultBlankPlaceholder(String defaultBlankPlaceholder) {
+        view.setDefaultBlankPlaceholder(defaultBlankPlaceholder);
     }
 
     protected void onFocus() {

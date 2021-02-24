@@ -20,6 +20,7 @@
 package gwt.material.design.client.model;
 
 import gwt.material.design.client.data.HasDataCategory;
+import gwt.material.design.client.data.factory.Category;
 
 import java.io.Serializable;
 
@@ -101,8 +102,8 @@ public class Person implements HasDataCategory, Serializable {
     }
 
     @Override
-    public String getDataCategory() {
-        return getCategory();
+    public Category getDataCategory() {
+        return new Category(getCategory());
     }
 
     @Override

@@ -21,16 +21,12 @@ package gwt.material.design.client.data;
 
 import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.user.client.ui.Widget;
-import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.constants.IconSize;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.data.component.Component;
 import gwt.material.design.client.data.component.RowComponent;
-import gwt.material.design.client.ui.table.TableData;
-import gwt.material.design.client.ui.table.TableHeader;
-import gwt.material.design.client.ui.table.TableRow;
-import gwt.material.design.client.ui.table.TableSubHeader;
+import gwt.material.design.client.ui.table.*;
 import gwt.material.design.client.ui.table.cell.Column;
 import gwt.material.design.client.ui.table.cell.FrozenSide;
 
@@ -41,15 +37,16 @@ import java.util.List;
  * @param <T>
  */
 public interface Renderer<T> {
+
     TableRow drawRow(DataView<T> dataView, RowComponent<T> rowComponent, Object valueKey, List<Column<T, ?>> columns, boolean redraw);
 
-    TableSubHeader drawCategory(CategoryComponent category, int columnCount);
+    TableSubHeader drawCategory(CategoryComponent<T> category, int columnCount, DataView<T> dataView);
 
     TableRow drawCustom(Component<?> component);
 
     TableData drawSelectionCell();
 
-    MaterialWidget drawColumn(TableRow row, Context context, T rowValue, Column<T, ?> column, int beforeIndex, boolean visible);
+    ColumnContext<T> drawColumn(TableRow row, Context context, T rowValue, Column<T, ?> column, int beforeIndex, boolean visible);
 
     TableHeader drawColumnHeader(Widget container, Column<T, ?> column, String header, int index);
 

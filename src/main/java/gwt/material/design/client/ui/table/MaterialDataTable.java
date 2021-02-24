@@ -24,15 +24,8 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Panel;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.constants.*;
-import gwt.material.design.client.data.events.InsertColumnEvent;
-import gwt.material.design.client.data.events.InsertColumnHandler;
-import gwt.material.design.client.data.events.RemoveColumnEvent;
-import gwt.material.design.client.data.events.RemoveColumnHandler;
-import gwt.material.design.client.data.events.SetupHandler;
-import gwt.material.design.client.ui.table.events.StretchEvent;
-import gwt.material.design.client.ui.table.events.StretchHandler;
-import gwt.material.design.jquery.client.api.JQueryElement;
 import gwt.material.design.client.data.DataView;
+import gwt.material.design.client.data.events.*;
 import gwt.material.design.client.js.Js;
 import gwt.material.design.client.js.JsTableElement;
 import gwt.material.design.client.ui.MaterialCheckBox;
@@ -41,6 +34,10 @@ import gwt.material.design.client.ui.MaterialIcon;
 import gwt.material.design.client.ui.html.ListItem;
 import gwt.material.design.client.ui.html.Span;
 import gwt.material.design.client.ui.table.cell.Column;
+import gwt.material.design.client.ui.table.cell.ColumnFormatProvider;
+import gwt.material.design.client.ui.table.events.StretchEvent;
+import gwt.material.design.client.ui.table.events.StretchHandler;
+import gwt.material.design.jquery.client.api.JQueryElement;
 
 import static gwt.material.design.jquery.client.api.JQuery.$;
 
@@ -49,13 +46,15 @@ import static gwt.material.design.jquery.client.api.JQuery.$;
  * table icon, table title, stretch functionality, column toggling, etc.
  *
  * @author Ben Dol
- *
  * @see <a href="http://gwtmaterialdesign.github.io/gwt-material-demo/#datatable">Material Data Table</a>
  * @see <a href="https://material.io/guidelines/components/data-tables.html">Material Design Specification</a>
  */
 public class MaterialDataTable<T> extends AbstractDataTable<T> implements InsertColumnHandler<T>, RemoveColumnHandler {
 
     private JQueryElement stretchContainer;
+
+    // Global Configs
+    private static GlobalConfig globals;
 
     // Interface
     private MaterialIcon tableIcon;
@@ -101,20 +100,20 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
         Panel infoPanel = scaffolding.getInfoPanel();
         Panel toolPanel = scaffolding.getToolPanel();
 
-        if(tableIcon == null || !tableIcon.isAttached()) {
+        if (tableIcon == null || !tableIcon.isAttached()) {
             // table icon
             tableIcon = new MaterialIcon(IconType.VIEW_LIST);
             infoPanel.add(tableIcon);
         }
 
-        if(tableTitle == null || !tableTitle.isAttached()) {
+        if (tableTitle == null || !tableTitle.isAttached()) {
             // table title
             tableTitle = new Span("Table Title");
             tableTitle.addStyleName(TableCssName.TITLE);
             infoPanel.add(tableTitle);
         }
 
-        if(stretchIcon == null || !stretchIcon.isAttached()) {
+        if (stretchIcon == null || !stretchIcon.isAttached()) {
             // stretch icon
             stretchIcon = new MaterialIcon(IconType.FULLSCREEN);
             stretchIcon.setWaves(WavesType.LIGHT);
@@ -122,9 +121,10 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
             stretchIcon.setId("stretch");
             stretchIcon.getElement().getStyle().setCursor(Style.Cursor.POINTER);
             toolPanel.add(stretchIcon);
+            getView().getAccessibilityControl().registerWidget(stretchIcon);
         }
 
-        if(columnMenuIcon == null || !columnMenuIcon.isAttached()) {
+        if (columnMenuIcon == null || !columnMenuIcon.isAttached()) {
             // menu icon
             columnMenuIcon = new MaterialIcon(IconType.MORE_VERT);
             columnMenuIcon.setHideOn(HideOn.HIDE_ON_SMALL_DOWN);
@@ -133,9 +133,10 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
             columnMenuIcon.setId("columnToggle");
             columnMenuIcon.getElement().getStyle().setCursor(Style.Cursor.POINTER);
             toolPanel.add(columnMenuIcon);
+            getView().getAccessibilityControl().registerWidget(columnMenuIcon);
         }
 
-        if(stretchContainer == null) {
+        if (stretchContainer == null) {
             // stretch container
             stretchContainer = $("body");
         }
@@ -158,7 +159,7 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
         // Setup menu checkboxes
         // This will allow the user to toggle columns
 
-        if(menu == null) {
+        if (menu == null) {
             // dropdown structure
             menu = new MaterialDropDown(columnMenuIcon);
             scaffolding.getToolPanel().add(menu);
@@ -181,13 +182,13 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
             JQueryElement $this = $(e.getCurrentTarget());
 
             String forBox = ((String) $this.attr("for")).replace(getView().getId() + "-", "");
-            if(Js.isTrue(forBox)) {
+            if (Js.isTrue(forBox)) {
                 JQueryElement thd = $("th#" + forBox + ",td#" + forBox, this);
                 boolean checked = $this.prev().is(":checked");
 
                 thd.each((index, el) -> {
                     JQueryElement cell = $(el);
-                    if(checked) {
+                    if (checked) {
                         cell.hide();
                     } else {
                         cell.show();
@@ -242,7 +243,7 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
             reindexToggles();
         };
 
-        if(getView().isSetup()) {
+        if (getView().isSetup()) {
             handler.onSetup(null);
         } else {
             addSetupHandler(handler);
@@ -257,7 +258,7 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
             reindexToggles();
         };
 
-        if(getView().isSetup()) {
+        if (getView().isSetup()) {
             handler.onSetup(null);
         } else {
             addSetupHandler(handler);
@@ -267,7 +268,7 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
     private void reindexToggles() {
         int colOffset = getView().getColumnOffset();
         $("li", menu).each((index, e) -> {
-            String ref = getView().getId() + "-col" + ((Double)index + colOffset);
+            String ref = getView().getId() + "-col" + ((Double) index + colOffset);
 
             JQueryElement input = $(e).find("input");
             input.attr("id", ref);
@@ -295,7 +296,7 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
         // Recalculate subheaders
         getView().getSubheaderLib().recalculate(true);
 
-        if(fireEvent) {
+        if (fireEvent) {
             // Fire table stretch event
             StretchEvent.fire(this, $this().hasClass(TableCssName.STRETCH));
         }
@@ -335,5 +336,20 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
         // Register data view events, these are removed onUnload.
         addInsertColumnHandler(this);
         addRemoveColumnHandler(this);
+    }
+
+    public static GlobalConfig getGlobals() {
+        if (globals == null) {
+            globals = new GlobalConfig();
+        }
+        return globals;
+    }
+
+    /**
+     * Set global configurations such as default formats  {@link GlobalConfig#setDefaultFormatProvider(ColumnFormatProvider)} and
+     * default blank empty placeholder {@link GlobalConfig#setDefaultBlankPlaceholder(String)}
+     */
+    public static void setGlobals(GlobalConfig globals) {
+        MaterialDataTable.globals = globals;
     }
 }

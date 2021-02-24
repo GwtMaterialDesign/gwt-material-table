@@ -38,6 +38,7 @@ import gwt.material.design.client.data.loader.LoadResult;
 import gwt.material.design.client.events.DefaultHandlerRegistry;
 import gwt.material.design.client.events.HandlerRegistry;
 import gwt.material.design.client.jquery.JQueryExtension;
+import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControls;
 import gwt.material.design.client.ui.table.DataDisplay;
 import gwt.material.design.client.ui.table.TableScaffolding;
 import gwt.material.design.jquery.client.api.JQueryElement;
@@ -91,20 +92,23 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
     // Data loading task
     private InterruptibleTask loaderTask;
 
-    private int loaderBuffer = 10;
-    private int loaderIndex;
-    private int loaderSize;
+    protected int loaderBuffer = 10;
+    protected int loaderIndex;
+    protected int loaderSize;
 
     // Data loader delay millis
     private int loaderDelay = 200;
 
-    private List<T> loaderCache;
+    protected List<T> loaderCache;
 
     // Cache the selected rows for persistence
     private List<T> selectedModels = new ArrayList<>();
 
     // Cached models
     protected InfiniteDataCache<T> dataCache = new InfiniteDataCache<>();
+
+    // Row Loader
+    protected InfiniteRowLoader<T> rowLoader = new InfiniteRowLoader<>(this);
 
     // Handler registry
     private HandlerRegistry handlers;
@@ -204,6 +208,12 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
         // Setup the scroll event handlers
         JQueryExtension.$(tableBody).scrollY(id, (event, scroll) -> onVerticalScroll());
 
+        // Accessibility Controls for infinite loading
+        DataTableAccessibilityControls accessibilityControl = getAccessibilityControl();
+        if (accessibilityControl != null) {
+            accessibilityControl.registerInfiniteDataLoadingControl(this);
+        }
+
         super.onSetup(scaffolding);
     }
 
@@ -280,7 +290,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
                 }
 
                 // hide passed empty categories
-                for (CategoryComponent category : getPassedCategories()) {
+                for (CategoryComponent<T> category : getPassedCategories()) {
                     if (category.isRendered()) {
                         category.getWidget().setVisible(false);
                     }
@@ -332,7 +342,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
         return tableBody.height() - headerRow.$this().height();
     }
 
-    protected Object onVerticalScroll() {
+    public Object onVerticalScroll() {
         if (!rendering) {
             int index = (int) Math.ceil(tableBody.scrollTop() / getCalculatedRowHeight());
             if (index == 0 || index != viewIndex) {
@@ -377,6 +387,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
 
     protected void doLoad() {
         loading = true;
+
         // Check if the data was found in the cache
         if (loaderCache != null && !loaderCache.isEmpty()) {
             loaded(loaderIndex, loaderCache, false);
@@ -384,17 +395,19 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
             loaderCache = null;
         } else {
             setLoadMask(true);
-
-            dataSource.load(new LoadConfig<>(loaderIndex, loaderSize, getSortContext(), getOpenCategories()),
+            rowLoader.show();
+            dataSource.load(new LoadConfig<T>(this, loaderIndex, loaderSize, getSortContext(), getOpenCategories()),
                 new LoadCallback<T>() {
                     @Override
                     public void onSuccess(LoadResult<T> result) {
+                        rowLoader.hide();
                         loaded(result.getOffset(), result.getData(), result.getTotalLength(), result.isCacheData());
                     }
 
                     @Override
                     public void onFailure(Throwable caught) {
                         logger.log(Level.SEVERE, "Load failure", caught);
+                        loading = false;
                         // TODO: What we need to do on failure? Maybe clear table?
                     }
                 });
@@ -465,6 +478,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
     /**
      * Returns the total number of rows that are visible given
      * the current grid height.
+     * //TODO: Issue with returned number of rows causing the bottom area to have an excess whitespace.
      */
     public int getVisibleRowCapacity() {
         int rh = getCalculatedRowHeight();
@@ -480,7 +494,7 @@ public class InfiniteDataView<T> extends AbstractDataView<T> implements HasLoade
 
         logger.finest("row height: " + rh + " visibleHeight: " + visibleHeight + " visible rows: "
             + rows + " calcHeight: " + calcHeight);
-        return rows;
+        return rows + 2;
     }
 
     @Override

@@ -20,13 +20,17 @@
 package gwt.material.design.client.ui.pager.actions;
 
 import com.google.gwt.dom.client.Document;
+import com.google.gwt.event.dom.client.KeyCodes;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.constants.WavesType;
 import gwt.material.design.client.ui.MaterialIcon;
+import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControls;
+import gwt.material.design.client.accessibility.TriggerCallback;
 import gwt.material.design.client.ui.html.Span;
 import gwt.material.design.client.ui.pager.MaterialDataPager;
+import gwt.material.design.client.ui.table.MaterialDataTable;
 
 /**
  * Widget for building the action panel - contains a page detail including the arrow next / previous icons.
@@ -52,22 +56,38 @@ public class ActionsPanel extends MaterialWidget {
     protected void onLoad() {
         super.onLoad();
 
-        // Add the next button
-        iconNext.setWaves(WavesType.DEFAULT);
-        iconNext.setCircle(true);
-        add(iconNext);
-
-        // Add the action label
-        add(actionLabel);
-
         // Add the previous button
+        iconPrev.setTabIndex(0);
         iconPrev.setWaves(WavesType.DEFAULT);
         iconPrev.setCircle(true);
         add(iconPrev);
 
+        // Add the action label
+        add(actionLabel);
+
+        // Add the next button
+        iconNext.setTabIndex(0);
+        iconNext.setWaves(WavesType.DEFAULT);
+        iconNext.setCircle(true);
+        add(iconNext);
+
         // Register the handlers
         registerHandler(iconNext.addClickHandler(clickEvent -> pager.next()));
         registerHandler(iconPrev.addClickHandler(clickEvent -> pager.previous()));
+
+        // Register Accessibility Controls
+        registerAccessibility(iconNext, event -> pager.next());
+        registerAccessibility(iconPrev, event -> pager.previous());
+    }
+
+    protected void registerAccessibility(MaterialIcon icon, TriggerCallback callback) {
+        MaterialDataTable table = pager.getTable();
+        if (table != null) {
+            DataTableAccessibilityControls accessibilityControl = table.getView().getAccessibilityControl();
+            if (accessibilityControl != null) {
+                accessibilityControl.registerWidget(icon, KeyCodes.KEY_ENTER, callback);
+            }
+        }
     }
 
     public Span getActionLabel() {

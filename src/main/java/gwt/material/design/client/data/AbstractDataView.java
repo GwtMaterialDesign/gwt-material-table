@@ -40,21 +40,20 @@ import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.data.component.*;
 import gwt.material.design.client.data.component.CategoryComponent.OrphanCategoryComponent;
 import gwt.material.design.client.data.events.*;
+import gwt.material.design.client.data.factory.Category;
 import gwt.material.design.client.data.factory.CategoryComponentFactory;
 import gwt.material.design.client.data.factory.RowComponentFactory;
 import gwt.material.design.client.jquery.JQueryExtension;
 import gwt.material.design.client.jquery.JQueryMutate;
-import gwt.material.design.client.js.Js;
-import gwt.material.design.client.js.JsTableElement;
-import gwt.material.design.client.js.JsTableSubHeaders;
-import gwt.material.design.client.js.StickyTableOptions;
+import gwt.material.design.client.js.*;
 import gwt.material.design.client.ui.MaterialCheckBox;
 import gwt.material.design.client.ui.MaterialProgress;
 import gwt.material.design.client.ui.Selectors;
+import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControls;
 import gwt.material.design.client.ui.table.*;
-import gwt.material.design.client.ui.table.cell.Column;
-import gwt.material.design.client.ui.table.cell.FrozenSide;
+import gwt.material.design.client.ui.table.cell.*;
 import gwt.material.design.jquery.client.api.Event;
+import gwt.material.design.jquery.client.api.Functions;
 import gwt.material.design.jquery.client.api.JQueryElement;
 import gwt.material.design.jquery.client.api.MouseEvent;
 
@@ -85,7 +84,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected SortContext<T> sortContext;
     protected Column<T, ?> autoSortColumn;
     protected RowComponentFactory<T> rowFactory;
-    protected ComponentFactory<? extends CategoryComponent, String> categoryFactory;
+    protected ComponentFactory<? extends CategoryComponent, Category> categoryFactory;
     protected ProvidesKey<T> keyProvider;
     //protected List<ComponentFactory<?, T>> componentFactories;
     protected JsTableSubHeaders subheaderLib;
@@ -121,6 +120,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected int leftFrozenColumns = -1;
     protected int rightFrozenColumns = -1;
     protected int rowClickCooldown = 100;
+    protected int debounceThrottle = 250;
 
     private int lastSelected;
     private boolean setup;
@@ -132,11 +132,14 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     private boolean useCategories;
     private SelectionType selectionType = SelectionType.NONE;
     private Density density = DisplayDensity.DEFAULT;
+    private DataTableAccessibilityControls accessibilityControl;
+    private ColumnFormatProvider defaultFormatProvider;
+    private String defaultBlankPlaceholder;
 
     // Components
     protected final Components<RowComponent<T>> rows = new Components<>();
     protected final Components<RowComponent<T>> pendingRows = new Components<>();
-    protected final Categories categories = new Categories();
+    protected final Categories<T> categories = new Categories();
 
     // Mixin
     protected CssNameMixin<Table, Density> densityCssNameMixin;
@@ -183,6 +186,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         this.keyProvider = keyProvider;
         this.categoryFactory = new CategoryComponentFactory();
         this.rowFactory = new RowComponentFactory<>();
+        this.accessibilityControl = new DataTableAccessibilityControls(this);
         //this.componentFactories = new ArrayList<>();
 
         setRenderer(new BaseRenderer<>());
@@ -217,11 +221,14 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
         // Reset category indexes and row counts
         if (isUseCategories()) {
-            for (CategoryComponent category : categories) {
+            for (CategoryComponent<T> category : categories) {
                 category.setCurrentIndex(-1);
                 category.setRowCount(0);
             }
         }
+
+        // Calculate computed columns.
+        calculateComputedColumns();
 
         if (!components.isEmpty()) {
             // Remove the last attach handler
@@ -345,10 +352,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             clearRows(false);
 
             if (isUseCategories()) {
-                Categories openCategories = getOpenCategories();
+                Categories<T> openCategories = getOpenCategories();
                 categories.clearWidgets();
 
-                for (CategoryComponent category : categories) {
+                for (CategoryComponent<T> category : categories) {
                     // Re-render the category component
                     renderComponent(category);
 
@@ -374,13 +381,15 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             }
 
             if (isUseCategories()) {
-                CategoryComponent category = row.getCategory();
+                CategoryComponent<T> category = row.getCategory();
                 if (category == null) {
                     category = buildCategoryComponent(row);
-                    categories.add(category);
+                    if (category != null) {
+                        categories.add(category);
+                    }
                 }
 
-                if (category.isRendered()) {
+                if (category != null && category.isRendered()) {
                     category.getWidget().setVisible(true);
                 }
             }
@@ -411,8 +420,9 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         return true;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
-    protected void renderComponent(Component<?> component) {
+    public void renderComponent(Component<?> component) {
         if (component != null) {
             TableRow row;
             int index = -1;
@@ -422,13 +432,16 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
                 // Check if the row has a category
                 // Categories have been rendered before the rows
-                CategoryComponent category = null;
+                CategoryComponent<T> category = null;
                 if (isUseCategories()) {
                     category = rowComponent.getCategory();
 
                     // Ensure the category exists and is rendered
-                    if (category != null && !category.isRendered()) {
-                        renderComponent(category);
+                    if (category != null) {
+                        if (!category.isRendered()) {
+                            renderComponent(category);
+                        }
+                        category.addRow(rowComponent);
                     }
                 }
                 T data = rowComponent.getData();
@@ -464,13 +477,15 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
                     rows.add(rowComponent);
                 }
-            } else if (component instanceof CategoryComponent) {
-                CategoryComponent categoryComponent = (CategoryComponent) component;
-                row = bindCategoryEvents(renderer.drawCategory(categoryComponent, getColumnCount() - getColumnOffset()));
 
+                accessibilityControl.registerRowControl(rowComponent);
+            } else if (component instanceof CategoryComponent) {
+                CategoryComponent<T> categoryComponent = (CategoryComponent<T>) component;
+                row = bindCategoryEvents(renderer.drawCategory(categoryComponent, getColumnCount() - getColumnOffset(), this));
                 if (categoryComponent.isOpenByDefault()) {
                     row.addAttachHandler(event -> openCategory(categoryComponent), true);
                 }
+                accessibilityControl.registerCategoryControl(categoryComponent);
             } else {
                 row = renderer.drawCustom(component);
             }
@@ -501,7 +516,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     public void renderColumn(Column<T, ?> column) {
         int index = column.getIndex() + getColumnOffset();
-
+        column.setDataView(this);
         TableHeader th = renderer.drawColumnHeader(getContainer(), column, column.name(), index);
         if (th != null) {
             if (column.sortable()) {
@@ -510,6 +525,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                     return true;
                 });
                 th.addStyleName(TableCssName.SORTABLE);
+                accessibilityControl.registerHeaderControl(th);
             }
 
             addHeader(index, th);
@@ -632,21 +648,16 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             // Setup the subheaders for categories
             setupSubHeaders();
 
-            // Setup the resize event handlers
-            tableBody.on("resize." + id, e -> {
-                refresh();
-                return true;
-            });
-
-            // We will check the window resize just in case
-            // it has updated the view size of the data view.
-            $(window()).on("resize." + id, e -> {
+            // Will need to make sure that we only call refresh() only once when mutation called.
+            Functions.Func2<Element, MutateData> refreshFunction = JsDebounce.debounce(250, (mutateEl, mutateData) -> {
                 // In the cases where the table is not currently attached.
                 if (getContainer().isAttached()) {
                     refresh();
                 }
-                return true;
             });
+
+            // Setup the height mutations event handler
+            JQueryMutate.$(tableBody).mutate("height", refreshFunction);
 
             // XScroll Setup
             $table.on("resize." + id, e -> {
@@ -700,7 +711,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
         renderColumns();
 
-        for (CategoryComponent category : categories) {
+        for (CategoryComponent<T> category : categories) {
             if (!category.isRendered()) {
                 renderCategory(category);
             }
@@ -827,84 +838,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         if (useRowExpansion) {
             // Expand current row extra information
             expands.on("tap." + id + " click." + id, e -> {
-                final boolean[] recalculated = {false};
-
                 JQueryElement tr = $(e.getCurrentTarget()).parent().parent();
-                if (!tr.hasClass("disabled") && !tr.is("[disabled]")) {
-                    JQueryElement[] expansion = new JQueryElement[]{tr.next().find("td.expansion div")};
-
-                    if (expansion[0].length() < 1) {
-                        expansion[0] = $(expansionHtml).insertAfter(tr);
-                        expansion[0] = expansion[0].find("td.expansion div");
-                    }
-
-                    final boolean expanding = !expansion[0].hasClass("expanded");
-                    final JQueryElement row = tr.next();
-                    final T model = getModelByRowElement(tr.asElement());
-
-                    RowExpansion<T> rowExpansion = new RowExpansion<>(model, row);
-                    final JQueryElement content = rowExpansion.getContent();
-
-                    JQueryElement[] copy = {expansion[0].find("div#copy")};
-                    if (expanding && hasFrozenColumns()) {
-                        // This will open at the same time as the original.
-                        copy[0] = content.clone().appendTo(expansion[0]);
-                        copy[0].attr("id", "copy");
-                        copy[0].css("height", "80px");
-
-                        // Assign absolute and left 0 for frozen column support.
-                        content.css("position", "absolute");
-                        content.css("left", "0");
-                        content.css("height", "80px");
-                    }
-
-                    expansion[0].one(transitionEvents, (e1, param1) -> {
-                        if (!recalculated[0]) {
-                            // Recalculate sub headers
-                            subheaderLib.recalculate(true);
-                            recalculated[0] = true;
-
-                            // Apply overlay
-                            JQueryElement overlay = row.find("section.overlay");
-                            overlay.height(row.outerHeight(false));
-
-                            if (expanding) {
-                                // Fire table expanded event
-                                RowExpandedEvent.fire(this, rowExpansion);
-                                $(e.currentTarget).html(IconType.KEYBOARD_ARROW_UP.getCssName());
-                            } else {
-                                // Fire table collapsed event
-                                RowCollapsedEvent.fire(this, rowExpansion);
-                                $(e.currentTarget).html(IconType.KEYBOARD_ARROW_DOWN.getCssName());
-                            }
-                        }
-                        return true;
-                    });
-
-                    if (expanding) {
-                        // Fire table expand event
-                        RowExpandingEvent.fire(this, rowExpansion);
-                    } else {
-                        // Destroy the copy
-                        if (copy[0] != null) {
-                            copy[0].remove();
-                        }
-
-                        content.css("position", "");
-                        content.css("left", "");
-
-                        RowCollapsingEvent.fire(this, rowExpansion);
-                    }
-
-                    Scheduler.get().scheduleDeferred(() -> {
-                        if (copy[0] != null) {
-                            copy[0].toggleClass("expanded");
-                        }
-                        expansion[0].toggleClass("expanded");
-                    });
+                if (expandOrCollapseRow(tr)) {
+                    e.stopPropagation();
                 }
-
-                e.stopPropagation();
                 return true;
             });
         }
@@ -913,10 +850,111 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         subheaderLib.recalculate(true);
     }
 
+    @Override
+    public boolean expandRow(RowComponent<T> row, boolean expand) {
+        JQueryElement tr = row.getWidget() != null ? row.getWidget().$this() : null;
+        return tr != null && expandRow(tr, expand);
+    }
+
+    @Override
+    public boolean expandRow(JQueryElement tr, boolean expand) {
+        final boolean[] recalculated = {false};
+
+        if (!tr.hasClass("disabled") && !tr.is("[disabled]")) {
+            JQueryElement[] expansion = new JQueryElement[]{tr.next().find("td.expansion div")};
+
+            if (expansion[0].length() < 1) {
+                expansion[0] = $(expansionHtml).insertAfter(tr);
+                expansion[0] = expansion[0].find("td.expansion div");
+            }
+
+            final JQueryElement row = tr.next();
+            final T model = getModelByRowElement(tr.asElement());
+
+            RowExpansion<T> rowExpansion = new RowExpansion<>(model, row);
+            final JQueryElement content = rowExpansion.getContent();
+
+            JQueryElement[] copy = {expansion[0].find("div#copy")};
+            if (expand && hasFrozenColumns()) {
+                // This will open at the same time as the original.
+                copy[0] = content.clone().appendTo(expansion[0]);
+                copy[0].attr("id", "copy");
+                copy[0].css("height", "80px");
+
+                // Assign absolute and left 0 for frozen column support.
+                content.css("position", "absolute");
+                content.css("left", "0");
+                content.css("height", "80px");
+            }
+
+            expansion[0].one(transitionEvents, (e1, param1) -> {
+                if (!recalculated[0]) {
+                    // Recalculate sub headers
+                    subheaderLib.recalculate(true);
+                    recalculated[0] = true;
+
+                    // Apply overlay
+                    JQueryElement overlay = row.find("section.overlay");
+                    overlay.height(row.outerHeight(false));
+
+                    JQueryElement icon = tr.find("i#expand");
+
+                    if (expand) {
+                        // Fire table expanded event
+                        RowExpandedEvent.fire(this, rowExpansion);
+                        icon.html(IconType.KEYBOARD_ARROW_UP.getCssName());
+                    } else {
+                        // Fire table collapsed event
+                        RowCollapsedEvent.fire(this, rowExpansion);
+                        icon.html(IconType.KEYBOARD_ARROW_DOWN.getCssName());
+                    }
+                }
+                return true;
+            });
+
+            if (expand) {
+                // Fire table expand event
+                RowExpandingEvent.fire(this, rowExpansion);
+            } else {
+                // Destroy the copy
+                if (copy[0] != null) {
+                    copy[0].remove();
+                }
+
+                content.css("position", "");
+                content.css("left", "");
+
+                RowCollapsingEvent.fire(this, rowExpansion);
+            }
+
+            Scheduler.get().scheduleDeferred(() -> {
+                if (copy[0] != null) {
+                    copy[0].toggleClass("expanded");
+                }
+                expansion[0].toggleClass("expanded");
+            });
+
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean expandOrCollapseRow(RowComponent<T> row) {
+        JQueryElement tr = row.getWidget() != null ? row.getWidget().$this() : null;
+        return tr != null && expandOrCollapseRow(tr);
+    }
+
+    @Override
+    public boolean expandOrCollapseRow(JQueryElement tr) {
+        JQueryElement expansion = tr.next().find("td.expansion div");
+        return expandRow(tr, !expansion.hasClass("expanded"));
+    }
+
     protected void setupStickyHeader() {
         if ($table != null && display != null) {
-            $table.stickyTableHeaders(StickyTableOptions.create(
-                $(".table-body", getContainer())));
+            $table.stickyTableHeaders(StickyTableOptions.create($(".table-body", getContainer())));
         }
     }
 
@@ -1009,17 +1047,17 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
-    public Column<T, ?> addColumn(Column<T, ?> column) {
+    public <X extends Column<T, ?>> X addColumn(X column) {
         return addColumn("", column);
     }
 
     @Override
-    public Column<T, ?> addColumn(String header, Column<T, ?> column) {
+    public <X extends Column<T, ?>> X addColumn(String header, X column) {
         return insertColumn(header, columns.size(), column);
     }
 
     @Override
-    public Column<T, ?> insertColumn(String header, int beforeIndex, Column<T, ?> column) {
+    public <X extends Column<T, ?>> X insertColumn(String header, int beforeIndex, X column) {
         // Allow insert at the end.
         if (beforeIndex != getColumnCount()) {
             checkColumnBounds(beforeIndex);
@@ -1048,6 +1086,17 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         InsertColumnEvent.fire(this, beforeIndex, column, header);
 
         return column;
+    }
+
+    @Override
+    public final Column<T, ?> addColumn(ColumnValueProvider<T> renderer, String columnName) {
+        return addColumn(columnName, new TextColumn<T>() {
+            @Override
+            public String getValue(T object) {
+                String value = renderer.getValue(object);
+                return value;
+            }
+        });
     }
 
     protected void updateSortContext(TableHeader th, Column<T, ?> column) {
@@ -1299,7 +1348,9 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
                 // Rebuild the columns
                 for (RowComponent<T> row : rows) {
-                    row.getWidget().insert(renderer.drawSelectionCell(), 0);
+                    TableData selectionCell = renderer.drawSelectionCell();
+                    selectionCell.getElement().removeAttribute("tabIndex");
+                    row.getWidget().insert(selectionCell, 0);
                 }
                 reindexHeadersAndRows();
             } else if (selectionType.equals(SelectionType.NONE) && hadSelection) {
@@ -1314,10 +1365,9 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         // Setup select all checkbox
         TableHeader th = new TableHeader();
         th.setId("col0");
-        th.addStyleName(TableCssName.SELECTION);
         if (selectionType.equals(SelectionType.MULTIPLE)) {
-            new MaterialCheckBox(th.getElement());
-
+            MaterialCheckBox checkBox = new MaterialCheckBox(th.getElement());
+            checkBox.addStyleName(TableCssName.SELECTION);
             // Select all row click bind
             // This will also update the check status of check all input.
             JQueryElement selectAll = $(th).find("label");
@@ -1686,7 +1736,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         return autoSortColumn;
     }
 
-    public ComponentFactory<? extends CategoryComponent, String> getCategoryFactory() {
+    public ComponentFactory<? extends CategoryComponent, Category> getCategoryFactory() {
         return categoryFactory;
     }
 
@@ -1699,17 +1749,17 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         return null;
     }
 
-    protected CategoryComponent buildCategoryComponent(RowComponent<T> row) {
-        return row != null ? buildCategoryComponent(row.getCategoryName()) : null;
+    protected CategoryComponent<T> buildCategoryComponent(RowComponent<T> row) {
+        return row != null ? buildCategoryComponent(row.getCategoryInfo()) : null;
     }
 
-    protected CategoryComponent buildCategoryComponent(String categoryName) {
-        if (categoryName != null) {
+    protected CategoryComponent<T> buildCategoryComponent(Category categoryPair) {
+        if (categoryPair != null && categoryPair.getName() != null) {
             // Generate the category if not exists
             if (categoryFactory != null) {
-                CategoryComponent category = getCategory(categoryName);
+                CategoryComponent<T> category = getCategory(categoryPair.getName());
                 if (category == null) {
-                    return categoryFactory.generate(this, categoryName);
+                    return categoryFactory.generate(this, categoryPair);
                 } else {
                     return category;
                 }
@@ -1779,6 +1829,13 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     @Override
     public void addCategory(String category) {
         if (category != null) {
+            addCategory(buildCategoryComponent(new Category(category)));
+        }
+    }
+
+    @Override
+    public void addCategory(Category category) {
+        if (category != null) {
             addCategory(buildCategoryComponent(category));
         }
     }
@@ -1820,7 +1877,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     @Override
     public void disableCategory(String categoryName) {
-        CategoryComponent category = getCategory(categoryName);
+        CategoryComponent<T> category = getCategory(categoryName);
         if (category != null && category.isRendered()) {
             subheaderLib.close(category.getWidget().$this());
             category.getWidget().setEnabled(false);
@@ -1829,7 +1886,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     @Override
     public void enableCategory(String categoryName) {
-        CategoryComponent category = getCategory(categoryName);
+        CategoryComponent<T> category = getCategory(categoryName);
         if (category != null && category.isRendered()) {
             category.getWidget().setEnabled(true);
         }
@@ -1845,7 +1902,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         Categories openCategories = null;
         if (isUseCategories()) {
             openCategories = new Categories();
-            for (CategoryComponent category : categories) {
+            for (CategoryComponent<T> category : categories) {
                 TableSubHeader element = category.getWidget();
                 if (element != null && element.isOpen()) {
                     openCategories.add(category);
@@ -1966,9 +2023,9 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         return byCategory;
     }
 
-    protected Categories getHiddenCategories() {
-        Categories hidden = new Categories();
-        for (CategoryComponent category : categories) {
+    protected Categories<T> getHiddenCategories() {
+        Categories<T> hidden = new Categories<>();
+        for (CategoryComponent<T> category : categories) {
             TableSubHeader element = category.getWidget();
             if (element != null && !element.isVisible()) {
                 hidden.add(category);
@@ -1977,9 +2034,9 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         return hidden;
     }
 
-    protected Categories getVisibleCategories() {
-        Categories visible = new Categories();
-        for (CategoryComponent category : categories) {
+    protected Categories<T> getVisibleCategories() {
+        Categories<T> visible = new Categories<>();
+        for (CategoryComponent<T> category : categories) {
             TableSubHeader element = category.getWidget();
             if (element != null && element.isVisible()) {
                 visible.add(category);
@@ -1988,10 +2045,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         return visible;
     }
 
-    protected Categories getPassedCategories() {
-        Categories passed = new Categories();
+    protected Categories<T> getPassedCategories() {
+        Categories<T> passed = new Categories<>();
         int scrollTop = tableBody.scrollTop();
-        for (CategoryComponent category : categories) {
+        for (CategoryComponent<T> category : categories) {
             if (isCategoryEmpty(category) && scrollTop > (getRowHeight() + thead.$this().height())) {
                 passed.add(category);
             } else {
@@ -2000,7 +2057,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             }
         }
         // No categories are populated.
-        return new Categories();
+        return new Categories<>();
     }
 
     @Override
@@ -2014,7 +2071,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
-    public void setCategoryFactory(ComponentFactory<? extends CategoryComponent, String> categoryFactory) {
+    public void setCategoryFactory(ComponentFactory<? extends CategoryComponent<T>, Category> categoryFactory) {
         this.categoryFactory = categoryFactory;
     }
 
@@ -2115,6 +2172,13 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
+    public void hideTableScrollbar(boolean hideScrollbar) {
+        if (tableBody != null) {
+            tableBody.css("overflow", hideScrollbar ? "hidden" : "");
+        }
+    }
+
+    @Override
     public String getId() {
         return id;
     }
@@ -2173,7 +2237,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         return Collections.unmodifiableList(rows);
     }
 
-    protected List<T> getData() {
+    @Override
+    public List<T> getData() {
         return RowComponent.extractData(rows);
     }
 
@@ -2226,7 +2291,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
-    public void openCategory(CategoryComponent category) {
+    public void openCategory(CategoryComponent<T> category) {
         if (category != null && category.isRendered()) {
             subheaderLib.open(category.getWidget().$this());
         }
@@ -2238,7 +2303,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
-    public void closeCategory(CategoryComponent category) {
+    public void closeCategory(CategoryComponent<T> category) {
         if (category != null && category.isRendered()) {
             subheaderLib.close(category.getWidget().$this());
         }
@@ -2264,7 +2329,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
      * Get a stored data categories subheader by name.
      */
     protected TableSubHeader getTableSubHeader(String name) {
-        CategoryComponent category = getCategory(name);
+        CategoryComponent<T> category = getCategory(name);
         return category != null ? category.getWidget() : null;
     }
 
@@ -2272,7 +2337,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
      * Get a stored data categories subheader by jquery element.
      */
     protected TableSubHeader getTableSubHeader(JQueryElement elem) {
-        for (CategoryComponent category : categories) {
+        for (CategoryComponent<T> category : categories) {
             TableSubHeader subheader = category.getWidget();
             if (subheader != null && $(subheader).is(elem)) {
                 return subheader;
@@ -2305,7 +2370,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     @Override
     public void clearCategories() {
-        for (CategoryComponent category : categories) {
+        for (CategoryComponent<T> category : categories) {
             TableSubHeader subheader = category.getWidget();
             if (subheader != null && subheader.isAttached()) {
                 subheader.removeFromParent();
@@ -2437,6 +2502,20 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         }
     }
 
+    protected void calculateComputedColumns() {
+        List<RowComponent<T>> rows = getRows();
+        for (RowComponent<T> row : rows) {
+            row.getComputedColumns().forEach(computedColumnData -> {
+                Number computedValue = computedColumnData.compute(row);
+                ColumnContext<T> columnContext = row.getColumnContext(computedColumnData.name());
+                if (columnContext != null) {
+                    computedColumnData.render(columnContext, computedValue);
+                }
+            });
+        }
+    }
+
+
     public void maybeApplyFrozenMargins() {
         // Assign left frozen column margin
         if (leftFrozenColumns > 0) {
@@ -2476,6 +2555,41 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     public boolean hasFrozenColumns() {
         return getLeftFrozenColumns() > 0 || getRightFrozenColumns() > 0;
+    }
+
+    public DataTableAccessibilityControls getAccessibilityControl() {
+        return accessibilityControl;
+    }
+
+    public void setAccessibilityControl(DataTableAccessibilityControls accessibilityControl) {
+        this.accessibilityControl = accessibilityControl;
+    }
+
+    @Override
+    public void setDefaultFormatProvider(ColumnFormatProvider defaultFormatProvider) {
+        this.defaultFormatProvider = defaultFormatProvider;
+    }
+
+    @Override
+    public ColumnFormatProvider getDefaultFormatProvider() {
+        if (defaultFormatProvider == null) {
+            defaultFormatProvider = new ColumnFormatProvider();
+        }
+        return defaultFormatProvider;
+    }
+
+    @Override
+    public void setDefaultBlankPlaceholder(String defaultBlankPlaceholder) {
+        this.defaultBlankPlaceholder = defaultBlankPlaceholder;
+    }
+
+    @Override
+    public String getDefaultBlankPlaceholder() {
+        return defaultBlankPlaceholder;
+    }
+
+    public Table getTable() {
+        return table;
     }
 
     public CssNameMixin<Table, Density> getDensityCssNameMixin() {

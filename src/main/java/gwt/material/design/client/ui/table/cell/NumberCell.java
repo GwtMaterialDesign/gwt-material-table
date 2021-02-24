@@ -20,6 +20,7 @@
 package gwt.material.design.client.ui.table.cell;
 
 import com.google.gwt.cell.client.AbstractSafeHtmlCell;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.text.shared.SafeHtmlRenderer;
@@ -32,6 +33,8 @@ import gwt.material.design.client.ui.text.NumberHtmlRenderer;
  * @author Ben Dol
  */
 public class NumberCell<T extends Number> extends AbstractSafeHtmlCell<T> {
+
+    protected NumberFormat format;
 
     /**
      * Constructs a TextCell that uses a {@link SimpleSafeHtmlRenderer} to render
@@ -56,5 +59,14 @@ public class NumberCell<T extends Number> extends AbstractSafeHtmlCell<T> {
         if (data != null) {
             sb.append(data);
         }
+    }
+
+    @Override
+    public void render(Context context, T data, SafeHtmlBuilder sb) {
+        sb.append(SimpleSafeHtmlRenderer.getInstance().render(format != null ? format.format(data) : String.valueOf(data)));
+    }
+
+    public void setFormat(NumberFormat format) {
+        this.format = format;
     }
 }

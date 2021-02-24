@@ -19,6 +19,8 @@
  */
 package gwt.material.design.client.data;
 
+import gwt.material.design.client.data.factory.Category;
+
 /**
  * Used for data categorization for features such as data categories.<br>
  * Models that implement this interface will be considered for categorization in {@link AbstractDataView}.
@@ -30,5 +32,5 @@ public interface HasDataCategory {
     /**
      * Returns the objects data category name.
      */
-    String getDataCategory();
+    Category getDataCategory();
 }

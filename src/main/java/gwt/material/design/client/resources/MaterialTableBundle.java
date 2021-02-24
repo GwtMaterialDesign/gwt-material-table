@@ -51,6 +51,6 @@ public interface MaterialTableBundle extends ClientBundle {
     @Source("css/style.min.css")
     TextResource style();
 
-    @Source("css/table-dark.min.css")
+    @Source("css/datatable.dark.min.css")
     TextResource darkCss();
 }

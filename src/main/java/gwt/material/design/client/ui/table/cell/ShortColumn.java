@@ -20,6 +20,8 @@
 package gwt.material.design.client.ui.table.cell;
 
 import com.google.gwt.cell.client.Cell;
+import com.google.gwt.i18n.client.NumberFormat;
+import gwt.material.design.client.ui.table.MaterialDataTable;
 
 /**
  * A column that displays its contents with a {@link NumberCell} and does not make
@@ -28,10 +30,13 @@ import com.google.gwt.cell.client.Cell;
  * @param <T> the row type
  * @author Ben Dol
  */
-public class ShortColumn<T> extends Column<T, Short> {
+public class ShortColumn<T> extends NumberColumn<T, Short> {
 
     public ShortColumn() {
-        super(new NumberCell<>());
+    }
+
+    public ShortColumn(NumberFormat format) {
+        super(format);
     }
 
     public ShortColumn(Cell<Short> cell) {
@@ -48,5 +53,10 @@ public class ShortColumn<T> extends Column<T, Short> {
 
     public ShortColumn(Cell<Short> cell, Value<T, Short> delegate, Short defaultValue) {
         super(cell, delegate, defaultValue);
+    }
+
+    @Override
+    public NumberFormat getDefaultFormat() {
+        return getDataView().getDefaultFormatProvider().getIntegerFormat();
     }
 }

@@ -20,6 +20,8 @@
 package gwt.material.design.client.data;
 
 import gwt.material.design.client.ui.table.cell.Column;
+import gwt.material.design.client.ui.table.cell.ColumnFormatProvider;
+import gwt.material.design.client.ui.table.cell.ColumnValueProvider;
 
 import java.util.List;
 
@@ -30,26 +32,32 @@ public interface HasColumns<T> {
      *
      * @param column the column object
      */
-    Column<T, ?> addColumn(Column<T, ?> column);
+    <X extends Column<T, ?>> X addColumn(X column);
 
     /**
      * Add a new column to the data view.
      *
      * @param column the column object
      */
-    Column<T, ?> addColumn(String header, Column<T, ?> column);
+    <X extends Column<T, ?>> X addColumn(String header, X column);
 
     /**
      * Inserts a column into the table at the specified index.
      *
      * @param beforeIndex the index to insert the column
-     * @param col the column to be added
+     * @param col         the column to be added
      * @throws IndexOutOfBoundsException if the index is out of range
      */
-    Column<T, ?> insertColumn(String header, int beforeIndex, Column<T, ?> col);
+    <X extends Column<T, ?>> X insertColumn(String header, int beforeIndex, X col);
+
+    /**
+     * Add a new column to the data view.
+     */
+    Column<T, ?> addColumn(ColumnValueProvider<T> provider, String columnName);
 
     /**
      * Remove an existing column by index.
+     *
      * @param colIndex the columns placement index
      */
     void removeColumn(int colIndex);
@@ -80,7 +88,7 @@ public interface HasColumns<T> {
      * Sort a column matching the given index (the index excludes the selection box row).
      *
      * @param columnIndex valid index to the user added {@link Column}s.
-     * @param dir the sort direction or null for auto reversing.
+     * @param dir         the sort direction or null for auto reversing.
      */
     void sort(int columnIndex, SortDir dir);
 
@@ -95,7 +103,7 @@ public interface HasColumns<T> {
      * Sort a column.
      *
      * @param column matching column that was added via {@link ##addColumn(Column)}.
-     * @param dir the sort direction or null for auto reversing.
+     * @param dir    the sort direction or null for auto reversing.
      */
     void sort(Column<T, ?> column, SortDir dir);
 
@@ -108,4 +116,18 @@ public interface HasColumns<T> {
      * Get the number of right frozen columns.
      */
     int getRightFrozenColumns();
+
+    ColumnFormatProvider getDefaultFormatProvider();
+
+    /**
+     * Set the datable default column format provider on this instance.
+     */
+    void setDefaultFormatProvider(ColumnFormatProvider defaultFormatProvider);
+
+    String getDefaultBlankPlaceholder();
+
+    /**
+     * Set the datable default column blank placeholder provider on this instance.
+     */
+    void setDefaultBlankPlaceholder(String defaultBlankPlaceholder);
 }

@@ -20,26 +20,27 @@
 package gwt.material.design.client.data.component;
 
 import com.google.gwt.user.client.ui.HasEnabled;
+import gwt.material.design.client.data.ColumnContext;
 import gwt.material.design.client.data.DataView;
+import gwt.material.design.client.data.factory.Category;
+import gwt.material.design.client.ui.table.TableRow;
+import gwt.material.design.client.ui.table.cell.ComputedColumn;
 import gwt.material.design.jquery.client.api.JQuery;
 import gwt.material.design.jquery.client.api.JQueryElement;
-import gwt.material.design.client.ui.table.TableRow;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Ben Dol
  */
 public class RowComponent<T> extends Component<TableRow> implements Comparable<T>, HasEnabled {
-    private Comparator<T> DEFAULT_COMPARATOR = (o1, o2) -> o1.toString().compareToIgnoreCase(o2.toString());
+    private final Comparator<T> DEFAULT_COMPARATOR = (o1, o2) -> o1.toString().compareToIgnoreCase(o2.toString());
 
     private T data;
     private int index;
-    private final String categoryName;
-    private final DataView dataView;
-
+    private Category categoryInfo;
+    private final DataView<T> dataView;
+    private Map<String, ColumnContext<T>> columns = new LinkedHashMap<>();
     private Comparator<T> comparator;
 
     public RowComponent(RowComponent<T> clone) {
@@ -47,14 +48,15 @@ public class RowComponent<T> extends Component<TableRow> implements Comparable<T
         addAll(clone.getChildren());
         data = clone.data;
         index = clone.index;
-        categoryName = clone.categoryName;
+        categoryInfo = clone.categoryInfo;
         dataView = clone.dataView;
+        comparator = clone.comparator;
     }
 
-    public RowComponent(T data, DataView dataView, String categoryName) {
+    public RowComponent(T data, DataView<T> dataView, Category categoryInfo) {
         this.data = data;
         this.dataView = dataView;
-        this.categoryName = categoryName;
+        this.categoryInfo = categoryInfo;
     }
 
     public T getData() {
@@ -73,16 +75,29 @@ public class RowComponent<T> extends Component<TableRow> implements Comparable<T
         this.index = index;
     }
 
-    public DataView getDataView() {
+    public DataView<T> getDataView() {
         return dataView;
     }
 
-    public CategoryComponent getCategory() {
-        return dataView.getCategory(categoryName);
+    public CategoryComponent<T> getCategory() {
+        return categoryInfo != null ? dataView.getCategory(categoryInfo.getName()) : null;
     }
 
     public String getCategoryName() {
-        return categoryName;
+        return categoryInfo != null ? categoryInfo.getName() : null;
+    }
+
+    public void setCategoryName(String categoryName) {
+        if (categoryInfo != null) {
+            this.categoryInfo.setName(categoryName);
+            setRedraw(true);
+            dataView.addCategory(categoryName);
+            dataView.renderComponent(this);
+        }
+    }
+
+    public Category getCategoryInfo() {
+        return categoryInfo;
     }
 
     public int getLeftFrozenColumns() {
@@ -105,6 +120,30 @@ public class RowComponent<T> extends Component<TableRow> implements Comparable<T
         return getRightFrozenColumns() > 0;
     }
 
+    /**
+     * Expands the row.
+     * Also see {@link #collapse()}
+     */
+    public boolean expand() {
+        return dataView.expandRow(this, true);
+    }
+
+    /**
+     * Collapses the row.
+     * Also see {@link #expand()}
+     */
+    public boolean collapse() {
+        return dataView.expandRow(this, false);
+    }
+
+    /**
+     * Expand or collapse the row.
+     * Also see {@link #expand()} and {@link #collapse()}
+     */
+    public boolean expandOrCollapse() {
+        return dataView.expandOrCollapseRow(this);
+    }
+
     @Override
     public boolean isEnabled() {
         return getWidget().isEnabled();
@@ -118,7 +157,7 @@ public class RowComponent<T> extends Component<TableRow> implements Comparable<T
     @Override
     protected void clearWidget() {
         TableRow row = getWidget();
-        if(row != null) {
+        if (row != null) {
             clearRowExpansion();
         }
         super.clearWidget();
@@ -126,15 +165,15 @@ public class RowComponent<T> extends Component<TableRow> implements Comparable<T
 
     public void clearRowExpansion() {
         JQueryElement next = JQuery.$(getWidget()).next();
-        if(next.is("tr.expansion")) {
+        if (next.is("tr.expansion")) {
             next.remove();
         }
     }
 
     public static <T> List<T> extractData(List<RowComponent<T>> rows) {
         List<T> data = new ArrayList<>();
-        for(RowComponent<T> row : rows) {
-            if(row != null) {
+        for (RowComponent<T> row : rows) {
+            if (row != null) {
                 data.add(row.getData());
             }
         }
@@ -166,12 +205,37 @@ public class RowComponent<T> extends Component<TableRow> implements Comparable<T
         }
     }
 
+    public void addColumn(ColumnContext<T> computedColumn) {
+        columns.put(computedColumn.getColumn().name(), computedColumn);
+    }
+
+    public List<ColumnContext<T>> getColumns() {
+        return new ArrayList<>(columns.values());
+    }
+
+    public List<ComputedColumn<T, ?>> getComputedColumns() {
+        List<ComputedColumn<T, ?>> computedColumns = new ArrayList<>();
+        if (columns != null) {
+            for (String key : columns.keySet()) {
+                ColumnContext<T> columnTableData = columns.get(key);
+                if (columnTableData.getColumn() instanceof ComputedColumn) {
+                    computedColumns.add((ComputedColumn<T, ?>) columnTableData.getColumn());
+                }
+            }
+        }
+        return computedColumns;
+    }
+
+    public ColumnContext<T> getColumnContext(String name) {
+        return columns.get(name);
+    }
+
     @Override
     public String toString() {
         return "RowComponent{" +
-                "data=" + data +
-                ", index=" + index +
-                ", categoryName='" + categoryName + '\'' +
-                '}';
+            "data=" + data +
+            ", index=" + index +
+            ", categoryInfo='" + categoryInfo + '\'' +
+            '}';
     }
 }

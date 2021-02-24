@@ -19,15 +19,19 @@
  */
 package gwt.material.design.client.data;
 
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasKeyProvider;
 import gwt.material.design.client.data.component.Component;
 import gwt.material.design.client.data.component.Components;
+import gwt.material.design.client.data.factory.Category;
 import gwt.material.design.client.js.JsTableSubHeaders;
 import gwt.material.design.client.ui.MaterialProgress;
+import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControls;
 import gwt.material.design.client.ui.table.DataDisplay;
 import gwt.material.design.client.ui.table.TableHeader;
 import gwt.material.design.client.ui.table.TableScaffolding;
+import gwt.material.design.client.ui.table.cell.ColumnFormatProvider;
 
 import java.util.List;
 
@@ -37,12 +41,17 @@ import java.util.List;
  * @author Ben Dol
  */
 public interface DataView<T> extends HasRows<T>, HasColumns<T>, HasDataSource<T>, HasRenderer<T>, HasKeyProvider<T>,
-        HasCategories, ViewSettings {
+        HasCategories<T>, ViewSettings {
 
     /**
      * Render the data view components to DOM.
      */
     void render(Components<Component<?>> components);
+
+    /**
+     * Render individual data view component to DOM.
+     */
+    void renderComponent(Component<?> component);
 
     /**
      * Setup the data view.
@@ -63,6 +72,11 @@ public interface DataView<T> extends HasRows<T>, HasColumns<T>, HasDataSource<T>
      * Get the displays main container.
      */
     Widget getContainer();
+
+    /**
+     * Set the Table Body's overflow
+     */
+    void hideTableScrollbar(boolean hideScrollbar);
 
     /**
      * Get the data views id.
@@ -133,4 +147,24 @@ public interface DataView<T> extends HasRows<T>, HasColumns<T>, HasDataSource<T>
      * Get the data views progress widget.
      */
     MaterialProgress getProgressWidget();
+
+    /**
+     * Controls the datatable's accessibility features including it's component focused states.
+     */
+    void setAccessibilityControl(DataTableAccessibilityControls accessibilityControl);
+
+    DataTableAccessibilityControls getAccessibilityControl();
+
+    /**
+     * Will return all the data of the datatable
+     */
+    List<T> getData();
+
+    void setDefaultFormatProvider(ColumnFormatProvider defaultFormatProvider);
+
+    ColumnFormatProvider getDefaultFormatProvider();
+
+    void setDefaultBlankPlaceholder(String defaultBlankPlaceholder);
+
+    String getDefaultBlankPlaceholder();
 }

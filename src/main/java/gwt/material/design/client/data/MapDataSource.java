@@ -20,6 +20,7 @@
 package gwt.material.design.client.data;
 
 import gwt.material.design.client.data.component.CategoryComponent;
+import gwt.material.design.client.data.factory.Category;
 import gwt.material.design.client.data.loader.LoadCallback;
 import gwt.material.design.client.data.loader.LoadConfig;
 import gwt.material.design.client.data.loader.LoadResult;
@@ -39,23 +40,23 @@ public class MapDataSource<T> implements DataSource<T>, HasDataView<T> {
 
     private final static Logger logger = Logger.getLogger(ListDataSource.class.getName());
 
-    private Map<String, List<T>> dataMap = new HashMap<>();
+    private Map<Object, List<T>> dataMap = new HashMap<>();
     private DataView<T> dataView;
 
     @Override
     public void load(LoadConfig<T> loadConfig, LoadCallback<T> callback) {
         try {
             List<T> flatData = new ArrayList<>();
-            List<CategoryComponent> categories = loadConfig.getOpenCategories();
+            List<CategoryComponent<T>> categories = loadConfig.getOpenCategories();
             if(dataView.isUseCategories() && categories != null) {
-                for (CategoryComponent category : categories) {
-                    List<T> data = dataMap.get(category.getName());
+                for (CategoryComponent<T> category : categories) {
+                    List<T> data = dataMap.get(category.getId());
                     if (data != null) {
                         flatData.addAll(data);
                     }
                 }
             } else {
-                for(Map.Entry<String, List<T>> entry : dataMap.entrySet()) {
+                for(Map.Entry<Object, List<T>> entry : dataMap.entrySet()) {
                     flatData.addAll(entry.getValue());
                 }
             }
@@ -80,14 +81,14 @@ public class MapDataSource<T> implements DataSource<T>, HasDataView<T> {
 
     public void add(Collection<T> list) {
         for(T item : list) {
-            String category = null;
+            Category category = null;
             if(dataView.isUseCategories()) {
                 category = dataView.getRowFactory().getCategory(item);
             }
             if(category == null) {
-                category = AbstractDataView.ORPHAN_PATTERN;
+                category = new Category(AbstractDataView.ORPHAN_PATTERN);
             }
-            List<T> data = dataMap.computeIfAbsent(category, k -> new ArrayList<>());
+            List<T> data = dataMap.computeIfAbsent(category.getId(), k -> new ArrayList<>());
             data.add(item);
         }
     }
