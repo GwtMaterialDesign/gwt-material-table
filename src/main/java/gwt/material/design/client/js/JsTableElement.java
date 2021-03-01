@@ -40,5 +40,11 @@ public class JsTableElement extends JQueryElement {
     public native JQueryElement stickyTableHeaders(StickyTableOptions opts);
 
     @JsMethod
+    public native JQueryElement stickyTableFooter(StickyTableOptions opts);
+
+    @JsMethod
     public native JQueryElement stickyTableHeaders(String method);
+
+    @JsMethod
+    public native JQueryElement stickyTableFooter(String method);
 }

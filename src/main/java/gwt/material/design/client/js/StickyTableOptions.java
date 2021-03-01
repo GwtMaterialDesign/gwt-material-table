@@ -34,9 +34,18 @@ public class StickyTableOptions extends JavaScriptObject {
         this.scrollableArea = scrollableArea;
     }-*/;
 
+    public native final void setMarginTop(int marginTop) /*-{
+        this.marginTop = marginTop;
+    }-*/;
+
     public static StickyTableOptions create(JQueryElement scrollableArea) {
+        return create(scrollableArea, 0);
+    }
+
+    public static StickyTableOptions create(JQueryElement scrollableArea, int marginTop) {
         StickyTableOptions obj = JavaScriptObject.createObject().cast();
         obj.setScrollableArea(scrollableArea);
+        obj.setMarginTop(marginTop);
         return obj;
     }
 }

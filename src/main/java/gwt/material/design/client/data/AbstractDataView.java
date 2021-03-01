@@ -20,6 +20,7 @@
 package gwt.material.design.client.data;
 
 import com.google.gwt.cell.client.Cell.Context;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
@@ -48,6 +49,7 @@ import gwt.material.design.client.jquery.JQueryMutate;
 import gwt.material.design.client.js.*;
 import gwt.material.design.client.ui.MaterialCheckBox;
 import gwt.material.design.client.ui.MaterialProgress;
+import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.Selectors;
 import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControls;
 import gwt.material.design.client.ui.table.*;
@@ -104,6 +106,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected Table table;
     protected MaterialWidget thead;
     protected MaterialWidget tbody;
+    protected Panel tfoot;
     protected MaterialProgress progressWidget;
     protected TableRow headerRow;
     protected JQueryElement container;
@@ -128,6 +131,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     private boolean shiftDown;
     private boolean useRowExpansion;
     private boolean useStickyHeader;
+    private boolean useStickyFooter;
     private boolean useLoadOverlay;
     private boolean useCategories;
     private SelectionType selectionType = SelectionType.NONE;
@@ -304,6 +308,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 return ++maxTries[0] < 125;
             }
         }, 40);
+
+        if (isUseStickyFooter()) {
+            Scheduler.get().scheduleDeferred(this::setupStickyFooter);
+        }
     }
 
     /**
@@ -536,7 +544,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             renderer.drawColumn(row.getWidget(), context, row.getData(), column, index, true);
         }
 
-        refreshStickyHeaders();
+        refreshStickyComponents();
     }
 
     @Override
@@ -596,6 +604,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             xScrollPanel = scaffolding.getXScrollPanel();
             tbody = table.getBody();
             thead = table.getHead();
+            tfoot = table.getFooter();
             $table = table.getJsElement();
 
             // apply the table-layout style property
@@ -643,6 +652,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             // Setup the sticky header bar
             if (useStickyHeader) {
                 setupStickyHeader();
+            }
+
+            if (useStickyFooter) {
+                setupStickyFooter();
             }
 
             // Setup the subheaders for categories
@@ -955,6 +968,14 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected void setupStickyHeader() {
         if ($table != null && display != null) {
             $table.stickyTableHeaders(StickyTableOptions.create($(".table-body", getContainer())));
+        }
+    }
+
+    protected void setupStickyFooter(){
+        if($table != null && display != null && tfoot != null) {
+            int marginTop = tableBody.outerHeight() - $(tfoot).outerHeight();
+            $table.stickyTableFooter(StickyTableOptions.create($(".table-body", getContainer()), marginTop));
+            $table.stickyTableFooter("toggleHeadersAutoLoad");
         }
     }
 
@@ -1271,7 +1292,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         }
 
         reindexHeadersAndRows();
-        refreshStickyHeaders();
+        refreshStickyComponents();
 
         if (hardRemove) {
             columns.remove(colIndex);
@@ -1456,17 +1477,36 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         return useStickyHeader;
     }
 
+    @Override
+    public void setUseStickyFooter(boolean stickyFooter) {
+        if (this.useStickyFooter && !stickyFooter) {
+            $table.stickyTableFooter("destroy");
+        } else if (stickyFooter) {
+            setupStickyFooter();
+        }
+        this.useStickyFooter = stickyFooter;
+    }
+
+    @Override
+    public boolean isUseStickyFooter() {
+        return useStickyFooter;
+    }
+
     /**
      * TODO: This method can be optimized.
      */
-    private void refreshStickyHeaders() {
+    private void refreshStickyComponents() {
         if ($table != null) {
             // Destroy existing sticky header function
             $table.stickyTableHeaders("destroy");
+            $table.stickyTableFooter("destroy");
 
             if (isUseStickyHeader()) {
-                // Initialize sticky header
                 setupStickyHeader();
+            }
+
+            if (isUseStickyFooter()) {
+                setupStickyFooter();
             }
         }
     }
@@ -2404,7 +2444,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             headers.remove(index);
             headerRow.remove(index);
         }
-        refreshStickyHeaders();
+        refreshStickyComponents();
     }
 
     protected int getCategoryRowCount(String category) {
@@ -2495,9 +2535,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 }
             }
 
-            if (isUseStickyHeader() && (leftFrozenColumns > 0 || rightFrozenColumns > 0)) {
-                logger.warning("Sticky header is not supported with frozen columns, this will be disabled automatically.");
+            if ((isUseStickyHeader() || isUseStickyFooter() ) && (leftFrozenColumns > 0 || rightFrozenColumns > 0)) {
+                logger.warning("Sticky header or footer is not supported with frozen columns, this will be disabled automatically.");
                 setUseStickyHeader(false);
+                setUseStickyFooter(false);
             }
         }
     }

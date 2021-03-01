@@ -159,7 +159,8 @@ table.table .cell {
     text-overflow: ellipsis;
 }
 
-table.table tbody td {
+table.table tbody td,
+table.table tfoot td {
     border-radius: 0;
     padding: 0 5px 0 20px;
 }
