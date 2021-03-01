@@ -21,6 +21,7 @@ package gwt.material.design.client;
  */
 
 import com.google.gwt.dom.client.StyleInjector;
+import gwt.material.design.client.resources.MaterialTableBundle;
 import gwt.material.design.client.resources.MaterialTableDebugBundle;
 import gwt.material.design.client.ui.pager.MaterialDataPagerClientBundle;
 
@@ -33,6 +34,7 @@ public class MaterialTableDebugBase extends MaterialDesignBase {
     public void load() {
         injectDebugJs(MaterialTableDebugBundle.INSTANCE.jQueryExt());
         injectDebugJs(MaterialTableDebugBundle.INSTANCE.stickyth());
+        injectDebugJs(MaterialTableDebugBundle.INSTANCE.stickytfoot());
         injectDebugJs(MaterialTableDebugBundle.INSTANCE.tableSubHeaders());
         injectDebugJs(MaterialTableDebugBundle.INSTANCE.greedyScroll());
         injectDebugJs(MaterialTableDebugBundle.INSTANCE.mutateEvents());

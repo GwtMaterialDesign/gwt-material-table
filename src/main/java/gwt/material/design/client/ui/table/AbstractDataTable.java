@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -47,7 +47,6 @@ import gwt.material.design.client.events.HandlerRegistry;
 import gwt.material.design.client.ui.table.cell.Column;
 import gwt.material.design.client.ui.table.cell.ColumnFormatProvider;
 import gwt.material.design.client.ui.table.cell.ColumnValueProvider;
-import gwt.material.design.client.ui.table.cell.TextColumn;
 import gwt.material.design.jquery.client.api.JQueryElement;
 
 import java.util.List;
@@ -97,9 +96,9 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
 
         @Override
         protected MaterialWidget createFooterPanel() {
-            MaterialWidget footerPanel = new MaterialWidget(DOM.createDiv());
-            footerPanel.addStyleName(TableCssName.FOOTER_PANEL);
-            return footerPanel;
+            MaterialWidget tableFooter = new MaterialWidget(DOM.createTFoot());
+            tableFooter.addStyleName(TableCssName.FOOTER_PANEL);
+            return tableFooter;
         }
 
         @Override
@@ -557,6 +556,16 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     @Override
     public final void setUseStickyHeader(boolean stickyHeader) {
         view.setUseStickyHeader(stickyHeader);
+    }
+
+    @Override
+    public boolean isUseStickyFooter() {
+        return view.isUseStickyFooter();
+    }
+
+    @Override
+    public void setUseStickyFooter(boolean stickyFooter) {
+        view.setUseStickyFooter(stickyFooter);
     }
 
     @Override

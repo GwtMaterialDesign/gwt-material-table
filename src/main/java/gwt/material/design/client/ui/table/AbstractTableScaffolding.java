@@ -113,14 +113,15 @@ public abstract class AbstractTableScaffolding implements TableScaffolding {
         container.add(topPanel);
         container.add(tableBody);
         container.add(xScrollPanel);
-        container.add(footerPanel);
 
         topPanel.add(infoPanel);
         topPanel.add(toolPanel);
 
         tableBody.add(wrapInnerScroll(table));
 
+        //TODO: Create a class for head and body
         table.addHead(new MaterialWidget(DOM.createElement("thead")));
         table.addBody(new MaterialWidget(DOM.createElement("tbody")));
+        table.addFooter(footerPanel);
     }
 }
