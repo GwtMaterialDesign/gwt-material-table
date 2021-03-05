@@ -19,12 +19,10 @@
  */
 package gwt.material.design.client.data;
 
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.HasKeyProvider;
 import gwt.material.design.client.data.component.Component;
 import gwt.material.design.client.data.component.Components;
-import gwt.material.design.client.data.factory.Category;
 import gwt.material.design.client.js.JsTableSubHeaders;
 import gwt.material.design.client.ui.MaterialProgress;
 import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControls;
@@ -32,6 +30,7 @@ import gwt.material.design.client.ui.table.DataDisplay;
 import gwt.material.design.client.ui.table.TableHeader;
 import gwt.material.design.client.ui.table.TableScaffolding;
 import gwt.material.design.client.ui.table.cell.ColumnFormatProvider;
+import gwt.material.design.client.ui.table.TableFooter;
 
 import java.util.List;
 
@@ -98,6 +97,8 @@ public interface DataView<T> extends HasRows<T>, HasColumns<T>, HasDataSource<T>
      */
     List<TableHeader> getHeaders();
 
+    TableFooter<T> getFooter();
+
     /**
      * Get the subheader library API.
      */
@@ -162,9 +163,9 @@ public interface DataView<T> extends HasRows<T>, HasColumns<T>, HasDataSource<T>
 
     void setDefaultFormatProvider(ColumnFormatProvider defaultFormatProvider);
 
-    ColumnFormatProvider getDefaultFormatProvider();
+    ColumnFormatProvider getFormatProvider();
 
     void setDefaultBlankPlaceholder(String defaultBlankPlaceholder);
 
-    String getDefaultBlankPlaceholder();
+    String getBlankPlaceholder();
 }

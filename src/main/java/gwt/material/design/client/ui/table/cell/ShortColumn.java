@@ -21,7 +21,6 @@ package gwt.material.design.client.ui.table.cell;
 
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.i18n.client.NumberFormat;
-import gwt.material.design.client.ui.table.MaterialDataTable;
 
 /**
  * A column that displays its contents with a {@link NumberCell} and does not make
@@ -57,6 +56,6 @@ public class ShortColumn<T> extends NumberColumn<T, Short> {
 
     @Override
     public NumberFormat getDefaultFormat() {
-        return getDataView().getDefaultFormatProvider().getIntegerFormat();
+        return getDataView().getFormatProvider().getIntegerFormat();
     }
 }

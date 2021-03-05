@@ -31,18 +31,18 @@ public abstract class AbstractTableScaffolding implements TableScaffolding {
     private Panel topPanel;
     private Panel infoPanel;
     private Panel toolPanel;
-    private Panel footerPanel;
+    private TableFooter<?> footer;
     private Table table;
 
     private XScrollPanel xScrollPanel;
 
     @Override
-    public void build() {
+    public void build(AbstractDataTable dataTable) {
         tableBody = createTableBody();
         topPanel = createTopPanel();
         infoPanel = createInfoPanel();
         toolPanel = createToolPanel();
-        footerPanel = createFooterPanel();
+        footer = createFooter(dataTable);
         table = createTable();
         xScrollPanel = createXScrollPanel(tableBody);
     }
@@ -75,11 +75,11 @@ public abstract class AbstractTableScaffolding implements TableScaffolding {
         return toolPanel;
     }
 
-    abstract protected Panel createFooterPanel();
+    abstract protected <T> TableFooter<T> createFooter(AbstractDataTable<T> dataTable);
 
     @Override
-    public Panel getFooterPanel() {
-        return footerPanel;
+    public <T> TableFooter<T> getFooter() {
+        return (TableFooter<T>) footer;
     }
 
     abstract protected XScrollPanel createXScrollPanel(Panel container);
@@ -119,9 +119,8 @@ public abstract class AbstractTableScaffolding implements TableScaffolding {
 
         tableBody.add(wrapInnerScroll(table));
 
-        //TODO: Create a class for head and body
         table.addHead(new MaterialWidget(DOM.createElement("thead")));
         table.addBody(new MaterialWidget(DOM.createElement("tbody")));
-        table.addFooter(footerPanel);
+        table.addFooter(footer);
     }
 }

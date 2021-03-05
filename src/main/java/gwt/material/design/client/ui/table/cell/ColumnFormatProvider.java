@@ -35,7 +35,7 @@ public class ColumnFormatProvider {
 
     public DateTimeFormat getDateFormat() {
         if (dateFormat == null) {
-            dateFormat = MaterialDataTable.getGlobals().getDefaultFormatProvider().getDateFormat();
+            dateFormat = MaterialDataTable.getGlobals().getFormatProvider().getDateFormat();
         }
         return dateFormat;
     }
@@ -47,7 +47,7 @@ public class ColumnFormatProvider {
 
     public NumberFormat getIntegerFormat() {
         if (integerFormat == null) {
-            integerFormat = MaterialDataTable.getGlobals().getDefaultFormatProvider().getIntegerFormat();
+            integerFormat = MaterialDataTable.getGlobals().getFormatProvider().getIntegerFormat();
         }
         return integerFormat;
     }
@@ -59,7 +59,7 @@ public class ColumnFormatProvider {
 
     public NumberFormat getLongFormat() {
         if (longFormat == null) {
-            longFormat = MaterialDataTable.getGlobals().getDefaultFormatProvider().getLongFormat();
+            longFormat = MaterialDataTable.getGlobals().getFormatProvider().getLongFormat();
         }
         return longFormat;
     }
@@ -71,7 +71,7 @@ public class ColumnFormatProvider {
 
     public NumberFormat getDoubleFormat() {
         if (doubleFormat == null) {
-            doubleFormat = MaterialDataTable.getGlobals().getDefaultFormatProvider().getDoubleFormat();
+            doubleFormat = MaterialDataTable.getGlobals().getFormatProvider().getDoubleFormat();
         }
         return doubleFormat;
     }
@@ -83,7 +83,7 @@ public class ColumnFormatProvider {
 
     public NumberFormat getFloatFormat() {
         if (floatFormat == null) {
-            floatFormat = MaterialDataTable.getGlobals().getDefaultFormatProvider().getFloatFormat();
+            floatFormat = MaterialDataTable.getGlobals().getFormatProvider().getFloatFormat();
         }
         return floatFormat;
     }
@@ -95,7 +95,7 @@ public class ColumnFormatProvider {
 
     public NumberFormat getBigDecimalFormat() {
         if (bigDecimalFormat == null) {
-            bigDecimalFormat = MaterialDataTable.getGlobals().getDefaultFormatProvider().getBigDecimalFormat();
+            bigDecimalFormat = MaterialDataTable.getGlobals().getFormatProvider().getBigDecimalFormat();
         }
         return bigDecimalFormat;
     }
@@ -107,7 +107,7 @@ public class ColumnFormatProvider {
 
     public NumberFormat getShortFormat() {
         if (shortFormat == null) {
-            shortFormat = MaterialDataTable.getGlobals().getDefaultFormatProvider().getShortFormat();
+            shortFormat = MaterialDataTable.getGlobals().getFormatProvider().getShortFormat();
         }
         return shortFormat;
     }
