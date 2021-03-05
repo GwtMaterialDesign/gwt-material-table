@@ -27,7 +27,9 @@ import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.js.Js;
 import gwt.material.design.client.ui.MaterialIcon;
+import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.html.Text;
+import gwt.material.design.client.ui.table.cell.Column;
 import gwt.material.design.jquery.client.api.JQueryElement;
 
 import java.util.ArrayList;
@@ -63,15 +65,18 @@ public class TableSubHeader extends TableRow {
     protected void build(int columnCount) {
         addStyleName(TableCssName.SUBHEADER);
 
+        TableHeader nameIconTh = new TableHeader();
         iconTh = new TableHeader();
         icon = new MaterialIcon(openIcon);
         iconTh.add(icon);
-        add(iconTh);
+        nameIconTh.add(iconTh);
 
         nameTh = new TableHeader();
         nameLbl = new Text("Subheader");
         nameTh.add(nameLbl);
-        add(nameTh);
+        nameIconTh.add(nameTh);
+
+        add(nameIconTh);
 
         // Only assign new header data if we require more columns
         if(columnCount < 2) {

@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,23 +17,24 @@
  * limitations under the License.
  * #L%
  */
-package gwt.material.design.client.ui.table;
+package gwt.material.design.client.data.factory;
 
 import com.google.gwt.core.client.GWT;
 import gwt.material.design.client.ui.table.cell.Column;
+import gwt.material.design.client.ui.table.cell.FooterColumn;
+import gwt.material.design.client.ui.table.cell.FooterValueProvider;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class FooterRowFactory<T> {
 
-    private Map<String, TableFooter.FooterTotalValueProvider<T>> map = new HashMap<>();
-
+    private Map<String, FooterValueProvider<T>> map = new HashMap<>();
 
     public void addFooterColumn(FooterColumn<T> footerColumn) {
         if (footerColumn != null) {
             Column<T, ?> column = footerColumn.getColumn();
-            TableFooter.FooterTotalValueProvider<T> valueProvider = footerColumn.getValueProvider();
+            FooterValueProvider<T> valueProvider = footerColumn.getValueProvider();
             if (column != null && column.name() != null && valueProvider != null) {
                 map.put(column.name(), valueProvider);
             }
@@ -42,7 +43,7 @@ public class FooterRowFactory<T> {
         }
     }
 
-    public TableFooter.FooterTotalValueProvider<T> get(String columnName) {
+    public FooterValueProvider<T> get(String columnName) {
         return map.get(columnName);
     }
 

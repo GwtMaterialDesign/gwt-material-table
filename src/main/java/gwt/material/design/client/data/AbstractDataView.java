@@ -52,7 +52,6 @@ import gwt.material.design.client.ui.Selectors;
 import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControls;
 import gwt.material.design.client.ui.table.*;
 import gwt.material.design.client.ui.table.cell.*;
-import gwt.material.design.client.ui.table.TableFooter;
 import gwt.material.design.jquery.client.api.Event;
 import gwt.material.design.jquery.client.api.Functions;
 import gwt.material.design.jquery.client.api.JQueryElement;
@@ -278,6 +277,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 }
 
                 ComponentsRenderedEvent.fire(this);
+
+                if (isUseCategories()) {
+                    buildCategoryColumns();
+                }
 
                 if (pendingRenderEvent) {
                     RenderedEvent.fire(this);
@@ -2539,6 +2542,13 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 setUseStickyHeader(false);
                 setUseStickyFooter(false);
             }
+        }
+    }
+
+    protected void buildCategoryColumns() {
+        Categories<T> categories = getCategories();
+        for (CategoryComponent<T> category : categories) {
+            category.buildColumns(getColumns());
         }
     }
 
