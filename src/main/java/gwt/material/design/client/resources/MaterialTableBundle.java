@@ -36,6 +36,9 @@ public interface MaterialTableBundle extends ClientBundle {
     @Source("js/stickyth.min.js")
     TextResource stickyth();
 
+    @Source("js/stickytfoot.min.js")
+    TextResource stickytfoot();
+
     @Source("js/table-subheaders.min.js")
     TextResource tableSubHeaders();
 

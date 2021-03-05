@@ -22,7 +22,6 @@ package gwt.material.design.client.ui.table.cell;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import gwt.material.design.client.ui.table.MaterialDataTable;
 
 import java.util.Date;
 
@@ -79,7 +78,7 @@ public class DateColumn<T> extends Column<T, Date> {
 
     public DateTimeFormat getFormat() {
         if (format == null) {
-            format = getDataView().getDefaultFormatProvider().getDateFormat();
+            format = getDataView().getFormatProvider().getDateFormat();
         }
         return format;
     }

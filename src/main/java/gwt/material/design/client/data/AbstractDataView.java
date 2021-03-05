@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,7 +20,6 @@
 package gwt.material.design.client.data;
 
 import com.google.gwt.cell.client.Cell.Context;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
@@ -49,11 +48,11 @@ import gwt.material.design.client.jquery.JQueryMutate;
 import gwt.material.design.client.js.*;
 import gwt.material.design.client.ui.MaterialCheckBox;
 import gwt.material.design.client.ui.MaterialProgress;
-import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.Selectors;
 import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControls;
 import gwt.material.design.client.ui.table.*;
 import gwt.material.design.client.ui.table.cell.*;
+import gwt.material.design.client.ui.table.TableFooter;
 import gwt.material.design.jquery.client.api.Event;
 import gwt.material.design.jquery.client.api.Functions;
 import gwt.material.design.jquery.client.api.JQueryElement;
@@ -106,7 +105,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected Table table;
     protected MaterialWidget thead;
     protected MaterialWidget tbody;
-    protected Panel tfoot;
+    protected TableFooter<T> footer;
     protected MaterialProgress progressWidget;
     protected TableRow headerRow;
     protected JQueryElement container;
@@ -524,7 +523,6 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     public void renderColumn(Column<T, ?> column) {
         int index = column.getIndex() + getColumnOffset();
-        column.setDataView(this);
         TableHeader th = renderer.drawColumnHeader(getContainer(), column, column.name(), index);
         if (th != null) {
             if (column.sortable()) {
@@ -604,7 +602,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             xScrollPanel = scaffolding.getXScrollPanel();
             tbody = table.getBody();
             thead = table.getHead();
-            tfoot = table.getFooter();
+            footer = table.getFooter();
             $table = table.getJsElement();
 
             // apply the table-layout style property
@@ -652,10 +650,6 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             // Setup the sticky header bar
             if (useStickyHeader) {
                 setupStickyHeader();
-            }
-
-            if (useStickyFooter) {
-                setupStickyFooter();
             }
 
             // Setup the subheaders for categories
@@ -721,6 +715,11 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         }
 
         setSelectionType(selectionType);
+
+        // Setup Footer
+        if (footer != null) {
+            footer.load();
+        }
 
         renderColumns();
 
@@ -971,9 +970,9 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         }
     }
 
-    protected void setupStickyFooter(){
-        if($table != null && display != null && tfoot != null) {
-            int marginTop = tableBody.outerHeight() - $(tfoot).outerHeight();
+    public void setupStickyFooter() {
+        if ($table != null && display != null && footer != null) {
+            int marginTop = tableBody.outerHeight() - $(footer).outerHeight();
             $table.stickyTableFooter(StickyTableOptions.create($(".table-body", getContainer()), marginTop));
             $table.stickyTableFooter("toggleHeadersAutoLoad");
         }
@@ -1104,6 +1103,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             renderColumn(column);
         }
 
+        column.setDataView(this);
         InsertColumnEvent.fire(this, beforeIndex, column, header);
 
         return column;
@@ -1481,8 +1481,6 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     public void setUseStickyFooter(boolean stickyFooter) {
         if (this.useStickyFooter && !stickyFooter) {
             $table.stickyTableFooter("destroy");
-        } else if (stickyFooter) {
-            setupStickyFooter();
         }
         this.useStickyFooter = stickyFooter;
     }
@@ -1503,10 +1501,6 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
             if (isUseStickyHeader()) {
                 setupStickyHeader();
-            }
-
-            if (isUseStickyFooter()) {
-                setupStickyFooter();
             }
         }
     }
@@ -2430,6 +2424,11 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         return headers;
     }
 
+    @Override
+    public TableFooter<T> getFooter() {
+        return footer;
+    }
+
     protected void addHeader(int index, TableHeader header) {
         if (headers.size() < 1) {
             headers.add(header);
@@ -2535,7 +2534,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 }
             }
 
-            if ((isUseStickyHeader() || isUseStickyFooter() ) && (leftFrozenColumns > 0 || rightFrozenColumns > 0)) {
+            if ((isUseStickyHeader() || isUseStickyFooter()) && (leftFrozenColumns > 0 || rightFrozenColumns > 0)) {
                 logger.warning("Sticky header or footer is not supported with frozen columns, this will be disabled automatically.");
                 setUseStickyHeader(false);
                 setUseStickyFooter(false);
@@ -2612,7 +2611,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
-    public ColumnFormatProvider getDefaultFormatProvider() {
+    public ColumnFormatProvider getFormatProvider() {
         if (defaultFormatProvider == null) {
             defaultFormatProvider = new ColumnFormatProvider();
         }
@@ -2625,7 +2624,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
-    public String getDefaultBlankPlaceholder() {
+    public String getBlankPlaceholder() {
         return defaultBlankPlaceholder;
     }
 

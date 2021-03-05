@@ -58,6 +58,6 @@ public class BigDecimalColumn<T> extends NumberColumn<T, BigDecimal> {
 
     @Override
     public NumberFormat getDefaultFormat() {
-        return getDataView().getDefaultFormatProvider().getBigDecimalFormat();
+        return getDataView().getFormatProvider().getBigDecimalFormat();
     }
 }

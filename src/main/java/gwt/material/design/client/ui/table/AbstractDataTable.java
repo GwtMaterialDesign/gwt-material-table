@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -95,8 +95,8 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         }
 
         @Override
-        protected MaterialWidget createFooterPanel() {
-            MaterialWidget tableFooter = new MaterialWidget(DOM.createTFoot());
+        protected <T> TableFooter<T> createFooter(AbstractDataTable<T> dataTable) {
+            TableFooter<T> tableFooter = new TableFooter<>(dataTable);
             tableFooter.addStyleName(TableCssName.FOOTER_PANEL);
             return tableFooter;
         }
@@ -149,7 +149,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         handlerRegistry = new DefaultHandlerRegistry(this);
 
         // Build the table scaffolding
-        scaffolding.build();
+        scaffolding.build(this);
         scaffolding.apply(this);
         MaterialDesign.checkJQuery(false);
         build();
@@ -675,8 +675,8 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
-    public ColumnFormatProvider getDefaultFormatProvider() {
-        return view.getDefaultFormatProvider();
+    public ColumnFormatProvider getFormatProvider() {
+        return view.getFormatProvider();
     }
 
     @Override
@@ -685,8 +685,8 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
-    public String getDefaultBlankPlaceholder() {
-        return view.getDefaultBlankPlaceholder();
+    public String getBlankPlaceholder() {
+        return view.getBlankPlaceholder();
     }
 
     @Override
