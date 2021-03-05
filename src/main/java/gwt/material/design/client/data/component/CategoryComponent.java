@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,13 +20,19 @@
 package gwt.material.design.client.data.component;
 
 import com.google.gwt.user.client.ui.Widget;
+import gwt.material.design.client.data.Categories;
 import gwt.material.design.client.data.HasCategories;
-import gwt.material.design.client.data.factory.Mode;
+import gwt.material.design.client.ui.MaterialLabel;
 import gwt.material.design.client.ui.table.TableHeader;
 import gwt.material.design.client.ui.table.TableSubHeader;
+import gwt.material.design.client.ui.table.cell.CategoryColumn;
+import gwt.material.design.client.ui.table.cell.CategoryValueProvider;
+import gwt.material.design.client.ui.table.cell.Column;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Ben Dol
@@ -57,6 +63,8 @@ public class CategoryComponent<T> extends Component<TableSubHeader> {
 
     private HasCategories<T> parent;
     private List<RowComponent<T>> rows = new ArrayList<>();
+    private Map<String, TableHeader> tableHeaderMap = new HashMap<>();
+    private Map<String, CategoryColumn<T>> columnsMap = new HashMap<>();
 
     public CategoryComponent(HasCategories<T> parent, String name, Object id) {
         this(parent, name, id, false);
@@ -187,6 +195,33 @@ public class CategoryComponent<T> extends Component<TableSubHeader> {
         }
     }
 
+    public CategoryComponent<T> addColumn(CategoryColumn<T> categoryColumn) {
+        if (categoryColumn != null && categoryColumn.getColumn() != null && categoryColumn.getColumn().name() != null) {
+            columnsMap.put(categoryColumn.getColumn().name(), categoryColumn);
+        }
+        return this;
+    }
+
+    public void buildColumns(List<Column<T, ?>> allColumns) {
+        List<CategoryColumn<T>> categoryColumns = getColumns();
+
+        for (int i = 1; i < allColumns.size(); i++) {
+            TableHeader th = new TableHeader();
+            getWidget().add(th);
+            tableHeaderMap.put(allColumns.get(i).name(), th);
+        }
+
+        if (categoryColumns != null) {
+            for (CategoryColumn<T> categoryColumn : categoryColumns) {
+                CategoryValueProvider<T> valueProvider = categoryColumn.getValueProvider();
+                if (valueProvider != null && categoryColumn.getColumn() != null) {
+                    TableHeader tableHeader = tableHeaderMap.get(categoryColumn.getColumn().name());
+                    tableHeader.add(new MaterialLabel(valueProvider.getValue(getData(), this)));
+                }
+            }
+        }
+    }
+
     public TableHeader getHeader(int index) {
         return getWidget().getHeader(index);
     }
@@ -229,5 +264,13 @@ public class CategoryComponent<T> extends Component<TableSubHeader> {
     @Override
     public int hashCode() {
         return name.hashCode();
+    }
+
+    public Map<String, CategoryColumn<T>> getColumnsMap() {
+        return columnsMap;
+    }
+
+    public List<CategoryColumn<T>> getColumns() {
+        return new ArrayList<>(columnsMap.values());
     }
 }

@@ -248,6 +248,15 @@ table.table tbody tr.subheader span {
     top: 2px;
 }
 
+table.table tbody tr.subheader th:first-child th {
+    padding-top: 0px !important;
+    padding-bottom:  0px !important;
+}
+
+table.table tbody tr.subheader th:first-child th:first-child {
+    padding-left: 0px !important;
+}
+
 table.table tbody tr.subheader th,
 table.table tbody tr.subheader td {
     white-space: nowrap;

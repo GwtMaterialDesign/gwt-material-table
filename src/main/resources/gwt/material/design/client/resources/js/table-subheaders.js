@@ -492,7 +492,7 @@ function TableSubHeaders($table, $stickies) {
   };
 
   base.setCellWidths = function (widths, $sticky) {
-    $sticky.find("th,td").each(function (index) {
+    $sticky.find("> th, > td").each(function (index) {
       var $this = $(this),
           width = widths[index];
 

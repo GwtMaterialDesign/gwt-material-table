@@ -34,9 +34,7 @@ import gwt.material.design.client.constants.HideOn;
 import gwt.material.design.client.constants.TextAlign;
 import gwt.material.design.client.data.DataView;
 import gwt.material.design.client.data.component.RowComponent;
-import gwt.material.design.client.ui.table.FooterColumn;
 import gwt.material.design.client.ui.table.MaterialDataTable;
-import gwt.material.design.client.ui.table.TableFooter;
 
 import java.util.Comparator;
 import java.util.HashMap;

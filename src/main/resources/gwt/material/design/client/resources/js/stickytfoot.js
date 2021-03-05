@@ -180,12 +180,13 @@
             base.setPositionValues();
           } else if (base.isSticky) {
             //base.$originalHeader.css('position', 'static');
-            //base.$clonedHeader.css('display', 'none');
+
             base.isSticky = false;
             //base.resetWidths($('td,th', base.$clonedHeader), $('td,th', base.$originalHeader));
             //base.$el.trigger('sticky-change', [false]);
           }
         });
+        base.$clonedHeader.css('visibility', 'hidden');
       }
     };
 
