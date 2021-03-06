@@ -21,7 +21,7 @@ package gwt.material.design.client.ui.table;
 
 import com.google.gwt.dom.client.Document;
 import gwt.material.design.client.base.MaterialWidget;
-import gwt.material.design.client.data.factory.FooterRowFactory;
+import gwt.material.design.client.data.factory.FooterColumnsFactory;
 import gwt.material.design.client.ui.MaterialLabel;
 import gwt.material.design.client.ui.table.cell.Column;
 import gwt.material.design.client.ui.table.cell.FooterColumn;
@@ -34,7 +34,7 @@ import java.util.Map;
 public class TableFooter<T> extends MaterialWidget {
 
     private Map<String, MaterialLabel> widgetFactory = new HashMap<>();
-    private FooterRowFactory<T> rowFactory = new FooterRowFactory<>();
+    private FooterColumnsFactory<T> columnsFactory = new FooterColumnsFactory<>();
     private final AbstractDataTable<T> dataTable;
     private final TableRow tableRow = new TableRow();
     private final List<Column<T, ?>> columns;
@@ -47,7 +47,7 @@ public class TableFooter<T> extends MaterialWidget {
     }
 
     public void load() {
-        if (dataTable != null && rowFactory != null) {
+        if (dataTable != null && columnsFactory != null) {
             for (Column<T, ?> column : columns) {
                 TableData tableData = new TableData();
                 MaterialLabel label = new MaterialLabel();
@@ -55,7 +55,7 @@ public class TableFooter<T> extends MaterialWidget {
 
                 FooterColumn<T> footer = column.getFooter();
                 if (footer != null) {
-                    rowFactory.addFooterColumn(footer);
+                    columnsFactory.addFooterColumn(footer);
                 }
 
                 widgetFactory.put(column.name(), label);
@@ -70,9 +70,9 @@ public class TableFooter<T> extends MaterialWidget {
     protected void onComponentsRendered() {
         dataTable.addComponentsRenderedHandler(event -> {
             List<T> entireData = dataTable.getView().getData();
-            if (rowFactory != null) {
+            if (columnsFactory != null) {
                 for (Column<T, ?> column : columns) {
-                    FooterValueProvider<T> valueProvider = rowFactory.get(column.name());
+                    FooterValueProvider<T> valueProvider = columnsFactory.get(column.name());
                     if (valueProvider != null) {
                         String value = valueProvider.getValue(entireData);
                         if (value != null) {
@@ -87,7 +87,7 @@ public class TableFooter<T> extends MaterialWidget {
         });
     }
 
-    public void setRowFactory(FooterRowFactory<T> rowFactory) {
-        this.rowFactory = rowFactory;
+    public void setColumnsFactory(FooterColumnsFactory<T> columnsFactory) {
+        this.columnsFactory = columnsFactory;
     }
 }
