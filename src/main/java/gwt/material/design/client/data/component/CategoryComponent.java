@@ -216,7 +216,7 @@ public class CategoryComponent<T> extends Component<TableSubHeader> {
                 CategoryValueProvider<T> valueProvider = categoryColumn.getValueProvider();
                 if (valueProvider != null && categoryColumn.getColumn() != null) {
                     TableHeader tableHeader = tableHeaderMap.get(categoryColumn.getColumn().name());
-                    tableHeader.add(new MaterialLabel(valueProvider.getValue(getData(), this)));
+                    tableHeader.add(new MaterialLabel(valueProvider.getValue(this)));
                 }
             }
         }

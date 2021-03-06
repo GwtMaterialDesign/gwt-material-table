@@ -27,7 +27,7 @@ import gwt.material.design.client.ui.table.cell.FooterValueProvider;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FooterRowFactory<T> {
+public class FooterColumnsFactory<T>  {
 
     private Map<String, FooterValueProvider<T>> map = new HashMap<>();
 
