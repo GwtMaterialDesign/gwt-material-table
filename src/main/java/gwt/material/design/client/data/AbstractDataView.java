@@ -1478,7 +1478,6 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             // Destroy existing sticky header function
             $table.stickyTableHeaders("destroy");
         } else if (stickyHeader) {
-            // Initialize sticky header
             setupStickyHeader();
         }
         this.useStickyHeader = stickyHeader;
@@ -1493,6 +1492,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     public void setUseStickyFooter(boolean stickyFooter) {
         if (this.useStickyFooter && !stickyFooter) {
             $table.stickyTableFooter("destroy");
+        } else if (stickyFooter) {
+            setupStickyFooter();
         }
         this.useStickyFooter = stickyFooter;
     }
