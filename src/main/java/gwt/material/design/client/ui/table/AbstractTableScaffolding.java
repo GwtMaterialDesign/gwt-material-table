@@ -82,7 +82,7 @@ public abstract class AbstractTableScaffolding implements TableScaffolding {
         return (TableFooter<T>) footer;
     }
 
-    abstract protected XScrollPanel createXScrollPanel(Panel container);
+    abstract protected XScrollPanel createXScrollPanel(Panel tableBody);
 
     @Override
     public XScrollPanel getXScrollPanel() {

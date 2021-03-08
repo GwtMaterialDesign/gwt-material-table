@@ -35,7 +35,7 @@ public interface TableScaffolding {
     Panel getTopPanel();
     Panel getInfoPanel();
     Panel getToolPanel();
-    Panel getXScrollPanel();
+    XScrollPanel getXScrollPanel();
     <T> TableFooter<T> getFooter();
     Table getTable();
     <T> void build(AbstractDataTable<T> dataTable);

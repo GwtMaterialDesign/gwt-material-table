@@ -89,7 +89,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     protected ProvidesKey<T> keyProvider;
     //protected List<ComponentFactory<?, T>> componentFactories;
     protected JsTableSubHeaders subheaderLib;
-    protected Panel xScrollPanel;
+    protected XScrollPanel xScrollPanel;
     protected String height;
     protected int categoryHeight = 0;
     protected int frozenMarginLeft;
@@ -285,6 +285,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
                 if (pendingRenderEvent) {
                     RenderedEvent.fire(this);
+                    xScrollPanel.updateWidth();
                     pendingRenderEvent = false;
                 }
             };
