@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -48,6 +48,7 @@ import gwt.material.design.client.jquery.JQueryMutate;
 import gwt.material.design.client.js.*;
 import gwt.material.design.client.ui.MaterialCheckBox;
 import gwt.material.design.client.ui.MaterialProgress;
+import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.Selectors;
 import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControls;
 import gwt.material.design.client.ui.table.*;
@@ -697,6 +698,14 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 // This event is triggered when the component is unloaded.
                 if (getContainer().isAttached()) {
                     xScrollPanel.setWidth((el.getScrollWidth() + frozenMarginLeft) + "px");
+
+                    if (isUseStickyFooter()) {
+                        setupStickyFooter();
+                    }
+
+                    if (isUseStickyHeader()) {
+                        setupStickyHeader();
+                    }
                 }
             });
 
