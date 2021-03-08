@@ -51,6 +51,11 @@ public class ComputedColumn<T, N extends Number> extends NumberColumn<T, N> {
     }
 
     @Override
+    public N getValue(T object) {
+        return super.getValue(object);
+    }
+
+    @Override
     public NumberFormat getDefaultFormat() {
         return getDataView().getFormatProvider().getLongFormat();
     }
