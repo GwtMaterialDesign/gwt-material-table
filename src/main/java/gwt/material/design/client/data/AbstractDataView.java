@@ -285,7 +285,6 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
                 if (pendingRenderEvent) {
                     RenderedEvent.fire(this);
-                    xScrollPanel.updateWidth();
                     pendingRenderEvent = false;
                 }
             };
