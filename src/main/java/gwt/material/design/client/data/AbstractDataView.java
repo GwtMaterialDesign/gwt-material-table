@@ -680,10 +680,12 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             $xScrollPanel.on("scroll." + id, e -> {
                 int scrollLeft = $xScrollPanel.scrollLeft();
                 innerScroll.prop("scrollLeft", scrollLeft);
-                if (scrollLeft < 1) {
-                    innerScroll.removeClass("inner-shadow");
-                } else {
-                    innerScroll.addClass("inner-shadow");
+                if (hasFrozenColumns()) {
+                    if (scrollLeft < 1) {
+                        innerScroll.removeClass("inner-shadow");
+                    } else {
+                        innerScroll.addClass("inner-shadow");
+                    }
                 }
                 return true;
             });
