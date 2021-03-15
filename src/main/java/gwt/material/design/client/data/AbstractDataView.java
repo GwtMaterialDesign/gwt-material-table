@@ -1080,7 +1080,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     @Override
     public <X extends Column<T, ?>> X addColumn(X column) {
-        return addColumn("", column);
+        return addColumn(column.name(), column);
     }
 
     @Override

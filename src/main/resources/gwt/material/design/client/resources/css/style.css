@@ -72,6 +72,11 @@ table.table tbody {
     color: rgba(0, 0, 0, 0.87);
 }
 
+table.table tfoot {
+    background: #ffffff;
+    border-top: 1px solid #e9e9e9;
+}
+
 .overflow-hidden {
     overflow: hidden !important;
 }
@@ -286,6 +291,11 @@ table.table .mask {
 /* Menu Dropdown */
 div.tool-panel ul.dropdown-content li {
     padding-left: 8px;
+    margin-bottom: 0px;
+}
+
+div.tool-panel ul.dropdown-content li.checkbox.gwt-CheckBox:after {
+    display: none;
 }
 
 div.tool-panel ul.dropdown-content li label {

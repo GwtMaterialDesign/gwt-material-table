@@ -1,8 +1,10 @@
 /** Dark Mode **/
 section.table-container .top-panel,
 .table-container, .table-body,
-table.table thead tr th {
+table.table thead tr th,
+table.table tfoot {
   background-color: #424242;
+  border-top: 1px solid #4a4a4a;
   color: #ffffff; }
 
 table.table tbody td {
