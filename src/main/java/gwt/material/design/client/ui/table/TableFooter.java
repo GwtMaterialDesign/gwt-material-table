@@ -23,6 +23,7 @@ import com.google.gwt.dom.client.Document;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.data.factory.FooterColumnsFactory;
 import gwt.material.design.client.ui.MaterialLabel;
+import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.table.cell.Column;
 import gwt.material.design.client.ui.table.cell.FooterColumn;
 import gwt.material.design.client.ui.table.cell.FooterValueProvider;
@@ -68,23 +69,26 @@ public class TableFooter<T> extends MaterialWidget {
     }
 
     protected void onComponentsRendered() {
-        dataTable.addComponentsRenderedHandler(event -> {
-            List<T> entireData = dataTable.getView().getData();
-            if (columnsFactory != null) {
-                for (Column<T, ?> column : columns) {
-                    FooterValueProvider<T> valueProvider = columnsFactory.get(column.name());
-                    if (valueProvider != null) {
-                        String value = valueProvider.getValue(entireData);
-                        if (value != null) {
-                            MaterialLabel label = widgetFactory.get(column.name());
-                            if (label != null) {
-                                label.setText(value);
-                            }
+        dataTable.addComponentsRenderedHandler(event -> updateFooterValues());
+        dataTable.addRowEmptyHandler(event -> updateFooterValues());
+    }
+
+    protected void updateFooterValues() {
+        List<T> entireData = dataTable.getView().getData();
+        if (columnsFactory != null) {
+            for (Column<T, ?> column : columns) {
+                FooterValueProvider<T> valueProvider = columnsFactory.get(column.name());
+                if (valueProvider != null) {
+                    String value = valueProvider.getValue(entireData);
+                    if (value != null) {
+                        MaterialLabel label = widgetFactory.get(column.name());
+                        if (label != null) {
+                            label.setText(value);
                         }
                     }
                 }
             }
-        });
+        }
     }
 
     public void setColumnsFactory(FooterColumnsFactory<T> columnsFactory) {

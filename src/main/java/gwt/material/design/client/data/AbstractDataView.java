@@ -27,7 +27,6 @@ import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ProvidesKey;
 import com.google.gwt.view.client.Range;
@@ -48,7 +47,6 @@ import gwt.material.design.client.jquery.JQueryMutate;
 import gwt.material.design.client.js.*;
 import gwt.material.design.client.ui.MaterialCheckBox;
 import gwt.material.design.client.ui.MaterialProgress;
-import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.Selectors;
 import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControls;
 import gwt.material.design.client.ui.table.*;
@@ -294,6 +292,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 attachHandler = componentWidget.addAttachHandler(handler);
             }
         } else {
+            RowEmptyEvent.fire(this);
             rendering = false;
         }
 

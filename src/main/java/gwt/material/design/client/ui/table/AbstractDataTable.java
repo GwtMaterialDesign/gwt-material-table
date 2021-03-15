@@ -922,6 +922,11 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
+    public HandlerRegistration addRowEmptyHandler(RowEmptyHandler handler) {
+        return addHandler(handler, RowEmptyEvent.TYPE);
+    }
+
+    @Override
     public HandlerRegistration addRowsVisibleHandler(RowsVisibleHandler handler) {
         return addHandler(handler, RowsVisibleEvent.TYPE);
     }

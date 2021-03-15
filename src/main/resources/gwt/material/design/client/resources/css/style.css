@@ -129,6 +129,7 @@ table.striped > tbody > tr:nth-child(odd) td.frozen-col {
     height: 15px;
     width: 100%;
     overflow-y: hidden;
+    background: #f9f9f9;
 }
 
 .table-container {
