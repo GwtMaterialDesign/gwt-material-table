@@ -173,6 +173,8 @@ table.table tfoot td {
 
 table.table td#col0.selection {
     width: 45px;
+    min-width: 45px;
+    max-width: 45px;
 }
 
 table.table tbody tr.data-row #col0.frozen-col:not([data-title]) {

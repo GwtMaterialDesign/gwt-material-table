@@ -19,12 +19,14 @@
  */
 package gwt.material.design.client.ui.table;
 
+import com.gargoylesoftware.htmlunit.javascript.host.dom.Selection;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Panel;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.constants.*;
 import gwt.material.design.client.data.DataView;
+import gwt.material.design.client.data.SelectionType;
 import gwt.material.design.client.data.events.*;
 import gwt.material.design.client.js.Js;
 import gwt.material.design.client.js.JsTableElement;
@@ -182,6 +184,17 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
             JQueryElement $this = $(e.getCurrentTarget());
 
             String forBox = ((String) $this.attr("for")).replace(getView().getId() + "-", "");
+            SelectionType selectionType = getSelectionType();
+
+            if ((selectionType.equals(SelectionType.SINGLE) || selectionType.equals(SelectionType.MULTIPLE))
+                && forBox.contains("col")) {
+                String id = forBox.replace("col", "");
+                if (!id.isEmpty()) {
+                    int i = Integer.parseInt(id) + 1;
+                    forBox = "col" + i;
+                }
+            }
+
             if (Js.isTrue(forBox)) {
                 JQueryElement thd = $("th#" + forBox + ",td#" + forBox, this);
                 boolean checked = $this.prev().is(":checked");
@@ -200,6 +213,11 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
 
                 // Recalculate the subheader
                 getView().getSubheaderLib().recalculate(true);
+
+                // Recalculate the category
+                getView().getCategories().recalculateColumns();
+
+                // Recalculate the footer
             }
             return true;
         });
@@ -235,7 +253,7 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
             menu.add(toggleBox);
 
             // We will hide the empty header menu items
-            if (header.isEmpty()) {
+            if (header != null && header.isEmpty()) {
                 toggleBox.setVisible(false);
             }
 

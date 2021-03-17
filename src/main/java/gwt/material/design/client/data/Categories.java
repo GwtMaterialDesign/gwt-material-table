@@ -22,8 +22,10 @@ package gwt.material.design.client.data;
 import gwt.material.design.client.data.component.CategoryComponent;
 import gwt.material.design.client.data.component.Components;
 import gwt.material.design.client.data.factory.Mode;
+import gwt.material.design.client.ui.table.cell.Column;
 
 import java.util.Collection;
+import java.util.List;
 
 public class Categories<T> extends Components<CategoryComponent<T>> {
 
@@ -52,5 +54,17 @@ public class Categories<T> extends Components<CategoryComponent<T>> {
 
     public void closeAll() {
         forEach(CategoryComponent::close);
+    }
+
+    public void buildColumns(List<Column<T, ?>> columns) {
+        for (CategoryComponent<T> category : this) {
+            category.buildColumns(columns);
+        }
+    }
+
+    public void recalculateColumns() {
+        for (CategoryComponent<T> category : this) {
+            category.recalculateColumns();
+        }
     }
 }

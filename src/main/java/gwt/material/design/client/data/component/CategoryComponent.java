@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,10 +19,12 @@
  */
 package gwt.material.design.client.data.component;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;
-import gwt.material.design.client.data.Categories;
+import gwt.material.design.client.constants.Display;
 import gwt.material.design.client.data.HasCategories;
 import gwt.material.design.client.ui.MaterialLabel;
+import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.table.TableHeader;
 import gwt.material.design.client.ui.table.TableSubHeader;
 import gwt.material.design.client.ui.table.cell.CategoryColumn;
@@ -33,6 +35,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static gwt.material.design.jquery.client.api.JQuery.$;
 
 /**
  * @author Ben Dol
@@ -204,20 +208,38 @@ public class CategoryComponent<T> extends Component<TableSubHeader> {
 
     public void buildColumns(List<Column<T, ?>> allColumns) {
         List<CategoryColumn<T>> categoryColumns = getColumns();
-
+        TableHeader parentTh = new TableHeader();
+        parentTh.addStyleName("category-parent");
         for (int i = 1; i < allColumns.size(); i++) {
-            TableHeader th = new TableHeader();
-            getWidget().add(th);
-            tableHeaderMap.put(allColumns.get(i).name(), th);
+            Column<T, ?> column = allColumns.get(i);
+            if (column != null && !column.name().isEmpty()) {
+                TableHeader th = new TableHeader();
+                th.addStyleName("category");
+                parentTh.add(th);
+                tableHeaderMap.put(column.name(), th);
+            }
         }
+
+        getWidget().add(parentTh);
 
         if (categoryColumns != null) {
             for (CategoryColumn<T> categoryColumn : categoryColumns) {
                 CategoryValueProvider<T> valueProvider = categoryColumn.getValueProvider();
                 if (valueProvider != null && categoryColumn.getColumn() != null) {
-                    TableHeader tableHeader = tableHeaderMap.get(categoryColumn.getColumn().name());
+                    Column<T, ?> column = categoryColumn.getColumn();
+                    TableHeader tableHeader = tableHeaderMap.get(column.name());
                     tableHeader.add(new MaterialLabel(valueProvider.getValue(this)));
                 }
+            }
+        }
+    }
+
+    public void recalculateColumns() {
+        for (String columnName : tableHeaderMap.keySet()) {
+            TableHeader tableHeader = tableHeaderMap.get(columnName);
+            String display = $("td[data-title='" + columnName + "']").css("display");
+            if (display != null) {
+                tableHeader.getElement().getStyle().setProperty("display", display);
             }
         }
     }

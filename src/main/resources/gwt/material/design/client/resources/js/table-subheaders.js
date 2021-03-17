@@ -265,6 +265,9 @@ function TableSubHeaders($table, $stickies) {
     // Calculate any new heights
     base.updateHeights();
 
+    // Recalculate Category Rows
+    base.recalculateColumns($table.find(".inner-scroll").scrollLeft())
+
     var scrollTop = $table.scrollTop(),
         outerScrollTop = base.getOuterScrollTop(),
         fullWidth = base.$tableBody.outerWidth();
@@ -289,6 +292,16 @@ function TableSubHeaders($table, $stickies) {
     base.scroll();
   };
 
+  base.recalculateColumns = function (scrollLeft) {
+    // Need to update the category column
+    if (scrollLeft > 0) {
+      var elem = $(".category-parent");
+      elem.css("position", "absolute");
+      elem.css("right", scrollLeft - 160 + "px");
+      elem.css("top", "0px");
+    }
+  };
+
   // Attempts to perform top scrolls using position: fixed since its the only
   // way to retain flexible styling with high performance (on mobile, etc).
   // This method has more overhead to ensure the subheader positions maintain 
@@ -308,6 +321,8 @@ function TableSubHeaders($table, $stickies) {
         left = offset.left + base.options.marginLeft,
         scrollLeft = $table.find(".inner-scroll").scrollLeft(),
         outerScrollLeft = base.getOuterScrollLeft();
+        base.recalculateColumns(scrollLeft);
+
 
     base.$stickies.each(function (i) {
       var $this = $(this),
@@ -492,13 +507,14 @@ function TableSubHeaders($table, $stickies) {
   };
 
   base.setCellWidths = function (widths, $sticky) {
-    $sticky.find("> th, > td").each(function (index) {
+    $sticky.find("> th:first-child,th.category, > td").each(function (index) {
       var $this = $(this),
           width = widths[index];
 
       $this.css({
         "min-width": width,
-        "max-width": width
+        "max-width": width,
+        "padding-left": "0px"
       });
     });
   };

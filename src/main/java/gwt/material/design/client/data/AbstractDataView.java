@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -277,9 +277,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
                 ComponentsRenderedEvent.fire(this);
 
-                if (isUseCategories()) {
-                    buildCategoryColumns();
-                }
+                buildCategoryColumns();
 
                 if (pendingRenderEvent) {
                     RenderedEvent.fire(this);
@@ -1416,6 +1414,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 return false;
             });
         }
+        th.setWidth("32px");
+        th.setMinWidth("32px");
+        th.setMaxWidth("32px");
+
         addHeader(0, th);
     }
 
@@ -1454,6 +1456,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 td.setId("col" + i);
             }
         }
+
+
     }
 
     protected void reindexColumns(int fromIndex) {
@@ -1941,15 +1945,15 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
-    public Categories getCategories() {
-        return new Categories(categories);
+    public Categories<T> getCategories() {
+        return new Categories<>(categories);
     }
 
     @Override
-    public Categories getOpenCategories() {
-        Categories openCategories = null;
+    public Categories<T> getOpenCategories() {
+        Categories<T> openCategories = null;
         if (isUseCategories()) {
-            openCategories = new Categories();
+            openCategories = new Categories<>();
             for (CategoryComponent<T> category : categories) {
                 TableSubHeader element = category.getWidget();
                 if (element != null && element.isOpen()) {
@@ -2557,10 +2561,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     protected void buildCategoryColumns() {
-        Categories<T> categories = getCategories();
-        for (CategoryComponent<T> category : categories) {
-            category.buildColumns(getColumns());
-        }
+        if (isUseCategories()) getCategories().buildColumns(getColumns());
     }
 
     protected void calculateComputedColumns() {
