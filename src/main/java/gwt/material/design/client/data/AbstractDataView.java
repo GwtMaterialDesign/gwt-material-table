@@ -697,14 +697,6 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 // This event is triggered when the component is unloaded.
                 if (getContainer().isAttached()) {
                     xScrollPanel.setWidth((el.getScrollWidth() + frozenMarginLeft) + "px");
-
-                    if (isUseStickyFooter()) {
-                        setupStickyFooter();
-                    }
-
-                    if (isUseStickyHeader()) {
-                        setupStickyHeader();
-                    }
                 }
             });
 
@@ -1385,10 +1377,18 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                     row.getWidget().insert(selectionCell, 0);
                 }
                 reindexHeadersAndRows();
+
+                // Refresh Sticky Components
+                refreshStickyComponents();
             } else if (selectionType.equals(SelectionType.NONE) && hadSelection) {
                 removeHeader(0);
                 $("td#col0", getContainer()).remove();
                 reindexHeadersAndRows();
+            }
+
+            // Update Footer Column
+            if (footer != null && footer.isAttached()) {
+                footer.updateSelectionType(selectionType);
             }
         }
     }
@@ -1518,6 +1518,17 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
             if (isUseStickyHeader()) {
                 setupStickyHeader();
+            }
+        }
+    }
+
+    protected void refreshStickyFooter() {
+        if ($table != null) {
+            // Destroy existing sticky footer function
+            $table.stickyTableFooter("destroy");
+
+            if (isUseStickyFooter()) {
+                setupStickyFooter();
             }
         }
     }
