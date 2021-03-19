@@ -19,6 +19,7 @@
  */
 package gwt.material.design.client.ui.table;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.data.factory.FooterColumnsFactory;
@@ -70,7 +71,7 @@ public class TableFooter<T> extends MaterialWidget {
 
     protected void onComponentsRendered() {
         dataTable.addComponentsRenderedHandler(event -> updateFooterValues());
-        dataTable.addRowEmptyHandler(event -> updateFooterValues());
+        dataTable.addRowEmptyHandler(event -> setVisible(false));
     }
 
     protected void updateFooterValues() {
@@ -89,6 +90,7 @@ public class TableFooter<T> extends MaterialWidget {
                 }
             }
         }
+        setVisible(true);
     }
 
     public void setColumnsFactory(FooterColumnsFactory<T> columnsFactory) {

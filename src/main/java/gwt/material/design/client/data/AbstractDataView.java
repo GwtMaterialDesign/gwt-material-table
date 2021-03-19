@@ -1515,7 +1515,6 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         if ($table != null) {
             // Destroy existing sticky header function
             $table.stickyTableHeaders("destroy");
-            $table.stickyTableFooter("destroy");
 
             if (isUseStickyHeader()) {
                 setupStickyHeader();
