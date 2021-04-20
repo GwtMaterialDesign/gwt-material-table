@@ -536,7 +536,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             }
 
             addHeader(index, th);
-            th.setVisible(!column.isHiddenByDefault());
+            th.setVisible(!column.isHiddenByDefault() || column.isNonHideable());
         }
 
         for (RowComponent<T> row : rows) {

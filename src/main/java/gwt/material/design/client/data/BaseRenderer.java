@@ -292,7 +292,7 @@ public class BaseRenderer<T> implements Renderer<T> {
                 styleProps.forEach((s, v) -> style.setProperty(s.styleName(), v));
             }
 
-            data.setVisible(!column.isHiddenByDefault());
+            data.setVisible(!column.isHiddenByDefault() || column.isNonHideable());
 
             // Hide if defined as not visible
             // This can be the case when a header is toggled off.
