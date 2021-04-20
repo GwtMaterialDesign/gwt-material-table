@@ -218,6 +218,7 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
                 getView().getCategories().recalculateColumns();
 
                 // Recalculate the footer
+                getView().getFooter().recalculateColumns();
             }
             return true;
         });

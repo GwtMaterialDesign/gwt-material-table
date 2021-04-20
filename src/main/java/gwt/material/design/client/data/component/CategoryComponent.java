@@ -237,6 +237,7 @@ public class CategoryComponent<T> extends Component<TableSubHeader> {
     public void recalculateColumns() {
         for (String columnName : tableHeaderMap.keySet()) {
             TableHeader tableHeader = tableHeaderMap.get(columnName);
+            //TODO: Issue with parenting
             String display = $("td[data-title='" + columnName + "']").css("display");
             if (display != null) {
                 tableHeader.getElement().getStyle().setProperty("display", display);

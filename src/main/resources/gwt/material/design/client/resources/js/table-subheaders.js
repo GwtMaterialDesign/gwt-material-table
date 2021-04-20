@@ -297,7 +297,7 @@ function TableSubHeaders($table, $stickies) {
     if (scrollLeft > 0) {
       var elem = $(".category-parent");
       elem.css("position", "absolute");
-      elem.css("right", scrollLeft - 160 + "px");
+      elem.css("right", scrollLeft - 200 + "px");
       elem.css("top", "0px");
     }
   };

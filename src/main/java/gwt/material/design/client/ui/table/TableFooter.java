@@ -19,24 +19,29 @@
  */
 package gwt.material.design.client.ui.table;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
+import com.google.gwt.user.client.ui.HasText;
+import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.base.MaterialWidget;
-import gwt.material.design.client.constants.CssName;
 import gwt.material.design.client.data.SelectionType;
 import gwt.material.design.client.data.factory.FooterColumnsFactory;
 import gwt.material.design.client.ui.MaterialLabel;
 import gwt.material.design.client.ui.table.cell.Column;
 import gwt.material.design.client.ui.table.cell.FooterColumn;
 import gwt.material.design.client.ui.table.cell.FooterValueProvider;
+import gwt.material.design.jquery.client.api.JQueryElement;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static gwt.material.design.jquery.client.api.JQuery.$;
+
 public class TableFooter<T> extends MaterialWidget {
 
     private static final String SELECTION = "selection";
-    private Map<String, MaterialLabel> widgetFactory = new HashMap<>();
+    private Map<String, TableData> tableDataFactory = new HashMap<>();
     private FooterColumnsFactory<T> columnsFactory = new FooterColumnsFactory<>();
     private final AbstractDataTable<T> dataTable;
     private final TableRow tableRow = new TableRow();
@@ -63,7 +68,7 @@ public class TableFooter<T> extends MaterialWidget {
                     columnsFactory.addFooterColumn(footer);
                 }
 
-                widgetFactory.put(column.name(), label);
+                tableDataFactory.put(column.name(), tableData);
                 tableRow.add(tableData);
             }
 
@@ -84,10 +89,14 @@ public class TableFooter<T> extends MaterialWidget {
                 FooterValueProvider<T> valueProvider = columnsFactory.get(column.name());
                 if (valueProvider != null) {
                     String value = valueProvider.getValue(entireData);
+                    TableData tableData = tableDataFactory.get(column.name());
                     if (value != null) {
-                        MaterialLabel label = widgetFactory.get(column.name());
-                        if (label != null) {
-                            label.setText(value);
+
+                        if (tableData != null) {
+                            Widget widget = tableData.getWidget(0);
+                            if (widget instanceof HasText) {
+                                ((HasText) widget).setText(value);
+                            }
                         }
                     }
                 }
@@ -105,6 +114,17 @@ public class TableFooter<T> extends MaterialWidget {
             if (footerSelectionCol.isAttached()) tableRow.remove(footerSelectionCol);
         } else {
             tableRow.insert(footerSelectionCol, 0);
+        }
+    }
+
+    public void recalculateColumns() {
+        //TODO: FInd a way to hide also the table data on the footer columns
+        for (String columnName : tableDataFactory.keySet()) {
+            JQueryElement jQueryElement = dataTable.$this().find("td[data-title='" + columnName + "']");
+            TableData tableData = tableDataFactory.get(columnName);
+            if (jQueryElement != null) {
+                tableData.getElement().getStyle().setProperty("display", jQueryElement.css("display"));
+            }
         }
     }
 }

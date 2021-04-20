@@ -171,7 +171,8 @@ table.table tfoot td {
     padding: 0 5px 0 20px;
 }
 
-table.table td#col0.selection {
+table.table td#col0.selection,
+table.table tfoot td.selection{
     width: 45px;
     min-width: 45px;
     max-width: 45px;

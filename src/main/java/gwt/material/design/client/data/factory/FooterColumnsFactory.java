@@ -47,6 +47,10 @@ public class FooterColumnsFactory<T>  {
         return map.get(columnName);
     }
 
+    public Map<String, FooterValueProvider<T>> getMap() {
+        return map;
+    }
+
     public void clear() {
         map.clear();
     }
