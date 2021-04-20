@@ -250,13 +250,15 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
             label.text(column.name());
             label.attr("for", ref);
 
-            toggleBox.setValue(true);
             menu.add(toggleBox);
 
             // We will hide the empty header menu items
             if (header != null && header.isEmpty()) {
                 toggleBox.setVisible(false);
             }
+
+            toggleBox.setValue(!column.isHiddenByDefault(), true);
+            toggleBox.setVisible(!column.isNonHideable());
 
             setupMenu();
             reindexToggles();

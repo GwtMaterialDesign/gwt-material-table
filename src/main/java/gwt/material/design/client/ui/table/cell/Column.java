@@ -71,6 +71,8 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     private boolean autoSort;
     private boolean sortable;
     private boolean widthToPercent;
+    private boolean hiddenByDefault;
+    private boolean nonHideable;
     private String name;
     private String width;
     private HideOn hideOn;
@@ -233,6 +235,30 @@ public abstract class Column<T, C> implements HasCell<T, C> {
      */
     public Column<T, C> autoSort(boolean autoSort) {
         this.autoSort = autoSort;
+        return this;
+    }
+
+    public boolean isHiddenByDefault() {
+        return hiddenByDefault;
+    }
+
+    /**
+     * Make this column hidden by default
+     */
+    public Column<T, C> setHiddenByDefault(boolean hiddenByDefault) {
+        this.hiddenByDefault = hiddenByDefault;
+        return this;
+    }
+
+    public boolean isNonHideable() {
+        return nonHideable;
+    }
+
+    /**
+     * This column restricts to be hidden
+     */
+    public Column<T, C> setNonHideable(boolean nonHideable) {
+        this.nonHideable = nonHideable;
         return this;
     }
 

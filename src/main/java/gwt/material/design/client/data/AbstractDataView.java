@@ -536,13 +536,13 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             }
 
             addHeader(index, th);
+            th.setVisible(!column.isHiddenByDefault());
         }
 
         for (RowComponent<T> row : rows) {
             Context context = new Context(row.getIndex(), index, getValueKey(row.getData()));
             renderer.drawColumn(row.getWidget(), context, row.getData(), column, index, true);
         }
-
         refreshStickyComponents();
     }
 
