@@ -19,7 +19,6 @@
  */
 package gwt.material.design.client.ui.table;
 
-import com.gargoylesoftware.htmlunit.javascript.host.dom.Selection;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Panel;
@@ -257,8 +256,8 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
                 toggleBox.setVisible(false);
             }
 
-            toggleBox.setValue(!column.isHiddenByDefault(), true);
-            toggleBox.setVisible(!column.isNonHideable());
+            toggleBox.setValue(!column.isHidden());
+            toggleBox.setVisible(column.isHideable());
 
             setupMenu();
             reindexToggles();
