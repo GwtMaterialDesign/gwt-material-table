@@ -643,6 +643,14 @@ table.table.compact tr td .input-field input.select-dropdown {
     position: relative;
 }
 
+table.table .widget-cell.content-placeholder * {
+    display: none;
+}
+
+table.table .cell.content-placeholder {
+    color: transparent;
+}
+
 /* ==================== RESPONSIVE LAYOUT ==================== */
 /* --- Mobile Devices Up To 560px --- */
 @media only screen and (max-width: 520px), (min-device-width: 0px) and (max-device-width: 519px) {
@@ -849,3 +857,4 @@ table.table tbody tr.data-row.focus-visible {
 table.table thead tr th.sortable.focus-visible {
     color: rgba(0, 0, 0, 0.87);
 }
+

@@ -20,9 +20,11 @@
 package gwt.material.design.client.data.component;
 
 import com.google.gwt.user.client.ui.HasEnabled;
+import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.data.ColumnContext;
 import gwt.material.design.client.data.DataView;
 import gwt.material.design.client.data.factory.Category;
+import gwt.material.design.client.ui.table.TableData;
 import gwt.material.design.client.ui.table.TableRow;
 import gwt.material.design.client.ui.table.cell.ComputedColumn;
 import gwt.material.design.jquery.client.api.JQuery;
@@ -228,6 +230,19 @@ public class RowComponent<T> extends Component<TableRow> implements Comparable<T
 
     public ColumnContext<T> getColumnContext(String name) {
         return columns.get(name);
+    }
+
+    public void loading(boolean loading) {
+        List<ColumnContext<T>> columns = getColumns();
+        for (ColumnContext<T> column : columns) {
+            TableData tableData = column.getTableData();
+            Widget widget = tableData.getWidget(0);
+            if (loading) {
+                widget.addStyleName("content-placeholder");
+            } else {
+                widget.removeStyleName("content-placeholder");
+            }
+        }
     }
 
     @Override
