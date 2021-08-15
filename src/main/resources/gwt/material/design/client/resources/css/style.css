@@ -227,7 +227,7 @@ table.table tbody tr.subheader.expanded {
 
 table.table .table-header {
     width: 100%;
-    display: inline-block;
+    display: contents;
 }
 
 table.table thead th.selected {
@@ -435,6 +435,10 @@ table.table thead tr th {
 
 tr.data-row, table.table thead tr th.sortable {
     cursor: pointer;
+}
+
+tr.data-row, table.table thead tr th.sortable i {
+    margin-left: 12px;
 }
 
 table.table tbody tr.data-row {

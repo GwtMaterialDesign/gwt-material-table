@@ -236,37 +236,39 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
         Column<T, ?> column = event.getColumn();
         String header = event.getHeader();
 
-        SetupHandler handler = e -> {
-            int index = beforeIndex + getView().getColumnOffset();
-            String ref = getView().getId() + "-col" + index;
+        if (header != null && !header.isEmpty()) {
+            SetupHandler handler = e -> {
+                int index = beforeIndex + getView().getColumnOffset();
+                String ref = getView().getId() + "-col" + index;
 
-            MaterialCheckBox toggleBox = new MaterialCheckBox(new ListItem().getElement());
-            toggleBox.setType(CheckBoxType.FILLED);
-            JQueryElement input = $(toggleBox).find("input");
-            input.attr("id", ref);
+                MaterialCheckBox toggleBox = new MaterialCheckBox(new ListItem().getElement());
+                toggleBox.setType(CheckBoxType.FILLED);
+                JQueryElement input = $(toggleBox).find("input");
+                input.attr("id", ref);
 
-            JQueryElement label = $(toggleBox).find("label");
-            label.text(column.name());
-            label.attr("for", ref);
+                JQueryElement label = $(toggleBox).find("label");
+                label.text(column.name());
+                label.attr("for", ref);
 
-            menu.add(toggleBox);
+                menu.add(toggleBox);
 
-            // We will hide the empty header menu items
-            if (header != null && header.isEmpty()) {
-                toggleBox.setVisible(false);
+                // We will hide the empty header menu items
+                if (header != null && header.isEmpty()) {
+                    toggleBox.setVisible(false);
+                }
+
+                toggleBox.setValue(!column.isHidden());
+                toggleBox.setVisible(column.isHideable());
+
+                setupMenu();
+                reindexToggles();
+            };
+
+            if (getView().isSetup()) {
+                handler.onSetup(null);
+            } else {
+                addSetupHandler(handler);
             }
-
-            toggleBox.setValue(!column.isHidden());
-            toggleBox.setVisible(column.isHideable());
-
-            setupMenu();
-            reindexToggles();
-        };
-
-        if (getView().isSetup()) {
-            handler.onSetup(null);
-        } else {
-            addSetupHandler(handler);
         }
     }
 

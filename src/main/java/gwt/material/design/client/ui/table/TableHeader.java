@@ -63,7 +63,7 @@ public class TableHeader extends TableData {
         if(headerLbl == null) {
             headerLbl = new Span(header);
             headerLbl.setStyleName(TableCssName.TABLE_HEADER);
-            headerWrap.add(headerLbl);
+            headerWrap.insert(headerLbl, 0);
         } else {
             headerLbl.setText(header);
         }
