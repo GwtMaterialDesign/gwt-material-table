@@ -24,6 +24,8 @@ import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.data.ColumnContext;
 import gwt.material.design.client.data.DataView;
 import gwt.material.design.client.data.factory.Category;
+import gwt.material.design.client.ui.animate.MaterialAnimation;
+import gwt.material.design.client.ui.animate.Transition;
 import gwt.material.design.client.ui.table.TableData;
 import gwt.material.design.client.ui.table.TableRow;
 import gwt.material.design.client.ui.table.cell.ComputedColumn;
@@ -240,6 +242,10 @@ public class RowComponent<T> extends Component<TableRow> implements Comparable<T
             if (loading) {
                 widget.addStyleName("content-placeholder");
             } else {
+                new MaterialAnimation()
+                    .duration(400)
+                    .transition(Transition.SHARED_AXIS_X_BACKWARD_IN)
+                    .animate(getWidget());
                 widget.removeStyleName("content-placeholder");
             }
         }
