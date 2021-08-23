@@ -100,6 +100,7 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
 
         Panel infoPanel = scaffolding.getInfoPanel();
         Panel toolPanel = scaffolding.getToolPanel();
+        TableFooter<T> footer = scaffolding.getFooter();
 
         if (tableIcon == null || !tableIcon.isAttached()) {
             // table icon
@@ -140,6 +141,14 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
         if (stretchContainer == null) {
             // stretch container
             stretchContainer = $("body");
+        }
+
+        if (toolPanel != null) {
+            buildActions(toolPanel);
+        }
+
+        if (footer != null) {
+            buildFooter(footer);
         }
 
         setupToolPanel();

@@ -35,7 +35,7 @@ import gwt.material.design.client.events.HandlerRegistry;
  * aspects of the DataTable.
  */
 public interface DataDisplay<T> extends IsWidget, EventHandlers<T>, HasRows<T>, HasColumns<T>,
-        HasDataSource<T>, HasRenderer<T>, HasCategories<T>, ViewSettings, HandlerRegistry {
+        HasDataSource<T>, HasRenderer<T>, HasCategories<T>, ViewSettings, HandlerRegistry, ComponentBuilder {
 
     /**
      * Get the displays {@link DataView}.

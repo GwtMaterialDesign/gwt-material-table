@@ -776,6 +776,34 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         return scaffolding;
     }
 
+    public Panel getTableBody() {
+        return scaffolding.getTableBody();
+    }
+
+    public Panel getTopPanel() {
+        return scaffolding.getTopPanel();
+    }
+
+    public Panel getInfoPanel() {
+        return scaffolding.getInfoPanel();
+    }
+
+    public Panel getToolPanel() {
+        return scaffolding.getToolPanel();
+    }
+
+    public XScrollPanel getXScrollPanel() {
+        return scaffolding.getXScrollPanel();
+    }
+
+    public <T> TableFooter<T> getFooter() {
+        return scaffolding.getFooter();
+    }
+
+    public  Table getTable() {
+        return scaffolding.getTable();
+    }
+
     /**
      * @deprecated use {@link #addSetupHandler(SetupHandler)}
      */
