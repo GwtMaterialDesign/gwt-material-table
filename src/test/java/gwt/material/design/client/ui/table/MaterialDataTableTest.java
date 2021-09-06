@@ -129,7 +129,7 @@ public class MaterialDataTableTest<T extends MaterialDataTable<Person>> extends 
         assertTrue(scaffolding.getTopPanel().getElement().hasClassName(TableCssName.TOP_PANEL));
         // Dropdown Menu
         MaterialDropDown dropDown = table.getMenu();
-        assertEquals(3, dropDown.getWidgetCount());
+        assertEquals(2, dropDown.getWidgetCount());
         int index = 0;
         for (Widget w : dropDown.getChildren()) {
             assertTrue(w instanceof MaterialCheckBox);

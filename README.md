@@ -24,7 +24,7 @@ Current Version 2.5.0
 <dependency>
     <groupId>com.github.gwtmaterialdesign</groupId>
     <artifactId>gwt-material-table</artifactId>
-    <version>2.5.0-SNAPSHOT</version>
+    <version>2.5.0</version>
 </dependency>
 ```
 
