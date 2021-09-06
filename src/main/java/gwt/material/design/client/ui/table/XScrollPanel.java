@@ -19,35 +19,51 @@
  */
 package gwt.material.design.client.ui.table;
 
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.user.client.ui.Panel;
 import gwt.material.design.client.base.helper.EventHelper;
 import gwt.material.design.client.jquery.JQueryExtension;
+import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.html.Div;
+
+import static gwt.material.design.jquery.client.api.JQuery.$;
 
 public class XScrollPanel extends Div {
 
     private Div scrollBar = new Div();
+    private Panel tableBody;
 
-    public XScrollPanel(Panel container) {
+    public XScrollPanel(Panel tableBody) {
         super("x-scroll");
-
+        this.tableBody = tableBody;
         add(scrollBar);
 
         AttachEvent.Handler handler = event -> {
-            int barSize = JQueryExtension.scrollBarWidth(container.getElement());
-            if (barSize < 1) {
-                barSize = 8;
-            }
-            super.setStyle("width: calc(100% - " + barSize + "px)");
-            setHeight(barSize + "px");
+           updateWidth();
         };
 
-        if(!container.isAttached()) {
-            EventHelper.onAttachOnce(container, handler);
+        if(!tableBody.isAttached()) {
+            EventHelper.onAttachOnce(tableBody, handler);
         } else {
             handler.onAttachOrDetach(null);
         }
+    }
+
+    public void updateWidth() {
+        boolean hasVerticalScrollBar = JQueryExtension.$(tableBody.getElement()).hasVerticalScrollBar();
+        int barSize = JQueryExtension.scrollBarWidth(tableBody.getElement());
+        if (barSize < 1) {
+            barSize = 8;
+        }
+
+        if (hasVerticalScrollBar) {
+            super.setStyle("width: calc(100% - " + barSize + "px)");
+        } else {
+            super.setStyle("width: 100%");
+        }
+
+        setHeight(barSize + "px");
     }
 
     @Override

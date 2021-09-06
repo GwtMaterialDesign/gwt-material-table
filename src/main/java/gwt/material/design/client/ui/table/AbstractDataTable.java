@@ -47,7 +47,6 @@ import gwt.material.design.client.events.HandlerRegistry;
 import gwt.material.design.client.ui.table.cell.Column;
 import gwt.material.design.client.ui.table.cell.ColumnFormatProvider;
 import gwt.material.design.client.ui.table.cell.ColumnValueProvider;
-import gwt.material.design.client.ui.table.cell.TextColumn;
 import gwt.material.design.jquery.client.api.JQueryElement;
 
 import java.util.List;
@@ -96,10 +95,10 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         }
 
         @Override
-        protected MaterialWidget createFooterPanel() {
-            MaterialWidget footerPanel = new MaterialWidget(DOM.createDiv());
-            footerPanel.addStyleName(TableCssName.FOOTER_PANEL);
-            return footerPanel;
+        protected <T> TableFooter<T> createFooter(AbstractDataTable<T> dataTable) {
+            TableFooter<T> tableFooter = new TableFooter<>(dataTable);
+            tableFooter.addStyleName(TableCssName.FOOTER_PANEL);
+            return tableFooter;
         }
 
         @Override
@@ -110,8 +109,8 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         }
 
         @Override
-        protected XScrollPanel createXScrollPanel(Panel container) {
-            return new XScrollPanel(container);
+        protected XScrollPanel createXScrollPanel(Panel tableBody) {
+            return new XScrollPanel(tableBody);
         }
     }
 
@@ -150,7 +149,7 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         handlerRegistry = new DefaultHandlerRegistry(this);
 
         // Build the table scaffolding
-        scaffolding.build();
+        scaffolding.build(this);
         scaffolding.apply(this);
         MaterialDesign.checkJQuery(false);
         build();
@@ -560,6 +559,16 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
+    public boolean isUseStickyFooter() {
+        return view.isUseStickyFooter();
+    }
+
+    @Override
+    public void setUseStickyFooter(boolean stickyFooter) {
+        view.setUseStickyFooter(stickyFooter);
+    }
+
+    @Override
     public final boolean isUseCategories() {
         return view.isUseCategories();
     }
@@ -666,8 +675,8 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
-    public ColumnFormatProvider getDefaultFormatProvider() {
-        return view.getDefaultFormatProvider();
+    public ColumnFormatProvider getFormatProvider() {
+        return view.getFormatProvider();
     }
 
     @Override
@@ -676,8 +685,8 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
-    public String getDefaultBlankPlaceholder() {
-        return view.getDefaultBlankPlaceholder();
+    public String getBlankPlaceholder() {
+        return view.getBlankPlaceholder();
     }
 
     @Override
@@ -765,6 +774,34 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     @Override
     public TableScaffolding getScaffolding() {
         return scaffolding;
+    }
+
+    public Panel getTableBody() {
+        return scaffolding.getTableBody();
+    }
+
+    public Panel getTopPanel() {
+        return scaffolding.getTopPanel();
+    }
+
+    public Panel getInfoPanel() {
+        return scaffolding.getInfoPanel();
+    }
+
+    public Panel getToolPanel() {
+        return scaffolding.getToolPanel();
+    }
+
+    public XScrollPanel getXScrollPanel() {
+        return scaffolding.getXScrollPanel();
+    }
+
+    public <T> TableFooter<T> getFooter() {
+        return scaffolding.getFooter();
+    }
+
+    public  Table getTable() {
+        return scaffolding.getTable();
     }
 
     /**
@@ -910,6 +947,11 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     @Override
     public HandlerRegistration addRenderedHandler(RenderedHandler handler) {
         return addHandler(handler, RenderedEvent.TYPE);
+    }
+
+    @Override
+    public HandlerRegistration addRowEmptyHandler(RowEmptyHandler handler) {
+        return addHandler(handler, RowEmptyEvent.TYPE);
     }
 
     @Override

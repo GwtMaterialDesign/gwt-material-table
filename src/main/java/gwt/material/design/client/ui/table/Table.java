@@ -21,17 +21,18 @@ package gwt.material.design.client.ui.table;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
-import gwt.material.design.jquery.client.api.JQueryElement;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.js.JsTableElement;
+import gwt.material.design.jquery.client.api.JQueryElement;
 
 /**
  * @author Ben Dol
  */
 public class Table extends MaterialWidget {
-    
+
     private MaterialWidget thead;
     private MaterialWidget tbody;
+    private TableFooter<?> tfoot;
 
     public Table() {
         this(DOM.createTable());
@@ -65,5 +66,14 @@ public class Table extends MaterialWidget {
 
     public MaterialWidget getBody() {
         return tbody;
+    }
+
+    public <T> void addFooter(TableFooter<T> tfoot) {
+        this.tfoot = tfoot;
+        add(tfoot);
+    }
+
+    public <T> TableFooter<T> getFooter() {
+        return (TableFooter<T>) tfoot;
     }
 }

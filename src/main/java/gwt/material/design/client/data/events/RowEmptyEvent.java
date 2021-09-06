@@ -17,26 +17,26 @@
  * limitations under the License.
  * #L%
  */
-package gwt.material.design.client.ui.table;
+package gwt.material.design.client.data.events;
 
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.event.shared.GwtEvent;
+import com.google.gwt.event.shared.HasHandlers;
 
-/**
- * Table scaffolding that will construct the Panels for the table foundation.
- *
- * @author Ben Dol
- */
-public interface TableScaffolding {
+public class RowEmptyEvent extends GwtEvent<RowEmptyHandler> {
 
-    void apply(HasWidgets container);
+    public static final Type<RowEmptyHandler> TYPE = new Type<>();
 
-    Panel getTableBody();
-    Panel getTopPanel();
-    Panel getInfoPanel();
-    Panel getToolPanel();
-    XScrollPanel getXScrollPanel();
-    <T> TableFooter<T> getFooter();
-    Table getTable();
-    <T> void build(AbstractDataTable<T> dataTable);
+    public static void fire(HasHandlers source) {
+        source.fireEvent(new RowEmptyEvent());
+    }
+
+    @Override
+    public Type<RowEmptyHandler> getAssociatedType() {
+        return TYPE;
+    }
+
+    @Override
+    protected void dispatch(RowEmptyHandler handler) {
+        handler.onRowEmpty(this);
+    }
 }

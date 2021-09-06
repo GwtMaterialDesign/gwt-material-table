@@ -2,7 +2,7 @@
  * #%L
  * GwtMaterial
  * %%
- * Copyright (C) 2015 - 2017 GwtMaterialDesign
+ * Copyright (C) 2015 - 2021 GwtMaterialDesign
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,24 +19,12 @@
  */
 package gwt.material.design.client.ui.table;
 
-import com.google.gwt.user.client.ui.HasWidgets;
+
 import com.google.gwt.user.client.ui.Panel;
 
-/**
- * Table scaffolding that will construct the Panels for the table foundation.
- *
- * @author Ben Dol
- */
-public interface TableScaffolding {
+public interface ComponentBuilder {
 
-    void apply(HasWidgets container);
+    default void buildActions(Panel toolPanel) {}
 
-    Panel getTableBody();
-    Panel getTopPanel();
-    Panel getInfoPanel();
-    Panel getToolPanel();
-    XScrollPanel getXScrollPanel();
-    <T> TableFooter<T> getFooter();
-    Table getTable();
-    <T> void build(AbstractDataTable<T> dataTable);
+    default <T> void buildFooter(TableFooter<T> footer) {}
 }

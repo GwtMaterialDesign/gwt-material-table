@@ -38,7 +38,7 @@ public class GlobalConfig {
         defaultFormatProvider.setShortFormat(NumberFormat.getFormat("#"));
     }
 
-    public ColumnFormatProvider getDefaultFormatProvider() {
+    public ColumnFormatProvider getFormatProvider() {
         return defaultFormatProvider;
     }
 
@@ -46,7 +46,7 @@ public class GlobalConfig {
         this.defaultFormatProvider = defaultFormatProvider;
     }
 
-    public String getDefaultBlankPlaceholder() {
+    public String getBlankPlaceholder() {
         return defaultBlankPlaceholder;
     }
 

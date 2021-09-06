@@ -20,23 +20,7 @@
 package gwt.material.design.client.data;
 
 import com.google.gwt.event.shared.HandlerRegistration;
-import gwt.material.design.client.data.events.CategoryClosedHandler;
-import gwt.material.design.client.data.events.CategoryOpenedHandler;
-import gwt.material.design.client.data.events.ColumnSortHandler;
-import gwt.material.design.client.data.events.ComponentsRenderedHandler;
-import gwt.material.design.client.data.events.RenderedEvent;
-import gwt.material.design.client.data.events.RenderedHandler;
-import gwt.material.design.client.data.events.RowCollapsedHandler;
-import gwt.material.design.client.data.events.RowCollapsingHandler;
-import gwt.material.design.client.data.events.RowContextMenuHandler;
-import gwt.material.design.client.data.events.RowDoubleClickHandler;
-import gwt.material.design.client.data.events.RowExpandedHandler;
-import gwt.material.design.client.data.events.RowExpandingHandler;
-import gwt.material.design.client.data.events.RowLongPressHandler;
-import gwt.material.design.client.data.events.RowSelectHandler;
-import gwt.material.design.client.data.events.RowShortPressHandler;
-import gwt.material.design.client.data.events.RowsVisibleHandler;
-import gwt.material.design.client.data.events.SelectAllHandler;
+import gwt.material.design.client.data.events.*;
 
 import java.util.List;
 
@@ -123,6 +107,11 @@ public interface EventHandlers<T> {
      * This will only fire once per call even if the data is re-rendered in the cases of sorting, etc.
      */
     HandlerRegistration addRenderedHandler(RenderedHandler handler);
+
+    /**
+     * Add a handler that triggers when we render an empty row data.
+     */
+    HandlerRegistration addRowEmptyHandler(RowEmptyHandler handler);
 
     /**
      * Add a handler that will guarantee the rows are visible. A {@link RenderedEvent} won't

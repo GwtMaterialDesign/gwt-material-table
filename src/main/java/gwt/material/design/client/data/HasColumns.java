@@ -117,14 +117,14 @@ public interface HasColumns<T> {
      */
     int getRightFrozenColumns();
 
-    ColumnFormatProvider getDefaultFormatProvider();
+    ColumnFormatProvider getFormatProvider();
 
     /**
      * Set the datable default column format provider on this instance.
      */
     void setDefaultFormatProvider(ColumnFormatProvider defaultFormatProvider);
 
-    String getDefaultBlankPlaceholder();
+    String getBlankPlaceholder();
 
     /**
      * Set the datable default column blank placeholder provider on this instance.

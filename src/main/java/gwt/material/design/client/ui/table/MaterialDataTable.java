@@ -25,6 +25,7 @@ import com.google.gwt.user.client.ui.Panel;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.constants.*;
 import gwt.material.design.client.data.DataView;
+import gwt.material.design.client.data.SelectionType;
 import gwt.material.design.client.data.events.*;
 import gwt.material.design.client.js.Js;
 import gwt.material.design.client.js.JsTableElement;
@@ -99,6 +100,7 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
 
         Panel infoPanel = scaffolding.getInfoPanel();
         Panel toolPanel = scaffolding.getToolPanel();
+        TableFooter<T> footer = scaffolding.getFooter();
 
         if (tableIcon == null || !tableIcon.isAttached()) {
             // table icon
@@ -139,6 +141,14 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
         if (stretchContainer == null) {
             // stretch container
             stretchContainer = $("body");
+        }
+
+        if (toolPanel != null) {
+            buildActions(toolPanel);
+        }
+
+        if (footer != null) {
+            buildFooter(footer);
         }
 
         setupToolPanel();
@@ -182,6 +192,17 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
             JQueryElement $this = $(e.getCurrentTarget());
 
             String forBox = ((String) $this.attr("for")).replace(getView().getId() + "-", "");
+            SelectionType selectionType = getSelectionType();
+
+            if ((selectionType.equals(SelectionType.SINGLE) || selectionType.equals(SelectionType.MULTIPLE))
+                && forBox.contains("col")) {
+                String id = forBox.replace("col", "");
+                if (!id.isEmpty()) {
+                    int i = Integer.parseInt(id) + 1;
+                    forBox = "col" + i;
+                }
+            }
+
             if (Js.isTrue(forBox)) {
                 JQueryElement thd = $("th#" + forBox + ",td#" + forBox, this);
                 boolean checked = $this.prev().is(":checked");
@@ -200,6 +221,12 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
 
                 // Recalculate the subheader
                 getView().getSubheaderLib().recalculate(true);
+
+                // Recalculate the category
+                getView().getCategories().recalculateColumns();
+
+                // Recalculate the footer
+                getView().getFooter().recalculateColumns();
             }
             return true;
         });
@@ -218,35 +245,39 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
         Column<T, ?> column = event.getColumn();
         String header = event.getHeader();
 
-        SetupHandler handler = e -> {
-            int index = beforeIndex + getView().getColumnOffset();
-            String ref = getView().getId() + "-col" + index;
+        if (header != null && !header.isEmpty()) {
+            SetupHandler handler = e -> {
+                int index = beforeIndex + getView().getColumnOffset();
+                String ref = getView().getId() + "-col" + index;
 
-            MaterialCheckBox toggleBox = new MaterialCheckBox(new ListItem().getElement());
-            toggleBox.setType(CheckBoxType.FILLED);
-            JQueryElement input = $(toggleBox).find("input");
-            input.attr("id", ref);
+                MaterialCheckBox toggleBox = new MaterialCheckBox(new ListItem().getElement());
+                toggleBox.setType(CheckBoxType.FILLED);
+                JQueryElement input = $(toggleBox).find("input");
+                input.attr("id", ref);
 
-            JQueryElement label = $(toggleBox).find("label");
-            label.text(column.name());
-            label.attr("for", ref);
+                JQueryElement label = $(toggleBox).find("label");
+                label.text(column.name());
+                label.attr("for", ref);
 
-            toggleBox.setValue(true);
-            menu.add(toggleBox);
+                menu.add(toggleBox);
 
-            // We will hide the empty header menu items
-            if (header.isEmpty()) {
-                toggleBox.setVisible(false);
+                // We will hide the empty header menu items
+                if (header != null && header.isEmpty()) {
+                    toggleBox.setVisible(false);
+                }
+
+                toggleBox.setValue(!column.isHidden());
+                toggleBox.setVisible(column.isHideable());
+
+                setupMenu();
+                reindexToggles();
+            };
+
+            if (getView().isSetup()) {
+                handler.onSetup(null);
+            } else {
+                addSetupHandler(handler);
             }
-
-            setupMenu();
-            reindexToggles();
-        };
-
-        if (getView().isSetup()) {
-            handler.onSetup(null);
-        } else {
-            addSetupHandler(handler);
         }
     }
 

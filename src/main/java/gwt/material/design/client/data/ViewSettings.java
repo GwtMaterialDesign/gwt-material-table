@@ -35,6 +35,16 @@ public interface ViewSettings extends HasDensity {
     void setUseStickyHeader(boolean stickyHeader);
 
     /**
+     * True if we are using sticky table footer.
+     */
+    boolean isUseStickyFooter();
+
+    /**
+     * Enable the use of sticky table footer.
+     */
+    void setUseStickyFooter(boolean stickyFooter);
+
+    /**
      * Is the data view using categories where possible.
      */
     boolean isUseCategories();

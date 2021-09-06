@@ -19,14 +19,24 @@
  */
 package gwt.material.design.client.data.component;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;
+import gwt.material.design.client.constants.Display;
 import gwt.material.design.client.data.HasCategories;
-import gwt.material.design.client.data.factory.Mode;
+import gwt.material.design.client.ui.MaterialLabel;
+import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.table.TableHeader;
 import gwt.material.design.client.ui.table.TableSubHeader;
+import gwt.material.design.client.ui.table.cell.CategoryColumn;
+import gwt.material.design.client.ui.table.cell.CategoryValueProvider;
+import gwt.material.design.client.ui.table.cell.Column;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static gwt.material.design.jquery.client.api.JQuery.$;
 
 /**
  * @author Ben Dol
@@ -57,6 +67,8 @@ public class CategoryComponent<T> extends Component<TableSubHeader> {
 
     private HasCategories<T> parent;
     private List<RowComponent<T>> rows = new ArrayList<>();
+    private Map<String, TableHeader> tableHeaderMap = new HashMap<>();
+    private Map<String, CategoryColumn<T>> columnsMap = new HashMap<>();
 
     public CategoryComponent(HasCategories<T> parent, String name, Object id) {
         this(parent, name, id, false);
@@ -187,6 +199,52 @@ public class CategoryComponent<T> extends Component<TableSubHeader> {
         }
     }
 
+    public CategoryComponent<T> addColumn(CategoryColumn<T> categoryColumn) {
+        if (categoryColumn != null && categoryColumn.getColumn() != null && categoryColumn.getColumn().name() != null) {
+            columnsMap.put(categoryColumn.getColumn().name(), categoryColumn);
+        }
+        return this;
+    }
+
+    public void buildColumns(List<Column<T, ?>> allColumns) {
+        List<CategoryColumn<T>> categoryColumns = getColumns();
+        TableHeader parentTh = new TableHeader();
+        parentTh.addStyleName("category-parent");
+        for (int i = 1; i < allColumns.size(); i++) {
+            Column<T, ?> column = allColumns.get(i);
+            if (column != null && !column.name().isEmpty()) {
+                TableHeader th = new TableHeader();
+                th.addStyleName("category");
+                parentTh.add(th);
+                tableHeaderMap.put(column.name(), th);
+            }
+        }
+
+        getWidget().add(parentTh);
+
+        if (categoryColumns != null) {
+            for (CategoryColumn<T> categoryColumn : categoryColumns) {
+                CategoryValueProvider<T> valueProvider = categoryColumn.getValueProvider();
+                if (valueProvider != null && categoryColumn.getColumn() != null) {
+                    Column<T, ?> column = categoryColumn.getColumn();
+                    TableHeader tableHeader = tableHeaderMap.get(column.name());
+                    tableHeader.add(new MaterialLabel(valueProvider.getValue(this)));
+                }
+            }
+        }
+    }
+
+    public void recalculateColumns() {
+        for (String columnName : tableHeaderMap.keySet()) {
+            TableHeader tableHeader = tableHeaderMap.get(columnName);
+            //TODO: Issue with parenting
+            String display = $("td[data-title='" + columnName + "']").css("display");
+            if (display != null) {
+                tableHeader.getElement().getStyle().setProperty("display", display);
+            }
+        }
+    }
+
     public TableHeader getHeader(int index) {
         return getWidget().getHeader(index);
     }
@@ -229,5 +287,13 @@ public class CategoryComponent<T> extends Component<TableSubHeader> {
     @Override
     public int hashCode() {
         return name.hashCode();
+    }
+
+    public Map<String, CategoryColumn<T>> getColumnsMap() {
+        return columnsMap;
+    }
+
+    public List<CategoryColumn<T>> getColumns() {
+        return new ArrayList<>(columnsMap.values());
     }
 }

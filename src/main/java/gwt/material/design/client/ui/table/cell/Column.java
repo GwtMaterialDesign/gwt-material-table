@@ -71,6 +71,8 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     private boolean autoSort;
     private boolean sortable;
     private boolean widthToPercent;
+    private boolean hidden;
+    private boolean hideable = true;
     private String name;
     private String width;
     private HideOn hideOn;
@@ -79,6 +81,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     private Map<StyleName, String> styleProps;
     private Comparator<? super RowComponent<T>> sortComparator;
     private DataView<T> dataView;
+    private FooterColumn<T> footer;
 
     protected C defaultValue;
     protected String blankPlaceholder;
@@ -232,6 +235,30 @@ public abstract class Column<T, C> implements HasCell<T, C> {
      */
     public Column<T, C> autoSort(boolean autoSort) {
         this.autoSort = autoSort;
+        return this;
+    }
+
+    public boolean isHidden() {
+        return hidden;
+    }
+
+    /**
+     * Make this column hidden by default
+     */
+    public Column<T, C> setHidden(boolean hidden) {
+        this.hidden = hidden;
+        return this;
+    }
+
+    public boolean isHideable() {
+        return hideable;
+    }
+
+    /**
+     * This column restricts to be hidden
+     */
+    public Column<T, C> setHideable(boolean hideable) {
+        this.hideable = hideable;
         return this;
     }
 
@@ -490,8 +517,8 @@ public abstract class Column<T, C> implements HasCell<T, C> {
      */
     public String blankPlaceholder() {
         if (blankPlaceholder == null) {
-            String defaultBlankPlaceholder = getDataView().getDefaultBlankPlaceholder();
-            blankPlaceholder = defaultBlankPlaceholder != null ? defaultBlankPlaceholder : MaterialDataTable.getGlobals().getDefaultBlankPlaceholder();
+            String defaultBlankPlaceholder = getDataView().getBlankPlaceholder();
+            blankPlaceholder = defaultBlankPlaceholder != null ? defaultBlankPlaceholder : MaterialDataTable.getGlobals().getBlankPlaceholder();
         }
         return blankPlaceholder;
     }
@@ -499,6 +526,16 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     public Column<T, C> blankPlaceholder(String blankPlaceholder) {
         this.blankPlaceholder = blankPlaceholder;
         return this;
+    }
+
+    public Column<T, C> addFooter(FooterColumn<T> footer) {
+        this.footer = footer;
+        footer.setColumn(this);
+        return this;
+    }
+
+    public FooterColumn<T> getFooter() {
+        return footer;
     }
 
     public DataView<T> getDataView() {

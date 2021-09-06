@@ -72,6 +72,11 @@ table.table tbody {
     color: rgba(0, 0, 0, 0.87);
 }
 
+table.table tfoot {
+    background: #ffffff;
+    border-top: 1px solid #e9e9e9;
+}
+
 .overflow-hidden {
     overflow: hidden !important;
 }
@@ -124,6 +129,7 @@ table.striped > tbody > tr:nth-child(odd) td.frozen-col {
     height: 15px;
     width: 100%;
     overflow-y: hidden;
+    background: #f9f9f9;
 }
 
 .table-container {
@@ -159,13 +165,17 @@ table.table .cell {
     text-overflow: ellipsis;
 }
 
-table.table tbody td {
+table.table tbody td,
+table.table tfoot td {
     border-radius: 0;
     padding: 0 5px 0 20px;
 }
 
-table.table td#col0.selection {
+table.table td#col0.selection,
+table.table tfoot td.selection {
     width: 45px;
+    min-width: 45px;
+    max-width: 45px;
 }
 
 table.table tbody tr.data-row #col0.frozen-col:not([data-title]) {
@@ -217,7 +227,7 @@ table.table tbody tr.subheader.expanded {
 
 table.table .table-header {
     width: 100%;
-    display: inline-block;
+    display: contents;
 }
 
 table.table thead th.selected {
@@ -245,6 +255,15 @@ table.table tbody tr.subheader td {
 table.table tbody tr.subheader span {
     position: relative;
     top: 2px;
+}
+
+table.table tbody tr.subheader th:first-child th {
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+}
+
+table.table tbody tr.subheader th:first-child th:first-child {
+    padding-left: 0px !important;
 }
 
 table.table tbody tr.subheader th,
@@ -276,6 +295,11 @@ table.table .mask {
 /* Menu Dropdown */
 div.tool-panel ul.dropdown-content li {
     padding-left: 8px;
+    margin-bottom: 0px;
+}
+
+div.tool-panel ul.dropdown-content li.checkbox.gwt-CheckBox:after {
+    display: none;
 }
 
 div.tool-panel ul.dropdown-content li label {
@@ -413,6 +437,10 @@ tr.data-row, table.table thead tr th.sortable {
     cursor: pointer;
 }
 
+tr.data-row, table.table thead tr th.sortable i {
+    margin-left: 12px;
+}
+
 table.table tbody tr.data-row {
     border-bottom: 1px solid #E6E6E6;
     -webkit-touch-callout: none;
@@ -421,6 +449,7 @@ table.table tbody tr.data-row {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    transition: 400ms all;
 }
 
 table.table tbody tr.data-row:hover {
@@ -617,6 +646,20 @@ table.table.compact tr td .input-field input.select-dropdown {
     -webkit-background-size: 800px 104px;
     background-size: 800px 104px;
     position: relative;
+}
+
+table.table .widget-cell.content-placeholder * {
+    display: none;
+}
+
+table.table .cell.content-placeholder {
+    color: transparent;
+}
+
+
+table.table tbody tr.data-row.animated {
+    -webkit-box-shadow: 0px 0px 19px 0px rgba(26,115,232,0.65);
+    box-shadow: 0px 0px 19px 0px rgba(26,115,232,0.65);
 }
 
 /* ==================== RESPONSIVE LAYOUT ==================== */

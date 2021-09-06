@@ -25,7 +25,6 @@ import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.data.ColumnContext;
 import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.client.ui.html.Div;
-import gwt.material.design.client.ui.table.MaterialDataTable;
 
 public class ComputedColumn<T, N extends Number> extends NumberColumn<T, N> {
 
@@ -52,7 +51,12 @@ public class ComputedColumn<T, N extends Number> extends NumberColumn<T, N> {
     }
 
     @Override
+    public N getValue(T object) {
+        return super.getValue(object);
+    }
+
+    @Override
     public NumberFormat getDefaultFormat() {
-        return getDataView().getDefaultFormatProvider().getLongFormat();
+        return getDataView().getFormatProvider().getLongFormat();
     }
 }
