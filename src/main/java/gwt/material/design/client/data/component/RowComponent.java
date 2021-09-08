@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,6 +21,7 @@ package gwt.material.design.client.data.component;
 
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.Widget;
+import gwt.material.design.client.base.helper.ScrollHelper;
 import gwt.material.design.client.data.ColumnContext;
 import gwt.material.design.client.data.DataView;
 import gwt.material.design.client.data.factory.Category;
@@ -29,10 +30,11 @@ import gwt.material.design.client.ui.animate.Transition;
 import gwt.material.design.client.ui.table.TableData;
 import gwt.material.design.client.ui.table.TableRow;
 import gwt.material.design.client.ui.table.cell.ComputedColumn;
-import gwt.material.design.jquery.client.api.JQuery;
 import gwt.material.design.jquery.client.api.JQueryElement;
 
 import java.util.*;
+
+import static gwt.material.design.jquery.client.api.JQuery.$;
 
 /**
  * @author Ben Dol
@@ -168,7 +170,7 @@ public class RowComponent<T> extends Component<TableRow> implements Comparable<T
     }
 
     public void clearRowExpansion() {
-        JQueryElement next = JQuery.$(getWidget()).next();
+        JQueryElement next = $(getWidget()).next();
         if (next.is("tr.expansion")) {
             next.remove();
         }
@@ -242,13 +244,26 @@ public class RowComponent<T> extends Component<TableRow> implements Comparable<T
             if (loading) {
                 widget.addStyleName("content-placeholder");
             } else {
-                new MaterialAnimation()
-                    .duration(400)
-                    .transition(Transition.SHARED_AXIS_X_BACKWARD_IN)
-                    .animate(getWidget());
+                highlight();
                 widget.removeStyleName("content-placeholder");
             }
         }
+    }
+
+    public void highlight() {
+        MaterialAnimation animation = new MaterialAnimation()
+            .duration(400)
+            .transition(Transition.SHARED_AXIS_X_BACKWARD_IN);
+        highlight(animation, 64);
+    }
+
+    public void highlight(MaterialAnimation animation, int offsetTop) {
+        ScrollHelper helper = new ScrollHelper();
+
+        helper.setContainerElement($(dataView.getContainer().getElement()).find(".table-body").asElement());
+        helper.setAddedScrollOffset(offsetTop);
+        helper.scrollTo(getWidget());
+        helper.setCompleteCallback(() -> animation.animate(getWidget()));
     }
 
     @Override
