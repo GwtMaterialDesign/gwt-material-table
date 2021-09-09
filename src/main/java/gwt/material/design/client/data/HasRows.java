@@ -254,4 +254,14 @@ public interface HasRows<T> extends HasHandlers {
      * Will highlight row component
      */
     void highlightRow(T data);
+
+    /**
+     * Will show the loading placeholder for the row
+     */
+    void showRowLoading(T data);
+
+    /**
+     * Will hide the loading placeholder for the row
+     */
+    void hideRowLoading(T data);
 }

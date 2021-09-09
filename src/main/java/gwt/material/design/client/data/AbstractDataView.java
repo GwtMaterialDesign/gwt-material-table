@@ -968,6 +968,26 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
+    public void showRowLoading(T data) {
+        if (data != null) {
+            RowComponent<T> row = getRow(data);
+            if (row != null) {
+                row.loading(true);
+            }
+        }
+    }
+
+    @Override
+    public void hideRowLoading(T data) {
+        if (data != null) {
+            RowComponent<T> row = getRow(data);
+            if (row != null) {
+                row.loading(false);
+            }
+        }
+    }
+
+    @Override
     public void highlightRow(T data) {
         if (data != null) {
             RowComponent<T> row = getRow(data);

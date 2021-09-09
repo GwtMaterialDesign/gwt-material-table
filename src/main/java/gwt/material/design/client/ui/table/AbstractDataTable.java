@@ -539,6 +539,16 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
+    public void showRowLoading(T data) {
+        view.showRowLoading(data);
+    }
+
+    @Override
+    public void hideRowLoading(T data) {
+        view.hideRowLoading(data);
+    }
+
+    @Override
     public void highlightRow(T data) {
         view.highlightRow(data);
     }

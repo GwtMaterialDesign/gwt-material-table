@@ -259,11 +259,16 @@ public class RowComponent<T> extends Component<TableRow> implements Comparable<T
 
     public void highlight(MaterialAnimation animation, int offsetTop) {
         ScrollHelper helper = new ScrollHelper();
+        TableRow row = getWidget();
 
-        helper.setContainerElement($(dataView.getContainer().getElement()).find(".table-body").asElement());
-        helper.setAddedScrollOffset(offsetTop);
-        helper.scrollTo(getWidget());
-        helper.setCompleteCallback(() -> animation.animate(getWidget()));
+        if (helper.isInViewPort(row.getElement())) {
+            animation.animate(getWidget());
+        } else {
+            helper.setContainerElement($(dataView.getContainer().getElement()).find(".table-body").asElement());
+            helper.setAddedScrollOffset(offsetTop);
+            helper.scrollTo(getWidget());
+            helper.setCompleteCallback(() -> animation.animate(getWidget()));
+        }
     }
 
     @Override
