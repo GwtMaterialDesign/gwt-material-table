@@ -967,6 +967,16 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         return expandRow(tr, !expansion.hasClass("expanded"));
     }
 
+    @Override
+    public void highlightRow(T data) {
+        if (data != null) {
+            RowComponent<T> row = getRow(data);
+            if (row != null) {
+                row.highlight();
+            }
+        }
+    }
+
     protected void setupStickyHeader() {
         if ($table != null && display != null) {
             $table.stickyTableHeaders(StickyTableOptions.create($(".table-body", getContainer())));

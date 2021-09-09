@@ -539,6 +539,11 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
+    public void highlightRow(T data) {
+        view.highlightRow(data);
+    }
+
+    @Override
     public void setRowClickCooldown(int clickCooldownMillis) {
         view.setRowClickCooldown(clickCooldownMillis);
     }
