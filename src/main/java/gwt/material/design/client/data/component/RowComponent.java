@@ -251,21 +251,22 @@ public class RowComponent<T> extends Component<TableRow> implements Comparable<T
     }
 
     public void highlight() {
-        MaterialAnimation animation = new MaterialAnimation()
-            .duration(400)
-            .transition(Transition.SHARED_AXIS_X_BACKWARD_IN);
-        highlight(animation, 64);
+        highlight(new DefaultRowHighlightConfig());
     }
 
-    public void highlight(MaterialAnimation animation, int offsetTop) {
+    public void highlight(RowHighlightConfig config) {
+        MaterialAnimation animation = new MaterialAnimation();
         ScrollHelper helper = new ScrollHelper();
         TableRow row = getWidget();
 
         if (helper.isInViewPort(row.getElement())) {
+            animation.setTransition(config.getTransition());
+            animation.setDelay(config.getDelay());
+            animation.setDuration(config.getDuration());
             animation.animate(getWidget());
         } else {
             helper.setContainerElement($(dataView.getContainer().getElement()).find(".table-body").asElement());
-            helper.setAddedScrollOffset(offsetTop);
+            helper.setAddedScrollOffset(config.getOffsetTop());
             helper.scrollTo(getWidget());
             helper.setCompleteCallback(() -> animation.animate(getWidget()));
         }
