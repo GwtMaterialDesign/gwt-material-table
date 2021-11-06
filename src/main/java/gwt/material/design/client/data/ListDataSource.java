@@ -65,6 +65,14 @@ public class ListDataSource<T> implements DataSource<T> {
         data.addAll(startIndex, list);
     }
 
+    public void clear() {
+        data = new ArrayList<>();
+    }
+
+    public void setData(List<T> list) {
+        data = list;
+    }
+
     public void remove(List<T> list) {
         data.removeAll(list);
     }

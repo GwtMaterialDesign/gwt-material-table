@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,6 +24,7 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Style;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.TableCssName;
+import gwt.material.design.client.base.mixin.CssTypeMixin;
 import gwt.material.design.client.data.DataSource;
 import gwt.material.design.client.data.DataView;
 import gwt.material.design.client.data.loader.LoadCallback;
@@ -52,13 +53,14 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
     protected int currentPage = 1;
     protected int totalRows = 0;
     protected int[] limitOptions = new int[]{5, 10, 20};
-    protected DataPagerLocaleProvider localeProvider = new DataPagerLocaleProvider() {
-    };
+    protected DataPagerLocaleProvider localeProvider = new DataPagerLocaleProvider() {};
 
     private MaterialPanel pagerWrapper = new MaterialPanel();
     private ActionsPanel actionsPanel = new ActionsPanel(this);
     private RowSelection rowSelection = new RowSelection(this);
     private PageSelection pageSelection;
+
+    protected CssTypeMixin<PagerType, MaterialDataPager<T>> typeMixin;
 
     public MaterialDataPager() {
         super(Document.get().createDivElement(), TableCssName.DATA_PAGER, TableCssName.ROW);
@@ -68,6 +70,13 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
         this();
         this.table = table;
         this.dataSource = dataSource;
+    }
+
+    public MaterialDataPager(MaterialDataTable<T> table, DataSource<T> dataSource, PagerType type, int limit) {
+        this(table, dataSource);
+
+        setType(type);
+        setLimit(limit);
     }
 
     /**
@@ -105,7 +114,6 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
 
     public void unload() {
         offset = 0;
-        limit = 0;
         currentPage = 1;
         totalRows = 0;
         limitOptions = new int[]{5, 10, 20};
@@ -233,9 +241,8 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
      */
     protected void doLoad(int offset, int limit) {
         DataView<T> dataView = table.getView();
-
         dataSource.load(new LoadConfig<>(dataView, offset, limit, dataView.getSortContext(),
-                dataView.getOpenCategories()), new LoadCallback<T>() {
+            dataView.getOpenCategories()), new LoadCallback<T>() {
             @Override
             public void onSuccess(LoadResult<T> loadResult) {
                 setOffset(loadResult.getOffset());
@@ -335,5 +342,22 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
 
     public void setLocaleProvider(DataPagerLocaleProvider localeProvider) {
         this.localeProvider = localeProvider;
+    }
+
+    @Override
+    public void setType(PagerType type) {
+        getTypeMixin().setType(type);
+    }
+
+    @Override
+    public PagerType getType() {
+        return getTypeMixin().getType();
+    }
+
+    public CssTypeMixin<PagerType, MaterialDataPager<T>> getTypeMixin() {
+        if (typeMixin == null) {
+            typeMixin = new CssTypeMixin<>(this);
+        }
+        return typeMixin;
     }
 }

@@ -115,3 +115,23 @@
 .data-pager .action-page-panel i.focus-visible {
     background-color: #2e2e2e;
 }
+
+/** Data pager simple **/
+.data-pager.simple .rows-per-page-panel,
+.data-pager.simple .num-page-panel,
+.data-pager.simple .action-page-panel span {
+    display: none;
+}
+
+.data-pager.simple .action-page-panel i {
+    border: 1px solid;
+    height: 33px !important;
+}
+.data-pager.simple .action-page-panel i.arrow-next {
+    border-radius: 0px 4px 4px 0px;
+}
+
+.data-pager.simple .action-page-panel i.arrow-prev {
+    border-radius: 4px 0px 0px 4px;
+    margin-right: 0px;
+}
