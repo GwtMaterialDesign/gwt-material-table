@@ -21,13 +21,13 @@ package gwt.material.design.client.ui.pager.actions;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.KeyCodes;
+import gwt.material.design.client.accessibility.TriggerCallback;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.constants.WavesType;
-import gwt.material.design.client.ui.MaterialIcon;
+import gwt.material.design.client.ui.MaterialLink;
 import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControls;
-import gwt.material.design.client.accessibility.TriggerCallback;
 import gwt.material.design.client.ui.html.Span;
 import gwt.material.design.client.ui.pager.MaterialDataPager;
 import gwt.material.design.client.ui.table.MaterialDataTable;
@@ -41,8 +41,8 @@ public class ActionsPanel extends MaterialWidget {
 
     private final MaterialDataPager pager;
     protected Span actionLabel = new Span();
-    protected MaterialIcon iconNext = new MaterialIcon(IconType.KEYBOARD_ARROW_RIGHT);
-    protected MaterialIcon iconPrev = new MaterialIcon(IconType.KEYBOARD_ARROW_LEFT);
+    protected MaterialLink iconNext = new MaterialLink(IconType.KEYBOARD_ARROW_RIGHT);
+    protected MaterialLink iconPrev = new MaterialLink(IconType.KEYBOARD_ARROW_LEFT);
 
     public ActionsPanel(MaterialDataPager pager) {
         super(Document.get().createDivElement(), TableCssName.ACTION_PAGE_PANEL);
@@ -80,7 +80,7 @@ public class ActionsPanel extends MaterialWidget {
         registerAccessibility(iconPrev, event -> pager.previous());
     }
 
-    protected void registerAccessibility(MaterialIcon icon, TriggerCallback callback) {
+    protected void registerAccessibility(MaterialLink icon, TriggerCallback callback) {
         MaterialDataTable table = pager.getTable();
         if (table != null) {
             DataTableAccessibilityControls accessibilityControl = table.getView().getAccessibilityControl();
@@ -94,11 +94,11 @@ public class ActionsPanel extends MaterialWidget {
         return actionLabel;
     }
 
-    public MaterialIcon getIconNext() {
+    public MaterialLink getIconNext() {
         return iconNext;
     }
 
-    public MaterialIcon getIconPrev() {
+    public MaterialLink getIconPrev() {
         return iconPrev;
     }
 }
