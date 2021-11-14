@@ -131,6 +131,10 @@
     height: 33px !important;
 }
 
+.data-pager.simple .action-page-panel a span {
+    display: block;
+}
+
 .data-pager.simple .action-page-panel a.arrow-next {
     border-radius: 0px 4px 4px 0px;
 }
