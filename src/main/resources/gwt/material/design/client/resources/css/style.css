@@ -437,7 +437,8 @@ tr.data-row, table.table thead tr th.sortable {
     cursor: pointer;
 }
 
-tr.data-row, table.table thead tr th.sortable i {
+tr.data-row, table.table thead tr th.selected.sortable i.sort-header {
+    margin-right: 0px;
     margin-left: 12px;
 }
 
@@ -658,8 +659,8 @@ table.table .cell.content-placeholder {
 
 
 table.table tbody tr.data-row.animated {
-    -webkit-box-shadow: 0px 0px 19px 0px rgba(26,115,232,0.65);
-    box-shadow: 0px 0px 19px 0px rgba(26,115,232,0.65);
+    -webkit-box-shadow: 0px 0px 19px 0px rgba(26, 115, 232, 0.65);
+    box-shadow: 0px 0px 19px 0px rgba(26, 115, 232, 0.65);
 }
 
 /* ==================== RESPONSIVE LAYOUT ==================== */
@@ -867,4 +868,30 @@ table.table tbody tr.data-row.focus-visible {
 
 table.table thead tr th.sortable.focus-visible {
     color: rgba(0, 0, 0, 0.87);
+}
+
+/** Table Help Description **/
+.table-help i {
+    margin-left: 8px;
+    float: right;
+    margin-top: -4px;
+}
+
+.table-help span {
+    position: absolute;
+    background: #f3f3f3;
+    top: 64px;
+    overflow: visible;
+    width: 410px;
+    white-space: initial;
+    min-width: 200px;
+    max-width: 100%;
+    font-size: initial;
+    padding: 12px;
+    display: none;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+}
+
+.table-help:hover span {
+    display: block;
 }

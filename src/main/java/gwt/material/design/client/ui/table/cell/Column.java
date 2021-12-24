@@ -74,6 +74,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     private boolean hidden;
     private boolean hideable = true;
     private String name;
+    private String help;
     private String width;
     private HideOn hideOn;
     private TextAlign textAlign;
@@ -199,6 +200,21 @@ public abstract class Column<T, C> implements HasCell<T, C> {
      */
     public final String name() {
         return this.name;
+    }
+
+    /**
+     * Sets the help description beside the column name.
+     */
+    public Column<T, C> help(String help) {
+        this.help = help;
+        return this;
+    }
+
+    /**
+     * Returns the help description of datatable's column.
+     */
+    public String help() {
+        return help;
     }
 
     /**

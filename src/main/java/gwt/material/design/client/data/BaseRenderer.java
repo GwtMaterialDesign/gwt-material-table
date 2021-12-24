@@ -311,6 +311,7 @@ public class BaseRenderer<T> implements Renderer<T> {
         TableHeader th = new TableHeader(sortIcon);
         th.setId("col" + index);
         th.setHeader(header);
+        th.setHelp(column.help());
         HideOn hideOn = column.hideOn();
         if (hideOn != null) {
             th.setHideOn(hideOn);
