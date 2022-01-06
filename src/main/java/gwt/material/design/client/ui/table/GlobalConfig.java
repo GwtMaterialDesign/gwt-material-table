@@ -27,6 +27,7 @@ public class GlobalConfig {
 
     private ColumnFormatProvider defaultFormatProvider = new ColumnFormatProvider();
     private String defaultBlankPlaceholder = "";
+    private Boolean helpEnabled = true;
 
     public GlobalConfig() {
         defaultFormatProvider.setDateFormat(DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_FULL));
@@ -52,5 +53,13 @@ public class GlobalConfig {
 
     public void setDefaultBlankPlaceholder(String defaultBlankPlaceholder) {
         this.defaultBlankPlaceholder = defaultBlankPlaceholder;
+    }
+
+    public Boolean isHelpEnabled() {
+        return helpEnabled;
+    }
+
+    public void setHelpEnabled(Boolean helpEnabled) {
+        this.helpEnabled = helpEnabled;
     }
 }

@@ -130,4 +130,12 @@ public interface HasColumns<T> {
      * Set the datable default column blank placeholder provider on this instance.
      */
     void setDefaultBlankPlaceholder(String defaultBlankPlaceholder);
+
+    /**
+     * Will show a help tooltip for each column that has help.
+     * @see Column#help(String)
+     */
+    void setHelpEnabled(Boolean Boolean);
+
+    Boolean isHelpEnabled();
 }

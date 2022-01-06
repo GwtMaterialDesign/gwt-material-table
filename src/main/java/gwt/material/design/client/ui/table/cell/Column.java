@@ -73,6 +73,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     private boolean widthToPercent;
     private boolean hidden;
     private boolean hideable = true;
+    private Boolean helpEnabled;
     private String name;
     private String help;
     private String width;
@@ -542,6 +543,19 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     public Column<T, C> blankPlaceholder(String blankPlaceholder) {
         this.blankPlaceholder = blankPlaceholder;
         return this;
+    }
+
+    public Column<T, C> helpEnabled(boolean helpEnabled) {
+        this.helpEnabled = helpEnabled;
+        return this;
+    }
+
+    public Boolean isHelpEnabled() {
+        if (helpEnabled == null) {
+            Boolean defaultHelpEnabled = getDataView().isHelpEnabled();
+            helpEnabled = defaultHelpEnabled != null ? defaultHelpEnabled : MaterialDataTable.getGlobals().isHelpEnabled();
+        }
+        return helpEnabled;
     }
 
     public Column<T, C> addFooter(FooterColumn<T> footer) {

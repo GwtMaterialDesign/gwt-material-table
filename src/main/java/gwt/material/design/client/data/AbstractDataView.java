@@ -131,6 +131,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     private boolean useStickyFooter;
     private boolean useLoadOverlay;
     private boolean useCategories;
+    private Boolean helpEnabled;
     private SelectionType selectionType = SelectionType.NONE;
     private Density density = DisplayDensity.DEFAULT;
     private DataTableAccessibilityControls accessibilityControl;
@@ -2683,6 +2684,16 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     @Override
     public void setDefaultBlankPlaceholder(String defaultBlankPlaceholder) {
         this.defaultBlankPlaceholder = defaultBlankPlaceholder;
+    }
+
+    @Override
+    public void setHelpEnabled(Boolean helpEnabled) {
+        this.helpEnabled = helpEnabled;
+    }
+
+    @Override
+    public Boolean isHelpEnabled() {
+        return helpEnabled;
     }
 
     @Override

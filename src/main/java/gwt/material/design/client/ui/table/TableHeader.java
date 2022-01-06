@@ -34,7 +34,6 @@ import gwt.material.design.client.ui.html.Span;
 public class TableHeader extends TableData {
 
     private Span headerLbl;
-    private String help;
     private MaterialIcon sortIcon;
     private TableHelp helpWidget = new TableHelp();
     private Div headerWrap = new Div();
@@ -56,12 +55,12 @@ public class TableHeader extends TableData {
     protected void onLoad() {
         super.onLoad();
 
-        sortIcon.addStyleName("sort-header");
+        if (sortIcon != null) {
+            sortIcon.addStyleName("sort-header");
+        }
         headerWrap.setHeight("100%");
         headerWrap.setDisplay(Display.FLEX);
         add(headerWrap);
-
-
     }
 
     public void setHeader(String header) {

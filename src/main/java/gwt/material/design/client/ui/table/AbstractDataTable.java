@@ -709,6 +709,16 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         view.setDefaultBlankPlaceholder(defaultBlankPlaceholder);
     }
 
+    @Override
+    public void setHelpEnabled(Boolean enable) {
+        view.setHelpEnabled(enable);
+    }
+
+    @Override
+    public Boolean isHelpEnabled() {
+        return view.isHelpEnabled();
+    }
+
     protected void onFocus() {
         // Do nothing by default
     }
