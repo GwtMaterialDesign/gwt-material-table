@@ -312,7 +312,7 @@ public class BaseRenderer<T> implements Renderer<T> {
         th.setId("col" + index);
         th.setHeader(header);
         if (column.isHelpEnabled()) {
-            th.setHelp(column.help());
+            th.updateHelp(column.help());
         }
         HideOn hideOn = column.hideOn();
         if (hideOn != null) {

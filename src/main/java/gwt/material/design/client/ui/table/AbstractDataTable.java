@@ -719,6 +719,11 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         return view.isHelpEnabled();
     }
 
+    @Override
+    public void enableHelp(Boolean enabled) {
+        view.enableHelp(enabled);
+    }
+
     protected void onFocus() {
         // Do nothing by default
     }

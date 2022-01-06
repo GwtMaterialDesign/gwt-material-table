@@ -77,10 +77,16 @@ public class TableHeader extends TableData {
         return helpWidget.getHelp();
     }
 
-    public void setHelp(String help) {
+    public void updateHelp(String help) {
         if (help != null) {
             helpWidget.setHelp(help);
             headerWrap.add(helpWidget);
+        }
+    }
+
+    public void enableHelp(Boolean enabled) {
+        if (helpWidget.isAttached()) {
+            helpWidget.setVisible(enabled);
         }
     }
 

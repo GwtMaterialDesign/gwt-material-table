@@ -135,7 +135,9 @@ public interface HasColumns<T> {
      * Will show a help tooltip for each column that has help.
      * @see Column#help(String)
      */
-    void setHelpEnabled(Boolean Boolean);
+    void setHelpEnabled(Boolean enabled);
+
+    void enableHelp(Boolean enabled);
 
     Boolean isHelpEnabled();
 }

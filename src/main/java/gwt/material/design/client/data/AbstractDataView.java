@@ -2697,6 +2697,14 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
+    public void enableHelp(Boolean enabled) {
+        List<TableHeader> headers = getHeaders();
+        for (TableHeader header : headers) {
+            header.enableHelp(enabled);
+        }
+    }
+
+    @Override
     public String getBlankPlaceholder() {
         return defaultBlankPlaceholder;
     }
