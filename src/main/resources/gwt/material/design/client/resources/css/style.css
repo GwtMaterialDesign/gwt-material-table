@@ -879,13 +879,13 @@ table.table thead tr th.sortable.focus-visible {
 
 .table-help span {
     position: absolute;
-    background: #f3f3f3;
+    background: #daebff;
     top: 64px;
     overflow: visible;
-    width: 410px;
+    width: unset;
     white-space: initial;
-    min-width: 200px;
-    max-width: 100%;
+    min-width: unset;
+    max-width: 400px;
     font-size: initial;
     padding: 12px;
     display: none;

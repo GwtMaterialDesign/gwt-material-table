@@ -61,10 +61,7 @@ public class TableHeader extends TableData {
         headerWrap.setDisplay(Display.FLEX);
         add(headerWrap);
 
-        if (help != null) {
-            helpWidget.setHelp(help);
-            headerWrap.add(helpWidget);
-        }
+
     }
 
     public void setHeader(String header) {
@@ -78,11 +75,14 @@ public class TableHeader extends TableData {
     }
 
     public String getHelp() {
-        return help;
+        return helpWidget.getHelp();
     }
 
     public void setHelp(String help) {
-        this.help = help;
+        if (help != null) {
+            helpWidget.setHelp(help);
+            headerWrap.add(helpWidget);
+        }
     }
 
     public String getHeader() {

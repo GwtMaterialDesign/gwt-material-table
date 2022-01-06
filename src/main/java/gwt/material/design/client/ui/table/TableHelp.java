@@ -33,6 +33,10 @@ public class TableHelp extends MaterialPanel {
         }
     }
 
+    public String getHelp() {
+        return help;
+    }
+
     public void setHelp(String help) {
         this.help = help;
     }
