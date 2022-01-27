@@ -84,7 +84,7 @@ public class TableHeader extends TableData {
         }
     }
 
-    public void enableHelp(Boolean enabled) {
+    public void showHelp(Boolean enabled) {
         if (helpWidget.isAttached()) {
             helpWidget.setVisible(enabled);
         }

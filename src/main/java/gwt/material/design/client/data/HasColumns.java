@@ -137,7 +137,7 @@ public interface HasColumns<T> {
      */
     void setHelpEnabled(Boolean enabled);
 
-    void enableHelp(Boolean enabled);
+    void showHelp(Boolean enabled);
 
     Boolean isHelpEnabled();
 }

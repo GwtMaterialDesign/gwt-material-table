@@ -2697,10 +2697,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
-    public void enableHelp(Boolean enabled) {
+    public void showHelp(Boolean enabled) {
         List<TableHeader> headers = getHeaders();
         for (TableHeader header : headers) {
-            header.enableHelp(enabled);
+            header.showHelp(enabled);
         }
     }
 
