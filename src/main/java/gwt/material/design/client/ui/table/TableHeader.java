@@ -79,6 +79,10 @@ public class TableHeader extends TableData {
 
     public void updateHelp(String help) {
         if (help != null) {
+            helpWidget.addClickHandler(event -> {
+                event.preventDefault();
+                event.stopPropagation();
+            });
             helpWidget.setHelp(help);
             headerWrap.add(helpWidget);
         }
