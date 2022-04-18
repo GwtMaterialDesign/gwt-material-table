@@ -281,9 +281,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
 
     public final Comparator<? super RowComponent<T>> sortComparator() {
         if (sortComparator == null) {
-            sortComparator = (o1, o2) -> {
-                return o1.compareTo(o2.getData());
-            };
+            sortComparator = Comparator.comparing(o -> getValue(o.getData()).toString());
         }
         return sortComparator;
     }
