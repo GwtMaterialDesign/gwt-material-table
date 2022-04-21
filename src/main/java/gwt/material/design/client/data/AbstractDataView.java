@@ -1231,7 +1231,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             // No longer a fresh sort
             sortContext.setSorted(true);
 
-            if (renderRows) {
+            if (renderRows || !column.isUseRemoteSort()) {
                 // Sort render requires us to clear widgets for reinsertion
                 clearRows(false);
 
@@ -1256,12 +1256,13 @@ public abstract class AbstractDataView<T> implements DataView<T> {
      * @return true if the data was sorted, false if no sorting was performed.
      */
     protected boolean doSort(SortContext<T> sortContext, Components<RowComponent<T>> rows) {
-
-        if (dataSource != null && dataSource.useRemoteSort()) {
-            // The sorting should be handled by an external
-            // data source rather than re-ordered by the
-            // client comparator.
-            return true;
+        if (sortContext != null && sortContext.getSortColumn() != null && sortContext.getSortColumn().isUseRemoteSort())  {
+            if (dataSource != null && dataSource.useRemoteSort()) {
+                // The sorting should be handled by an external
+                // data source rather than re-ordered by the
+                // client comparator.
+                return true;
+            }
         }
 
         Comparator<? super RowComponent<T>> comparator = sortContext != null

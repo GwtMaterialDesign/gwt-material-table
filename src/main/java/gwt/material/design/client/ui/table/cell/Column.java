@@ -70,6 +70,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     private boolean numeric;
     private boolean autoSort;
     private boolean sortable;
+    private boolean useRemoteSort;
     private boolean widthToPercent;
     private boolean hidden;
     private boolean hideable = true;
@@ -554,6 +555,15 @@ public abstract class Column<T, C> implements HasCell<T, C> {
             helpEnabled = defaultHelpEnabled != null ? defaultHelpEnabled : MaterialDataTable.getGlobals().isHelpEnabled();
         }
         return helpEnabled;
+    }
+
+    public Column<T, C> useRemoteSort(boolean useRemoteSort) {
+        this.useRemoteSort = useRemoteSort;
+        return this;
+    }
+
+    public Boolean isUseRemoteSort() {
+        return useRemoteSort;
     }
 
     public Column<T, C> addFooter(FooterColumn<T> footer) {
