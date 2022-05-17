@@ -140,4 +140,14 @@ public interface HasColumns<T> {
     void showHelp(Boolean enabled);
 
     Boolean isHelpEnabled();
+
+    void setColumnTruncate(boolean truncate, Integer maxWidth);
+
+    default void setColumnTruncate(boolean truncate) {
+        setColumnTruncate(truncate, 400);
+    }
+
+    Boolean isColumnTruncate();
+
+    Integer getColumnMaxWidth();
 }

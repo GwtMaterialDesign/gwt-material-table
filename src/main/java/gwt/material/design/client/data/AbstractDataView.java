@@ -132,6 +132,8 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     private boolean useLoadOverlay;
     private boolean useCategories;
     private Boolean helpEnabled;
+    private Boolean columnTruncate;
+    private Integer columnMaxWidth;
     private SelectionType selectionType = SelectionType.NONE;
     private Density density = DisplayDensity.DEFAULT;
     private DataTableAccessibilityControls accessibilityControl;
@@ -2688,6 +2690,11 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
+    public String getBlankPlaceholder() {
+        return defaultBlankPlaceholder;
+    }
+
+    @Override
     public void setHelpEnabled(Boolean helpEnabled) {
         this.helpEnabled = helpEnabled;
     }
@@ -2706,8 +2713,19 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
-    public String getBlankPlaceholder() {
-        return defaultBlankPlaceholder;
+    public void setColumnTruncate(boolean truncate, Integer maxWidth) {
+        this.columnTruncate = truncate;
+        this.columnMaxWidth = maxWidth;
+    }
+
+    @Override
+    public Boolean isColumnTruncate() {
+        return columnTruncate;
+    }
+
+    @Override
+    public Integer getColumnMaxWidth() {
+        return columnMaxWidth;
     }
 
     public Table getTable() {

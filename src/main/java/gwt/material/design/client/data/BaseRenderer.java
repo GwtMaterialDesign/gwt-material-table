@@ -256,6 +256,14 @@ public class BaseRenderer<T> implements Renderer<T> {
                 wrapper.setWidth(column.width());
             }
 
+            if (column.isTruncated()) {
+                data.addStyleName(TableCssName.TRUNCATE_COLUMN);
+            }
+
+            if (column.getMaxWidth() != null) {
+                data.setMaxWidth(column.getMaxWidth() + "px");
+            }
+
             // Render the column cell
             if (column instanceof WidgetColumn) {
                 wrapper.setStyleName(TableCssName.WIDGET_CELL);
@@ -324,6 +332,12 @@ public class BaseRenderer<T> implements Renderer<T> {
         }
         if (column.numeric()) {
             th.addStyleName(TableCssName.NUMERIC);
+        }
+        if (column.isTruncated()) {
+            th.addStyleName(TableCssName.TRUNCATE_HEADER);
+        }
+        if (column.getMaxWidth() != null) {
+            th.setMaxWidth(column.getMaxWidth() + "px");
         }
 
         // Apply the style properties

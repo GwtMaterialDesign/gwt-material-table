@@ -895,3 +895,20 @@ table.table thead tr th.sortable.focus-visible {
 .table-help:hover span {
     display: block;
 }
+
+/** Column Truncation **/
+table.table thead tr th.truncate-header .table-header {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+table.table tr td.truncate-column span,
+table.table tr td.truncate-column label,
+table.table tr td.truncate-column p{
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

@@ -73,7 +73,10 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     private boolean useRemoteSort;
     private boolean widthToPercent;
     private boolean hidden;
+
     private boolean hideable = true;
+    private Integer maxWidth = 400;
+    private Boolean truncate;
     private Boolean helpEnabled;
     private String name;
     private String help;
@@ -574,6 +577,33 @@ public abstract class Column<T, C> implements HasCell<T, C> {
 
     public FooterColumn<T> getFooter() {
         return footer;
+    }
+
+    public Column<T, C> truncate(boolean truncate, Integer maxWidth) {
+        this.truncate = truncate;
+        this.maxWidth = maxWidth;
+        return this;
+    }
+
+    public Boolean isTruncated() {
+        if (truncate == null) {
+            Boolean defaultTruncate = getDataView().isColumnTruncate();
+            truncate = defaultTruncate != null ? defaultTruncate : MaterialDataTable.getGlobals().isColumnTruncate();
+        }
+        return truncate;
+    }
+
+    public Column<T, C> maxWidth(Integer maxWidth) {
+        this.maxWidth = maxWidth;
+        return this;
+    }
+
+    public Integer getMaxWidth() {
+        if (maxWidth == null) {
+            Integer defaultMaxWidth = getDataView().getColumnMaxWidth();
+            maxWidth = defaultMaxWidth != null ? defaultMaxWidth : MaterialDataTable.getGlobals().getColumnMaxWidth();
+        }
+        return maxWidth;
     }
 
     public DataView<T> getDataView() {

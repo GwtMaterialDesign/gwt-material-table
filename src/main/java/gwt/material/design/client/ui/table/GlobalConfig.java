@@ -28,6 +28,8 @@ public class GlobalConfig {
     private ColumnFormatProvider defaultFormatProvider = new ColumnFormatProvider();
     private String defaultBlankPlaceholder = "";
     private Boolean helpEnabled = true;
+    private Boolean columnTruncate = false;
+    private Integer columnMaxWidth = 400;
 
     public GlobalConfig() {
         defaultFormatProvider.setDateFormat(DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_FULL));
@@ -61,5 +63,22 @@ public class GlobalConfig {
 
     public void setHelpEnabled(Boolean helpEnabled) {
         this.helpEnabled = helpEnabled;
+    }
+
+    public void setColumnTruncate(Boolean truncate, Integer maxWidth) {
+        this.columnTruncate = truncate;
+        this.columnMaxWidth = maxWidth;
+    }
+
+    public void setColumnTruncate(Boolean truncate) {
+        this.columnTruncate = truncate;
+    }
+
+    public Boolean isColumnTruncate() {
+        return columnTruncate;
+    }
+
+    public Integer getColumnMaxWidth() {
+        return columnMaxWidth;
     }
 }

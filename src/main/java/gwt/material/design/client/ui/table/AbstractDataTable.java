@@ -724,6 +724,21 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
         view.showHelp(enabled);
     }
 
+    @Override
+    public void setColumnTruncate(boolean truncate, Integer maxWidth) {
+        view.setColumnTruncate(truncate, maxWidth);
+    }
+
+    @Override
+    public Boolean isColumnTruncate() {
+        return view.isColumnTruncate();
+    }
+
+    @Override
+    public Integer getColumnMaxWidth() {
+        return view.getColumnMaxWidth();
+    }
+
     protected void onFocus() {
         // Do nothing by default
     }

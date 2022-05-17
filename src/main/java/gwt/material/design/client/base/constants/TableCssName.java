@@ -51,4 +51,6 @@ public interface TableCssName {
     String SORTABLE = "sortable";
     String FROZEN_COL = "frozen-col";
     String FOOTER_PANEL = "footer-panel";
+    String TRUNCATE_COLUMN = "truncate-column";
+    String TRUNCATE_HEADER = "truncate-header";
 }
