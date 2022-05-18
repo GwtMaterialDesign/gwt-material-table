@@ -75,7 +75,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     private boolean hidden;
 
     private boolean hideable = true;
-    private Integer maxWidth = 400;
+    private Integer maxWidth;
     private Boolean truncate;
     private Boolean helpEnabled;
     private String name;
