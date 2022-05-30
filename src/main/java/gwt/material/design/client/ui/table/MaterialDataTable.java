@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,6 +22,10 @@ package gwt.material.design.client.ui.table;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Panel;
+import elemental2.dom.AddEventListenerOptions;
+import elemental2.dom.DomGlobal;
+import elemental2.dom.Element;
+import elemental2.dom.Event;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.constants.*;
 import gwt.material.design.client.data.DataView;
@@ -39,6 +43,8 @@ import gwt.material.design.client.ui.table.cell.ColumnFormatProvider;
 import gwt.material.design.client.ui.table.events.StretchEvent;
 import gwt.material.design.client.ui.table.events.StretchHandler;
 import gwt.material.design.jquery.client.api.JQueryElement;
+
+import java.util.List;
 
 import static gwt.material.design.jquery.client.api.JQuery.$;
 
@@ -184,6 +190,13 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
             menu.setAlignment(Alignment.LEFT);
             menu.setHideOn(HideOn.HIDE_ON_SMALL_DOWN);
             menu.getElement().getStyle().setProperty("minWidth", "200px");
+        } else {
+            List<Element> elements = DomGlobal.document.body.querySelectorAll("#" + menu.getId() + " li").asList();
+            for (Element element : elements) {
+                AddEventListenerOptions options = AddEventListenerOptions.create();
+                options.setPassive(true);
+                element.addEventListener("touchstart click", Event::stopPropagation, options);
+            }
         }
 
         JQueryElement $menu = $(menu);
@@ -228,13 +241,6 @@ public class MaterialDataTable<T> extends AbstractDataTable<T> implements Insert
                 // Recalculate the footer
                 getView().getFooter().recalculateColumns();
             }
-            return true;
-        });
-
-        // Stop each menu item from closing the dropdown
-        $menu.find("li").off("touchstart click");
-        $menu.find("li").on("touchstart click", e -> {
-            e.stopPropagation();
             return true;
         });
     }
