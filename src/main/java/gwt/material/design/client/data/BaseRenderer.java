@@ -333,9 +333,13 @@ public class BaseRenderer<T> implements Renderer<T> {
         if (column.numeric()) {
             th.addStyleName(TableCssName.NUMERIC);
         }
+
         if (column.isTruncated()) {
             th.addStyleName(TableCssName.TRUNCATE_HEADER);
         }
+
+        th.setTruncate(column.isTruncated());
+
         if (column.getMaxWidth() != null) {
             th.setMaxWidth(column.getMaxWidth() + "px");
         }

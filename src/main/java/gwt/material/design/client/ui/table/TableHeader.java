@@ -94,6 +94,11 @@ public class TableHeader extends TableData {
         }
     }
 
+    @Override
+    public void setTruncate(boolean truncate) {
+        headerLbl.setTruncate(truncate);
+    }
+
     public String getHeader() {
         return headerLbl != null ? headerLbl.getText() : "";
     }
