@@ -902,6 +902,7 @@ table.table thead tr th.truncate-header .table-header {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    width: auto;
 }
 
 table.table tr td.truncate-column span,
