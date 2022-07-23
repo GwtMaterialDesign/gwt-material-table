@@ -539,6 +539,21 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
+    public void showRowLoading(T data) {
+        view.showRowLoading(data);
+    }
+
+    @Override
+    public void hideRowLoading(T data) {
+        view.hideRowLoading(data);
+    }
+
+    @Override
+    public void highlightRow(T data) {
+        view.highlightRow(data);
+    }
+
+    @Override
     public void setRowClickCooldown(int clickCooldownMillis) {
         view.setRowClickCooldown(clickCooldownMillis);
     }
@@ -692,6 +707,36 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     @Override
     public void setDefaultBlankPlaceholder(String defaultBlankPlaceholder) {
         view.setDefaultBlankPlaceholder(defaultBlankPlaceholder);
+    }
+
+    @Override
+    public void setHelpEnabled(Boolean enable) {
+        view.setHelpEnabled(enable);
+    }
+
+    @Override
+    public Boolean isHelpEnabled() {
+        return view.isHelpEnabled();
+    }
+
+    @Override
+    public void showHelp(Boolean enabled) {
+        view.showHelp(enabled);
+    }
+
+    @Override
+    public void setColumnTruncate(boolean truncate, Integer maxWidth) {
+        view.setColumnTruncate(truncate, maxWidth);
+    }
+
+    @Override
+    public Boolean isColumnTruncate() {
+        return view.isColumnTruncate();
+    }
+
+    @Override
+    public Integer getColumnMaxWidth() {
+        return view.getColumnMaxWidth();
     }
 
     protected void onFocus() {

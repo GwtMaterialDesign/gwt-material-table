@@ -84,14 +84,14 @@ table tr.stickyExclude {
 .table-container .data-pager {
   border: none; }
 
-.data-pager .action-page-panel i.disabled {
+.data-pager .action-page-panel a.disabled {
   background: #424242 !important;
   color: rgba(153, 153, 153, 0.2) !important; }
 
-.data-pager .action-page-panel i {
+.data-pager .action-page-panel a {
   color: rgba(255, 255, 255, 0.6); }
 
-.data-pager .action-page-panel i:hover {
+.data-pager .action-page-panel a:hover {
   color: white; }
 
 @media only screen and (max-width: 520px), (max-device-width: 519px) and (min-device-width: 0px) {
@@ -138,4 +138,10 @@ tr.subheader.disabled * {
 /** XScroll**/
 .x-scroll {
   background: #424242;
+}
+
+/** Help **/
+.table-help:hover span {
+  background: #292929;
+  color: white;
 }

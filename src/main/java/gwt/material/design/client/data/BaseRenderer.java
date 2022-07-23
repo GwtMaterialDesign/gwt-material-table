@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -256,6 +256,14 @@ public class BaseRenderer<T> implements Renderer<T> {
                 wrapper.setWidth(column.width());
             }
 
+            if (column.isTruncated()) {
+                data.addStyleName(TableCssName.TRUNCATE_COLUMN);
+            }
+
+            if (column.getMaxWidth() != null) {
+                data.setMaxWidth(column.getMaxWidth() + "px");
+            }
+
             // Render the column cell
             if (column instanceof WidgetColumn) {
                 wrapper.setStyleName(TableCssName.WIDGET_CELL);
@@ -311,6 +319,9 @@ public class BaseRenderer<T> implements Renderer<T> {
         TableHeader th = new TableHeader(sortIcon);
         th.setId("col" + index);
         th.setHeader(header);
+        if (column.isHelpEnabled()) {
+            th.updateHelp(column.help());
+        }
         HideOn hideOn = column.hideOn();
         if (hideOn != null) {
             th.setHideOn(hideOn);
@@ -321,6 +332,16 @@ public class BaseRenderer<T> implements Renderer<T> {
         }
         if (column.numeric()) {
             th.addStyleName(TableCssName.NUMERIC);
+        }
+
+        if (column.isTruncated()) {
+            th.addStyleName(TableCssName.TRUNCATE_HEADER);
+        }
+
+        th.setTruncate(column.isTruncated());
+
+        if (column.getMaxWidth() != null) {
+            th.setMaxWidth(column.getMaxWidth() + "px");
         }
 
         // Apply the style properties

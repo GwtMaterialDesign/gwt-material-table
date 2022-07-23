@@ -249,4 +249,19 @@ public interface HasRows<T> extends HasHandlers {
      * @param tr the rows tr element to expand or collapse
      */
     boolean expandOrCollapseRow(JQueryElement tr);
+
+    /**
+     * Will highlight row component
+     */
+    void highlightRow(T data);
+
+    /**
+     * Will show the loading placeholder for the row
+     */
+    void showRowLoading(T data);
+
+    /**
+     * Will hide the loading placeholder for the row
+     */
+    void hideRowLoading(T data);
 }

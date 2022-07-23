@@ -131,6 +131,9 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     private boolean useStickyFooter;
     private boolean useLoadOverlay;
     private boolean useCategories;
+    private Boolean helpEnabled;
+    private Boolean columnTruncate;
+    private Integer columnMaxWidth;
     private SelectionType selectionType = SelectionType.NONE;
     private Density density = DisplayDensity.DEFAULT;
     private DataTableAccessibilityControls accessibilityControl;
@@ -967,6 +970,36 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         return expandRow(tr, !expansion.hasClass("expanded"));
     }
 
+    @Override
+    public void showRowLoading(T data) {
+        if (data != null) {
+            RowComponent<T> row = getRow(data);
+            if (row != null) {
+                row.loading(true);
+            }
+        }
+    }
+
+    @Override
+    public void hideRowLoading(T data) {
+        if (data != null) {
+            RowComponent<T> row = getRow(data);
+            if (row != null) {
+                row.loading(false);
+            }
+        }
+    }
+
+    @Override
+    public void highlightRow(T data) {
+        if (data != null) {
+            RowComponent<T> row = getRow(data);
+            if (row != null) {
+                row.highlight();
+            }
+        }
+    }
+
     protected void setupStickyHeader() {
         if ($table != null && display != null) {
             $table.stickyTableHeaders(StickyTableOptions.create($(".table-body", getContainer())));
@@ -1200,7 +1233,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             // No longer a fresh sort
             sortContext.setSorted(true);
 
-            if (renderRows) {
+            if (renderRows || !column.isUseRemoteSort()) {
                 // Sort render requires us to clear widgets for reinsertion
                 clearRows(false);
 
@@ -1225,12 +1258,13 @@ public abstract class AbstractDataView<T> implements DataView<T> {
      * @return true if the data was sorted, false if no sorting was performed.
      */
     protected boolean doSort(SortContext<T> sortContext, Components<RowComponent<T>> rows) {
-
-        if (dataSource != null && dataSource.useRemoteSort()) {
-            // The sorting should be handled by an external
-            // data source rather than re-ordered by the
-            // client comparator.
-            return true;
+        if (sortContext != null && sortContext.getSortColumn() != null && sortContext.getSortColumn().isUseRemoteSort())  {
+            if (dataSource != null && dataSource.useRemoteSort()) {
+                // The sorting should be handled by an external
+                // data source rather than re-ordered by the
+                // client comparator.
+                return true;
+            }
         }
 
         Comparator<? super RowComponent<T>> comparator = sortContext != null
@@ -2658,6 +2692,40 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     @Override
     public String getBlankPlaceholder() {
         return defaultBlankPlaceholder;
+    }
+
+    @Override
+    public void setHelpEnabled(Boolean helpEnabled) {
+        this.helpEnabled = helpEnabled;
+    }
+
+    @Override
+    public Boolean isHelpEnabled() {
+        return helpEnabled;
+    }
+
+    @Override
+    public void showHelp(Boolean enabled) {
+        List<TableHeader> headers = getHeaders();
+        for (TableHeader header : headers) {
+            header.showHelp(enabled);
+        }
+    }
+
+    @Override
+    public void setColumnTruncate(boolean truncate, Integer maxWidth) {
+        this.columnTruncate = truncate;
+        this.columnMaxWidth = maxWidth;
+    }
+
+    @Override
+    public Boolean isColumnTruncate() {
+        return columnTruncate;
+    }
+
+    @Override
+    public Integer getColumnMaxWidth() {
+        return columnMaxWidth;
     }
 
     public Table getTable() {

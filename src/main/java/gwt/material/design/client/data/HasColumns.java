@@ -130,4 +130,24 @@ public interface HasColumns<T> {
      * Set the datable default column blank placeholder provider on this instance.
      */
     void setDefaultBlankPlaceholder(String defaultBlankPlaceholder);
+
+    /**
+     * Will show a help tooltip for each column that has help.
+     * @see Column#help(String)
+     */
+    void setHelpEnabled(Boolean enabled);
+
+    void showHelp(Boolean enabled);
+
+    Boolean isHelpEnabled();
+
+    void setColumnTruncate(boolean truncate, Integer maxWidth);
+
+    default void setColumnTruncate(boolean truncate) {
+        setColumnTruncate(truncate, 400);
+    }
+
+    Boolean isColumnTruncate();
+
+    Integer getColumnMaxWidth();
 }

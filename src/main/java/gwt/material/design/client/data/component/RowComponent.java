@@ -21,6 +21,7 @@ package gwt.material.design.client.data.component;
 
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.Widget;
+import gwt.material.design.client.base.helper.ScrollHelper;
 import gwt.material.design.client.data.ColumnContext;
 import gwt.material.design.client.data.DataView;
 import gwt.material.design.client.data.factory.Category;
@@ -29,10 +30,11 @@ import gwt.material.design.client.ui.animate.Transition;
 import gwt.material.design.client.ui.table.TableData;
 import gwt.material.design.client.ui.table.TableRow;
 import gwt.material.design.client.ui.table.cell.ComputedColumn;
-import gwt.material.design.jquery.client.api.JQuery;
 import gwt.material.design.jquery.client.api.JQueryElement;
 
 import java.util.*;
+
+import static gwt.material.design.jquery.client.api.JQuery.$;
 
 /**
  * @author Ben Dol
@@ -168,7 +170,7 @@ public class RowComponent<T> extends Component<TableRow> implements Comparable<T
     }
 
     public void clearRowExpansion() {
-        JQueryElement next = JQuery.$(getWidget()).next();
+        JQueryElement next = $(getWidget()).next();
         if (next.is("tr.expansion")) {
             next.remove();
         }
@@ -242,12 +244,31 @@ public class RowComponent<T> extends Component<TableRow> implements Comparable<T
             if (loading) {
                 widget.addStyleName("content-placeholder");
             } else {
-                new MaterialAnimation()
-                    .duration(400)
-                    .transition(Transition.SHARED_AXIS_X_BACKWARD_IN)
-                    .animate(getWidget());
+                highlight();
                 widget.removeStyleName("content-placeholder");
             }
+        }
+    }
+
+    public void highlight() {
+        highlight(new DefaultRowHighlightConfig());
+    }
+
+    public void highlight(RowHighlightConfig config) {
+        MaterialAnimation animation = new MaterialAnimation();
+        ScrollHelper helper = new ScrollHelper();
+        TableRow row = getWidget();
+
+        if (helper.isInViewPort(row.getElement())) {
+            animation.setTransition(config.getTransition());
+            animation.setDelay(config.getDelay());
+            animation.setDuration(config.getDuration());
+            animation.animate(getWidget());
+        } else {
+            helper.setContainerElement($(dataView.getContainer().getElement()).find(".table-body").asElement());
+            helper.setAddedScrollOffset(config.getOffsetTop());
+            helper.scrollTo(getWidget());
+            helper.setCompleteCallback(() -> animation.animate(getWidget()));
         }
     }
 

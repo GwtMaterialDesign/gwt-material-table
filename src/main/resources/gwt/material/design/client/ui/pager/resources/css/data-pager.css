@@ -27,17 +27,20 @@
 
 .data-pager .action-page-panel > span,
 .data-pager .rows-per-page-panel > span,
-.data-pager .action-page-panel i {
+.data-pager .action-page-panel a {
     float: left;
     margin-right: 8px;
     margin-top: 12px;
 }
 
-.data-pager .action-page-panel i {
-    margin-top: 4px;
+.data-pager .action-page-panel a {
+    margin: 0px;
+    margin-top: 8px;
+    width: 32px;
+    color: #7d7d7d;
 }
 
-.data-pager .action-page-panel i.disabled {
+.data-pager .action-page-panel a.disabled {
     background: white !important;
     color: #e9e9e9 !important;
 }
@@ -101,7 +104,7 @@
         margin-top: 0px !important;
     }
 
-    .table-container .data-pager .action-page-panel .arrow-prev {
+    .table-container .data-pager .action-page-panel a.arrow-prev {
         float: left;
     }
 
@@ -112,6 +115,31 @@
 }
 
 /** Data pager focusable **/
-.data-pager .action-page-panel i.focus-visible {
+.data-pager .action-page-panel a.focus-visible {
     background-color: #2e2e2e;
+}
+
+/** Data pager simple **/
+.data-pager.simple .rows-per-page-panel,
+.data-pager.simple .num-page-panel,
+.data-pager.simple .action-page-panel span {
+    display: none;
+}
+
+.data-pager.simple .action-page-panel a {
+    border: 1px solid;
+    height: 33px !important;
+}
+
+.data-pager.simple .action-page-panel a span {
+    display: block;
+}
+
+.data-pager.simple .action-page-panel a.arrow-next {
+    border-radius: 0px 4px 4px 0px;
+}
+
+.data-pager.simple .action-page-panel a.arrow-prev {
+    border-radius: 4px 0px 0px 4px;
+    margin-right: 0px;
 }

@@ -35,6 +35,7 @@ public class TableHeader extends TableData {
 
     private Span headerLbl;
     private MaterialIcon sortIcon;
+    private TableHelp helpWidget = new TableHelp();
     private Div headerWrap = new Div();
 
     public TableHeader() {
@@ -54,6 +55,9 @@ public class TableHeader extends TableData {
     protected void onLoad() {
         super.onLoad();
 
+        if (sortIcon != null) {
+            sortIcon.addStyleName("sort-header");
+        }
         headerWrap.setHeight("100%");
         headerWrap.setDisplay(Display.FLEX);
         add(headerWrap);
@@ -67,6 +71,32 @@ public class TableHeader extends TableData {
         } else {
             headerLbl.setText(header);
         }
+    }
+
+    public String getHelp() {
+        return helpWidget.getHelp();
+    }
+
+    public void updateHelp(String help) {
+        if (help != null) {
+            helpWidget.addClickHandler(event -> {
+                event.preventDefault();
+                event.stopPropagation();
+            });
+            helpWidget.setHelp(help);
+            headerWrap.add(helpWidget);
+        }
+    }
+
+    public void showHelp(Boolean enabled) {
+        if (helpWidget.isAttached()) {
+            helpWidget.setVisible(enabled);
+        }
+    }
+
+    @Override
+    public void setTruncate(boolean truncate) {
+        headerLbl.setTruncate(truncate);
     }
 
     public String getHeader() {
