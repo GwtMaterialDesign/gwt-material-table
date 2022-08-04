@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,7 +31,6 @@ import gwt.material.design.client.data.loader.LoadCallback;
 import gwt.material.design.client.data.loader.LoadConfig;
 import gwt.material.design.client.data.loader.LoadResult;
 import gwt.material.design.client.ui.MaterialPanel;
-import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControls;
 import gwt.material.design.client.ui.pager.actions.ActionsPanel;
 import gwt.material.design.client.ui.pager.actions.PageNumberBox;
@@ -55,7 +54,10 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
     protected int currentPage = 1;
     protected int totalRows = 0;
     protected int[] limitOptions = new int[]{5, 10, 20};
-    protected DataPagerLocaleProvider localeProvider = new DataPagerLocaleProvider() {};
+    protected boolean enableRowSelection = true;
+    protected boolean enablePageSelection = true;
+    protected DataPagerLocaleProvider localeProvider = new DataPagerLocaleProvider() {
+    };
 
     private MaterialPanel pagerWrapper = new MaterialPanel();
     private ActionsPanel actionsPanel = new ActionsPanel(this);
@@ -89,21 +91,7 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
         super.onLoad();
 
         if (!rendered) {
-            if (pageSelection == null) {
-                pageSelection = new PageNumberBox(this);
-            }
-
-            pagerWrapper.setFloat(Style.Float.RIGHT);
-            add(pagerWrapper);
-            pagerWrapper.add(pageSelection);
-            pagerWrapper.add(rowSelection);
-            pagerWrapper.add(actionsPanel);
-
-            // Register Accessibility Controls
-            DataTableAccessibilityControls accessibilityControl = getTable().getView().getAccessibilityControl();
-            if (accessibilityControl != null) {
-                accessibilityControl.registerPageControl(this);
-            }
+            render();
             rendered = true;
         }
 
@@ -123,12 +111,43 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
         currentPage = 1;
         totalRows = 0;
         limitOptions = new int[]{10, 20, 30};
-        clear();
+    }
+
+    public void render() {
+        if (pageSelection == null) {
+            pageSelection = new PageNumberBox(this);
+        }
+
+        pagerWrapper.setFloat(Style.Float.RIGHT);
+        add(pagerWrapper);
+
+        if (enablePageSelection) {
+            pagerWrapper.add(pageSelection);
+        }
+
+        if (enableRowSelection) {
+            pagerWrapper.add(rowSelection);
+        }
+
+        pagerWrapper.add(actionsPanel);
+
+        // Register Accessibility Controls
+        DataTableAccessibilityControls accessibilityControl = getTable().getView().getAccessibilityControl();
+        if (accessibilityControl != null) {
+            accessibilityControl.registerPageControl(this);
+        }
+    }
+
+    public void reload(boolean redraw) {
+        unload();
+        if (redraw) {
+            render();
+        }
+        load();
     }
 
     public void reload() {
-        unload();
-        load();
+        reload(false);
     }
 
     public void updateRowsPerPage(int limit) {
@@ -248,7 +267,7 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
     protected void doLoad(int offset, int limit) {
         DataView<T> dataView = table.getView();
         dataSource.load(new LoadConfig<>(dataView, offset, limit, dataView.getSortContext(),
-            dataView.getOpenCategories()), new LoadCallback<T>() {
+                dataView.getOpenCategories()), new LoadCallback<T>() {
             @Override
             public void onSuccess(LoadResult<T> loadResult) {
                 setOffset(loadResult.getOffset());
@@ -348,6 +367,22 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
 
     public void setLocaleProvider(DataPagerLocaleProvider localeProvider) {
         this.localeProvider = localeProvider;
+    }
+
+    public boolean isEnableRowSelection() {
+        return enableRowSelection;
+    }
+
+    public void setEnableRowSelection(boolean enableRowSelection) {
+        this.enableRowSelection = enableRowSelection;
+    }
+
+    public boolean isEnablePageSelection() {
+        return enablePageSelection;
+    }
+
+    public void setEnablePageSelection(boolean enablePageSelection) {
+        this.enablePageSelection = enablePageSelection;
     }
 
     @Override
