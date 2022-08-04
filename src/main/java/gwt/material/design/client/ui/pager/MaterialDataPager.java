@@ -31,6 +31,7 @@ import gwt.material.design.client.data.loader.LoadCallback;
 import gwt.material.design.client.data.loader.LoadConfig;
 import gwt.material.design.client.data.loader.LoadResult;
 import gwt.material.design.client.ui.MaterialPanel;
+import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControls;
 import gwt.material.design.client.ui.pager.actions.ActionsPanel;
 import gwt.material.design.client.ui.pager.actions.PageNumberBox;
@@ -48,6 +49,7 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
     protected MaterialDataTable<T> table;
     protected DataSource<T> dataSource;
 
+    protected boolean rendered;
     protected int offset = 0;
     protected int limit = 0;
     protected int currentPage = 1;
@@ -86,6 +88,25 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
     protected void onLoad() {
         super.onLoad();
 
+        if (!rendered) {
+            if (pageSelection == null) {
+                pageSelection = new PageNumberBox(this);
+            }
+
+            pagerWrapper.setFloat(Style.Float.RIGHT);
+            add(pagerWrapper);
+            pagerWrapper.add(pageSelection);
+            pagerWrapper.add(rowSelection);
+            pagerWrapper.add(actionsPanel);
+
+            // Register Accessibility Controls
+            DataTableAccessibilityControls accessibilityControl = getTable().getView().getAccessibilityControl();
+            if (accessibilityControl != null) {
+                accessibilityControl.registerPageControl(this);
+            }
+            rendered = true;
+        }
+
         load();
     }
 
@@ -94,22 +115,7 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
             limit = limitOptions[0];
         }
 
-        if (pageSelection == null) {
-            pageSelection = new PageNumberBox(this);
-        }
-        pagerWrapper.add(pageSelection);
-        pagerWrapper.add(rowSelection);
-        pagerWrapper.add(actionsPanel);
-
-        pagerWrapper.setFloat(Style.Float.RIGHT);
-        add(pagerWrapper);
         firstPage();
-
-        // Register Accessibility Controls
-        DataTableAccessibilityControls accessibilityControl = getTable().getView().getAccessibilityControl();
-        if (accessibilityControl != null) {
-            accessibilityControl.registerPageControl(this);
-        }
     }
 
     public void unload() {
