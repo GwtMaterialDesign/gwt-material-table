@@ -70,6 +70,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     private boolean numeric;
     private boolean autoSort;
     private boolean sortable;
+    private boolean searchable;
     private boolean useRemoteSort;
     private boolean widthToPercent;
     private boolean hidden;
@@ -612,6 +613,15 @@ public abstract class Column<T, C> implements HasCell<T, C> {
 
     public void setDataView(DataView<T> dataView) {
         this.dataView = dataView;
+    }
+
+    public boolean isSearchable() {
+        return searchable;
+    }
+
+    public Column<T, C> searchable(boolean searchable) {
+        this.searchable = searchable;
+        return this;
     }
 
     @Override
