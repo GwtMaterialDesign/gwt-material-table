@@ -214,7 +214,10 @@ public class CategoryComponent<T> extends Component<TableSubHeader> {
             Column<T, ?> column = allColumns.get(i);
             if (column != null && !column.name().isEmpty()) {
                 TableHeader th = new TableHeader();
-                th.addStyleName("category");
+                th.addStyleName("category " + column.name().replace(" ", "-"));
+                th.setWidth(column.width());
+                th.setMinWidth(column.width());
+                th.setMaxWidth(column.width());
                 parentTh.add(th);
                 tableHeaderMap.put(column.name(), th);
             }

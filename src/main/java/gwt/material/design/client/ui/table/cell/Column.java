@@ -536,7 +536,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
      * A blank or empty placeholder when column's value is null.
      */
     public String blankPlaceholder() {
-        if (blankPlaceholder == null) {
+        if (blankPlaceholder == null && getDataView() != null) {
             String defaultBlankPlaceholder = getDataView().getBlankPlaceholder();
             blankPlaceholder = defaultBlankPlaceholder != null ? defaultBlankPlaceholder : MaterialDataTable.getGlobals().getBlankPlaceholder();
         }
@@ -554,7 +554,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     }
 
     public Boolean isHelpEnabled() {
-        if (helpEnabled == null) {
+        if (helpEnabled == null && getDataView() != null) {
             Boolean defaultHelpEnabled = getDataView().isHelpEnabled();
             helpEnabled = defaultHelpEnabled != null ? defaultHelpEnabled : MaterialDataTable.getGlobals().isHelpEnabled();
         }
@@ -587,7 +587,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     }
 
     public Boolean isTruncated() {
-        if (truncate == null) {
+        if (truncate == null && getDataView() != null) {
             Boolean defaultTruncate = getDataView().isColumnTruncate();
             truncate = defaultTruncate != null ? defaultTruncate : MaterialDataTable.getGlobals().isColumnTruncate();
         }
@@ -600,7 +600,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     }
 
     public Integer getMaxWidth() {
-        if (maxWidth == null) {
+        if (maxWidth == null && getDataView() != null) {
             Integer defaultMaxWidth = getDataView().getColumnMaxWidth();
             maxWidth = defaultMaxWidth != null ? defaultMaxWidth : MaterialDataTable.getGlobals().getColumnMaxWidth();
         }
