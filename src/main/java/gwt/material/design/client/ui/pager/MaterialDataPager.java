@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,20 +22,21 @@ package gwt.material.design.client.ui.pager;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.base.mixin.CssTypeMixin;
+import gwt.material.design.client.base.mixin.ToggleStyleMixin;
 import gwt.material.design.client.data.DataSource;
 import gwt.material.design.client.data.DataView;
 import gwt.material.design.client.data.loader.LoadCallback;
 import gwt.material.design.client.data.loader.LoadConfig;
 import gwt.material.design.client.data.loader.LoadResult;
+import gwt.material.design.client.ui.MaterialButton;
+import gwt.material.design.client.ui.MaterialLink;
 import gwt.material.design.client.ui.MaterialPanel;
 import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControls;
-import gwt.material.design.client.ui.pager.actions.ActionsPanel;
-import gwt.material.design.client.ui.pager.actions.PageNumberBox;
-import gwt.material.design.client.ui.pager.actions.PageSelection;
-import gwt.material.design.client.ui.pager.actions.RowSelection;
+import gwt.material.design.client.ui.pager.actions.*;
 import gwt.material.design.client.ui.table.MaterialDataTable;
 
 /**
@@ -62,7 +63,10 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
     private MaterialPanel pagerWrapper = new MaterialPanel();
     private ActionsPanel actionsPanel = new ActionsPanel(this);
     private RowSelection rowSelection = new RowSelection(this);
+    private PageSlider pageSlider = new PageSlider(this);
     private PageSelection pageSelection;
+    private MaterialButton slidePrevious, slideNext;
+    private ToggleStyleMixin<Widget> slideActionsMixin;
 
     protected CssTypeMixin<PagerType, MaterialDataPager<T>> typeMixin;
 
@@ -131,11 +135,23 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
 
         pagerWrapper.add(actionsPanel);
 
+        setupSlideActions();
+
         // Register Accessibility Controls
         DataTableAccessibilityControls accessibilityControl = getTable().getView().getAccessibilityControl();
         if (accessibilityControl != null) {
             accessibilityControl.registerPageControl(this);
         }
+    }
+
+    protected void setupSlideActions() {
+        slidePrevious = pageSlider.getPrevious();
+        slidePrevious.addClickHandler(clickEvent -> previous());
+        table.add(slidePrevious);
+
+        slideNext = pageSlider.getNext();
+        slideNext.addClickHandler(clickEvent -> next());
+        table.add(slideNext);
     }
 
     public void reload(boolean redraw) {
@@ -298,16 +314,16 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
         int lastRow = (isExcess() & isLastPage()) ? totalRows : (offset + limit);
         actionsPanel.getActionLabel().setText((firstRow == lastRow ? lastRow : firstRow + "-" + lastRow) + " " + getLocaleProvider().of() + " " + totalRows);
 
-        actionsPanel.getIconNext().setEnabled(true);
-        actionsPanel.getIconPrev().setEnabled(true);
+        MaterialLink iconNext = actionsPanel.getIconNext();
+        MaterialLink iconPrev = actionsPanel.getIconPrev();
 
-        if (!isNext()) {
-            actionsPanel.getIconNext().setEnabled(false);
-        }
+        iconNext.setEnabled(true);
+        iconPrev.setEnabled(true);
 
-        if (!isPrevious()) {
-            actionsPanel.getIconPrev().setEnabled(false);
-        }
+        if (!isNext()) iconNext.setEnabled(false);
+        if (!isPrevious()) iconPrev.setEnabled(false);
+        if (slideNext != null) slideNext.setVisible(iconNext.isEnabled());
+        if (slidePrevious != null) slidePrevious.setVisible(iconPrev.isEnabled());
     }
 
     public MaterialDataTable<T> getTable() {
@@ -386,6 +402,14 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
         this.enablePageSelection = enablePageSelection;
     }
 
+    public void setEnabledSlideActions(boolean enabled) {
+        getSlideActionsMixin().setOn(enabled);
+    }
+
+    public boolean isSlideActionsEnabled() {
+        return getSlideActionsMixin().isOn();
+    }
+
     @Override
     public void setType(PagerType type) {
         getTypeMixin().setType(type);
@@ -394,6 +418,13 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
     @Override
     public PagerType getType() {
         return getTypeMixin().getType();
+    }
+
+    public ToggleStyleMixin<Widget> getSlideActionsMixin() {
+        if (slideActionsMixin == null) {
+            slideActionsMixin = new ToggleStyleMixin<>(table, "slide-navigation");
+        }
+        return slideActionsMixin;
     }
 
     public CssTypeMixin<PagerType, MaterialDataPager<T>> getTypeMixin() {

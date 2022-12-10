@@ -136,6 +136,7 @@ table.striped > tbody > tr:nth-child(odd) td.frozen-col {
     height: 100%;
     width: 100%;
     background-color: #fff;
+    position: relative;
 }
 
 .table-container.stretch {
@@ -912,4 +913,60 @@ table.table tr td.truncate-column p{
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+/** Slider **/
+.table-container.slide-navigation .slide-next,
+.table-container.slide-navigation .slide-previous{
+    display: block;
+}
+
+.table-container .slide-previous,
+.table-container .slide-next {
+    position: absolute;
+    width: 60px;
+    height: 100%;
+    top: 0;
+    background: transparent;
+    box-shadow: none;
+    color: #999999;
+    padding: 0px;
+    opacity: 0;
+    transition: 400ms all;
+    display: none;
+}
+
+.table-container .slide-previous:hover,
+.table-container .slide-next:hover {
+    opacity: 1;
+    background: #f6f6f6;
+}
+
+.table-container .slide-next:hover {
+    border-radius: 0px 20px 20px 0px;
+}
+
+.table-container .slide-previous:hover {
+    border-radius: 20px 0px 0px 20px;
+}
+
+.table-container .slide-previous i,
+.table-container .slide-next i {
+    font-size: 3em;
+    width: 44px;
+    background: #e5e5e5;
+    height: 44px;
+    text-align: center;
+    line-height: 44px;
+    border-radius: 100%;
+    margin-left: 8px;
+}
+
+.table-container .slide-next {
+    right: -60px;
+}
+
+.table-container .slide-previous {
+    left: -60px;
+
 }
