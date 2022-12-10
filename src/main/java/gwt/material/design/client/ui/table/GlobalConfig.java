@@ -29,6 +29,7 @@ public class GlobalConfig {
     private String defaultBlankPlaceholder = "";
     private Boolean helpEnabled = true;
     private Boolean columnTruncate = false;
+    private Boolean slidePagerEnabled = false;
     private Integer columnMaxWidth = 400;
 
     public GlobalConfig() {
@@ -80,5 +81,13 @@ public class GlobalConfig {
 
     public Integer getColumnMaxWidth() {
         return columnMaxWidth;
+    }
+
+    public Boolean isSlidePagerEnabled() {
+        return slidePagerEnabled;
+    }
+
+    public void setSlidePagerEnabled(Boolean slidePagerEnabled) {
+        this.slidePagerEnabled = slidePagerEnabled;
     }
 }

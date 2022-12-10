@@ -106,7 +106,7 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
         if (limit == 0) {
             limit = limitOptions[0];
         }
-
+        setEnabledSlideActions(MaterialDataTable.getGlobals().isSlidePagerEnabled());
         firstPage();
     }
 
