@@ -322,14 +322,19 @@ public class BaseRenderer<T> implements Renderer<T> {
         if (column.isHelpEnabled()) {
             th.updateHelp(column.help());
         }
+
         HideOn hideOn = column.hideOn();
         if (hideOn != null) {
             th.setHideOn(hideOn);
         }
+
+        th.setVisible(column.isHidden());
+
         TextAlign textAlign = column.textAlign();
         if (textAlign != null) {
             th.setTextAlign(textAlign);
         }
+
         if (column.numeric()) {
             th.addStyleName(TableCssName.NUMERIC);
         }
