@@ -37,6 +37,7 @@ import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.client.data.factory.Mode;
 import gwt.material.design.client.ui.MaterialCheckBox;
 import gwt.material.design.client.ui.MaterialIcon;
+import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.html.Div;
 import gwt.material.design.client.ui.table.TableData;
 import gwt.material.design.client.ui.table.TableHeader;
@@ -328,8 +329,6 @@ public class BaseRenderer<T> implements Renderer<T> {
             th.setHideOn(hideOn);
         }
 
-        th.setVisible(column.isHidden());
-
         TextAlign textAlign = column.textAlign();
         if (textAlign != null) {
             th.setTextAlign(textAlign);
@@ -368,7 +367,7 @@ public class BaseRenderer<T> implements Renderer<T> {
             int percent = (columnWidth * 100) / rowWidth;
             th.setWidth(percent + "%");
         }
-        th.setVisible(true);
+        th.setVisible(column.isHidden());
         return th;
     }
 
