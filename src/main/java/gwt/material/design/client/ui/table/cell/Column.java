@@ -74,6 +74,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     private boolean useRemoteSort;
     private boolean widthToPercent;
     private boolean hidden;
+    private String className;
 
     private boolean hideable = true;
     private Integer maxWidth;
@@ -605,6 +606,15 @@ public abstract class Column<T, C> implements HasCell<T, C> {
             maxWidth = defaultMaxWidth != null ? defaultMaxWidth : MaterialDataTable.getGlobals().getColumnMaxWidth();
         }
         return maxWidth;
+    }
+
+    public Column<T, C> className(String className) {
+        this.className = className;
+        return this;
+    }
+
+    public String getClassName() {
+        return className;
     }
 
     public DataView<T> getDataView() {

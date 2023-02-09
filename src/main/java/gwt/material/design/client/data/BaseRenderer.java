@@ -265,6 +265,10 @@ public class BaseRenderer<T> implements Renderer<T> {
                 data.setMaxWidth(column.getMaxWidth() + "px");
             }
 
+            if (column.getClassName() != null && !column.getClassName().isEmpty()) {
+                data.getElement().addClassName(column.getClassName());
+            }
+
             // Render the column cell
             if (column instanceof WidgetColumn) {
                 wrapper.setStyleName(TableCssName.WIDGET_CELL);
@@ -346,6 +350,10 @@ public class BaseRenderer<T> implements Renderer<T> {
 
         if (column.getMaxWidth() != null) {
             th.setMaxWidth(column.getMaxWidth() + "px");
+        }
+
+        if (column.getClassName() != null && !column.getClassName().isEmpty()) {
+            th.getElement().addClassName(column.getClassName());
         }
 
         // Apply the style properties
