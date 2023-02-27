@@ -81,6 +81,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     private Boolean truncate;
     private Boolean helpEnabled;
     private String name;
+    private String path;
     private String help;
     private String width;
     private HideOn hideOn;
@@ -207,6 +208,15 @@ public abstract class Column<T, C> implements HasCell<T, C> {
      */
     public final String name() {
         return this.name;
+    }
+
+    public Column<T, C> path(String path) {
+        this.path = path;
+        return this;
+    }
+
+    public final String path() {
+        return this.path;
     }
 
     /**
