@@ -2650,6 +2650,16 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
+    public void resetSort() {
+        for (TableHeader header : getHeaders()) {
+            if (header != null) {
+                header.getSortIcon().setIconType(IconType.DEFAULT);
+                header.getElement().removeClassName(TableCssName.SELECTED);
+            }
+        }
+    }
+
+    @Override
     public int getLeftFrozenColumns() {
         return leftFrozenColumns;
     }
