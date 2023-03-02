@@ -22,6 +22,7 @@ package gwt.material.design.client.ui.pager;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.TableCssName;
@@ -35,6 +36,7 @@ import gwt.material.design.client.data.loader.LoadResult;
 import gwt.material.design.client.ui.MaterialButton;
 import gwt.material.design.client.ui.MaterialLink;
 import gwt.material.design.client.ui.MaterialPanel;
+import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControls;
 import gwt.material.design.client.ui.pager.actions.*;
 import gwt.material.design.client.ui.table.MaterialDataTable;
@@ -57,6 +59,7 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
     protected int[] limitOptions = new int[]{5, 10, 20};
     protected boolean enableRowSelection = true;
     protected boolean enablePageSelection = true;
+    protected boolean autoLoad = true;
     protected DataPagerLocaleProvider localeProvider = new DataPagerLocaleProvider() {
     };
 
@@ -65,7 +68,6 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
     private RowSelection rowSelection = new RowSelection(this);
     private PageSlider pageSlider = new PageSlider(this);
     private PageSelection pageSelection;
-    private MaterialButton slidePrevious, slideNext;
     private ToggleStyleMixin<Widget> slideActionsMixin;
 
     protected CssTypeMixin<PagerType, MaterialDataPager<T>> typeMixin;
@@ -99,7 +101,18 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
             rendered = true;
         }
 
-        load();
+        if (autoLoad) load();
+
+        if (table != null && !pageSlider.isAttached()) {
+            table.getScaffolding().getXScrollPanel().add(pageSlider);
+        }
+    }
+
+    @Override
+    protected void onUnload() {
+        super.onUnload();
+
+        if (pageSlider.isAttached()) pageSlider.removeFromParent();
     }
 
     public void load() {
@@ -135,23 +148,11 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
 
         pagerWrapper.add(actionsPanel);
 
-        setupSlideActions();
-
         // Register Accessibility Controls
         DataTableAccessibilityControls accessibilityControl = getTable().getView().getAccessibilityControl();
         if (accessibilityControl != null) {
             accessibilityControl.registerPageControl(this);
         }
-    }
-
-    protected void setupSlideActions() {
-        slidePrevious = pageSlider.getPrevious();
-        slidePrevious.addClickHandler(clickEvent -> previous());
-        table.add(slidePrevious);
-
-        slideNext = pageSlider.getNext();
-        slideNext.addClickHandler(clickEvent -> next());
-        table.add(slideNext);
     }
 
     public void reload(boolean redraw) {
@@ -280,26 +281,27 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
     /**
      * Load the datasource within a given offset and limit
      */
-    //TODO: Cache the loaded data
     protected void doLoad(int offset, int limit) {
         DataView<T> dataView = table.getView();
-        dataSource.load(new LoadConfig<>(dataView, offset, limit, dataView.getSortContext(),
-                dataView.getOpenCategories()), new LoadCallback<T>() {
-            @Override
-            public void onSuccess(LoadResult<T> loadResult) {
-                setOffset(loadResult.getOffset());
-                totalRows = loadResult.getTotalLength();
-                table.setVisibleRange(loadResult.getOffset(), loadResult.getData().size());
-                table.loaded(loadResult.getOffset(), loadResult.getData());
-                updateUi();
-            }
+        if (dataSource != null) {
+            dataSource.load(new LoadConfig<>(dataView, offset, limit, dataView.getSortContext(),
+                    dataView.getOpenCategories()), new LoadCallback<T>() {
+                @Override
+                public void onSuccess(LoadResult<T> loadResult) {
+                    setOffset(loadResult.getOffset());
+                    totalRows = loadResult.getTotalLength();
+                    table.setVisibleRange(loadResult.getOffset(), loadResult.getData().size());
+                    table.loaded(loadResult.getOffset(), loadResult.getData());
+                    updateUi();
+                }
 
-            @Override
-            public void onFailure(Throwable caught) {
-                GWT.log("Load failure", caught);
-                //TODO: What we need to do on failure? May be clear table?
-            }
-        });
+                @Override
+                public void onFailure(Throwable caught) {
+                    GWT.log("Load failure", caught);
+                    //TODO: What we need to do on failure? May be clear table?
+                }
+            });
+        }
     }
 
     /**
@@ -317,13 +319,10 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
         MaterialLink iconNext = actionsPanel.getIconNext();
         MaterialLink iconPrev = actionsPanel.getIconPrev();
 
-        iconNext.setEnabled(true);
-        iconPrev.setEnabled(true);
-
-        if (!isNext()) iconNext.setEnabled(false);
-        if (!isPrevious()) iconPrev.setEnabled(false);
-        if (slideNext != null) slideNext.setVisible(iconNext.isEnabled());
-        if (slidePrevious != null) slidePrevious.setVisible(iconPrev.isEnabled());
+        iconNext.setEnabled(isNext());
+        iconPrev.setEnabled(isPrevious());
+        pageSlider.showNext(isNext());
+        pageSlider.showPrevious(isPrevious());
     }
 
     public MaterialDataTable<T> getTable() {
@@ -418,6 +417,14 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
     @Override
     public PagerType getType() {
         return getTypeMixin().getType();
+    }
+
+    public boolean isAutoLoad() {
+        return autoLoad;
+    }
+
+    public void setAutoLoad(boolean autoLoad) {
+        this.autoLoad = autoLoad;
     }
 
     public ToggleStyleMixin<Widget> getSlideActionsMixin() {

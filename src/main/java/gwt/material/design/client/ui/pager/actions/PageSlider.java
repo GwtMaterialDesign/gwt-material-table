@@ -1,15 +1,15 @@
 /*
  * #%L
- * GwtMaterial
+ * insclix-app-gazoo-client
  * %%
- * Copyright (C) 2015 - 2023 GwtMaterialDesign
+ * Copyright (C) 2017 - 2022 Insclix
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,6 +32,7 @@ public class PageSlider extends MaterialPanel {
     protected MaterialButton previous = new MaterialButton();
 
     public PageSlider() {
+        addStyleName("page-slider");
         next.addStyleName("slide-next");
         previous.addStyleName("slide-previous");
         next.setIconType(IconType.KEYBOARD_ARROW_RIGHT);
@@ -40,7 +41,7 @@ public class PageSlider extends MaterialPanel {
         previous.setWaves(WavesType.DEFAULT);
     }
 
-    public <T> PageSlider(MaterialDataPager pager) {
+    public PageSlider(MaterialDataPager pager) {
         this();
 
         this.pager = pager;
@@ -50,11 +51,11 @@ public class PageSlider extends MaterialPanel {
     protected void onLoad() {
         super.onLoad();
 
-        next.addClickHandler(clickEvent -> pager.next());
-        previous.addClickHandler(clickEvent -> pager.previous());
+        next.registerHandler(next.addClickHandler(clickEvent -> pager.next()));
+        previous.registerHandler(previous.addClickHandler(clickEvent -> pager.previous()));
 
-        add(next);
-        add(previous);
+        if (!next.isAttached()) add(next);
+        if (!previous.isAttached()) add(previous);
     }
 
     public MaterialButton getNext() {
@@ -63,5 +64,13 @@ public class PageSlider extends MaterialPanel {
 
     public MaterialButton getPrevious() {
         return previous;
+    }
+
+    public void showNext(boolean next) {
+        this.next.setVisible(next);
+    }
+
+    public void showPrevious(boolean previous) {
+        this.previous.setVisible(previous);
     }
 }

@@ -929,7 +929,7 @@ table.table tr td.truncate-column p{
     top: 0;
     background: transparent;
     box-shadow: none;
-    color: #999999;
+    color: #1a73e8;
     padding: 0px;
     opacity: 0;
     transition: 400ms all;
@@ -939,7 +939,7 @@ table.table tr td.truncate-column p{
 .table-container .slide-previous:hover,
 .table-container .slide-next:hover {
     opacity: 1;
-    background: #f6f6f6;
+    background: #d8e9ff;
 }
 
 .table-container .slide-next:hover {
@@ -954,7 +954,7 @@ table.table tr td.truncate-column p{
 .table-container .slide-next i {
     font-size: 3em;
     width: 44px;
-    background: #e5e5e5;
+    background: #c3ddff;
     height: 44px;
     text-align: center;
     line-height: 44px;
@@ -963,10 +963,10 @@ table.table tr td.truncate-column p{
 }
 
 .table-container .slide-next {
-    right: -60px;
+    right: -61px;
 }
 
 .table-container .slide-previous {
-    left: -60px;
+    left: -74px;
 
 }
