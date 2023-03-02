@@ -46,6 +46,7 @@ import gwt.material.design.client.jquery.JQueryExtension;
 import gwt.material.design.client.jquery.JQueryMutate;
 import gwt.material.design.client.js.*;
 import gwt.material.design.client.ui.MaterialCheckBox;
+import gwt.material.design.client.ui.MaterialIcon;
 import gwt.material.design.client.ui.MaterialProgress;
 import gwt.material.design.client.ui.Selectors;
 import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControls;
@@ -537,7 +538,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 th.addStyleName(TableCssName.SORTABLE);
                 accessibilityControl.registerHeaderControl(th);
             }
-
+            th.setResetSortCallback(() -> {
+                resetSort();
+                ColumnResetSortEvent.fire(this);
+            });
             addHeader(index, th);
             th.setVisible(!column.isHidden());
         }

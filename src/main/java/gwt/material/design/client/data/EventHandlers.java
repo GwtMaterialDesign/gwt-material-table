@@ -85,6 +85,11 @@ public interface EventHandlers<T> {
     HandlerRegistration addColumnSortHandler(ColumnSortHandler<T> handler);
 
     /**
+     * Add a handler that triggers when we reset sort in a column
+     */
+    HandlerRegistration addColumnResetSortHandler(ColumnResetSortHandler<T> handler);
+
+    /**
      * Add a handler that triggers when a category is opened.
      */
     HandlerRegistration addCategoryOpenedHandler(CategoryOpenedHandler handler);

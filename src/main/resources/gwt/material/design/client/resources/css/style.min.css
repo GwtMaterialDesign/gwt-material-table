@@ -443,6 +443,22 @@ tr.data-row, table.table thead tr th.selected.sortable i.sort-header {
     margin-left: 12px;
 }
 
+table.table thead tr th i.reset-sort {
+    display: none;
+    font-size: 1.5em;
+}
+
+table.table thead tr th.sortable.selected i.reset-sort {
+    display: flex;
+}
+
+i.tiny.sort-header.material-icons {
+    flex: auto !important;
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 12px;
+}
+
 table.table tbody tr.data-row {
     border-bottom: 1px solid #E6E6E6;
     -webkit-touch-callout: none;
@@ -465,7 +481,8 @@ table.table tbody tr.data-row td.hover {
 }
 
 table.table thead tr th.sortable:hover {
-    color: rgba(0, 0, 0, 0.87);
+    background: #edf4fd;
+    box-shadow: 0 3px 0 0 #1a73e8;
 }
 
 table.table tbody tr.expansion td {
@@ -968,5 +985,4 @@ table.table tr td.truncate-column p{
 
 .table-container .slide-previous {
     left: -74px;
-
 }

@@ -975,6 +975,11 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
+    public HandlerRegistration addColumnResetSortHandler(ColumnResetSortHandler<T> handler) {
+        return addHandler(handler, ColumnResetSortEvent.TYPE);
+    }
+
+    @Override
     public HandlerRegistration addCategoryOpenedHandler(CategoryOpenedHandler handler) {
         return addHandler(handler, CategoryOpenedEvent.TYPE);
     }
