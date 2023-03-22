@@ -2657,7 +2657,9 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     public void resetSort() {
         for (TableHeader header : getHeaders()) {
             if (header != null) {
-                header.getSortIcon().setIconType(IconType.DEFAULT);
+                if (header.getSortIcon() != null) {
+                    header.getSortIcon().setIconType(IconType.DEFAULT);
+                }
                 header.getElement().removeClassName(TableCssName.SELECTED);
             }
         }

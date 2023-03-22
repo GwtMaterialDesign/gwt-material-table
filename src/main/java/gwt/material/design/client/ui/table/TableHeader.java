@@ -66,7 +66,6 @@ public class TableHeader extends TableData {
         }
         headerWrap.setHeight("100%");
         headerWrap.setDisplay(Display.FLEX);
-        headerWrap.add(resetSortIcon);
         resetSortIcon.addClickHandler(clickEvent -> {
             if (resetSortCallback != null) resetSortCallback.call();
             clickEvent.stopPropagation();
@@ -130,6 +129,7 @@ public class TableHeader extends TableData {
             }
             this.sortIcon.getElement().getStyle().setFloat(Float.LEFT);
             headerWrap.insert(this.sortIcon, 0);
+            headerWrap.add(resetSortIcon);
         }
     }
 
