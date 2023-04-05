@@ -19,7 +19,7 @@
  */
 package gwt.material.design.client.ui.table.cell;
 
-public interface ColumnValueProvider<T> {
+public interface ColumnValueProvider<T, V> {
 
-    String getValue(T object);
+    V getValue(T object);
 }

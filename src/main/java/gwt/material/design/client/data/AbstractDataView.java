@@ -46,7 +46,6 @@ import gwt.material.design.client.jquery.JQueryExtension;
 import gwt.material.design.client.jquery.JQueryMutate;
 import gwt.material.design.client.js.*;
 import gwt.material.design.client.ui.MaterialCheckBox;
-import gwt.material.design.client.ui.MaterialIcon;
 import gwt.material.design.client.ui.MaterialProgress;
 import gwt.material.design.client.ui.Selectors;
 import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControls;
@@ -1150,7 +1149,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
-    public final Column<T, ?> addColumn(ColumnValueProvider<T> renderer, String columnName) {
+    public final Column<T, ?> addColumn(ColumnValueProvider<T, String> renderer, String columnName) {
         return addColumn(columnName, new TextColumn<T>() {
             @Override
             public String getValue(T object) {
