@@ -22,6 +22,8 @@ package gwt.material.design.client.ui.pager;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.event.shared.HasHandlers;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.base.MaterialWidget;
@@ -120,7 +122,7 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
             limit = limitOptions[0];
         }
         setEnabledSlideActions(MaterialDataTable.getGlobals().isSlidePagerEnabled());
-        firstPage();
+        gotoPage(currentPage);
     }
 
     public void unload() {
@@ -179,6 +181,10 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
     public void next() {
         currentPage++;
         gotoPage(currentPage);
+    }
+
+    public void setCurrentPage(int currentPage) {
+        this.currentPage = currentPage;
     }
 
     @Override
@@ -293,6 +299,7 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
                     table.setVisibleRange(loadResult.getOffset(), loadResult.getData().size());
                     table.loaded(loadResult.getOffset(), loadResult.getData());
                     updateUi();
+                    PageChangeEvent.fire(MaterialDataPager.this, currentPage);
                 }
 
                 @Override
@@ -425,6 +432,11 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
 
     public void setAutoLoad(boolean autoLoad) {
         this.autoLoad = autoLoad;
+    }
+
+    @Override
+    public HandlerRegistration addPageChangeHandler(PageChangeEvent.PageChangeHandler handler) {
+        return addHandler(handler, PageChangeEvent.TYPE);
     }
 
     public ToggleStyleMixin<Widget> getSlideActionsMixin() {

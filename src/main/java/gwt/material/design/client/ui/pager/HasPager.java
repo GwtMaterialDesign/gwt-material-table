@@ -19,6 +19,7 @@
  */
 package gwt.material.design.client.ui.pager;
 
+import com.google.gwt.event.shared.HandlerRegistration;
 import gwt.material.design.client.base.HasType;
 import gwt.material.design.client.ui.pager.actions.PageListBox;
 import gwt.material.design.client.ui.pager.actions.PageSelection;
@@ -78,4 +79,6 @@ public interface HasPager extends HasType<PagerType> {
     void setPageSelection(PageSelection pageSelection);
 
     PageSelection getPageSelection();
+
+    HandlerRegistration addPageChangeHandler(PageChangeEvent.PageChangeHandler handler);
 }
