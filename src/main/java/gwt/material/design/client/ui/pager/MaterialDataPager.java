@@ -23,8 +23,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.event.shared.HasHandlers;
-import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 import gwt.material.design.client.base.MaterialWidget;
 import gwt.material.design.client.base.constants.TableCssName;
@@ -35,10 +33,8 @@ import gwt.material.design.client.data.DataView;
 import gwt.material.design.client.data.loader.LoadCallback;
 import gwt.material.design.client.data.loader.LoadConfig;
 import gwt.material.design.client.data.loader.LoadResult;
-import gwt.material.design.client.ui.MaterialButton;
 import gwt.material.design.client.ui.MaterialLink;
 import gwt.material.design.client.ui.MaterialPanel;
-import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.accessibility.DataTableAccessibilityControls;
 import gwt.material.design.client.ui.pager.actions.*;
 import gwt.material.design.client.ui.table.MaterialDataTable;
@@ -62,6 +58,7 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
     protected boolean enableRowSelection = true;
     protected boolean enablePageSelection = true;
     protected boolean autoLoad = true;
+    protected boolean canLoad = true;
     protected DataPagerLocaleProvider localeProvider = new DataPagerLocaleProvider() {
     };
 
@@ -290,24 +287,26 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
     protected void doLoad(int offset, int limit) {
         DataView<T> dataView = table.getView();
         if (dataSource != null) {
-            dataSource.load(new LoadConfig<>(dataView, offset, limit, dataView.getSortContext(),
-                    dataView.getOpenCategories()), new LoadCallback<T>() {
-                @Override
-                public void onSuccess(LoadResult<T> loadResult) {
-                    setOffset(loadResult.getOffset());
-                    totalRows = loadResult.getTotalLength();
-                    table.setVisibleRange(loadResult.getOffset(), loadResult.getData().size());
-                    table.loaded(loadResult.getOffset(), loadResult.getData());
-                    updateUi();
-                    PageChangeEvent.fire(MaterialDataPager.this, currentPage);
-                }
+            if (canLoad) {
+                BeforePageChangeEvent.fire(MaterialDataPager.this, currentPage);
+                dataSource.load(new LoadConfig<>(dataView, offset, limit, dataView.getSortContext(), dataView.getOpenCategories()), new LoadCallback<T>() {
+                    @Override
+                    public void onSuccess(LoadResult<T> loadResult) {
+                        PageChangeEvent.fire(MaterialDataPager.this, currentPage);
+                        setOffset(loadResult.getOffset());
+                        totalRows = loadResult.getTotalLength();
+                        table.setVisibleRange(loadResult.getOffset(), loadResult.getData().size());
+                        table.loaded(loadResult.getOffset(), loadResult.getData());
+                        updateUi();
+                    }
 
-                @Override
-                public void onFailure(Throwable caught) {
-                    GWT.log("Load failure", caught);
-                    //TODO: What we need to do on failure? May be clear table?
-                }
-            });
+                    @Override
+                    public void onFailure(Throwable caught) {
+                        GWT.log("Load failure", caught);
+                        //TODO: What we need to do on failure? May be clear table?
+                    }
+                });
+            }
         }
     }
 
@@ -432,6 +431,19 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
 
     public void setAutoLoad(boolean autoLoad) {
         this.autoLoad = autoLoad;
+    }
+
+    public boolean isCanLoad() {
+        return canLoad;
+    }
+
+    public void setCanLoad(boolean canLoad) {
+        this.canLoad = canLoad;
+    }
+
+    @Override
+    public HandlerRegistration addBeforePageChangeHandler(BeforePageChangeEvent.BeforePageChangeHandler handler) {
+        return addHandler(handler, BeforePageChangeEvent.TYPE);
     }
 
     @Override

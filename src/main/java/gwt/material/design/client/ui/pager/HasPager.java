@@ -80,5 +80,7 @@ public interface HasPager extends HasType<PagerType> {
 
     PageSelection getPageSelection();
 
+    HandlerRegistration addBeforePageChangeHandler(BeforePageChangeEvent.BeforePageChangeHandler handler);
+
     HandlerRegistration addPageChangeHandler(PageChangeEvent.PageChangeHandler handler);
 }
