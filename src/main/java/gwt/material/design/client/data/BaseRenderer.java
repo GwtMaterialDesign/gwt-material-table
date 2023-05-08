@@ -37,6 +37,7 @@ import gwt.material.design.client.data.component.RowComponent;
 import gwt.material.design.client.data.factory.Mode;
 import gwt.material.design.client.ui.MaterialCheckBox;
 import gwt.material.design.client.ui.MaterialIcon;
+import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.html.Div;
 import gwt.material.design.client.ui.table.TableData;
 import gwt.material.design.client.ui.table.TableHeader;
@@ -264,6 +265,10 @@ public class BaseRenderer<T> implements Renderer<T> {
                 data.setMaxWidth(column.getMaxWidth() + "px");
             }
 
+            if (column.getClassName() != null && !column.getClassName().isEmpty()) {
+                data.getElement().addClassName(column.getClassName());
+            }
+
             // Render the column cell
             if (column instanceof WidgetColumn) {
                 wrapper.setStyleName(TableCssName.WIDGET_CELL);
@@ -322,14 +327,17 @@ public class BaseRenderer<T> implements Renderer<T> {
         if (column.isHelpEnabled()) {
             th.updateHelp(column.help());
         }
+
         HideOn hideOn = column.hideOn();
         if (hideOn != null) {
             th.setHideOn(hideOn);
         }
+
         TextAlign textAlign = column.textAlign();
         if (textAlign != null) {
             th.setTextAlign(textAlign);
         }
+
         if (column.numeric()) {
             th.addStyleName(TableCssName.NUMERIC);
         }
@@ -342,6 +350,10 @@ public class BaseRenderer<T> implements Renderer<T> {
 
         if (column.getMaxWidth() != null) {
             th.setMaxWidth(column.getMaxWidth() + "px");
+        }
+
+        if (column.getClassName() != null && !column.getClassName().isEmpty()) {
+            th.getElement().addClassName(column.getClassName());
         }
 
         // Apply the style properties
@@ -363,7 +375,7 @@ public class BaseRenderer<T> implements Renderer<T> {
             int percent = (columnWidth * 100) / rowWidth;
             th.setWidth(percent + "%");
         }
-        th.setVisible(true);
+        th.setVisible(column.isHidden());
         return th;
     }
 

@@ -136,6 +136,7 @@ table.striped > tbody > tr:nth-child(odd) td.frozen-col {
     height: 100%;
     width: 100%;
     background-color: #fff;
+    position: relative;
 }
 
 .table-container.stretch {
@@ -442,6 +443,22 @@ tr.data-row, table.table thead tr th.selected.sortable i.sort-header {
     margin-left: 12px;
 }
 
+table.table thead tr th i.reset-sort {
+    display: none;
+    font-size: 1.5em;
+}
+
+table.table thead tr th.sortable.selected i.reset-sort {
+    display: flex;
+}
+
+i.tiny.sort-header.material-icons {
+    flex: auto !important;
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 12px;
+}
+
 table.table tbody tr.data-row {
     border-bottom: 1px solid #E6E6E6;
     -webkit-touch-callout: none;
@@ -464,7 +481,8 @@ table.table tbody tr.data-row td.hover {
 }
 
 table.table thead tr th.sortable:hover {
-    color: rgba(0, 0, 0, 0.87);
+    background: #edf4fd;
+    box-shadow: 0 3px 0 0 #1a73e8;
 }
 
 table.table tbody tr.expansion td {
@@ -912,4 +930,59 @@ table.table tr td.truncate-column p{
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+/** Slider **/
+.table-container.slide-navigation .slide-next,
+.table-container.slide-navigation .slide-previous{
+    display: block;
+}
+
+.table-container .slide-previous,
+.table-container .slide-next {
+    position: absolute;
+    width: 60px;
+    height: 100%;
+    top: 0;
+    background: transparent;
+    box-shadow: none;
+    color: #1a73e8;
+    padding: 0px;
+    opacity: 0;
+    transition: 400ms all;
+    display: none;
+}
+
+.table-container .slide-previous:hover,
+.table-container .slide-next:hover {
+    opacity: 1;
+    background: #d8e9ff;
+}
+
+.table-container .slide-next:hover {
+    border-radius: 0px 20px 20px 0px;
+}
+
+.table-container .slide-previous:hover {
+    border-radius: 20px 0px 0px 20px;
+}
+
+.table-container .slide-previous i,
+.table-container .slide-next i {
+    font-size: 3em;
+    width: 44px;
+    background: #c3ddff;
+    height: 44px;
+    text-align: center;
+    line-height: 44px;
+    border-radius: 100%;
+    margin-left: 8px;
+}
+
+.table-container .slide-next {
+    right: -61px;
+}
+
+.table-container .slide-previous {
+    left: -74px;
 }

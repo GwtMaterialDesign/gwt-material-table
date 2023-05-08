@@ -70,15 +70,18 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     private boolean numeric;
     private boolean autoSort;
     private boolean sortable;
+    private boolean searchable;
     private boolean useRemoteSort;
     private boolean widthToPercent;
     private boolean hidden;
+    private String className;
 
     private boolean hideable = true;
     private Integer maxWidth;
     private Boolean truncate;
     private Boolean helpEnabled;
     private String name;
+    private String path;
     private String help;
     private String width;
     private HideOn hideOn;
@@ -205,6 +208,15 @@ public abstract class Column<T, C> implements HasCell<T, C> {
      */
     public final String name() {
         return this.name;
+    }
+
+    public Column<T, C> path(String path) {
+        this.path = path;
+        return this;
+    }
+
+    public final String path() {
+        return this.path;
     }
 
     /**
@@ -535,7 +547,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
      * A blank or empty placeholder when column's value is null.
      */
     public String blankPlaceholder() {
-        if (blankPlaceholder == null) {
+        if (blankPlaceholder == null && getDataView() != null) {
             String defaultBlankPlaceholder = getDataView().getBlankPlaceholder();
             blankPlaceholder = defaultBlankPlaceholder != null ? defaultBlankPlaceholder : MaterialDataTable.getGlobals().getBlankPlaceholder();
         }
@@ -553,7 +565,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     }
 
     public Boolean isHelpEnabled() {
-        if (helpEnabled == null) {
+        if (helpEnabled == null && getDataView() != null) {
             Boolean defaultHelpEnabled = getDataView().isHelpEnabled();
             helpEnabled = defaultHelpEnabled != null ? defaultHelpEnabled : MaterialDataTable.getGlobals().isHelpEnabled();
         }
@@ -586,7 +598,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     }
 
     public Boolean isTruncated() {
-        if (truncate == null) {
+        if (truncate == null && getDataView() != null) {
             Boolean defaultTruncate = getDataView().isColumnTruncate();
             truncate = defaultTruncate != null ? defaultTruncate : MaterialDataTable.getGlobals().isColumnTruncate();
         }
@@ -599,11 +611,20 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     }
 
     public Integer getMaxWidth() {
-        if (maxWidth == null) {
+        if (maxWidth == null && getDataView() != null) {
             Integer defaultMaxWidth = getDataView().getColumnMaxWidth();
             maxWidth = defaultMaxWidth != null ? defaultMaxWidth : MaterialDataTable.getGlobals().getColumnMaxWidth();
         }
         return maxWidth;
+    }
+
+    public Column<T, C> className(String className) {
+        this.className = className;
+        return this;
+    }
+
+    public String getClassName() {
+        return className;
     }
 
     public DataView<T> getDataView() {
@@ -612,6 +633,15 @@ public abstract class Column<T, C> implements HasCell<T, C> {
 
     public void setDataView(DataView<T> dataView) {
         this.dataView = dataView;
+    }
+
+    public boolean isSearchable() {
+        return searchable;
+    }
+
+    public Column<T, C> searchable(boolean searchable) {
+        this.searchable = searchable;
+        return this;
     }
 
     @Override

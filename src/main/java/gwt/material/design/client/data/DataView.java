@@ -168,4 +168,6 @@ public interface DataView<T> extends HasRows<T>, HasColumns<T>, HasDataSource<T>
     void setDefaultBlankPlaceholder(String defaultBlankPlaceholder);
 
     String getBlankPlaceholder();
+
+    void resetSort();
 }

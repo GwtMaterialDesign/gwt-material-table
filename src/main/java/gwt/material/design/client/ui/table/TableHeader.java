@@ -24,9 +24,12 @@ import com.google.gwt.user.client.DOM;
 import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.constants.Display;
 import gwt.material.design.client.constants.IconSize;
+import gwt.material.design.client.constants.IconType;
 import gwt.material.design.client.ui.MaterialIcon;
+import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.html.Div;
 import gwt.material.design.client.ui.html.Span;
+import gwt.material.design.client.ui.table.events.ResetSortCallback;
 
 /**
  * @author Ben Dol
@@ -36,6 +39,8 @@ public class TableHeader extends TableData {
     private Span headerLbl;
     private MaterialIcon sortIcon;
     private TableHelp helpWidget = new TableHelp();
+    private ResetSortCallback resetSortCallback;
+    private MaterialIcon resetSortIcon = new MaterialIcon(IconType.CLOSE);
     private Div headerWrap = new Div();
 
     public TableHeader() {
@@ -49,6 +54,7 @@ public class TableHeader extends TableData {
     public TableHeader(MaterialIcon sortIcon) {
         this();
         setSortIcon(sortIcon);
+        resetSortIcon.addStyleName("reset-sort");
     }
 
     @Override
@@ -60,6 +66,11 @@ public class TableHeader extends TableData {
         }
         headerWrap.setHeight("100%");
         headerWrap.setDisplay(Display.FLEX);
+        resetSortIcon.addClickHandler(clickEvent -> {
+            if (resetSortCallback != null) resetSortCallback.call();
+            clickEvent.stopPropagation();
+            clickEvent.preventDefault();
+        });
         add(headerWrap);
     }
 
@@ -118,6 +129,7 @@ public class TableHeader extends TableData {
             }
             this.sortIcon.getElement().getStyle().setFloat(Float.LEFT);
             headerWrap.insert(this.sortIcon, 0);
+            headerWrap.add(resetSortIcon);
         }
     }
 
@@ -125,5 +137,13 @@ public class TableHeader extends TableData {
         if(sortIcon != null) {
             sortIcon.setInnerText("");
         }
+    }
+
+    public ResetSortCallback getResetSortCallback() {
+        return resetSortCallback;
+    }
+
+    public void setResetSortCallback(ResetSortCallback resetSortCallback) {
+        this.resetSortCallback = resetSortCallback;
     }
 }

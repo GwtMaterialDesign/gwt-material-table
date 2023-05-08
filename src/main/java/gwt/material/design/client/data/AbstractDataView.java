@@ -537,7 +537,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
                 th.addStyleName(TableCssName.SORTABLE);
                 accessibilityControl.registerHeaderControl(th);
             }
-
+            th.setResetSortCallback(() -> {
+                resetSort();
+                ColumnResetSortEvent.fire(this);
+            });
             addHeader(index, th);
             th.setVisible(!column.isHidden());
         }
@@ -1146,7 +1149,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     }
 
     @Override
-    public final Column<T, ?> addColumn(ColumnValueProvider<T> renderer, String columnName) {
+    public final Column<T, ?> addColumn(ColumnValueProvider<T, String> renderer, String columnName) {
         return addColumn(columnName, new TextColumn<T>() {
             @Override
             public String getValue(T object) {
@@ -2646,6 +2649,18 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             firstFrozenHeader.$this().nextAll().each((param1, el) -> frozenMarginRight += $(el).outerWidth());
             innerScroll.addClass("frozen");
             innerScroll.css("margin-right", frozenMarginRight + "px");
+        }
+    }
+
+    @Override
+    public void resetSort() {
+        for (TableHeader header : getHeaders()) {
+            if (header != null) {
+                if (header.getSortIcon() != null) {
+                    header.getSortIcon().setIconType(IconType.DEFAULT);
+                }
+                header.getElement().removeClassName(TableCssName.SELECTED);
+            }
         }
     }
 

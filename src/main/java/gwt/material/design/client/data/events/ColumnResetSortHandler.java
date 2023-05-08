@@ -2,7 +2,7 @@
  * #%L
  * GwtMaterial
  * %%
- * Copyright (C) 2015 - 2021 GwtMaterialDesign
+ * Copyright (C) 2015 - 2017 GwtMaterialDesign
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,10 @@
  * limitations under the License.
  * #L%
  */
-package gwt.material.design.client.ui.table.cell;
+package gwt.material.design.client.data.events;
 
-public interface ColumnValueProvider<T, V> {
+import com.google.gwt.event.shared.EventHandler;
 
-    V getValue(T object);
+public interface ColumnResetSortHandler<T> extends EventHandler {
+    void onColumnResetSort(ColumnResetSortEvent<T> event);
 }

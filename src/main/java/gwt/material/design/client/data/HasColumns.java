@@ -53,7 +53,7 @@ public interface HasColumns<T> {
     /**
      * Add a new column to the data view.
      */
-    Column<T, ?> addColumn(ColumnValueProvider<T> provider, String columnName);
+    Column<T, ?> addColumn(ColumnValueProvider<T, String> provider, String columnName);
 
     /**
      * Remove an existing column by index.
