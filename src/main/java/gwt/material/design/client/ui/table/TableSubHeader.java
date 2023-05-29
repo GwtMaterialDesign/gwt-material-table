@@ -48,7 +48,7 @@ public class TableSubHeader extends TableRow {
 
     private MaterialIcon icon;
     private Text nameLbl;
-
+    private Widget widget;
     private IconType openIcon = IconType.ADD;
     private IconType closeIcon = IconType.REMOVE;
 
@@ -238,5 +238,14 @@ public class TableSubHeader extends TableRow {
     @Override
     public String toString() {
         return getElement().toString();
+    }
+
+    public void setWidget(Widget widget) {
+        this.widget = widget;
+
+        nameTh.clear();
+        if (widget != null) {
+            nameTh.add(widget);
+        }
     }
 }
