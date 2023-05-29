@@ -275,6 +275,15 @@ public class CategoryComponent<T> extends Component<TableSubHeader> {
         }
     }
 
+    public void reset() {
+        rows.clear();
+        for (Widget widget : getWidget()) {
+            if (widget.getElement().hasClassName("category-parent")) {
+                widget.removeFromParent();
+            }
+        }
+    }
+
     public List<RowComponent<T>> getRows() {
         return rows;
     }
