@@ -19,12 +19,9 @@
  */
 package gwt.material.design.client.data.component;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;
-import gwt.material.design.client.constants.Display;
 import gwt.material.design.client.data.HasCategories;
 import gwt.material.design.client.ui.MaterialLabel;
-import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.table.TableHeader;
 import gwt.material.design.client.ui.table.TableSubHeader;
 import gwt.material.design.client.ui.table.cell.CategoryColumn;
@@ -61,7 +58,6 @@ public class CategoryComponent<T> extends Component<TableSubHeader> {
     private String height;
     private boolean openByDefault;
     private boolean hideName;
-
     private int currentIndex = -1;
     private int rowCount = 0;
 
@@ -236,6 +232,12 @@ public class CategoryComponent<T> extends Component<TableSubHeader> {
                 }
             }
         }
+
+        renderRows(this, getData());
+    }
+
+    protected void renderRows(CategoryComponent<T> tCategoryComponent, List<T> data) {
+
     }
 
     public void recalculateColumns() {
@@ -275,6 +277,15 @@ public class CategoryComponent<T> extends Component<TableSubHeader> {
         }
     }
 
+    public void reset() {
+        rows.clear();
+        for (Widget widget : getWidget()) {
+            if (widget.getElement().hasClassName("category-parent")) {
+                widget.removeFromParent();
+            }
+        }
+    }
+
     public List<RowComponent<T>> getRows() {
         return rows;
     }
@@ -286,6 +297,10 @@ public class CategoryComponent<T> extends Component<TableSubHeader> {
 
         CategoryComponent<T> that = (CategoryComponent<T>) o;
         return name.equals(that.name);
+    }
+
+    public void setCustomWidget(Widget widget) {
+        getWidget().setWidget(widget);
     }
 
     @Override
