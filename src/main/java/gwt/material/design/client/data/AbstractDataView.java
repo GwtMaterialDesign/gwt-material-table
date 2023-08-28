@@ -1199,8 +1199,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     public void sort(Column<T, ?> column, SortDir dir) {
         if (column != null) {
             int index = column.getIndex() + getColumnOffset();
-            TableHeader th = headers.get(index);
-            sort(rows, th, column, index, dir);
+            if (index >= 0 && headers.size() > 0) {
+                TableHeader th = headers.get(index);
+                sort(rows, th, column, index, dir);
+            }
         } else {
             throw new RuntimeException("Cannot sort on a null column.");
         }
