@@ -196,7 +196,7 @@ public class MaterialDataTableTest<T extends MaterialDataTable<Person>> extends 
         table.addCategoryClosedHandler(event -> {
             isCategoryClosedFired[0] = true;
         });
-        table.fireEvent(new CategoryClosedEvent(null));
+        table.fireEvent(new CategoryClosedEvent(null,null));
         assertTrue(isCategoryClosedFired[0]);
 
         // Category Opened
@@ -204,7 +204,7 @@ public class MaterialDataTableTest<T extends MaterialDataTable<Person>> extends 
         table.addCategoryOpenedHandler(event -> {
             isCategoryOpenedFired[0] = true;
         });
-        table.fireEvent(new CategoryOpenedEvent(null));
+        table.fireEvent(new CategoryOpenedEvent(null,null));
         assertTrue(isCategoryOpenedFired[0]);
 
         // Row Context Menu

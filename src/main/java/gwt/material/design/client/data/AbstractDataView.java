@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -2300,12 +2300,12 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             // Attach the category events
             category.$this().off("opened");
             category.$this().on("opened", (e, categoryElem) -> {
-                CategoryOpenedEvent.fire(this, category.getName());
+                CategoryOpenedEvent.fire(this, category.getId(), category.getName());
                 return true;
             });
             category.$this().off("closed");
             category.$this().on("closed", (e, categoryElem) -> {
-                CategoryClosedEvent.fire(this, category.getName());
+                CategoryClosedEvent.fire(this, category.getId(), category.getName());
                 return true;
             });
         }
@@ -2351,6 +2351,20 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         if (name != null) {
             for (CategoryComponent category : categories) {
                 if (category.getName().equals(name)) {
+                    return category;
+                }
+            }
+        } else {
+            return getOrphansCategory();
+        }
+        return null;
+    }
+
+    @Override
+    public CategoryComponent<T> getCategoryById(String id) {
+        if (id != null) {
+            for (CategoryComponent category : categories) {
+                if (category.getId().equals(id)) {
                     return category;
                 }
             }

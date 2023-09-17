@@ -39,6 +39,8 @@ public interface HasCategories<T> {
      */
     CategoryComponent<T> getCategory(String categoryName);
 
+    CategoryComponent<T> getCategoryById(String id);
+
     /**
      * Get all registered category components.
      */
