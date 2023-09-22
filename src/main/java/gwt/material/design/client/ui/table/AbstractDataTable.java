@@ -228,6 +228,11 @@ public abstract class AbstractDataTable<T> extends MaterialWidget implements Dat
     }
 
     @Override
+    public CategoryComponent<T> getCategoryById(String id) {
+        return view.getCategoryById(id);
+    }
+
+    @Override
     public final Categories<T> getCategories() {
         return view.getCategories();
     }

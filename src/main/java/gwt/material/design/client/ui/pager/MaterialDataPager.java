@@ -314,8 +314,10 @@ public class MaterialDataPager<T> extends MaterialWidget implements HasPager {
      * Set and update the ui fields of the pager after the datasource load callback
      */
     protected void updateUi() {
-        pageSelection.updatePageNumber(currentPage);
-        pageSelection.updateTotalPages(getTotalPages());
+        if (pageSelection != null) {
+            pageSelection.updatePageNumber(currentPage);
+            pageSelection.updateTotalPages(getTotalPages());
+        }
 
         // Action label (current selection) in either the form "x-y of z" or "y of z" (when page has only 1 record)
         int firstRow = offset + 1;

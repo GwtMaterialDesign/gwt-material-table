@@ -26,18 +26,24 @@ public class CategoryOpenedEvent extends GwtEvent<CategoryOpenedHandler> {
 
     public static final Type<CategoryOpenedHandler> TYPE = new Type<>();
 
-    public static void fire(HasHandlers source, String name) {
-        source.fireEvent(new CategoryOpenedEvent(name));
+    public static void fire(HasHandlers source, String id, String name) {
+        source.fireEvent(new CategoryOpenedEvent(id, name));
     }
 
     private final String name;
+    private final String id;
 
-    public CategoryOpenedEvent(String name) {
+    public CategoryOpenedEvent(String id, String name) {
+        this.id = id;
         this.name = name;
     }
 
     public String getName() {
         return name;
+    }
+
+    public String getId() {
+        return id;
     }
 
     @Override

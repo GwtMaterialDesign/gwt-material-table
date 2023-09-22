@@ -1199,8 +1199,10 @@ public abstract class AbstractDataView<T> implements DataView<T> {
     public void sort(Column<T, ?> column, SortDir dir) {
         if (column != null) {
             int index = column.getIndex() + getColumnOffset();
-            TableHeader th = headers.get(index);
-            sort(rows, th, column, index, dir);
+            if (index >= 0 && headers.size() > 0) {
+                TableHeader th = headers.get(index);
+                sort(rows, th, column, index, dir);
+            }
         } else {
             throw new RuntimeException("Cannot sort on a null column.");
         }
@@ -1856,7 +1858,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         if (categoryPair != null && categoryPair.getName() != null) {
             // Generate the category if not exists
             if (categoryFactory != null) {
-                CategoryComponent<T> category = getCategory(categoryPair.getName());
+                CategoryComponent<T> category = getCategoryById(categoryPair.getId().toString());
                 if (category == null) {
                     return categoryFactory.generate(this, categoryPair);
                 } else {
@@ -2298,12 +2300,12 @@ public abstract class AbstractDataView<T> implements DataView<T> {
             // Attach the category events
             category.$this().off("opened");
             category.$this().on("opened", (e, categoryElem) -> {
-                CategoryOpenedEvent.fire(this, category.getName());
+                CategoryOpenedEvent.fire(this, category.getId(), category.getName());
                 return true;
             });
             category.$this().off("closed");
             category.$this().on("closed", (e, categoryElem) -> {
-                CategoryClosedEvent.fire(this, category.getName());
+                CategoryClosedEvent.fire(this, category.getId(), category.getName());
                 return true;
             });
         }
@@ -2349,6 +2351,20 @@ public abstract class AbstractDataView<T> implements DataView<T> {
         if (name != null) {
             for (CategoryComponent category : categories) {
                 if (category.getName().equals(name)) {
+                    return category;
+                }
+            }
+        } else {
+            return getOrphansCategory();
+        }
+        return null;
+    }
+
+    @Override
+    public CategoryComponent<T> getCategoryById(String id) {
+        if (id != null) {
+            for (CategoryComponent category : categories) {
+                if (category.getId().equals(id)) {
                     return category;
                 }
             }
