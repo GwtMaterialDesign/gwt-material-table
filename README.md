@@ -11,12 +11,12 @@ A complex table component designed for the material design specifications!
 Support documentation can be found [here](https://github.com/GwtMaterialDesign/gwt-material-table/wiki)
 
 ## Maven
-Current Version 2.8.1
+Current Version 2.8.3
 ```xml
 <dependency>
     <groupId>com.github.gwtmaterialdesign</groupId>
     <artifactId>gwt-material-table</artifactId>
-    <version>2.8.1</version>
+    <version>2.8.3</version>
 </dependency>
 ```
 
