@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,6 +25,7 @@ import gwt.material.design.client.base.constants.TableCssName;
 import gwt.material.design.client.constants.Display;
 import gwt.material.design.client.constants.IconSize;
 import gwt.material.design.client.constants.IconType;
+import gwt.material.design.client.constants.TextAlign;
 import gwt.material.design.client.ui.MaterialIcon;
 import gwt.material.design.client.ui.MaterialToast;
 import gwt.material.design.client.ui.html.Div;
@@ -75,13 +76,26 @@ public class TableHeader extends TableData {
     }
 
     public void setHeader(String header) {
-        if(headerLbl == null) {
+        if (headerLbl == null) {
             headerLbl = new Span(header);
             headerLbl.setStyleName(TableCssName.TABLE_HEADER);
             headerWrap.insert(headerLbl, 0);
         } else {
             headerLbl.setText(header);
         }
+    }
+
+    @Override
+    public void setTextAlign(TextAlign align) {
+       if (align != null) {
+           String alignment = "left";
+           if (align == TextAlign.RIGHT) {
+               alignment = "right";
+           } else if (align == TextAlign.CENTER) {
+               alignment = "center";
+           }
+           headerWrap.getElement().getStyle().setProperty("justifyContent", alignment);
+       }
     }
 
     public String getHelp() {
@@ -122,9 +136,9 @@ public class TableHeader extends TableData {
         removeSortIcon();
         this.sortIcon = sortIcon;
 
-        if(sortIcon != null) {
+        if (sortIcon != null) {
             IconSize iconSize = this.sortIcon.getIconSize();
-            if(iconSize == null) {
+            if (iconSize == null) {
                 this.sortIcon.setIconSize(IconSize.SMALL);
             }
             this.sortIcon.getElement().getStyle().setFloat(Float.LEFT);
@@ -134,7 +148,7 @@ public class TableHeader extends TableData {
     }
 
     public void removeSortIcon() {
-        if(sortIcon != null) {
+        if (sortIcon != null) {
             sortIcon.setInnerText("");
         }
     }

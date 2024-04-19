@@ -527,7 +527,7 @@ public abstract class AbstractDataView<T> implements DataView<T> {
 
     public void renderColumn(Column<T, ?> column) {
         int index = column.getIndex() + getColumnOffset();
-        TableHeader th = renderer.drawColumnHeader(getContainer(), column, column.name(), index);
+        TableHeader th = renderer.drawColumnHeader(getContainer(), column, column.displayName(), index);
         if (th != null) {
             if (column.sortable()) {
                 th.$this().on("click", e -> {
