@@ -210,7 +210,7 @@ public class CategoryComponent<T> extends Component<TableSubHeader> {
             Column<T, ?> column = allColumns.get(i);
             if (column != null && !column.name().isEmpty()) {
                 TableHeader th = new TableHeader();
-                th.addStyleName("category " + column.name().replace(" ", "-"));
+                th.addStyleName("category " + column.name().replace(" ", "-").replace(".", "-"));
                 String width = column.width();
                 th.setWidth(column.width());
                 if (width != null) th.setMinWidth(width);

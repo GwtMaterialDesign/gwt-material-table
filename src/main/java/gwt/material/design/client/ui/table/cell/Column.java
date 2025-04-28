@@ -81,6 +81,7 @@ public abstract class Column<T, C> implements HasCell<T, C> {
     private Boolean truncate;
     private Boolean helpEnabled;
     private String name;
+    private String displayName;
     private String path;
     private String help;
     private String width;
@@ -208,6 +209,21 @@ public abstract class Column<T, C> implements HasCell<T, C> {
      */
     public final String name() {
         return this.name;
+    }
+
+    public Column<T, C> displayName(String displayName) {
+        this.displayName = displayName;
+        return this;
+    }
+
+    /**
+     * @return the database name of the column, or null if it's never been set
+     */
+    public final String displayName() {
+        if (this.displayName == null || this.displayName.isEmpty()) {
+            this.displayName = name;
+        }
+        return this.displayName;
     }
 
     public Column<T, C> path(String path) {
